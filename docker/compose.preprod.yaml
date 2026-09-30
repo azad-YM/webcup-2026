@@ -1,0 +1,98 @@
+services:
+  preprod-admin:
+    container_name: preprod-admin
+    image: ghcr.io/torche-km/boilerplate-admin:preprod
+    restart: always
+    environment:
+      VITE_APP_ENV: prod
+      VITE_API_BASE_URL: https://pre-api.boilerplate.tech
+      VIRTUAL_HOST: pre-app.boilerplate.tech
+      LETSENCRYPT_HOST: pre-app.boilerplate.tech
+      LETSENCRYPT_EMAIL: contact@boilerplate.tech
+      VIRTUAL_PORT: 80
+    depends_on:
+      - preprod-api-nginx
+    networks:
+      - boilerplate-net
+
+  preprod-site:
+    container_name: preprod-site
+    image: ghcr.io/torche-km/boilerplate-site:preprod
+    restart: always
+    environment:
+      VIRTUAL_HOST: boilerplate.tech
+      LETSENCRYPT_HOST: boilerplate.tech
+      LETSENCRYPT_EMAIL: contact@boilerplate.tech
+      VIRTUAL_PORT: 3000
+    networks:
+      - boilerplate-net
+
+  preprod-api:
+    container_name: preprod-api
+    image: ghcr.io/torche-km/boilerplate-api:preprod
+    restart: always
+    env_file:
+      - ../api/.env.local
+    depends_on:
+      - preprod-db
+    environment:
+      APP_ENV: prod
+      APP_DEBUG: 0
+      MESSENGER_TRANSPORT_DSN: doctrine://default?auto_setup=0
+    networks:
+      - boilerplate-net
+
+  preprod-api-nginx:
+    image: ghcr.io/torche-km/boilerplate-api-nginx:preprod
+    container_name: preprod-api-nginx
+    restart: always
+    depends_on:
+      - preprod-api
+    environment:
+      VIRTUAL_HOST: pre-api.boilerplate.tech
+      LETSENCRYPT_HOST: pre-api.boilerplate.tech
+      LETSENCRYPT_EMAIL: contact@boilerplate.tech
+      VIRTUAL_PORT: 80
+    networks:
+      - boilerplate-net
+
+  preprod-messenger-worker:
+    container_name: preprod-messenger-worker
+    image: ghcr.io/torche-km/boilerplate-api:preprod
+    command:
+      - php
+      - bin/console
+      - messenger:consume
+      - async
+      - -vv
+    restart: always
+    env_file:
+      - ../api/.env.local
+    depends_on:
+      - preprod-db
+    environment:
+      APP_ENV: prod
+      APP_DEBUG: 0
+      MESSENGER_TRANSPORT_DSN: doctrine://default?auto_setup=0
+    networks:
+      - boilerplate-net
+
+  preprod-db:
+    image: mysql:8.4
+    container_name: preprod-db
+    restart: always
+    env_file:
+      - ../api/.env.local
+    volumes:
+      - preprod_db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - boilerplate-net
+
+volumes:
+  preprod_db_data:
+
+networks:
+  boilerplate-net:
+    external: true

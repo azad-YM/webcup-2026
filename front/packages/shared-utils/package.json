@@ -1,0 +1,17 @@
+{
+  "name": "@boilerplate/shared-utils",
+  "version": "0.0.0",
+  "private": true,
+  "license": "PROPRIETARY",
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    "./utility": "./src/utility.ts",
+    "./api-client": "./src/api-client.ts",
+    "./error.utils": "./src/error.utils.ts",
+    "./random.id-provider": "./src/random.id-provider.ts",
+    "./use-cases.decorator": "./src/use-cases.decorator.ts",
+    "./rtk-query.decorator": "./src/rtk-query.decorator.ts"
+  }
+}

@@ -1,0 +1,14 @@
+iam:
+    resource:
+        path: ../src/IAM/Application/Controller/
+        namespace: IAM\Application\Controller
+    type: attribute
+
+api_login_check:
+    path: /api/login_check
+
+example:
+    resource:
+        path: ../src/Example/Application/Controller/
+        namespace: Example\Application\Controller
+    type: attribute

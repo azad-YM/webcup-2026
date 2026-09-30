@@ -1,0 +1,50 @@
+import { afterEach, describe, expect, it, vi } from "vitest"
+import { AuthHttpGateway } from "./auth.http.gateway"
+import { PortalLoginHttpGateway } from "./portal-login.http.gateway"
+
+const sessions = () => ({ getToken: vi.fn((): string | null => "jwt"), saveToken: vi.fn(), clear: vi.fn() })
+afterEach(() => vi.unstubAllGlobals())
+
+describe("Admin HTTP authentication", () => {
+  it("requires a real admin membership from the API", async () => {
+    const session = sessions()
+    const fetch = vi.fn().mockResolvedValueOnce(new Response(JSON.stringify({ name: "Admin", email: "admin@example.com", spaces: [{ code: "admin" }] }))).mockResolvedValueOnce(new Response(JSON.stringify({ name: "Other", email: "other@example.com", spaces: [] })))
+    vi.stubGlobal("fetch", fetch)
+    const gateway = new AuthHttpGateway("/api", session, vi.fn())
+    expect(await gateway.getProfile()).toEqual({ name: "Admin", email: "admin@example.com" })
+    await expect(gateway.getProfile()).rejects.toThrow("pas accès")
+    expect(session.clear).not.toHaveBeenCalled()
+  })
+  it("invalidates on 401 but retains the session on network failure", async () => {
+    const session = sessions()
+    const invalidated = vi.fn()
+    const gateway = new AuthHttpGateway("/api", session, invalidated)
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValueOnce(new TypeError("network")).mockResolvedValueOnce(new Response('{}', { status: 401 })))
+    await expect(gateway.getProfile()).rejects.toThrow("indisponible")
+    expect(session.clear).not.toHaveBeenCalled()
+    expect(await gateway.getProfile()).toBeNull()
+    expect(session.clear).toHaveBeenCalledOnce()
+    expect(invalidated).toHaveBeenCalledOnce()
+  })
+  it("exchanges only a code matching the initiating browser state and verifier", async () => {
+    const values = new Map<string, string>()
+    vi.stubGlobal("window", { sessionStorage: { setItem: (key: string, value: string) => values.set(key, value), getItem: (key: string) => values.get(key) ?? null, removeItem: (key: string) => values.delete(key) } })
+    const session = sessions()
+    const gateway = new PortalLoginHttpGateway("/api", "http://localhost:5178", session)
+    const url = new URL(await gateway.start())
+    expect(url.pathname).toBe("/sso/")
+    expect(url.searchParams.get("destination")).toBe("admin")
+    expect(url.searchParams.get("challenge")).toHaveLength(43)
+    const fetch = vi.fn().mockResolvedValue(new Response(JSON.stringify({ token: "portal-jwt" })))
+    vi.stubGlobal("fetch", fetch)
+    await expect(gateway.complete("a".repeat(64), "wrong-state")).rejects.toThrow("invalide")
+    expect(fetch).not.toHaveBeenCalled()
+    await gateway.complete("a".repeat(64), url.searchParams.get("state")!)
+    const payload = JSON.parse(fetch.mock.calls[0]![1].body)
+    expect(payload.destination).toBe("admin")
+    expect(payload.verifier).toHaveLength(64)
+    expect(session.saveToken).toHaveBeenCalledWith("portal-jwt")
+    expect(values.size).toBe(0)
+    await expect(gateway.complete("a".repeat(64), url.searchParams.get("state")!)).rejects.toThrow("introuvable")
+  })
+})

@@ -1,0 +1,17 @@
+{
+  "extends": "@boilerplate/shared-config/vite.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "types": ["vite/client", "node", "vitest/globals"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "exclude": [
+    "src/modules/shared/ui/components",
+    "src/modules/shared/ui/hooks",
+    "src/modules/shared/ui/lib",
+    "src/modules/shared/core/ports"
+  ]
+}

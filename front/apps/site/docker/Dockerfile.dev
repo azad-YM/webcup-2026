@@ -1,0 +1,20 @@
+FROM node:20-alpine
+
+RUN corepack enable pnpm
+
+WORKDIR /app
+
+COPY front/pnpm-workspace.yaml ./
+COPY front/package.json ./
+
+COPY front/apps/site/package.json apps/site/
+COPY front/packages ./packages
+
+RUN pnpm install
+
+COPY front .
+
+WORKDIR /app/apps/site
+
+EXPOSE 3000
+CMD ["pnpm", "dev"]

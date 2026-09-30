@@ -1,0 +1,39 @@
+FROM node:20-alpine AS base
+WORKDIR /app
+
+RUN apk add --no-cache libc6-compat \
+  && corepack enable \
+  && corepack prepare pnpm@10.4.1 --activate
+
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# ── deps: installer les dépendances (contexte = front/) ──────────────────────
+FROM base AS deps
+COPY package.json pnpm-workspace.yaml tsconfig.base.json ./
+# Manifestes des packages workspace (pnpm en a besoin pour résoudre workspace:*)
+COPY packages/shared-ui/package.json     ./packages/shared-ui/package.json
+COPY packages/shared-utils/package.json  ./packages/shared-utils/package.json
+COPY packages/shared-config/package.json ./packages/shared-config/package.json
+COPY apps/site/package.json      ./apps/site/package.json
+RUN pnpm install --no-frozen-lockfile
+
+# ── build ─────────────────────────────────────────────────────────────────────
+FROM deps AS build
+COPY packages/shared-ui     ./packages/shared-ui
+COPY packages/shared-utils  ./packages/shared-utils
+COPY packages/shared-config ./packages/shared-config
+COPY apps/site      ./apps/site
+RUN pnpm --filter site build
+
+# ── runner (image légère grâce au standalone output) ─────────────────────────
+FROM base AS runner
+ENV NODE_ENV=production \
+    PORT=3000
+
+COPY --from=build /app/apps/site/.next/standalone ./
+COPY --from=build /app/apps/site/.next/static     ./apps/site/.next/static
+COPY --from=build /app/apps/site/public           ./apps/site/public
+
+WORKDIR /app/apps/site
+EXPOSE 3000
+CMD ["node", "server.js"]

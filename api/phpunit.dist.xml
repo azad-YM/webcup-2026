@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/12.2/phpunit.xsd" bootstrap="src/Shared/Tests/bootstrap.php" colors="true" cacheDirectory=".phpunit.cache">
+  <php><server name="APP_ENV" value="test" force="true"/></php>
+  <testsuites>
+    <testsuite name="IAM">
+      <directory>src/IAM/Tests/Suites/Application</directory>
+      <directory>src/IAM/Tests/Suites/Unit</directory>
+    </testsuite>
+    <testsuite name="Example">
+      <directory>src/Example/Tests/Suites/Application</directory>
+      <directory>src/Example/Tests/Suites/Unit</directory>
+    </testsuite>
+    <testsuite name="Shared">
+      <directory>src/Shared/Tests/Suites/Application</directory>
+      <directory>src/Shared/Tests/Suites/Unit</directory>
+    </testsuite>
+  </testsuites>
+  <source><include><directory suffix=".php">src</directory></include><exclude>
+    <directory>src/IAM/Tests</directory>
+    <directory>src/Example/Tests</directory>
+    <directory>src/Shared/Tests</directory>
+  </exclude></source>
+</phpunit>

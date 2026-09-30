@@ -1,0 +1,6 @@
+parameters:
+    doctrine.dbal.connection_factory.class: Tests\Shared\Infrastructure\TestConnectionFactory
+
+services:
+    logger:
+        class: Psr\Log\NullLogger

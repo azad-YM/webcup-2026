@@ -1,0 +1,16 @@
+<?php
+
+declare(strict_types=1);
+
+namespace IAM\Infrastructure\Doctrine\Repository;
+
+use IAM\Application\Ports\Repository\IUserRepository;
+use IAM\Domain\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
+
+final readonly class DoctrineUserRepository implements IUserRepository
+{
+    public function __construct(private EntityManagerInterface $entityManager) {}
+    public function save(User $user): void { $this->entityManager->persist($user); $this->entityManager->flush(); }
+    public function findByEmail(string $email): ?User { return $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]); }
+}

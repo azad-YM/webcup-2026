@@ -1,0 +1,164 @@
+name: boilerplate-dev
+
+x-api-environment: &api-environment
+  APP_ENV: dev
+  APP_SECRET: dev-only-change-me
+  DATABASE_URL: "mysql://boilerplate:boilerplate@db:3306/boilerplate?serverVersion=8.4.0&charset=utf8mb4"
+  MESSENGER_TRANSPORT_DSN: "doctrine://default?auto_setup=0"
+  MAILER_DSN: "null://null"
+  CORS_ALLOW_ORIGIN: "^https?://(localhost|127\\.0\\.0\\.1)(:[0-9]+)?$"
+  JWT_SECRET_KEY: "%kernel.project_dir%/config/jwt/private.pem"
+  JWT_PUBLIC_KEY: "%kernel.project_dir%/config/jwt/public.pem"
+  JWT_PASSPHRASE: dev-only-change-me
+
+services:
+  admin:
+    container_name: boilerplate-admin
+    build:
+      context: ../
+      dockerfile: front/apps/admin/docker/Dockerfile.dev
+    ports:
+      - "5179:5173"
+    volumes:
+      - ../front:/app:delegated
+
+      - /app/node_modules
+      - /app/apps/admin/node_modules
+      - /app/packages/shared-ui/node_modules
+      - /app/packages/shared-utils/node_modules
+      - /app/packages/shared-config/node_modules
+    environment:
+      NODE_ENV: development
+      VITE_SITE_URL: http://localhost:5178
+      VITE_API_BASE_URL: http://localhost:8083/api
+      VITE_APP_ENV: dev
+    restart: unless-stopped
+    networks:
+      - boilerplate
+    develop:
+      watch:
+        - action: sync
+          path: ../front
+          target: /app
+          ignore:
+            - node_modules/
+            - apps/admin/node_modules/
+            - packages/shared-ui/node_modules/
+            - packages/shared-utils/node_modules/
+            - packages/shared-config/node_modules/
+
+  site:
+    container_name: boilerplate-site
+    build:
+      context: ../
+      dockerfile: front/apps/site/docker/Dockerfile.dev
+    ports:
+      - "5178:3000"
+    volumes:
+      - ../front:/app:delegated
+
+      - /app/node_modules
+      - /app/apps/site/node_modules
+      - /app/packages/shared-ui/node_modules
+      - /app/packages/shared-utils/node_modules
+      - /app/packages/shared-config/node_modules
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8083/api
+      NEXT_PUBLIC_SITE_URL: http://localhost:5178
+      NEXT_PUBLIC_ADMIN_URL: http://localhost:5179
+    restart: unless-stopped
+    networks:
+      - boilerplate
+    develop:
+      watch:
+        - action: sync
+          path: ../front
+          target: /app
+          ignore:
+            - node_modules/
+            - apps/site/node_modules/
+            - packages/shared-ui/node_modules/
+            - packages/shared-utils/node_modules/
+            - packages/shared-config/node_modules/
+
+  api:
+    container_name: boilerplate-api
+    restart: unless-stopped
+    build:
+      context: ../api
+      dockerfile: docker/dev/Dockerfile.dev
+    volumes:
+      - ../api:/var/www/html
+    depends_on:
+      - db
+    environment:
+      <<: *api-environment
+    networks:
+      - boilerplate
+    develop:
+      watch:
+        - action: sync
+          path: ../api
+          target: /var/www/html
+          ignore:
+            - vendor/
+            - var/
+
+  messenger-worker:
+    container_name: boilerplate-messenger-worker
+    restart: unless-stopped
+    build:
+      context: ../api
+      dockerfile: docker/dev/Dockerfile.dev
+    command:
+      - php
+      - bin/console
+      - messenger:consume
+      - async
+      - -vv
+    volumes:
+      - ../api:/var/www/html
+    depends_on:
+      - db
+    environment:
+      <<: *api-environment
+      SKIP_APP_SETUP: "1"
+    networks:
+      - boilerplate
+
+  db:
+    image: mysql:8.4
+    container_name: boilerplate-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: boilerplate
+      MYSQL_USER: boilerplate
+      MYSQL_PASSWORD: boilerplate
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - boilerplate_db_data:/var/lib/mysql
+    ports:
+      - "3338:3306"
+    networks:
+      - boilerplate
+
+  nginx:
+    image: nginx:1.25
+    container_name: boilerplate-api-nginx
+    restart: unless-stopped
+    volumes:
+      - ../api:/var/www/html
+      - ../api/docker/dev/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - api
+    ports:
+      - "8083:80"
+    networks:
+      - boilerplate
+
+volumes:
+  boilerplate_db_data:
+
+networks:
+  boilerplate:

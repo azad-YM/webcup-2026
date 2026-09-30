@@ -1,0 +1,102 @@
+# Architecture technique
+
+<!-- navigation:start -->
+[Accueil du projet](../../README.md) › [Documentation](../README.md) › [Architecture](README.md) › Architecture technique
+<!-- navigation:end -->
+
+## Vue d’ensemble
+
+```text
+Site Next.js (connexion) ──┐
+Admin React/Vite ──────────┼──► API Symfony ──► MySQL 8.4
+                           │         │
+                           │         └──► Worker Messenger (transport Doctrine)
+                           └── code à usage unique + PKCE entre site et admin
+```
+
+## API modulaire
+
+L’API est découpée en bounded contexts (BC) de même niveau : `IAM` et `Example`, plus le socle `Shared`. Un BC peut être subdivisé en sous-domaines (SD) lorsqu’il grossit. Chaque BC simple ou SD porte `Application`, `Domain`, `Infrastructure`, `Tests` et `doc`.
+
+```text
+api/src/
+├── IAM/                        BC identité et accès : comptes, login JWT, codes de portail,
+│                               membres d’administration, rôles, permissions, espaces
+├── Example/                    BC simple d’exemple : Item (CRUD)
+└── Shared/                     kernel, AppController, exceptions, AggregateRoot, ports techniques
+```
+
+- `Domain` contient les entités, règles et événements, sans dépendance au framework (dette connue : `User` implémente les interfaces Symfony) ;
+- `Application` contient commandes, queries, handlers, contrôleurs, DTO et ports ;
+- `Infrastructure` contient les adaptateurs Doctrine, sécurité et intermodules ;
+- `Tests` contient doubles, fixtures et suites `Unit` / `Application`.
+
+### Bus et transactions
+
+- `command.bus` : middleware `doctrine_transaction` (flush, commit, rollback) ;
+- `query.bus` : lecture, sans transaction ;
+- `event.bus` : événements de domaine, routés vers le transport `async`.
+
+Le contrôleur reçoit la commande via `#[MapRequestPayload]` puis appelle `AppController::dispatch()`. Les exceptions sont traduites par `Shared\Application\Listener\ExceptionListener` (403, 404, 409, 422, 500).
+
+## Frontières entre modules
+
+Aucun module consommateur n’appelle les détails internes d’un autre (même entre SD d’un même BC). Le consommateur définit un port dans sa couche Application ; le fournisseur l’implémente dans sa propre Infrastructure ; la composition injecte l’adaptateur. Voir l’[ADR 002](decisions/002-frontieres-et-acces.md).
+
+Raccordements livrés, à reproduire :
+
+| Consommateur (port) | Fournisseur (adaptateur) |
+|---|---|
+| `Example` — `ItemAccessPolicy` | `IAM/Infrastructure/Adapter/Example/AdminItemAccessPolicy` |
+
+Point d’extension : un BC exposant son propre espace implémente `IAM\Application\Ports\Provider\AccessibleSpacesProvider` dans son infrastructure (tag `iam.accessible_spaces`).
+
+La CLI d’[initialisation de l’administrateur](../../api/src/Shared/doc/initialisation-admin.md) est l’unique exception explicite : elle compose compte, rôle et membre directement, hors workflows applicatifs.
+
+## Frontend
+
+Monorepo pnpm : `apps/site`, `apps/admin`, `packages/shared-ui`, `packages/shared-utils`, `packages/shared-config`. Une application n’importe jamais le code interne d’une autre.
+
+Chaque module d’application suit :
+
+```text
+modules/<module>/
+├── core/
+│   ├── domain/                 types et règles pures
+│   ├── application/            dto, ports (gateway, provider), usecases, rtk-api
+│   └── infrastructure/         for-production (http, local), for-tests
+└── ui/                         layouts, pages, sections, modals
+```
+
+Chaîne : UI → RTK Query → use case (`withUseCase`) → port gateway → adaptateur injecté par le kernel (`modules/shared/core/config`). Entre modules frontend, même règle que le backend : l’admin et l’example définissent chacun leur port de session, implémenté par le module `auth`.
+
+## Authentification
+
+1. Le site appelle `POST /api/login_check` et reçoit un JWT d’audience `site`.
+2. Il liste les espaces via `GET /api/iam/me/spaces`.
+3. L’admin démarre `/auth/start` (état + vérificateur PKCE), le site appelle `POST /api/iam/portal-codes`, puis l’admin échange le code via `POST /api/iam/portal-sessions` et reçoit un JWT d’audience `admin`.
+
+Détails : [IAM — comptes et sessions](../../api/src/IAM/doc/comptes-et-sessions.md) et [parcours de connexion du site](../../front/apps/site/doc/parcours-connexion.md).
+
+## Tests
+
+- Unitaires : handlers construits avec doubles (`Ram*`, `Stub*`), sans kernel ni Docker.
+- Applicatifs : vraie route, Messenger, Doctrine, firewall JWT, sur MySQL 8.4 Testcontainers isolé par processus ; schéma recréé avant chaque test.
+- Frontend : Vitest pour règles de domaine, use cases via le store RTK et contrats HTTP des gateways.
+
+## Consignes des agents
+
+Les `AGENTS.md` sont répartis par périmètre : racine, `api/`, chaque BC/SD, `front/`, chaque application et `front/packages/`.
+
+<!-- backlinks:start -->
+---
+
+[← Retour à Architecture](README.md)
+
+**Référencé depuis :**
+
+- [Documentation](../README.md)
+- [Documentation — IAM](../../api/src/IAM/doc/README.md)
+- [Documentation — Example](../../api/src/Example/doc/README.md)
+- [Documentation — Shared](../../api/src/Shared/doc/README.md)
+<!-- backlinks:end -->

@@ -1,0 +1,16 @@
+services:
+  demo-admin:
+    container_name: demo-admin
+    image: ghcr.io/torche-km/boilerplate-admin:demo
+    restart: always
+    environment:
+      VIRTUAL_HOST: demo.boilerplate.tech
+      LETSENCRYPT_HOST: demo.boilerplate.tech
+      LETSENCRYPT_EMAIL: contact@boilerplate.tech
+      VIRTUAL_PORT: 80
+    networks:
+      - boilerplate-net
+
+networks:
+  boilerplate-net:
+    external: true

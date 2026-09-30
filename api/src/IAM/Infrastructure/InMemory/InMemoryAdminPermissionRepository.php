@@ -1,0 +1,41 @@
+<?php
+
+namespace IAM\Infrastructure\InMemory;
+
+use Shared\Application\Ports\Repository\IPermissionRepository;
+use Shared\Domain\VO\Permission;
+
+class InMemoryAdminPermissionRepository implements IPermissionRepository {
+    private array $permissions = [];
+
+    public function __construct()
+    {
+        $this->permissions = [
+            new Permission('admin', 'role', 'read'),
+            new Permission('admin', 'role', 'write'),
+            new Permission('admin', 'member', 'write'),
+            new Permission('admin', 'role-assignment', 'write'),
+            new Permission('admin', 'item', 'read'),
+            new Permission('admin', 'item', 'write'),
+        ];
+    }
+
+    /**
+     * @return Permission[]
+     */
+    public function findAllPermissions(): array
+    {
+        return $this->permissions;
+    }
+
+    /**
+     * @return Permission[]
+     */
+    public function findPermissionsByContext(string $context): array
+    {
+        return array_filter(
+            $this->permissions,
+            fn(Permission $permission) => $permission->context === $context,
+        );
+    }
+}

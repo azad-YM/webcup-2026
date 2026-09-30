@@ -1,0 +1,31 @@
+.DS_Store
+**/.DS_Store
+**/.vscode
+**/.idea
+**/*.swp
+
+# Dependency installs
+node_modules
+**/node_modules
+**/.pnpm-store
+
+# Build outputs and caches
+**/dist
+**/build
+**/.next
+**/.turbo
+**/.cache
+**/coverage
+
+# Env files and secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Logs
+*.log
+**/npm-debug.log*
+**/pnpm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*

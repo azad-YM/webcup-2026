@@ -1,0 +1,4 @@
+{
+  "extends": "@boilerplate/shared-config/typescript.json"
+}
+

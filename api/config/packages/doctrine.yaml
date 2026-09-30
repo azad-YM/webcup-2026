@@ -1,0 +1,48 @@
+doctrine:
+    dbal:
+        url: '%env(resolve:DATABASE_URL)%'
+        profiling_collect_backtrace: '%kernel.debug%'
+        use_savepoints: true
+    orm:
+        auto_generate_proxy_classes: true
+        enable_lazy_ghost_objects: true
+        report_fields_where_declared: true
+        validate_xml_mapping: true
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+        identity_generation_preferences:
+            Doctrine\DBAL\Platforms\MySQLPlatform: identity
+        auto_mapping: true
+        mappings:
+            IAM:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/IAM/Infrastructure/Doctrine/Entity'
+                prefix: 'IAM\Domain\Entity'
+                alias: IAM
+            Example:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Example/Infrastructure/Doctrine/Entity'
+                prefix: 'Example\Domain\Entity'
+                alias: Example
+            Shared:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Shared/Infrastructure/Doctrine/Entity'
+                prefix: 'Shared\Domain\Entity'
+                alias: Shared
+        controller_resolver:
+            auto_mapping: false
+
+when@prod:
+    doctrine:
+        orm:
+            auto_generate_proxy_classes: false
+            proxy_dir: '%kernel.build_dir%/doctrine/orm/Proxies'
+            query_cache_driver: { type: pool, pool: doctrine.system_cache_pool }
+            result_cache_driver: { type: pool, pool: doctrine.result_cache_pool }
+    framework:
+        cache:
+            pools:
+                doctrine.result_cache_pool: { adapter: cache.app }
+                doctrine.system_cache_pool: { adapter: cache.system }

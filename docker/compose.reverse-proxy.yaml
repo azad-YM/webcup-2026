@@ -1,0 +1,43 @@
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy:alpine
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./nginx/certs:/etc/nginx/certs
+      - ./nginx/vhost.d:/etc/nginx/vhost.d
+      - ./nginx/html:/usr/share/nginx/html
+      # Configuration globale custom (sécurité, cache…)
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    environment:
+      # Force Nginx à utiliser IPv4 + IPv6
+      - ENABLE_IPV6=true
+      - SSL_POLICY=Mozilla-Modern
+    networks:
+      - boilerplate-net
+    restart: always
+
+  acme-companion:
+    image: nginxproxy/acme-companion
+    container_name: acme-companion
+    depends_on:
+      - nginx-proxy
+    environment:
+      - DEFAULT_EMAIL=contact@boilerplate.tech
+      - NGINX_PROXY_CONTAINER=nginx-proxy
+      - DEBUG=false
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./nginx/certs:/etc/nginx/certs
+      - ./nginx/vhost.d:/etc/nginx/vhost.d
+      - ./nginx/html:/usr/share/nginx/html
+    networks:
+      - boilerplate-net
+    restart: always
+
+networks:
+  boilerplate-net:
+    external: true

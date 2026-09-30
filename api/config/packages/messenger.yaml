@@ -1,0 +1,25 @@
+framework:
+    messenger:
+        default_bus: command.bus
+        buses:
+            command.bus:
+                middleware:
+                    - doctrine_transaction
+            query.bus: ~
+            event.bus:
+                default_middleware:
+                    allow_no_handlers: true
+        failure_transport: failed
+        transports:
+            async: '%env(MESSENGER_TRANSPORT_DSN)%'
+            failed: 'doctrine://default?queue_name=failed'
+            sync: 'sync://'
+        routing:
+            'Shared\Domain\Event\DomainEvent': async
+
+when@test:
+    framework:
+        messenger:
+            transports:
+                async: 'test://'
+                failed: 'test://'

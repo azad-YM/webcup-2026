@@ -1,0 +1,29 @@
+FROM php:8.4-fpm
+
+# Installer dépendances système et PHP
+RUN apt-get update && apt-get install -y \
+  git unzip default-mysql-client libicu-dev libzip-dev libonig-dev \
+  && docker-php-ext-install pdo pdo_mysql intl zip
+
+# Installer Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/html
+
+# Copier les manifestes Composer pour profiter du cache et garantir un build reproductible
+COPY composer.json composer.lock ./
+RUN composer install --no-scripts --no-dev --optimize-autoloader
+
+# Copier le reste du code
+COPY . .
+
+# Symfony doit pouvoir écrire dans var/cache et var/log en runtime (php-fpm = www-data)
+RUN mkdir -p var/cache var/log \
+  && chown -R www-data:www-data var
+
+# Copier l’entrypoint
+COPY docker/dev/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT ["entrypoint.sh"]
+CMD ["php-fpm"]
