@@ -4,7 +4,6 @@
     "module": "preserve",
     "moduleResolution": "bundler",
 
-    "baseUrl": ".",
     "paths": {
       "@boilerplate/shared-ui/*": ["./src/*"]
     }
