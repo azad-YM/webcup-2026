@@ -11,7 +11,7 @@ Suivi des travaux de la plateforme pendant les 24H By Webcup : ce qui est livré
 
 ## État du flux
 
-Relevé du 2026-10-03 : vagues 4 (H+5) et 5 (H+6) diffusées, 36 demandes visibles pour 16 600 XP.
+Relevé du 2026-10-03 : vagues 6 (H+7), 7 (H+8) et 8 (H+9) diffusées, 50 demandes visibles pour 26 170 XP.
 
 ## Lots
 
@@ -21,15 +21,19 @@ Les lots regroupent les demandes qui partagent un même modèle ou un même écr
 |---|---|---|---|---|
 | L0 | Séparer l’identité (IAM) des membres et rôles (Administration), retirer le gabarit Example, cadrer Citizen — [ADR 003](../technique/decisions/003-identite-et-habilitations.md) | — | — | ✅ |
 | L1 | Comptes et profils : inscription citoyenne, espace personnel, rôles Agent et Administrateur, formulaire de membre | D01, D03, D08, D09 | 1 500 | 🟡 tâches 1 à 5 livrées ; parcours à vérifier dans le navigateur |
-| L2 | Demandes citoyennes : envoi, confirmation, signalement, suivi, file des agents, compteur d’attente — [Citizen](../../api/src/Citizen/doc/README.md#livré--demandes-citoyennes-lot-l2), [site](../../front/apps/site/doc/parcours-citoyen.md#4-demandes-citoyennes-lot-l2), [admin](../../front/apps/admin/doc/demandes.md) | D04, D16, F25, D11, F26, F22, D17 | 2 390 | 🟡 API, site, admin et temps réel livrés ; ni testés ni vérifiés dans le navigateur |
+| L2 | Demandes citoyennes : envoi, confirmation, signalement, suivi, file des agents, compteur d’attente — [Citizen](../../api/src/Citizen/doc/README.md#livré--demandes-citoyennes-lot-l2), [site](../../front/apps/site/doc/parcours-citoyen.md#4-demandes-citoyennes-lot-l2), [admin](../../front/apps/admin/doc/demandes.md) | D04, D16, F25, D11, F26, F22, D17, F49 | 2 720 | 🟡 API, site, admin et temps réel livrés ; ni testés ni vérifiés dans le navigateur |
 | L3 | Services municipaux (avec recherche et filtres), publications, page d’accueil — [Administration](../../api/src/Administration/doc/README.md), [Communication](../../api/src/Communication/doc/README.md), [vitrine](../../front/apps/site/doc/vitrine-et-alertes.md), [contenus](../../front/apps/admin/doc/contenus.md) | D05, D06, F28, F32, D07 | 1 550 | 🟡 API, vitrine sur l’HTTP et module `content` livrés ; non vérifié dans un navigateur, aucun test écrit |
 | L7 | Alertes et diffusion : message général, alerte ciblée par quartier, avis d’annonce importante, recommandations aux personnes vulnérables — [Communication](../../api/src/Communication/doc/README.md) | D18, F29, F30, F31 | 3 080 | 🟡 alertes, bandeau temps réel, notifications citoyennes, consentement sanitaire livrés ; non vérifié dans un navigateur, aucun test écrit |
-| L4 | Accessibilité et repères : lecteur d’écran, contraste, taille du texte, fil d’Ariane, première connexion, indications contextuelles | F21, F23, F24, D15, D12, F35 | 2 400 | ⬜ |
+| L4 | Accessibilité et repères : lecteur d’écran, contraste, taille du texte, fil d’Ariane, première connexion, indications contextuelles | F21, F23, F24, D15, D12, F35, D13, D20, F41, F42, F43, F44 | 6 120 | ⬜ |
 | L5 | Multilingue : interface, puis contenus | D14, F27 | 1 080 | ⬜ |
 | L6 | Pilotage : flux de l’API Webcup dans l’espace des agents — [Pilotage](../../api/src/Pilotage/doc/README.md), [page](../../front/apps/admin/doc/pilotage.md) | D19 | 750 | 🟡 livré, à vérifier avec la vraie clé |
 | L8 | Compte et sécurité : suppression de son compte, administration des comptes citoyens par les agents, protection contre les tentatives de connexion — [Citizen](../../api/src/Citizen/doc/compte-et-securite.md), [IAM](../../api/src/IAM/doc/comptes-et-sessions.md#protection-contre-les-tentatives-de-connexion-f37), pages [comptes citoyens](../../front/apps/admin/doc/comptes-citoyens.md) et [sécurité](../../front/apps/admin/doc/securite.md) | F33, F34, F37 | 1 770 | 🟡 livré, non testé, à vérifier dans un navigateur |
 | L9 | Services pratiques : transports (horaires et infos), service interrompu ou en maintenance — [Administration](../../api/src/Administration/doc/README.md) | F36, F38 | 1 180 | 🟡 état du service et horaires sur les fiches, saisis dans l’admin ; non vérifié dans un navigateur, aucun test écrit |
 | L10 | Rendez-vous avec un agent et rappel | F39, F40 | 900 | ⬜ |
+| L11 | Carte des services : localiser les services physiques, hôpitaux et urgences | F45, F46 | 1 280 | ⬜ |
+| L12 | Traçabilité : journal des actions de l’administration (qui a fait quoi, quand), consultable par les agents | F47, F48 | 1 600 | ⬜ |
+| L13 | Tableau de bord de l’activité pour les agents | F50 | 990 | ⬜ |
+| L14 | Participation : usage des données et remontée d’inquiétudes, soutien d’une demande | F51, F52 | 1 650 | ⬜ |
 
 ## Travail en parallèle
 

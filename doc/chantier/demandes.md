@@ -74,6 +74,35 @@ Statuts : ⬜ à faire · 🟡 en cours · ⚠️ partiel · ✅ livré · ⏸�
 | F39 | 2 | 600 | Prendre rendez-vous avec un agent : créneau sans ambiguïté, informations pour préparer le rendez-vous | L10 | Citizen, admin, site | ⬜ |
 | F40 | 1 | 300 | Recevoir un rappel avant son rendez-vous | L10 | Citizen, Communication, site | ⬜ |
 
+## Vague 6 (H+7) — « Inclusion et structuration »
+
+| Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
+|---|---|---|---|---|---|---|
+| D13 | 1 | 310 | Remplacer les mots difficiles par un langage clair, sans jargon technique | L4 | site, admin | ⬜ |
+| D20 | 3 | 930 | Plateforme utilisable par les personnes en situation de handicap, sans parcours à part | L4 | site, admin | ⬜ |
+| F41 | 2 | 620 | Toutes les actions atteignables au clavier seul | L4 | site, admin | ⬜ |
+| F42 | 3 | 930 | Formulaires, composants, champs et erreurs réellement accessibles aux technologies d’assistance | L4 | site, admin | ⬜ |
+| F43 | 1 | 310 | Ne pas dépendre de la couleur seule pour distinguer l’information | L4 | site, admin | ⬜ |
+| F44 | 2 | 620 | Agrandir le contenu (zoom) sans casser l’affichage | L4 | site, admin | ⬜ |
+
+## Vague 7 (H+8) — « Inclusion et structuration »
+
+| Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
+|---|---|---|---|---|---|---|
+| F45 | 3 | 960 | Localiser les services physiques de la ville (carte, adresse, itinéraire) | L11 | Administration, site | ⬜ |
+| F46 | 1 | 320 | Trouver rapidement hôpitaux et services d’urgence | L11 | Administration, site | ⬜ |
+| F47 | 3 | 960 | Justifier les actions réalisées : opérations consultables et traçables dans le temps, faciles à retrouver par les agents | L12 | Administration, admin | ⬜ |
+| F48 | 2 | 640 | Savoir qui a modifié quoi dans l’administration | L12 | Administration, admin | ⬜ |
+
+## Vague 8 (H+9) — « Inclusion et structuration »
+
+| Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
+|---|---|---|---|---|---|---|
+| F49 | 1 | 330 | Être informé quand sa demande change d’état | L2 | Citizen, site | ⬜ |
+| F50 | 3 | 990 | Tableau de bord simplifié de l’activité de la plateforme pour les agents | L13 | Pilotage, admin | ⬜ |
+| F51 | 3 | 990 | Comprendre l’usage de ses données et faire remonter ses inquiétudes, avec trace de prise en compte | L14 | Citizen, site, admin | ⬜ |
+| F52 | 2 | 660 | Soutenir une demande déjà déposée par d’autres habitants | L14 | Citizen, site | ⬜ |
+
 ## Vagues suivantes
 
 Ajouter une section par vague au moment de sa diffusion, en suivant la [procédure](README.md#quand-une-vague-arrive).
