@@ -134,6 +134,16 @@ services:
     Pilotage\Application\Ports\Provider\PilotageAccessPolicy:
         alias: Administration\Infrastructure\Adapter\Pilotage\AdminPilotageAccessPolicy
 
+    # Tableau de bord de l'activité (F50) : Pilotage consomme Citizen, Communication, IAM et Administration.
+    Pilotage\Application\Ports\Provider\Activity\CitizenActivityProvider:
+        alias: Citizen\Infrastructure\Adapter\Pilotage\CitizenPilotageActivity
+    Pilotage\Application\Ports\Provider\Activity\CommunicationActivityProvider:
+        alias: Communication\Infrastructure\Adapter\Pilotage\CommunicationPilotageActivity
+    Pilotage\Application\Ports\Provider\Activity\AccountSecurityActivityProvider:
+        alias: IAM\Infrastructure\Adapter\Pilotage\IAMPilotageSecurityActivity
+    Pilotage\Application\Ports\Provider\Activity\AdministrationActivityProvider:
+        alias: Administration\Infrastructure\Adapter\Pilotage\AdminPilotageActivity
+
     # Pilotage consomme IAM (auteur d'une mise à jour du suivi des demandes Webcup).
     Pilotage\Application\Ports\Provider\CurrentAgentProvider:
         alias: IAM\Infrastructure\Adapter\Pilotage\IAMPilotageCurrentAgent
