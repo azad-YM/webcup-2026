@@ -117,6 +117,10 @@ services:
     Pilotage\Application\Ports\Provider\PilotageAccessPolicy:
         alias: Administration\Infrastructure\Adapter\Pilotage\AdminPilotageAccessPolicy
 
+    # Citizen consomme Administration (file des demandes : admin.request.read / admin.request.write).
+    Citizen\Application\Ports\Provider\RequestAccessPolicy:
+        alias: Administration\Infrastructure\Adapter\Citizen\AdminRequestAccessPolicy
+
     # --- Socle ---
 
     Symfony\Component\Messenger\MessageBusInterface $commandBus: '@command.bus'
@@ -170,8 +174,3 @@ services:
     Shared\Application\Listener\ExceptionListener:
         tags:
             - { name: kernel.event_listener, event: kernel.exception, method: __invoke }
-
-    Citizen\Application\Ports\Repository\ServiceRequestRepository:
-        alias: Citizen\Infrastructure\Doctrine\Repository\DoctrineServiceRequestRepository
-    Citizen\Application\Ports\Provider\RequestAccessPolicy:
-        alias: Administration\Infrastructure\Adapter\Citizen\AdminRequestAccessPolicy

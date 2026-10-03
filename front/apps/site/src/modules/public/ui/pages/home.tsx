@@ -47,7 +47,7 @@ function AccountCallToAction() {
           </h2>
           <p className="mt-3 text-lg text-teal-50">
             {hasToken
-              ? "Retrouvez votre profil et, bientôt, le suivi de toutes vos demandes."
+              ? "Retrouvez votre profil, contactez la mairie et suivez toutes vos demandes."
               : "Créez votre compte citoyen pour retrouver vos démarches, être informé de ce qui concerne votre quartier et contacter la mairie."}
           </p>
         </div>

@@ -9,12 +9,13 @@ import { SeenRequestsLocalStorageGateway } from "@/modules/pilotage/core/infrast
 import { AuthSessionLocalStorageGateway } from "@/modules/auth/core/infrastructure/for-production/gateway/local/auth-session.local-storage.gateway"
 import { AuthHttpGateway } from "@/modules/auth/core/infrastructure/for-production/gateway/http/auth.http.gateway"
 import { PortalLoginHttpGateway } from "@/modules/auth/core/infrastructure/for-production/gateway/http/portal-login.http.gateway"
+import { AuthRequestSessionProvider } from "@/modules/auth/core/infrastructure/adapter/requests/auth-request-session.provider"
+import { RequestQueueHttpGateway } from "@/modules/requests/core/infrastructure/for-production/gateway/http/request-queue.http.gateway"
+import { REQUEST_EVENTS } from "@/modules/requests/core/application/rtk-api/requests"
+import { SseRealtimeSubscriber } from "../infrastructure/sse-realtime.subscriber"
 import type { Dependencies } from "./dependencies"
 import { createStore, type AppStore } from "./store"
 
-import { BrowserRealtimeSubscriber } from "@boilerplate/shared-utils/realtime"
-import { AuthRequestSessionProvider } from "@/modules/auth/core/infrastructure/adapter/requests/auth-request-session.provider"
-import { RequestHttpGateway } from "@/modules/requests/core/infrastructure/for-production/request.http.gateway"
 export class App {
   public dependencies: Dependencies
   public store: AppStore
@@ -32,11 +33,9 @@ export class App {
     // Each consumer module owns its session port; the auth module provides one adapter per consumer.
     const adminSession = new AuthAccessSessionProvider(authSessionGateway, onSessionInvalidated)
     const pilotageSession = new AuthPilotageSessionProvider(authSessionGateway, onSessionInvalidated)
+    const requestSession = new AuthRequestSessionProvider(authSessionGateway, onSessionInvalidated)
 
-    const requestGateway = new RequestHttpGateway(apiBaseUrl, new AuthRequestSessionProvider(authSessionGateway, onSessionInvalidated))
     return {
-      requestGateway,
-      requestRealtime: new BrowserRealtimeSubscriber({transport:import.meta.env.VITE_REALTIME_TRANSPORT || "none",url:import.meta.env.VITE_REALTIME_URL || "", key:import.meta.env.VITE_PUSHER_KEY,cluster:import.meta.env.VITE_PUSHER_CLUSTER,authorize:(topic,socketId)=>requestGateway.authorize(topic,socketId)}),
       authSessionGateway,
       authGateway: new AuthHttpGateway(apiBaseUrl, authSessionGateway, onSessionInvalidated),
       portalLoginGateway: new PortalLoginHttpGateway(apiBaseUrl, siteUrl, authSessionGateway),
@@ -45,6 +44,9 @@ export class App {
       memberGateway: new MemberHttpGateway(apiBaseUrl, adminSession),
       webcupFeedGateway: new WebcupFeedHttpGateway(apiBaseUrl, pilotageSession),
       seenRequestsGateway: new SeenRequestsLocalStorageGateway(),
+      requestQueueGateway: new RequestQueueHttpGateway(apiBaseUrl, requestSession),
+      // One stream per tab; the list gathers the events listened to by the admin screens.
+      realtime: new SseRealtimeSubscriber(apiBaseUrl, () => authSessionGateway.getToken(), [...REQUEST_EVENTS]),
     }
   }
 }

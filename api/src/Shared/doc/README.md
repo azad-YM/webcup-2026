@@ -31,4 +31,6 @@ Il ne centralise ni leurs entités ni leurs règles, et ne sert pas de raccourci
 
 - [Architecture transverse](../../../../doc/technique/README.md)
 - [ADR 004](../../../../doc/technique/decisions/004-temps-reel.md)
+- [Administration](../../Administration/doc/README.md)
+- [Administration — membres et habilitations](../../Administration/doc/membres-et-habilitations.md)
 <!-- backlinks:end -->

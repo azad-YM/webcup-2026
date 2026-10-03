@@ -14,14 +14,14 @@ Statuts : ⬜ à faire · 🟡 en cours · ⚠️ partiel · ✅ livré · ⏸�
 |---|---|---|---|---|---|---|
 | D01 | 1 | 250 | Un habitant crée simplement son compte et retrouve son espace | L1 | Citizen, IAM, site | 🟡 API ([`POST /api/citizen/register`](../../api/src/Citizen/doc/README.md#livré)) et site ([inscription en 2 étapes, espace](../../front/apps/site/doc/parcours-citoyen.md)) livrés ; bout en bout à vérifier dans le navigateur |
 | D03 | 1 | 250 | Se reconnecter à un espace personnel clairement identifié | L1 | IAM, site | 🟡 connexion et espace `/espace` livrés (API `GET /api/citizen/me` + site) ; bout en bout à vérifier dans le navigateur |
-| D04 | 1 | 250 | Envoyer un message aux services municipaux, avec confirmation | L2 | Citizen, site | ⬜ |
+| D04 | 1 | 250 | Envoyer un message aux services municipaux, avec confirmation | L2 | Citizen, site | 🟡 « Contacter la mairie » ([site](../../front/apps/site/doc/parcours-citoyen.md#4-demandes-citoyennes-lot-l2)) sur `POST /api/citizen/requests` ([Citizen](../../api/src/Citizen/doc/README.md#livré--demandes-citoyennes-lot-l2)) ; ni testé ni vérifié dans le navigateur |
 | D05 | 1 | 250 | Présenter clairement les principaux services municipaux | L3 | Administration, site | ⚠️ catalogue et fiches de service sur le site, contenu local de démonstration (API au lot L3) |
 | D06 | 1 | 250 | Consulter les publications de la ville | L3 | Communication, site | ⚠️ liste et lecture des actualités sur le site, contenu local de démonstration (API au lot L3) |
 | D07 | 2 | 500 | Page d’accueil qui hiérarchise l’essentiel et mène aux services | L3 | site | ⚠️ accueil structuré (présentation, « Que souhaitez-vous faire ? », recherche, services, actualités, appel à créer un compte) ; contenu local tant que L3 n’est pas livré |
 | D08 | 2 | 500 | Distinguer citoyens, agents et administrateurs | L1 | Administration, Citizen | 🟡 les trois profils existent : citoyen (API Citizen + espace du site), « Agent municipal » et « Administrateur principal » (rôles, liste et ajout des membres dans l’admin) ; à vérifier dans le navigateur |
 | D09 | 2 | 500 | Limiter les outils sensibles aux profils autorisés | L1 | Administration | ✅ chaque outil de l’admin (rôles, membres, flux Nova Terra) exige sa permission côté serveur, testé ; refus 403 expliqué dans l’interface. À étendre aux outils des lots suivants |
 | D19 | 3 | 750 | Espace agents distinct qui affiche le flux de l’API Nova Terra | L6 | Pilotage, admin | 🟡 page « Flux Nova Terra » (`/pilotage`) sur la route `GET /api/pilotage/webcup-feed`, testée avec l’API du concours simulée ; ✅ dès qu’elle est vérifiée avec la vraie clé dans `api/.env.local` |
-| F22 | 1 | 250 | Les agents voient les demandes reçues, leur état et celles à traiter | L2 | Citizen, admin | ⬜ |
+| F22 | 1 | 250 | Les agents voient les demandes reçues, leur état et celles à traiter | L2 | Citizen, admin | 🟡 module « Demandes citoyennes » de l’admin ([file des agents](../../front/apps/admin/doc/demandes.md)), filtre par état, traitement avec commentaire, temps réel ; ni testé ni vérifié dans le navigateur |
 
 ## Vague 1 (H+2) — « Premiers habitants »
 
@@ -35,14 +35,14 @@ Statuts : ⬜ à faire · 🟡 en cours · ⚠️ partiel · ✅ livré · ⏸�
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
-| D11 | 2 | 540 | Retrouver ses demandes, leur état et les étapes déjà réalisées | L2 | Citizen, site | ⬜ |
+| D11 | 2 | 540 | Retrouver ses demandes, leur état et les étapes déjà réalisées | L2 | Citizen, site | 🟡 « Mes demandes » : état et chronologie des étapes horodatées (`/espace/demandes?ref=…`) ; ni testé ni vérifié dans le navigateur |
 | D12 | 2 | 540 | Première connexion guidée : profil, trouver un service, lancer une démarche | L4 | site, Citizen | ⚠️ invitation à compléter le profil et raccourcis dans l’espace ; parcours guidé complet à faire |
 | D14 | 2 | 540 | Choisir une autre langue pour l’interface | L5 | site | ⬜ |
 | D15 | 1 | 270 | Repère de navigation (fil d’Ariane) et retour aux niveaux précédents | L4 | site, admin | ⚠️ site : fil d’Ariane sur toutes les pages hors accueil (premier niveau) ; admin à faire |
-| D16 | 1 | 270 | Confirmation claire immédiatement après l’envoi d’une demande | L2 | Citizen, site | ⬜ |
-| D17 | 1 | 270 | Nombre de demandes en attente de prise en charge, d’un coup d’œil | L2 | Citizen, admin | ⬜ |
-| F25 | 2 | 540 | Signaler un problème sur la voie publique avec description et lieu | L2 | Citizen, site | ⬜ |
-| F26 | 1 | 270 | Historique des demandes dans l’espace personnel | L2 | Citizen, site | ⬜ |
+| D16 | 1 | 270 | Confirmation claire immédiatement après l’envoi d’une demande | L2 | Citizen, site | 🟡 écran de confirmation avec la référence `NT-AAAA-NNNN` juste après l’envoi ; ni testé ni vérifié dans le navigateur |
+| D17 | 1 | 270 | Nombre de demandes en attente de prise en charge, d’un coup d’œil | L2 | Citizen, admin | 🟡 badge « N en attente » (`pendingCount`) dans la file de l’admin, mis à jour en temps réel ; ni testé ni vérifié dans le navigateur |
+| F25 | 2 | 540 | Signaler un problème sur la voie publique avec description et lieu | L2 | Citizen, site | 🟡 « Signaler un problème » avec description et lieu obligatoire ; ni testé ni vérifié dans le navigateur |
+| F26 | 1 | 270 | Historique des demandes dans l’espace personnel | L2 | Citizen, site | 🟡 historique des demandes dans `/espace/demandes` ; ni testé ni vérifié dans le navigateur |
 | F27 | 2 | 540 | Contenus des services et démarches proposés en plusieurs langues | L5 | Administration, site | ⬜ |
 | F28 | 1 | 270 | Mettre en avant les services prioritaires ou les plus utilisés | L3 | Administration, site | ⚠️ « Services les plus demandés » sur l’accueil, mise en avant locale (API au lot L3) |
 

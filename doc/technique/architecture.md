@@ -23,7 +23,7 @@ api/src/
 ├── IAM/                        BC identité : comptes, login JWT, codes de portail, espaces
 ├── Administration/             BC organisation municipale : membres, rôles, permissions
 │                               (cible : services municipaux)
-├── Citizen/                    BC relation habitants–ville : citoyens (inscription, profil) ; demandes à venir
+├── Citizen/                    BC relation habitants–ville : citoyens (inscription, profil), demandes et file des agents
 ├── Pilotage/                   BC pilotage : flux de l’API du concours Webcup (sans persistance)
 ├── Communication/              BC à construire : publications, alertes, audiences (ADR 005)
 └── Shared/                     kernel, AppController, exceptions, AggregateRoot, ports techniques (dont temps réel)
@@ -60,6 +60,11 @@ Raccordements livrés, à reproduire :
 | `Citizen` — `CurrentAccountProvider` | `IAM/Infrastructure/Adapter/Citizen/IAMCurrentAccountProvider` |
 | `IAM` — `AccessibleSpacesProvider` | `Administration/Infrastructure/Adapter/IAM/AdminAccessibleSpacesProvider` |
 | `Pilotage` — `PilotageAccessPolicy` | `Administration/Infrastructure/Adapter/Pilotage/AdminPilotageAccessPolicy` |
+| `Citizen` — `RequestAccessPolicy` | `Administration/Infrastructure/Adapter/Citizen/AdminRequestAccessPolicy` |
+| `Shared` (flux temps réel) — `RealtimeAccountProvider` | `IAM/Infrastructure/Adapter/Shared/IAMRealtimeAccountProvider` |
+| `Shared` (flux temps réel) — `RealtimeAudienceProvider` (tag `shared.realtime_audience`) | `Citizen/Infrastructure/Adapter/Shared/CitizenRealtimeAudience` (`citizen.{citizenId}`), `Administration/Infrastructure/Adapter/Shared/AdminRequestsRealtimeAudience` (`administration.requests`) |
+
+Temps réel : Citizen projette ses événements de domaine de demande (`PublishServiceRequestRealtime`) vers le port `RealtimePublisher` ; voir l’[ADR 004](decisions/004-temps-reel.md).
 
 Pilotage lit aussi l’API externe du concours par son port `WebcupFeedGateway`, implémenté dans sa propre infrastructure (`Infrastructure/Http/WebcupHttpFeedGateway`, cache de 20 s) ; voir [Pilotage](../../api/src/Pilotage/doc/README.md).
 
@@ -86,7 +91,7 @@ modules/<module>/
 └── ui/                         layouts, pages, sections, modals
 ```
 
-Chaîne : UI → RTK Query → use case (`withUseCase`) → port gateway → adaptateur injecté par le kernel (`modules/shared/core/config`). Entre modules frontend, même règle que le backend : chaque module métier de l’admin (aujourd’hui `admin` et `pilotage`) définit son port de session, implémenté par le module `auth` (`auth/core/infrastructure/adapter/<module>`).
+Chaîne : UI → RTK Query → use case (`withUseCase`) → port gateway → adaptateur injecté par le kernel (`modules/shared/core/config`). Entre modules frontend, même règle que le backend : chaque module métier de l’admin (aujourd’hui `admin`, `pilotage` et `requests`) définit son port de session, implémenté par le module `auth` (`auth/core/infrastructure/adapter/<module>`).
 
 ## Authentification
 

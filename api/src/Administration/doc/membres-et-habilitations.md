@@ -7,7 +7,7 @@
 ## Modèle
 
 - **Permission** : triplet `context.resource.action` (actions : `read`, `write`, `delete`, `approve`, `reject`, `execute`).
-- **Catalogue** (`Infrastructure/InMemory/InMemoryAdminPermissionRepository`, étiquette `administration.permissions`) : `admin.role.read`, `admin.role.write`, `admin.member.read`, `admin.member.write`, `admin.role-assignment.write`, `admin.pilotage.read`.
+- **Catalogue** (`Infrastructure/InMemory/InMemoryAdminPermissionRepository`, étiquette `administration.permissions`) : `admin.role.read`, `admin.role.write`, `admin.member.read`, `admin.member.write`, `admin.role-assignment.write`, `admin.pilotage.read`, `admin.request.read` (file des demandes citoyennes), `admin.request.write` (traitement des demandes).
 - **Rôle** : nom + liste de permissions (table `roles`).
 - **Membre** : référence un compte [IAM](../../IAM/doc/README.md) (`userId`, sans association ORM), porte des `roleIds` et un statut actif (table `admin_members`, un membre par compte).
 
@@ -20,7 +20,7 @@ Créés ou resynchronisés par la [CLI d’initialisation](initialisation-admin.
 | Identifiant | Nom | Permissions |
 |---|---|---|
 | `principal-administrator` | Administrateur principal | tout le catalogue |
-| `municipal-agent` | Agent municipal | `admin.pilotage.read` (les permissions de traitement des demandes s’ajouteront au lot L2) |
+| `municipal-agent` | Agent municipal | `admin.pilotage.read`, `admin.request.read`, `admin.request.write` |
 
 Un administrateur attribue le rôle « Agent municipal » depuis la page Membres de l’admin.
 
@@ -43,7 +43,8 @@ Refus d’autorisation → 403 ; règle métier ou payload invalide → 422 ; to
 | Port consommateur | Adaptateur | Permissions |
 |---|---|---|
 | [Pilotage](../../Pilotage/doc/README.md) — `PilotageAccessPolicy` | `Adapter/Pilotage/AdminPilotageAccessPolicy` | `admin.pilotage.read` (membre actif) |
-| `Citizen\…` (cible) | `Adapter/Citizen/…` | à définir |
+| [Citizen](../../Citizen/doc/README.md) — `RequestAccessPolicy` | `Adapter/Citizen/AdminRequestAccessPolicy` | lecture : `admin.request.read` ; traitement : `admin.request.read` + `admin.request.write` (membre actif) |
+| [Shared](../../Shared/doc/README.md) — `RealtimeAudienceProvider` | `Adapter/Shared/AdminRequestsRealtimeAudience` | topic `administration.requests` : `admin.request.read` (membre actif) |
 
 Initialisation du premier administrateur : [procédure CLI](initialisation-admin.md).
 
@@ -60,4 +61,5 @@ Initialisation du premier administrateur : [procédure CLI](initialisation-admin
 - [Administration](README.md)
 - [IAM — comptes et sessions](../../IAM/doc/comptes-et-sessions.md)
 - [Pilotage](../../Pilotage/doc/README.md)
+- [Citizen](../../Citizen/doc/README.md)
 <!-- backlinks:end -->

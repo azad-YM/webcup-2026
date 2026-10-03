@@ -6,12 +6,10 @@ import type { RoleGateway } from "@/modules/admin/core/application/ports/gateway
 import type { MemberGateway } from "@/modules/admin/core/application/ports/gateway/member.gateway"
 import type { WebcupFeedGateway } from "@/modules/pilotage/core/application/ports/gateway/webcup-feed.gateway"
 import type { SeenRequestsGateway } from "@/modules/pilotage/core/application/ports/gateway/seen-requests.gateway"
+import type { RequestQueueGateway } from "@/modules/requests/core/application/ports/gateway/request-queue.gateway"
+import type { RealtimeSubscriber } from "@/modules/shared/core/ports/realtime-subscriber"
 
-import type { RequestGateway } from "@/modules/requests/core/application/ports/gateway/request.gateway"
-import type { RealtimeSubscriber } from "@/modules/requests/core/application/ports/provider/realtime-subscriber"
 export type Dependencies = {
-  requestGateway: RequestGateway
-  requestRealtime: RealtimeSubscriber
   portalLoginGateway: PortalLoginGateway
   authGateway: AuthGateway
   authSessionGateway: AuthSessionGateway
@@ -20,4 +18,7 @@ export type Dependencies = {
   memberGateway: MemberGateway
   webcupFeedGateway: WebcupFeedGateway
   seenRequestsGateway: SeenRequestsGateway
+  requestQueueGateway: RequestQueueGateway
+  /** One SSE stream per tab, shared by the screens (ADR 004). */
+  realtime: RealtimeSubscriber
 }

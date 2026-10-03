@@ -1,6 +1,8 @@
-import type { RequestDraft, RequestFilter, RequestList, ServiceRequest } from "../../../domain/service-request"
+import type { RequestDraft, ServiceRequest } from "../../../domain/service-request"
+
+/** Contrat HTTP des demandes du citoyen connecté (Citizen, lot L2). */
 export interface ServiceRequestGateway {
- list(token: string, filter: RequestFilter): Promise<RequestList>
- submit(token: string, draft: RequestDraft): Promise<ServiceRequest>
- authorize(token: string, topic: string, socketId?: string): Promise<{token?: string; auth?: string}>
+  listMine(token: string): Promise<ServiceRequest[]>
+  getMine(token: string, reference: string): Promise<ServiceRequest>
+  submit(token: string, draft: RequestDraft): Promise<ServiceRequest>
 }

@@ -31,6 +31,7 @@ export class AuthHttpGateway extends ApiClient implements AuthGateway {
     // Internal navigation, not the list of IAM portal destinations or operation permissions.
     return [
       { code: "admin", name: "Administration", description: "Rôles, membres et catalogue des permissions." },
+      { code: "requests", name: "Demandes citoyennes", description: "Messages et signalements des habitants : file de traitement et suivi." },
       { code: "pilotage", name: "Pilotage", description: "Flux Nova Terra : demandes de la ville diffusées par l’API du concours." },
     ]
   }

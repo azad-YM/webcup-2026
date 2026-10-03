@@ -1,44 +1,146 @@
 "use client"
-import { useEffect, useRef, useState, type FormEvent } from "react"
+import { useEffect } from "react"
+import Link from "next/link"
+import type { Route } from "next"
+import { useSearchParams } from "next/navigation"
+import { ArrowLeft, ArrowRight, MapPin, Megaphone, MessageSquare } from "@boilerplate/shared-ui/components/icon"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
 import { useSession } from "@/modules/shared/ui/store-provider"
 import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
+import { EmptyState, ErrorState, LoadingState, SkeletonCards } from "@/modules/shared/ui/components/states"
 import { CitizenAccessState, useCitizenAccess } from "../components/citizen-access"
-import { useListRequestsQuery, useSubmitRequestMutation } from "../../core/application/rtk-api/service-requests"
-import { STATUS_LABELS, type RequestDraft, type ServiceRequest } from "../../core/domain/service-request"
-const empty: RequestDraft = {type:"contact",subject:"",description:"",location:null,serviceId:null}
-const input = "mt-1 w-full rounded-xl border border-slate-300 bg-white p-3"
-export function ServiceRequestsPage() {
- const access=useCitizenAccess()
- return <><PageHeader trail={[{label:"Mon espace",href:"/espace"},{label:"Mes demandes"}]} title="Mes demandes" lead="Contactez la mairie, signalez un problème et suivez chaque étape."/><PageBody>{access.profile ? <RequestWorkspace/> : <CitizenAccessState access={access} returnTo="/espace/demandes"/>}</PageBody></>
+import { RequestTimeline, StatusBadge } from "../components/request-status"
+import { REQUESTS_POLLING_MS, useGetMyRequestQuery, useListMyRequestsQuery } from "../../core/application/rtk-api/service-requests"
+import { formatDateTime, REQUEST_TYPE_LABELS, type ServiceRequest } from "../../core/domain/service-request"
+
+const requestHref = (reference: string) => `/espace/demandes?ref=${encodeURIComponent(reference)}` as Route
+
+/** Un 401 sur les demandes ferme la session, comme la garde de l'espace. */
+function useLogoutOnUnauthorized(error: unknown) {
+  const { logout } = useSession()
+  const unauthorized = toQueryError(error)?.status === 401
+  useEffect(() => {
+    if (unauthorized) logout()
+  }, [unauthorized, logout])
 }
-function RequestWorkspace() {
- const [page,setPage]=useState(1),[status,setStatus]=useState("")
- const query=useListRequestsQuery({page,status},{pollingInterval:60000})
- const [submit,{isLoading,error}]=useSubmitRequestMutation()
- const [draft,setDraft]=useState<RequestDraft>(empty),[confirmation,setConfirmation]=useState<ServiceRequest|null>(null)
- const sending=useRef(false), confirmationRef=useRef<HTMLDivElement>(null)
- const {logout}=useSession()
- const failure=toQueryError(error), readFailure=toQueryError(query.error)
- useEffect(()=>{if(failure?.status===401||readFailure?.status===401)logout()},[failure?.status,readFailure?.status,logout])
- useEffect(()=>{if(confirmation)confirmationRef.current?.focus()},[confirmation])
- const send=async(event:FormEvent)=>{event.preventDefault();if(sending.current)return;sending.current=true;try{const result=await submit(draft).unwrap();setConfirmation(result);setDraft(empty)}catch{}finally{sending.current=false}}
- return <div className="space-y-8">
- {confirmation&&<div ref={confirmationRef} tabIndex={-1} role="status" className="rounded-2xl border border-teal-300 bg-teal-50 p-6"><h2 className="text-xl font-semibold">Votre demande a bien été envoyée</h2><p className="mt-2 break-all">Référence : <strong>{confirmation.reference}</strong></p><p>Retrouvez son suivi ci-dessous. La mairie vous informera de chaque étape.</p></div>}
- <section className="rounded-2xl border bg-white p-6"><h2 className="text-xl font-semibold">Nouvelle demande</h2><form onSubmit={send} className="mt-4 space-y-4">
- <label className="block">Type de demande<select className={input} value={draft.type} onChange={e=>setDraft({...draft,type:e.target.value as RequestDraft["type"]})}><option value="contact">Contacter la mairie</option><option value="report">Signaler un problème</option></select></label>
- <label className="block">Objet (obligatoire)<input required maxLength={160} className={input} value={draft.subject} onChange={e=>setDraft({...draft,subject:e.target.value})}/></label>
- <label className="block">Description (obligatoire)<textarea required maxLength={5000} rows={5} className={input} value={draft.description} onChange={e=>setDraft({...draft,description:e.target.value})}/></label>
- <label className="block">Lieu {draft.type==="report"?"(obligatoire)":"(facultatif)"}<input required={draft.type==="report"} maxLength={255} className={input} value={draft.location||""} onChange={e=>setDraft({...draft,location:e.target.value||null})}/></label>
- {failure&&<p role="alert" className="text-red-800">{failure.data}</p>}
- <button disabled={isLoading} className="rounded-xl bg-teal-700 px-5 py-3 font-medium text-white disabled:opacity-60">{isLoading?"Envoi en cours…":"Envoyer ma demande"}</button>
- </form></section>
- <section><h2 className="text-2xl font-semibold">Historique et suivi</h2><label className="mt-4 block">Filtrer par statut<select className={input} value={status} onChange={e=>{setStatus(e.target.value);setPage(1)}}><option value="">Tous les statuts</option>{Object.entries(STATUS_LABELS).map(([value,label])=><option key={value} value={value}>{label}</option>)}</select></label>
- {query.isLoading?<p role="status">Chargement des demandes…</p>:readFailure?<div role="alert"><p>{readFailure.data}</p><button className="underline" onClick={()=>void query.refetch()}>Réessayer</button></div>:<>
- <p className="my-4" aria-live="polite">{query.data?.total||0} demande(s)</p>
- {query.data?.items.length===0&&<p>Aucune demande pour le moment.</p>}
- <div className="space-y-4">{query.data?.items.map(item=><article key={item.id} className="rounded-2xl border bg-white p-6"><h3 className="text-lg font-semibold">{item.subject}</h3><p className="mt-1 text-sm break-all">{item.reference} · {STATUS_LABELS[item.status]}</p><details className="mt-4"><summary className="cursor-pointer font-medium">Voir la demande et ses étapes</summary><p className="mt-4 whitespace-pre-wrap">{item.description}</p>{item.location&&<p>Lieu : {item.location}</p>}<ol className="mt-4 space-y-3">{item.steps.map((step,index)=><li key={index} className="border-l-2 border-teal-600 pl-4"><strong>{STATUS_LABELS[step.status]}</strong> · <time dateTime={step.at}>{new Date(step.at).toLocaleString("fr-FR")}</time>{step.comment&&<p className="whitespace-pre-wrap">{step.comment}</p>}</li>)}</ol></details></article>)}</div>
- <nav aria-label="Pages des demandes" className="mt-4 flex gap-4"><button disabled={page===1} onClick={()=>setPage(page-1)}>Précédent</button><span>Page {page}</span><button disabled={page*20 >= (query.data?.total||0)} onClick={()=>setPage(page+1)}>Suivant</button></nav>
- </>}
- </section></div>
+
+/** « Mes demandes » (D11, F26) : historique, puis détail d'une demande via `?ref=` (export statique). */
+export function ServiceRequestsPage() {
+  const access = useCitizenAccess()
+  const reference = useSearchParams().get("ref")
+  return (
+    <>
+      <PageHeader
+        trail={reference
+          ? [{ label: "Mon espace", href: "/espace" }, { label: "Mes demandes", href: "/espace/demandes" }, { label: reference }]
+          : [{ label: "Mon espace", href: "/espace" }, { label: "Mes demandes" }]}
+        title={reference ? `Demande ${reference}` : "Mes demandes"}
+        lead={reference ? undefined : "Retrouvez vos messages à la mairie et vos signalements, leur état et chaque étape de leur traitement."}
+      />
+      <PageBody>
+        {!access.profile
+          ? <CitizenAccessState access={access} returnTo="/espace/demandes" />
+          : reference ? <RequestDetail reference={reference} /> : <RequestHistory />}
+      </PageBody>
+    </>
+  )
+}
+
+function NewRequestLinks() {
+  return (
+    <div className="flex flex-wrap gap-3">
+      <Link href={"/espace/demandes/nouvelle?type=contact" as Route} className="inline-flex items-center gap-2 rounded-xl bg-teal-700 px-5 py-3 font-medium text-white hover:bg-teal-800">
+        <MessageSquare className="size-5" aria-hidden="true" /> Contacter la mairie
+      </Link>
+      <Link href={"/espace/demandes/nouvelle?type=report" as Route} className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-3 font-medium hover:bg-slate-50">
+        <Megaphone className="size-5" aria-hidden="true" /> Signaler un problème
+      </Link>
+    </div>
+  )
+}
+
+function RequestHistory() {
+  const query = useListMyRequestsQuery(undefined, { pollingInterval: REQUESTS_POLLING_MS })
+  useLogoutOnUnauthorized(query.error)
+  const failure = toQueryError(query.error)
+  const requests = query.data ?? []
+  return (
+    <div className="space-y-8">
+      <NewRequestLinks />
+      <section aria-labelledby="titre-historique">
+        <h2 id="titre-historique" className="text-2xl font-semibold tracking-tight">Historique</h2>
+        <div className="mt-5">
+          {query.isLoading ? (
+            <LoadingState label="Chargement de vos demandes…"><SkeletonCards count={2} /></LoadingState>
+          ) : failure && !query.data ? (
+            failure.status === 401 ? null : <ErrorState message={failure.data} onRetry={() => void query.refetch()} retrying={query.isFetching} />
+          ) : requests.length === 0 ? (
+            <EmptyState title="Vous n’avez encore envoyé aucune demande.">
+              Écrivez à la mairie ou signalez un problème dans votre quartier : vous suivrez ici chaque étape.
+            </EmptyState>
+          ) : (
+            <>
+              <p className="sr-only" aria-live="polite">{requests.length} demande{requests.length > 1 ? "s" : ""}</p>
+              <ul className="space-y-4">
+                {requests.map((request) => <li key={request.id}><RequestCard request={request} /></li>)}
+              </ul>
+            </>
+          )}
+        </div>
+      </section>
+    </div>
+  )
+}
+
+function RequestCard({ request }: { request: ServiceRequest }) {
+  return (
+    <Link href={requestHref(request.reference)} className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-teal-600 hover:shadow-md sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <p className="text-sm text-slate-600">{REQUEST_TYPE_LABELS[request.type]} · {request.reference} · envoyée le <time dateTime={request.createdAt}>{formatDateTime(request.createdAt)}</time></p>
+        <h3 className="mt-1 text-lg font-semibold text-slate-950">{request.subject}</h3>
+      </div>
+      <div className="flex items-center gap-4">
+        <StatusBadge status={request.status} />
+        <span className="inline-flex items-center gap-1 font-medium text-teal-800">Suivre <ArrowRight className="size-4" aria-hidden="true" /></span>
+      </div>
+    </Link>
+  )
+}
+
+function RequestDetail({ reference }: { reference: string }) {
+  const query = useGetMyRequestQuery(reference, { pollingInterval: REQUESTS_POLLING_MS })
+  useLogoutOnUnauthorized(query.error)
+  const failure = toQueryError(query.error)
+  const request = query.data
+  return (
+    <div className="space-y-6">
+      <Link href="/espace/demandes" className="inline-flex items-center gap-2 font-medium text-teal-800 underline underline-offset-4">
+        <ArrowLeft className="size-4" aria-hidden="true" /> Toutes mes demandes
+      </Link>
+      {query.isLoading ? (
+        <LoadingState label="Chargement de la demande…" />
+      ) : failure && !request ? (
+        failure.status === 401 ? null : failure.status === 404
+          ? <EmptyState title="Cette demande est introuvable dans votre espace.">Vérifiez la référence ou revenez à la liste de vos demandes.</EmptyState>
+          : <ErrorState message={failure.data} onRetry={() => void query.refetch()} retrying={query.isFetching} />
+      ) : request ? (
+        <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
+          <article aria-labelledby="titre-demande" className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
+            <p className="text-sm text-slate-600">{REQUEST_TYPE_LABELS[request.type]} · envoyée le <time dateTime={request.createdAt}>{formatDateTime(request.createdAt)}</time></p>
+            <h2 id="titre-demande" className="mt-1 text-2xl font-semibold text-slate-950">{request.subject}</h2>
+            <div className="mt-3"><StatusBadge status={request.status} /></div>
+            {request.location && (
+              <p className="mt-5 flex items-start gap-2 text-slate-800"><MapPin className="mt-0.5 size-5 shrink-0 text-teal-700" aria-hidden="true" /><span><span className="font-medium">Lieu : </span>{request.location}</span></p>
+            )}
+            <h3 className="mt-6 font-semibold text-slate-950">Votre message</h3>
+            <p className="mt-2 whitespace-pre-wrap text-slate-800">{request.description}</p>
+          </article>
+          <section aria-labelledby="titre-etapes" className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
+            <h2 id="titre-etapes" className="text-lg font-semibold">Étapes du traitement</h2>
+            <div className="mt-5" aria-live="polite"><RequestTimeline steps={request.steps} /></div>
+          </section>
+        </div>
+      ) : null}
+    </div>
+  )
 }

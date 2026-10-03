@@ -1,8 +1,28 @@
 <?php
 
 declare(strict_types=1);
+
 namespace Citizen\Application\Command\SubmitServiceRequest;
+
+use Citizen\Domain\Entity\ServiceRequest;
 use Symfony\Component\Validator\Constraints as Assert;
-final readonly class SubmitServiceRequestCommand {
- public function __construct(#[Assert\Choice(['contact','report'])] public string $type,#[Assert\NotBlank] #[Assert\Length(max:160)] public string $subject,#[Assert\NotBlank] #[Assert\Length(max:5000)] public string $description,#[Assert\Length(max:255)] public ?string $location=null,#[Assert\Length(max:100)] public ?string $serviceId=null){}
+
+/** L'auteur n'est jamais dans le payload : c'est le citoyen du compte connecté. */
+final readonly class SubmitServiceRequestCommand
+{
+    public function __construct(
+        #[Assert\NotBlank]
+        #[Assert\Choice(choices: ServiceRequest::TYPES)]
+        public string $type = '',
+        #[Assert\NotBlank]
+        #[Assert\Length(max: ServiceRequest::SUBJECT_MAX)]
+        public string $subject = '',
+        #[Assert\NotBlank]
+        #[Assert\Length(max: ServiceRequest::DESCRIPTION_MAX)]
+        public string $description = '',
+        #[Assert\Length(max: ServiceRequest::LOCATION_MAX)]
+        public ?string $location = null,
+        #[Assert\Length(max: ServiceRequest::SERVICE_ID_MAX)]
+        public ?string $serviceId = null,
+    ) {}
 }

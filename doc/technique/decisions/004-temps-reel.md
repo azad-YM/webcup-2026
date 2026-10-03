@@ -46,7 +46,7 @@ Cas d'usage ─► événement de domaine ─► handler applicatif du BC ─►
 - **Une seule route de flux** `GET /api/realtime/stream` (`Shared/Infrastructure/Realtime/Http/RealtimeController`), pour une seule connexion par onglet :
   - topics publics `public.*` pour tout le monde ;
   - topics privés seulement avec un **ticket** : `EventSource` ne sait pas envoyer l’en-tête `Authorization` et un JWT ne va jamais dans une URL. Le client échange son JWT contre un ticket opaque signé (`POST /api/realtime/tickets`, 15 min), qui ne sert qu’à ouvrir le flux ;
-  - les topics privés sont **décidés par le serveur** : chaque BC implémente le port `Shared\Application\Ports\Provider\RealtimeAudienceProvider` (tag automatique) pour ses propres topics. Livré : Citizen → `citizen.{citizenId}`. À venir : Administration → `administration.requests` pour les agents (L2), Communication → audience des alertes (L7). Un topic envoyé par le client est ignoré ;
+  - les topics privés sont **décidés par le serveur** : chaque BC implémente le port `Shared\Application\Ports\Provider\RealtimeAudienceProvider` (tag automatique) pour ses propres topics. Livré : Citizen → `citizen.{citizenId}` ; Administration → `administration.requests` pour les membres ayant `admin.request.read` (L2, `AdminRequestsRealtimeAudience`). À venir : Communication → audience des alertes (L7). Un topic envoyé par le client est ignoré ;
   - le compte connecté est fourni par IAM via le port `RealtimeAccountProvider`.
 - **Connexions courtes** : chaque flux ouvert occupe un processus PHP. Le serveur ferme la connexion après `REALTIME_STREAM_SECONDS` (20 s) ; `EventSource` se reconnecte seul (`retry: 1000`) et envoie `Last-Event-ID`. Le flux lit la table chaque seconde, envoie `: keep-alive` toutes les 5 s, les en-têtes `X-Accel-Buffering: no` et `Cache-Control: no-transform` contre la mise en tampon des proxys. Ne pas activer de compression sur cette route.
 - **Reprise** : l’identifiant SSE est l’`id` de `realtime_event`. Le serveur sert `id > Last-Event-ID` (en-tête, ou paramètre `lastEventId` à la réouverture). Une nouvelle connexion sans identifiant commence après le dernier événement existant : pas de rejeu de l’historique.
@@ -87,4 +87,8 @@ Cas d'usage ─► événement de domaine ─► handler applicatif du BC ─►
 - [Contexte produit](../../contexte/README.md)
 - [Chantier](../../chantier/README.md)
 - [Site](../../../front/apps/site/doc/README.md)
+- [Citizen](../../../api/src/Citizen/doc/README.md)
+- [Administration](../../../api/src/Administration/doc/README.md)
+- [Admin](../../../front/apps/admin/doc/README.md)
+- [Site — parcours citoyen](../../../front/apps/site/doc/parcours-citoyen.md)
 <!-- backlinks:end -->
