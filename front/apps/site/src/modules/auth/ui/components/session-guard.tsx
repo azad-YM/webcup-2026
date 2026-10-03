@@ -6,16 +6,13 @@ export function SessionGuard({ children }: { children: ReactNode }) {
   const { ready, hasToken } = useSession()
   const router = useRouter()
   useEffect(() => {
-    if (ready && !hasToken) router.replace("/login")
+    if (ready && !hasToken) router.replace("/connexion")
   }, [ready, hasToken, router])
   if (!ready || !hasToken)
     return (
-      <main
-        className="flex min-h-screen items-center justify-center bg-slate-50"
-        role="status"
-      >
+      <div className="mx-auto max-w-3xl px-4 py-16" role="status">
         <p>Vérification de votre session…</p>
-      </main>
+      </div>
     )
   return children
 }

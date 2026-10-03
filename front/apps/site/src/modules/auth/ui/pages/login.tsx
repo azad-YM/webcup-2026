@@ -1,98 +1,71 @@
 "use client"
-import { useEffect, useState, type FormEvent } from "react"
-import { useRouter } from "next/navigation"
+import { useEffect, useRef, useState, type FormEvent } from "react"
+import Link from "next/link"
+import { useRouter, useSearchParams } from "next/navigation"
+import type { Route } from "next"
 import { useLoginWithCredentialsMutation } from "../../core/application/rtk-api/auth"
+import { safeReturnPath } from "../../core/domain/return-path"
 import { useSession } from "@/modules/shared/ui/store-provider"
+import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
+import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
+import { FormAnnouncement, TextField } from "@/modules/shared/ui/components/form-field"
+import { LoadingState } from "@/modules/shared/ui/components/states"
+
 export function LoginPage() {
   const router = useRouter()
   const session = useSession()
+  const returnPath = safeReturnPath(useSearchParams().get("retour"))
   const [login, { isLoading, error }] = useLoginWithCredentialsMutation()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const submitting = useRef(false)
   useEffect(() => {
-    if (session.ready && session.hasToken) router.replace("/")
-  }, [session.ready, session.hasToken, router])
+    if (session.ready && session.hasToken) router.replace(returnPath as Route)
+  }, [session.ready, session.hasToken, router, returnPath])
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (isLoading) return
+    if (submitting.current) return
+    submitting.current = true
     try {
       await login({ email: email.trim(), password }).unwrap()
       setPassword("")
       session.refresh()
-      router.replace("/")
+      router.replace(returnPath as Route)
     } catch {
-      /* L’erreur RTK Query est affichée dans le formulaire. */
+      /* L’erreur RTK Query est affichée dans le formulaire ; la saisie est conservée. */
+    } finally {
+      submitting.current = false
     }
   }
-  if (!session.ready || session.hasToken)
-    return (
-      <main
-        className="flex min-h-screen items-center justify-center"
-        role="status"
-      >
-        Vérification de votre session…
-      </main>
-    )
+  const failure = toQueryError(error)
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6 py-12">
-      <section className="w-full max-w-md rounded-3xl bg-white p-8 shadow-lg">
-        <p className="font-semibold text-emerald-800">Boilerplate</p>
-        <h1 className="mt-6 text-3xl font-semibold">Connexion</h1>
-        <p className="mt-3 text-slate-600">
-          Connectez-vous pour accéder à vos espaces.
-        </p>
-        <form onSubmit={submit} className="mt-8 space-y-5">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium">
-              Adresse e-mail
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="username"
-              required
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3"
-            />
-          </div>
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium">
-              Mot de passe
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3"
-            />
-          </div>
-          {session.storageError && (
-            <p role="alert" className="text-sm text-red-700">
-              Le stockage du navigateur est indisponible. Autorisez-le pour vous
-              connecter.
+    <>
+      <PageHeader trail={[{ label: "Connexion" }]} title="Connexion" lead="Connectez-vous pour retrouver votre espace citoyen et vos démarches." />
+      <PageBody narrow>
+        {!session.ready || session.hasToken ? (
+          <LoadingState label="Vérification de votre session…" />
+        ) : (
+          <section aria-labelledby="titre-formulaire-connexion" className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+            <h2 id="titre-formulaire-connexion" className="text-xl font-semibold">Vos identifiants</h2>
+            <form onSubmit={submit} className="mt-6 space-y-5" noValidate>
+              <TextField id="email" label="Adresse e-mail" type="email" autoComplete="username" required value={email} onChange={(event) => setEmail(event.target.value)} />
+              <TextField id="password" label="Mot de passe" type="password" autoComplete="current-password" required value={password} onChange={(event) => setPassword(event.target.value)} />
+              <FormAnnouncement tone="error">
+                {session.storageError
+                  ? "Le stockage du navigateur est indisponible. Autorisez-le pour vous connecter."
+                  : failure?.data}
+              </FormAnnouncement>
+              <button disabled={isLoading} aria-disabled={isLoading} className="w-full rounded-xl bg-teal-700 px-4 py-3 font-medium text-white hover:bg-teal-800 disabled:opacity-60">
+                {isLoading ? "Connexion en cours…" : "Se connecter"}
+              </button>
+            </form>
+            <p className="mt-6 text-slate-700">
+              Pas encore de compte ?{" "}
+              <Link href="/inscription" className="font-medium text-teal-800 underline underline-offset-4">Créer mon compte citoyen</Link>
             </p>
-          )}
-          {error && (
-            <p role="alert" className="text-sm text-red-700">
-              {"data" in error
-                ? error.data
-                : "La connexion a échoué. Veuillez réessayer."}
-            </p>
-          )}
-          <button
-            disabled={isLoading}
-            className="w-full rounded-xl bg-brand-green px-4 py-3 font-medium text-white disabled:opacity-60"
-          >
-            {isLoading ? "Connexion en cours…" : "Se connecter"}
-          </button>
-        </form>
-      </section>
-    </main>
+          </section>
+        )}
+      </PageBody>
+    </>
   )
 }

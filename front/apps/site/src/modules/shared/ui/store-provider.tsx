@@ -9,13 +9,20 @@ import {
 } from "react"
 import { siteEnv } from "@/config/env"
 import { Provider } from "react-redux"
-import { createStore } from "../core/config/store"
+import { createStore, resetAccountCaches } from "../core/config/store"
+import type { Dependencies } from "../core/config/dependencies"
 import { AuthHttpGateway } from "@/modules/auth/core/infrastructure/for-production/gateway/http/auth.http.gateway"
 import {
   LocalStorageAuthSessionGateway,
   SESSION_KEY
 } from "@/modules/auth/core/infrastructure/for-production/gateway/auth-session.local-storage.gateway"
-import { authApi } from "@/modules/auth/core/application/rtk-api/auth"
+import { AuthCitizenSessionAdapter } from "@/modules/auth/core/infrastructure/adapter/citizen/auth-citizen-session.adapter"
+import { CitizenHttpGateway } from "@/modules/citizen/core/infrastructure/for-production/gateway/http/citizen.http.gateway"
+import { CitizenAccountRegistrationAdapter } from "@/modules/citizen/core/infrastructure/adapter/auth/citizen-account-registration.adapter"
+import {
+  LocalPublicationGateway,
+  LocalServiceCatalogGateway
+} from "@/modules/public/core/infrastructure/for-production/gateway/local/public-content.local.gateway"
 
 type Session = {
   ready: boolean
@@ -25,15 +32,29 @@ type Session = {
   logout: () => void
 }
 const SessionContext = createContext<Session | null>(null)
+
+/** Composition du site : chaque port reçoit son adaptateur de production. */
+function createDependencies(): Dependencies {
+  const authSessionGateway = new LocalStorageAuthSessionGateway()
+  const citizenGateway = new CitizenHttpGateway(siteEnv.apiBaseUrl)
+  return {
+    authGateway: new AuthHttpGateway(siteEnv.apiBaseUrl),
+    authSessionGateway,
+    accountRegistrationGateway: new CitizenAccountRegistrationAdapter(citizenGateway),
+    citizenGateway,
+    citizenSessionProvider: new AuthCitizenSessionAdapter(authSessionGateway),
+    // Contenu de démonstration local : à remplacer par l’HTTP d’Administration au lot L3.
+    serviceCatalogGateway: new LocalServiceCatalogGateway(),
+    publicationGateway: new LocalPublicationGateway()
+  }
+}
+
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [runtime] = useState(() => {
-    const authSessionGateway = new LocalStorageAuthSessionGateway()
+    const dependencies = createDependencies()
     return {
-      authSessionGateway,
-      store: createStore({
-        authSessionGateway,
-        authGateway: new AuthHttpGateway(siteEnv.apiBaseUrl)
-      })
+      authSessionGateway: dependencies.authSessionGateway,
+      store: createStore(dependencies)
     }
   })
   const [session, setSession] = useState({
@@ -59,14 +80,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       /* La session mémoire est fermée même si le stockage devient indisponible. */
     } finally {
       setSession({ ready: true, hasToken: false, storageError: false })
-      runtime.store.dispatch(authApi.util.resetApiState())
+      resetAccountCaches(runtime.store)
     }
   }, [runtime])
   useEffect(() => {
     refresh()
     const onStorage = (event: StorageEvent) => {
       if (event.key === SESSION_KEY || event.key === null) {
-        runtime.store.dispatch(authApi.util.resetApiState())
+        resetAccountCaches(runtime.store)
         refresh()
       }
     }
