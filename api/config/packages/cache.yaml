@@ -17,3 +17,17 @@ framework:
         # Namespaced pools use the above "app" backend by default
         #pools:
             #my.dedicated.cache: null
+
+        pools:
+            # Dernière réponse valide de l'API du concours (BC Pilotage), conservée 20 s.
+            pilotage.webcup_feed.cache:
+                adapter: cache.app
+                default_lifetime: 20
+
+when@test:
+    framework:
+        cache:
+            pools:
+                # Isolé par noyau de test : aucune réponse simulée ne fuit d'un test à l'autre.
+                pilotage.webcup_feed.cache:
+                    adapter: cache.adapter.array

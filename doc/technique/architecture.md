@@ -16,7 +16,7 @@ Admin React/Vite (agents) ───────┼──► API Symfony ──�
 
 ## API modulaire
 
-L’API est découpée en bounded contexts (BC) de même niveau : `IAM`, `Administration` et `Citizen` (cible), plus le socle `Shared`. Un BC peut être subdivisé en sous-domaines (SD) lorsqu’il grossit. Chaque BC simple ou SD porte `Application`, `Domain`, `Infrastructure`, `Tests` et `doc`.
+L’API est découpée en bounded contexts (BC) de même niveau : `IAM`, `Administration`, `Pilotage` et `Citizen` (cible), plus le socle `Shared`. Un BC peut être subdivisé en sous-domaines (SD) lorsqu’il grossit. Chaque BC simple ou SD porte `Application`, `Domain`, `Infrastructure`, `Tests` et `doc`.
 
 ```text
 api/src/
@@ -24,6 +24,7 @@ api/src/
 ├── Administration/             BC organisation municipale : membres, rôles, permissions
 │                               (cible : services municipaux, publications)
 ├── Citizen/                    BC relation habitants–ville : citoyens, demandes (doc seule)
+├── Pilotage/                   BC pilotage : flux de l’API du concours Webcup (sans persistance)
 └── Shared/                     kernel, AppController, exceptions, AggregateRoot, ports techniques
 ```
 
@@ -51,6 +52,9 @@ Raccordements livrés, à reproduire :
 | `Administration` — `CurrentAccountProvider` | `IAM/Infrastructure/Adapter/Administration/IAMCurrentAccountProvider` |
 | `Administration` — `MemberAccountProvisioner` | `IAM/Infrastructure/Adapter/Administration/IAMMemberAccountProvisioner` |
 | `IAM` — `AccessibleSpacesProvider` | `Administration/Infrastructure/Adapter/IAM/AdminAccessibleSpacesProvider` |
+| `Pilotage` — `PilotageAccessPolicy` | `Administration/Infrastructure/Adapter/Pilotage/AdminPilotageAccessPolicy` |
+
+Pilotage lit aussi l’API externe du concours par son port `WebcupFeedGateway`, implémenté dans sa propre infrastructure (`Infrastructure/Http/WebcupHttpFeedGateway`, cache de 20 s) ; voir [Pilotage](../../api/src/Pilotage/doc/README.md).
 
 Point d’extension : un BC exposant son propre espace implémente `IAM\Application\Ports\Provider\AccessibleSpacesProvider` dans son infrastructure (tag `iam.accessible_spaces`).
 
@@ -73,7 +77,7 @@ modules/<module>/
 └── ui/                         layouts, pages, sections, modals
 ```
 
-Chaîne : UI → RTK Query → use case (`withUseCase`) → port gateway → adaptateur injecté par le kernel (`modules/shared/core/config`). Entre modules frontend, même règle que le backend : chaque module métier de l’admin (aujourd’hui `admin`) définit son port de session, implémenté par le module `auth`.
+Chaîne : UI → RTK Query → use case (`withUseCase`) → port gateway → adaptateur injecté par le kernel (`modules/shared/core/config`). Entre modules frontend, même règle que le backend : chaque module métier de l’admin (aujourd’hui `admin` et `pilotage`) définit son port de session, implémenté par le module `auth` (`auth/core/infrastructure/adapter/<module>`).
 
 ## Authentification
 
@@ -104,6 +108,7 @@ Les `AGENTS.md` sont répartis par périmètre : racine, `api/`, chaque BC/SD, `
 - [Documentation — IAM](../../api/src/IAM/doc/README.md)
 - [Documentation — Administration](../../api/src/Administration/doc/README.md)
 - [Documentation — Shared](../../api/src/Shared/doc/README.md)
+- [Documentation — Pilotage](../../api/src/Pilotage/doc/README.md)
 - [Contexte produit](../contexte/README.md)
 - [ADR 003](decisions/003-identite-et-habilitations.md)
 <!-- backlinks:end -->

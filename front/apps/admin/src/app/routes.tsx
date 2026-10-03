@@ -8,6 +8,8 @@ import { AdminLayout } from "@/modules/admin/ui/layouts/admin.layout"
 import { MembersPage } from "@/modules/admin/ui/pages/members"
 import { AdminDashboardPage } from "@/modules/admin/ui/pages/dashboard"
 import { RolesPage } from "@/modules/admin/ui/pages/roles"
+import { PilotageLayout } from "@/modules/pilotage/ui/layouts/pilotage.layout"
+import { WebcupFeedPage } from "@/modules/pilotage/ui/pages/webcup-feed"
 
 const ProtectedRoutes = () => {
   const profile = useGetProfileQuery()
@@ -47,6 +49,13 @@ export const router = createBrowserRouter([
           { index: true, element: <AdminDashboardPage /> },
           { path: "role", element: <RolesPage /> },
           { path: "member", element: <MembersPage /> },
+        ],
+      },
+      {
+        path: "/pilotage",
+        element: <PilotageLayout />,
+        children: [
+          { index: true, element: <WebcupFeedPage /> },
         ],
       },
     ],

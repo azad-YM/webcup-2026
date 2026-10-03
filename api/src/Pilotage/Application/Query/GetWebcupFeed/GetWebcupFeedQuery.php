@@ -1,0 +1,7 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Pilotage\Application\Query\GetWebcupFeed;
+
+final readonly class GetWebcupFeedQuery {}

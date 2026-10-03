@@ -29,7 +29,7 @@ Elle ne s’étend pas aux workflows HTTP ni aux autres services. Voir la
 
 ## Périmètres
 
-- Backend : `api/AGENTS.md`, puis `api/src/<BC>/AGENTS.md` (`IAM`, `Administration`, `Citizen`, `Shared`).
+- Backend : `api/AGENTS.md`, puis `api/src/<BC>/AGENTS.md` (`IAM`, `Administration`, `Citizen`, `Pilotage`, `Shared`).
 - Frontend : `front/AGENTS.md`, puis `front/apps/<application>/AGENTS.md` (`site`, `admin`).
 - Packages frontend partagés : `front/packages/AGENTS.md`.
 

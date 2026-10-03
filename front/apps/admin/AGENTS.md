@@ -4,7 +4,7 @@ Lire [la documentation de l’application](doc/README.md) et les documents des B
 
 Application d’administration React/Vite, React Router, Redux Toolkit et RTK Query. Respecter le kernel et l’injection de dépendances dans `modules/shared/core/config`, ainsi que la chaîne endpoints RTK → use cases → ports gateway → adaptateurs.
 
-Modules : `auth`, `admin` (BC Administration : rôles, membres à venir), `shared`. Les modules internes affichés dans le sélecteur (aujourd’hui `admin`) ne sont pas les destinations IAM du site : l’application entière correspond à la destination `admin`.
+Modules : `auth`, `admin` (BC Administration : rôles, membres), `pilotage` (BC Pilotage : flux de l’API du concours), `shared`. Les modules internes affichés dans le sélecteur (`admin`, `pilotage`) ne sont pas les destinations IAM du site : l’application entière correspond à la destination `admin`.
 
 Entre modules : le consommateur définit son port (ex. `admin/core/application/ports/provider/access-session.provider.ts`), le module fournisseur l’implémente dans `core/infrastructure/adapter/<consommateur>` et le kernel l’injecte. Ne pas importer le store, les gateways concrètes ou les modèles d’un autre module.
 

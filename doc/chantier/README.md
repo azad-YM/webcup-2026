@@ -26,7 +26,7 @@ Les lots regroupent les demandes qui partagent un même modèle ou un même écr
 | L7 | Alertes et diffusion : message général, alerte ciblée par quartier, avis d’annonce importante, recommandations aux personnes vulnérables | D18, F29, F30, F31 | 3 080 | ⬜ |
 | L4 | Accessibilité et repères : lecteur d’écran, contraste, taille du texte, fil d’Ariane, première connexion | F21, F23, F24, D15, D12 | 2 110 | ⬜ |
 | L5 | Multilingue : interface, puis contenus | D14, F27 | 1 080 | ⬜ |
-| L6 | Pilotage : flux de l’API Webcup dans l’espace des agents | D19 | 750 | ⬜ |
+| L6 | Pilotage : flux de l’API Webcup dans l’espace des agents — [Pilotage](../../api/src/Pilotage/doc/README.md), [page](../../front/apps/admin/doc/pilotage.md) | D19 | 750 | ✅ |
 
 ## Travail en parallèle
 
@@ -60,11 +60,11 @@ Décisions : [Citizen — décisions retenues](../../api/src/Citizen/doc/README.
 ### Socle produit
 
 - Remplacer l’habillage « Boilerplate » du site et de l’admin par l’identité de Nova Terra.
-- Ajouter `WEBCUP_API_KEY` à `api/.env.example`, sans valeur, et définir la vraie clé dans `api/.env.local` pour le lot L6.
+- ✅ `WEBCUP_API_URL` et `WEBCUP_API_KEY` déclarés dans `api/.env.example` (clé vide). Reste à définir la vraie clé dans `api/.env.local` de chaque poste et à vérifier la page sur la vraie API.
 
 ## Quand une vague arrive
 
-1. Interroger l’API (Insomnia, ou la page Pilotage une fois le lot L6 livré) et relever l’état de `session`.
+1. Consulter la page « Flux Nova Terra » de l’admin (`/pilotage`, les nouvelles demandes y sont surlignées) ou interroger l’API, et relever l’état de `session`.
 2. Ajouter les nouvelles demandes au [registre](demandes.md), avec un résumé du besoin, l’XP et la difficulté.
 3. Rattacher chaque demande à un lot existant ou en créer un. Choisir son BC propriétaire en suivant la [carte des modules](../contexte/README.md#carte-des-modules).
 4. Réordonner les lots selon le rapport XP / effort et selon ce qui débloque d’autres demandes.

@@ -8,6 +8,7 @@ Règles :
 
 - Compte connecté et création de compte passent par les ports `Application/Ports/Provider/CurrentAccountProvider` et `MemberAccountProvisioner`, implémentés par IAM dans `IAM/Infrastructure/Adapter/Administration`. Ne jamais importer une classe d’IAM dans le code applicatif ou de domaine.
 - Pour autoriser un autre BC, implémenter **son** port dans `Infrastructure/Adapter/<BC>` (par exemple `Adapter/Citizen/…`, qui appellera `CheckCurrentMemberPermissions`), déclarer l’alias dans `services.yaml` et ajouter ses permissions au catalogue `InMemoryAdminPermissionRepository`.
+- Adaptateur livré : `Infrastructure/Adapter/Pilotage/AdminPilotageAccessPolicy` (port `PilotageAccessPolicy` du BC [Pilotage](../Pilotage/doc/README.md), permission `admin.pilotage.read`).
 - L’espace `admin` est fourni à IAM par `Infrastructure/Adapter/IAM/AdminAccessibleSpacesProvider` (tag `iam.accessible_spaces`).
 - Vérifier toutes les conditions avant sauvegarde : un refus ne crée ni compte, ni membre, ni événement.
 

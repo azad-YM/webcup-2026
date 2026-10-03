@@ -10,6 +10,10 @@
       <directory>src/Administration/Tests/Suites/Application</directory>
       <directory>src/Administration/Tests/Suites/Unit</directory>
     </testsuite>
+    <testsuite name="Pilotage">
+      <directory>src/Pilotage/Tests/Suites/Application</directory>
+      <directory>src/Pilotage/Tests/Suites/Unit</directory>
+    </testsuite>
     <testsuite name="Shared">
       <directory>src/Shared/Tests/Suites/Application</directory>
       <directory>src/Shared/Tests/Suites/Unit</directory>
@@ -18,6 +22,7 @@
   <source><include><directory suffix=".php">src</directory></include><exclude>
     <directory>src/IAM/Tests</directory>
     <directory>src/Administration/Tests</directory>
+    <directory>src/Pilotage/Tests</directory>
     <directory>src/Shared/Tests</directory>
   </exclude></source>
 </phpunit>

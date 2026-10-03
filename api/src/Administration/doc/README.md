@@ -15,6 +15,7 @@ Administration ne connaît pas les mots de passe ni les sessions : chaque membre
 - **Consommateurs techniques** :
   - l’application [admin](../../../../front/apps/admin/doc/README.md) (rôles, membres) ;
   - [IAM](../../IAM/doc/README.md), qui obtient l’espace `admin` via `AdminAccessibleSpacesProvider` ;
+  - [Pilotage](../../Pilotage/doc/README.md), qui réserve le flux du concours aux membres ayant `admin.pilotage.read` via `AdminPilotageAccessPolicy` ;
   - [Citizen](../../Citizen/doc/README.md) (cible), autorisera les agents via un port à définir.
 
 ## Livré
@@ -38,6 +39,7 @@ Interface : la page [Membres](../../../../front/apps/admin/doc/membres.md) de l�
 | Administration consomme IAM | `Application/Ports/Provider/CurrentAccountProvider` | `IAM/Infrastructure/Adapter/Administration/IAMCurrentAccountProvider` |
 | Administration consomme IAM | `Application/Ports/Provider/MemberAccountProvisioner` | `IAM/Infrastructure/Adapter/Administration/IAMMemberAccountProvisioner` |
 | IAM consomme Administration | `IAM\…\AccessibleSpacesProvider` | `Infrastructure/Adapter/IAM/AdminAccessibleSpacesProvider` |
+| Pilotage consomme Administration | `Pilotage\Application\Ports\Provider\PilotageAccessPolicy` | `Infrastructure/Adapter/Pilotage/AdminPilotageAccessPolicy` (`admin.pilotage.read`) |
 
 Les erreurs contractuelles `AccountAlreadyExists` et `AccountCreationRejected` appartiennent à Administration ; l’adaptateur IAM y traduit ses propres erreurs.
 
@@ -75,5 +77,7 @@ Les erreurs contractuelles `AccountAlreadyExists` et `AccountCreationRejected` a
 - [Contexte produit](../../../../doc/contexte/README.md)
 - [ADR 003](../../../../doc/technique/decisions/003-identite-et-habilitations.md)
 - [Citizen](../../Citizen/doc/README.md)
+- [Pilotage](../../Pilotage/doc/README.md)
 - [Membres et habilitations](membres-et-habilitations.md)
+- [Admin — membres](../../../../front/apps/admin/doc/membres.md)
 <!-- backlinks:end -->

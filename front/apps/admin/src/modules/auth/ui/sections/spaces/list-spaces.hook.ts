@@ -6,6 +6,7 @@ import type { AuthSpace } from "@/modules/auth/core/application/dto/auth.dto"
 
 const LOCAL_SPACE_ROUTES: Record<string, string> = {
   admin: "/admin",
+  pilotage: "/pilotage",
 }
 
 export const useListSpaces = () => {

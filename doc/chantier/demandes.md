@@ -19,8 +19,8 @@ Statuts : ⬜ à faire · 🟡 en cours · ⚠️ partiel · ✅ livré · ⏸�
 | D06 | 1 | 250 | Consulter les publications de la ville | L3 | Administration, site | ⬜ |
 | D07 | 2 | 500 | Page d’accueil qui hiérarchise l’essentiel et mène aux services | L3 | site | ⬜ accueil de remplacement |
 | D08 | 2 | 500 | Distinguer citoyens, agents et administrateurs | L1 | Administration, Citizen | ⚠️ rôles de référence « Administrateur principal » et « Agent municipal », liste et ajout des membres dans l’admin livrés ; profils citoyens (Citizen) absents |
-| D09 | 2 | 500 | Limiter les outils sensibles aux profils autorisés | L1 | Administration | ✅ chaque outil de l’admin (rôles, membres) exige sa permission côté serveur, testé ; refus 403 expliqué dans l’interface. À étendre aux outils des lots suivants |
-| D19 | 3 | 750 | Espace agents distinct qui affiche le flux de l’API Nova Terra | L6 | Pilotage, admin | ⚠️ espace distinct livré, flux absent |
+| D09 | 2 | 500 | Limiter les outils sensibles aux profils autorisés | L1 | Administration | ✅ chaque outil de l’admin (rôles, membres, flux Nova Terra) exige sa permission côté serveur, testé ; refus 403 expliqué dans l’interface. À étendre aux outils des lots suivants |
+| D19 | 3 | 750 | Espace agents distinct qui affiche le flux de l’API Nova Terra | L6 | Pilotage, admin | ✅ page « Flux Nova Terra » (`/pilotage`) sur la route `GET /api/pilotage/webcup-feed`, testée avec l’API du concours simulée ; à vérifier avec la vraie clé dans `api/.env.local` |
 | F22 | 1 | 250 | Les agents voient les demandes reçues, leur état et celles à traiter | L2 | Citizen, admin | ⬜ |
 
 ## Vague 1 (H+2) — « Premiers habitants »

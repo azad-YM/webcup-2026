@@ -42,7 +42,7 @@ Refus d’autorisation → 403 ; règle métier ou payload invalide → 422 ; to
 
 | Port consommateur | Adaptateur | Permissions |
 |---|---|---|
-| `Pilotage\Application\Ports\Provider\PilotageAccessPolicy` | `Adapter/Pilotage/AdminPilotageAccessPolicy` | `admin.pilotage.read` (membre actif) |
+| [Pilotage](../../Pilotage/doc/README.md) — `PilotageAccessPolicy` | `Adapter/Pilotage/AdminPilotageAccessPolicy` | `admin.pilotage.read` (membre actif) |
 | `Citizen\…` (cible) | `Adapter/Citizen/…` | à définir |
 
 Initialisation du premier administrateur : [procédure CLI](initialisation-admin.md).
@@ -59,4 +59,5 @@ Initialisation du premier administrateur : [procédure CLI](initialisation-admin
 - [Initialisation de l’administrateur](initialisation-admin.md)
 - [Administration](README.md)
 - [IAM — comptes et sessions](../../IAM/doc/comptes-et-sessions.md)
+- [Pilotage](../../Pilotage/doc/README.md)
 <!-- backlinks:end -->

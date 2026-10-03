@@ -1,3 +1,8 @@
+parameters:
+    # Valeurs par défaut : le conteneur démarre sans ces variables ; sans clé, la route Pilotage répond 503.
+    env(WEBCUP_API_URL): 'https://24h.webcup.fr/wp-json/webcup/v1/requests'
+    env(WEBCUP_API_KEY): ''
+
 services:
     _defaults:
         autowire: true
@@ -12,6 +17,11 @@ services:
         resource: '../src/Administration/'
         exclude:
             - '../src/Administration/Tests/'
+
+    Pilotage\:
+        resource: '../src/Pilotage/'
+        exclude:
+            - '../src/Pilotage/Tests/'
 
     Shared\:
         resource: '../src/Shared/'
@@ -53,6 +63,17 @@ services:
         arguments:
             $permissions: '@Administration\Infrastructure\InMemory\InMemoryAdminPermissionRepository'
 
+    # --- Pilotage : flux de l'API du concours Webcup ---
+
+    Pilotage\Infrastructure\Http\WebcupHttpFeedGateway:
+        arguments:
+            $cache: '@pilotage.webcup_feed.cache'
+            $apiUrl: '%env(WEBCUP_API_URL)%'
+            $apiKey: '%env(WEBCUP_API_KEY)%'
+
+    Pilotage\Application\Ports\Gateway\WebcupFeedGateway:
+        alias: Pilotage\Infrastructure\Http\WebcupHttpFeedGateway
+
     # --- Ports intermodules : port du consommateur -> adaptateur dans l'infrastructure du fournisseur ---
 
     # Administration consomme IAM (compte connecté, création de compte).
@@ -65,6 +86,10 @@ services:
     # IAM consomme Administration (espace « admin » accessible aux membres actifs).
     Administration\Infrastructure\Adapter\IAM\AdminAccessibleSpacesProvider:
         tags: ['iam.accessible_spaces']
+
+    # Pilotage consomme Administration (lecture du flux réservée à admin.pilotage.read).
+    Pilotage\Application\Ports\Provider\PilotageAccessPolicy:
+        alias: Administration\Infrastructure\Adapter\Pilotage\AdminPilotageAccessPolicy
 
     # --- Socle ---
 

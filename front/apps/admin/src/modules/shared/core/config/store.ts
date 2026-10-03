@@ -7,6 +7,7 @@ import {
 import { useDispatch } from "react-redux"
 import { authApi } from "@/modules/auth/core/application/rtk-api/auth"
 import { accessManagementApi } from "@/modules/admin/core/application/rtk-api/access-management"
+import { pilotageApi } from "@/modules/pilotage/core/application/rtk-api/pilotage"
 import type { Dependencies } from "./dependencies"
 import { sessionCleared } from "./session"
 
@@ -19,6 +20,7 @@ export type AppGetState = AppStore["getState"]
 const reducers = combineReducers({
   [authApi.reducerPath]: authApi.reducer,
   [accessManagementApi.reducerPath]: accessManagementApi.reducer,
+  [pilotageApi.reducerPath]: pilotageApi.reducer,
 })
 
 // A session change (logout, 401, other tab) wipes every cache.
@@ -46,6 +48,7 @@ export const createStore = (config: {
       middleware.push(
         authApi.middleware,
         accessManagementApi.middleware,
+        pilotageApi.middleware,
       )
 
       return middleware
