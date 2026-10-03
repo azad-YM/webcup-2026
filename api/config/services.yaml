@@ -147,3 +147,13 @@ services:
     Shared\Application\Listener\ExceptionListener:
         tags:
             - { name: kernel.event_listener, event: kernel.exception, method: __invoke }
+
+    Shared\Application\Ports\Service\RealtimeSubscriptionGrant:
+        alias: Shared\Infrastructure\Realtime\SignedRealtimeSubscriptionGrant
+
+    Shared\Infrastructure\Realtime\SignedRealtimeSubscriptionGrant:
+        arguments:
+            $transport: '%env(REALTIME_TRANSPORT)%'
+            $mercureSecret: '%env(MERCURE_JWT_SECRET)%'
+            $pusherKey: '%env(PUSHER_KEY)%'
+            $pusherSecret: '%env(PUSHER_SECRET)%'
