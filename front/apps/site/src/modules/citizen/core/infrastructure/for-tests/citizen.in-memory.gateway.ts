@@ -61,6 +61,16 @@ export class InMemoryCitizenGateway implements CitizenGateway {
     return { ...this.citizenFor(token).citizen }
   }
 
+  readonly activations: string[] = []
+
+  async activateMyCitizenAccount(token: string) {
+    this.consumeFailure()
+    const email = token.startsWith("token:") ? token.slice("token:".length) : null
+    if (!email) throw new AppError(401, "Votre session a expiré. Veuillez vous reconnecter.")
+    this.activations.push(email)
+    return { ...(this.citizens.get(email) ?? this.seed(email)) }
+  }
+
   async updateMyProfile(token: string, update: CitizenProfileUpdate) {
     this.consumeFailure()
     const { email, citizen } = this.citizenFor(token)

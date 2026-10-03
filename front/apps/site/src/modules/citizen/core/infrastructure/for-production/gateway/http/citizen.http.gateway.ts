@@ -27,7 +27,8 @@ function fieldFromPath(path: string | undefined): string | undefined {
 
 /**
  * Adaptateur HTTP du contrat Citizen (lot L1) :
- * `POST /citizen/register`, `GET /citizen/me`, `PUT /citizen/me`.
+ * `POST /citizen/register`, `GET /citizen/me`, `PUT /citizen/me`,
+ * `POST /citizen/me/activate`.
  * Les messages techniques de l’API ne sont jamais affichés.
  */
 export class CitizenHttpGateway extends ApiClient implements CitizenGateway {
@@ -79,5 +80,9 @@ export class CitizenHttpGateway extends ApiClient implements CitizenGateway {
   updateMyProfile(token: string, update: CitizenProfileUpdate): Promise<CitizenProfile> {
     const body = Object.fromEntries(PROFILE_FIELDS.map((field) => [field, update[field]]))
     return this.execute("profile", () => this.put<CitizenProfile>("/citizen/me", body, ApiClient.authHeaders(token)))
+  }
+
+  activateMyCitizenAccount(token: string): Promise<CitizenProfile> {
+    return this.execute("profile", () => this.post<CitizenProfile>("/citizen/me/activate", {}, ApiClient.authHeaders(token)))
   }
 }

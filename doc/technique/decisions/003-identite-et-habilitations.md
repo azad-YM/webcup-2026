@@ -25,7 +25,7 @@ L’option 2 rend IAM dépendant de ses consommateurs et lui fait connaître les
 Option 3.
 
 - **IAM** : comptes, login JWT, audiences, codes de portail, agrégation des espaces. Il ne connaît aucun profil métier.
-- **Administration** : membres de l’administration, rôles, catalogue de permissions, accès à l’espace `admin`, autorisation des opérations des autres BC. Cible : services municipaux et publications.
+- **Administration** : membres de l’administration, rôles, catalogue de permissions, accès à l’espace `admin`, autorisation des opérations des autres BC. Cible : services municipaux ; les publications et alertes relèvent désormais de Communication ([ADR 005](005-bc-communication.md)).
 - **Citizen** : citoyens et demandes citoyennes.
 - Un profil métier référence le compte par `userId`, sans association ORM.
 - La création « compte + profil » est un cas d’usage du BC métier ; il appelle son port de création de compte, implémenté dans `IAM/Infrastructure/Adapter/<BC>`, dans la transaction de `command.bus`.
@@ -48,6 +48,7 @@ Option 3.
 **Référencé depuis :**
 
 - [Architecture technique](../architecture.md)
+- [ADR 005](005-bc-communication.md)
 - [ADR 002](002-frontieres-et-acces.md)
 - [Documentation — IAM](../../../api/src/IAM/doc/README.md)
 - [Documentation — Administration](../../../api/src/Administration/doc/README.md)

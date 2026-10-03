@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Citizen\Application\Controller;
 
+use Citizen\Application\Command\ActivateMyCitizenAccount\ActivateMyCitizenAccountCommand;
 use Citizen\Application\Command\RegisterCitizen\RegisterCitizenCommand;
 use Citizen\Application\Command\UpdateMyCitizenProfile\UpdateMyCitizenProfileCommand;
 use Citizen\Application\Query\GetMyCitizenProfile\GetMyCitizenProfileQuery;
@@ -31,5 +32,12 @@ final class CitizenController extends AppController
     public function updateProfile(#[MapRequestPayload] UpdateMyCitizenProfileCommand $cmd): JsonResponse
     {
         return $this->dispatch($cmd);
+    }
+
+    /** Compte connecté sans profil citoyen (ex. agent) : activation en un clic, idempotente. */
+    #[Route('/api/citizen/me/activate', name: 'citizen_activate_my_account', methods: ['POST'], format: 'json')]
+    public function activate(): JsonResponse
+    {
+        return $this->dispatch(new ActivateMyCitizenAccountCommand());
     }
 }

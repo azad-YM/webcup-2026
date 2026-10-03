@@ -11,7 +11,7 @@ Suivi des travaux de la plateforme pendant les 24H By Webcup : ce qui est livré
 
 ## État du flux
 
-Relevé du 2026-10-03 à H+4h41 : vague 3 diffusée, 28 demandes visibles (10 initiales, 18 issues des vagues) pour 12 460 XP. La vague 4 est annoncée 19 minutes plus tard.
+Relevé du 2026-10-03 : vagues 4 (H+5) et 5 (H+6) diffusées, 36 demandes visibles pour 16 600 XP.
 
 ## Lots
 
@@ -24,9 +24,12 @@ Les lots regroupent les demandes qui partagent un même modèle ou un même écr
 | L2 | Demandes citoyennes : envoi, confirmation, signalement, suivi, file des agents, compteur d’attente | D04, D16, F25, D11, F26, F22, D17 | 2 390 | ⬜ |
 | L3 | Services municipaux (avec recherche et filtres), publications, page d’accueil | D05, D06, F28, F32, D07 | 1 550 | ⬜ |
 | L7 | Alertes et diffusion : message général, alerte ciblée par quartier, avis d’annonce importante, recommandations aux personnes vulnérables | D18, F29, F30, F31 | 3 080 | ⬜ |
-| L4 | Accessibilité et repères : lecteur d’écran, contraste, taille du texte, fil d’Ariane, première connexion | F21, F23, F24, D15, D12 | 2 110 | ⬜ |
+| L4 | Accessibilité et repères : lecteur d’écran, contraste, taille du texte, fil d’Ariane, première connexion, indications contextuelles | F21, F23, F24, D15, D12, F35 | 2 400 | ⬜ |
 | L5 | Multilingue : interface, puis contenus | D14, F27 | 1 080 | ⬜ |
 | L6 | Pilotage : flux de l’API Webcup dans l’espace des agents — [Pilotage](../../api/src/Pilotage/doc/README.md), [page](../../front/apps/admin/doc/pilotage.md) | D19 | 750 | 🟡 livré, à vérifier avec la vraie clé |
+| L8 | Compte et sécurité : suppression de son compte, administration des comptes citoyens par les agents, protection contre les tentatives de connexion | F33, F34, F37 | 1 770 | ⬜ |
+| L9 | Services pratiques : transports (horaires et infos), service interrompu ou en maintenance | F36, F38 | 1 180 | ⬜ |
+| L10 | Rendez-vous avec un agent et rappel | F39, F40 | 900 | ⬜ |
 
 ## Travail en parallèle
 
@@ -54,10 +57,13 @@ Décisions : [Citizen — décisions retenues](../../api/src/Citizen/doc/README.
 
 ### L7 — Alertes et diffusion (à cadrer)
 
+Décisions : BC propriétaire `Communication` ([ADR 005](../technique/decisions/005-bc-communication.md)) ; diffusion sans rechargement par le port `RealtimePublisher`, Mercure par défaut et fournisseur choisi par `REALTIME_TRANSPORT` ([ADR 004](../technique/decisions/004-temps-reel.md)). Livré : le port, les adaptateurs Mercure, Pusher et « aucun », le hub Mercure de développement ; à faire : abonnement côté front et topics privés ; le BC Communication reste à créer.
+
 - Une **alerte** est une publication urgente avec un niveau de gravité, une période de validité et une audience : tous les habitants, un quartier, ou les personnes ayant demandé les alertes sanitaires.
 - Elle s’affiche en bandeau sur le site pendant sa validité (D18, F29) et apparaît dans les notifications de l’espace personnel des citoyens concernés (F30).
 - F31 est marquée « liée à l’IA » : un agent pourrait générer des recommandations adaptées à chaque audience avec un modèle Claude, puis les relire avant publication.
-- Questions : quartiers en liste fermée ? notifications seulement dans l’application, ou aussi par e-mail ? consentement pour les alertes sanitaires.
+- Décidé : quartiers en **liste fermée** (Nord, Sud, Est, Ouest, Centre, Port) gérée par Administration ; recommandations F31 **rédigées à la main** par les agents (pas de génération par IA pour l’instant).
+- Questions : notifications par e-mail en plus de l’application ? consentement pour les alertes sanitaires.
 
 ### Socle produit
 

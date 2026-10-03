@@ -30,7 +30,7 @@ L’admin regroupe toutes les opérations de la mairie. Un module par domaine, c
 |---|---|---|---|
 | `admin` | Administration | Membres, rôles | L1 |
 | `requests` | Citizen | File des demandes, compteur d’attente, traitement | L2 |
-| `content` | Administration | Services, publications, alertes | L3, L7 |
+| `content` | Administration (services), Communication (publications, alertes — [ADR 005](../../../../doc/technique/decisions/005-bc-communication.md)) | Services, publications, alertes | L3, L7 |
 | `pilotage` | Pilotage | Flux de l’API Webcup | L6 |
 
 ## Limites

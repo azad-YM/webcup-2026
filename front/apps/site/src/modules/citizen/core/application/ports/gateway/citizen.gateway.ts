@@ -18,4 +18,6 @@ export interface CitizenGateway {
   register(payload: CitizenRegistration): Promise<{ citizenId: string }>
   getMyProfile(token: string): Promise<CitizenProfile>
   updateMyProfile(token: string, update: CitizenProfileUpdate): Promise<CitizenProfile>
+  /** Rend citoyen le compte connecté (ex. agent) ; idempotent. */
+  activateMyCitizenAccount(token: string): Promise<CitizenProfile>
 }

@@ -2,11 +2,11 @@
 import { useEffect, type ReactNode } from "react"
 import Link from "next/link"
 import type { Route } from "next"
-import { LogIn, ShieldAlert } from "@boilerplate/shared-ui/components/icon"
+import { LogIn, ShieldAlert, UserCheck } from "@boilerplate/shared-ui/components/icon"
 import { useSession } from "@/modules/shared/ui/store-provider"
 import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
 import { ErrorState, LoadingState, SkeletonCards } from "@/modules/shared/ui/components/states"
-import { useGetMyProfileQuery } from "../../core/application/rtk-api/citizen"
+import { useActivateMyCitizenAccountMutation, useGetMyProfileQuery } from "../../core/application/rtk-api/citizen"
 import { CitizenErrorCode } from "../../core/application/ports/gateway/citizen.gateway"
 
 /**
@@ -52,11 +52,12 @@ export function CitizenAccessState({ access, returnTo, nonCitizenFallback }: {
       <div className="space-y-6">
         <div className="rounded-3xl border border-amber-200 bg-amber-50 p-6 sm:p-8" role="status">
           <ShieldAlert className="size-8 text-amber-800" aria-hidden="true" />
-          <h2 className="mt-4 text-xl font-semibold text-slate-950">Ce compte n’est pas un compte citoyen</h2>
+          <h2 className="mt-4 text-xl font-semibold text-slate-950">Ce compte n’est pas encore un compte citoyen</h2>
           <p className="mt-2 text-slate-800">
             Vous êtes connecté avec un compte qui n’a pas d’espace citoyen, par exemple un compte d’agent municipal.
-            Si vous êtes membre de l’administration, ouvrez votre espace de travail ci-dessous.
+            Vous habitez Nova Terra ? Activez votre espace citoyen avec ce même compte, sans nouvelle inscription.
           </p>
+          <ActivateCitizenAccount />
         </div>
         {nonCitizenFallback}
       </div>
@@ -67,5 +68,28 @@ export function CitizenAccessState({ access, returnTo, nonCitizenFallback }: {
     <LoadingState label="Chargement de votre espace…">
       <SkeletonCards count={3} />
     </LoadingState>
+  )
+}
+
+/** Un compte existant (ex. agent) devient citoyen en un clic ; la garde recharge ensuite le profil. */
+function ActivateCitizenAccount() {
+  const [activate, { isLoading, error }] = useActivateMyCitizenAccountMutation()
+  const failure = toQueryError(error)
+  return (
+    <div className="mt-6">
+      <button
+        type="button"
+        onClick={() => void activate()}
+        disabled={isLoading}
+        aria-describedby={failure ? "activation-error" : undefined}
+        className="inline-flex items-center gap-2 rounded-xl bg-teal-700 px-5 py-3 font-medium text-white hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-70"
+      >
+        <UserCheck className="size-5" aria-hidden="true" />
+        {isLoading ? "Activation en cours…" : "Activer mon compte citoyen"}
+      </button>
+      <p id="activation-error" role="alert" aria-live="assertive" className="mt-3 text-sm text-red-800">
+        {failure ? failure.data : null}
+      </p>
+    </div>
   )
 }

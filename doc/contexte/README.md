@@ -28,16 +28,22 @@ IAM ─────────────── comptes, connexion, passage si
  ▲         ▲
  │ port    │ port (création de compte, compte connecté)
  │         │
-Administration ──── membres, rôles, permissions ; services, publications, alertes (cible)
+Administration ──── membres, rôles, permissions ; services municipaux (cible)
  ▲
  │ port (droits des agents)
  │
 Citizen ─────────── citoyens (inscription, profil livrés), demandes, suivi (cible)
 
+Communication ───── publications, alertes, audiences (cible, ADR 005)
+   │ port (droit de publier) → Administration
+   └ port (quartier, consentement du citoyen) → Citizen
+
 Pilotage ────────── flux de l’API du concours pour les agents
    │ port (droit admin.pilotage.read) → Administration
    └ port (lecture de l’API Webcup, cache 20 s) → API du concours
 ```
+
+Communication est décidé par l’[ADR 005](../technique/decisions/005-bc-communication.md) ; ses mises à jour sans rechargement passent par le port temps réel de l’[ADR 004](../technique/decisions/004-temps-reel.md).
 
 - [IAM](../../api/src/IAM/doc/README.md) · [Administration](../../api/src/Administration/doc/README.md) · [Citizen](../../api/src/Citizen/doc/README.md) · [Pilotage](../../api/src/Pilotage/doc/README.md)
 - Applications : [site](../../front/apps/site/doc/README.md) (portail citoyen) · [admin](../../front/apps/admin/doc/README.md) (espace des agents)

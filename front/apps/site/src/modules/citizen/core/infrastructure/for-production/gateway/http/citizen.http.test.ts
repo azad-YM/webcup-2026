@@ -61,6 +61,14 @@ describe("Contrat HTTP Citizen (lot L1)", () => {
     await expect(gateway.getMyProfile("jwt")).rejects.toMatchObject({ status: 401 })
   })
 
+  it("POST /api/citizen/me/activate avec le jeton", async () => {
+    const fetch = vi.fn().mockResolvedValue(json(profile))
+    vi.stubGlobal("fetch", fetch)
+    await expect(gateway.activateMyCitizenAccount("jwt")).resolves.toEqual(profile)
+    expect(fetch).toHaveBeenCalledWith(`${API}/citizen/me/activate`, expect.objectContaining({ method: "POST" }))
+    expect(fetch.mock.calls[0][1].headers).toMatchObject({ Authorization: "Bearer jwt" })
+  })
+
   it("PUT /api/citizen/me avec les six champs modifiables", async () => {
     const update = { firstName: "Ada", lastName: "Lovelace", phone: null, address: "12 allée des Serres", district: "Aurore", preferredLanguage: "fr" }
     const fetch = vi.fn().mockResolvedValue(json({ ...profile, ...update, profileCompleted: true }))

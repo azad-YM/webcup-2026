@@ -32,7 +32,7 @@ Garde : une session est requise (sinon invitation à se connecter, avec retour v
 | Résultat | Comportement |
 |---|---|
 | `200` | « Bonjour <prénom> » (ou « Bonjour »), invitation « Complétez votre profil » si `profileCompleted` est faux, raccourcis (services, actualités, « Mes demandes » bientôt disponible, profil), résumé « Mes informations », et carte « Administration » si le compte a cet espace IAM. |
-| `404` | « Ce compte n’est pas un compte citoyen » et liste des espaces IAM (carte « Administration » pour un membre, sinon « aucun espace »). |
+| `404` | « Ce compte n’est pas encore un compte citoyen », bouton **« Activer mon compte citoyen »** (`POST /api/citizen/me/activate`, puis rechargement du profil) et liste des espaces IAM (carte « Administration » pour un membre, sinon « aucun espace »). |
 | `401` | Session fermée, caches vidés, invitation à se reconnecter. |
 | Panne réseau ou `5xx` | Message et « Réessayer », sans déconnexion. |
 

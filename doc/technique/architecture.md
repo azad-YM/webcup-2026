@@ -22,10 +22,11 @@ L’API est découpée en bounded contexts (BC) de même niveau : `IAM`, `Admini
 api/src/
 ├── IAM/                        BC identité : comptes, login JWT, codes de portail, espaces
 ├── Administration/             BC organisation municipale : membres, rôles, permissions
-│                               (cible : services municipaux, publications)
+│                               (cible : services municipaux)
 ├── Citizen/                    BC relation habitants–ville : citoyens (inscription, profil) ; demandes à venir
 ├── Pilotage/                   BC pilotage : flux de l’API du concours Webcup (sans persistance)
-└── Shared/                     kernel, AppController, exceptions, AggregateRoot, ports techniques
+├── Communication/              BC à construire : publications, alertes, audiences (ADR 005)
+└── Shared/                     kernel, AppController, exceptions, AggregateRoot, ports techniques (dont temps réel)
 ```
 
 - `Domain` contient les entités, règles et événements, sans dépendance au framework (dette connue : `User` implémente les interfaces Symfony) ;
@@ -38,6 +39,10 @@ api/src/
 - `command.bus` : middleware `doctrine_transaction` (flush, commit, rollback) ;
 - `query.bus` : lecture, sans transaction ;
 - `event.bus` : événements de domaine, routés vers le transport `async`.
+
+### Temps réel
+
+Un BC qui veut faire apparaître un changement sans rechargement écoute son événement de domaine dans un handler applicatif et appelle le port technique `Shared\Application\Ports\Service\RealtimePublisher`. Le fournisseur est un réglage d’infrastructure : `RealtimePublisherFactory` fournit le port selon `REALTIME_TRANSPORT` (`mercure` par défaut, `pusher`, `none`) ; chaque adaptateur de `Shared\Infrastructure\Realtime` est le seul code qui connaît son fournisseur. Les BC ne communiquent jamais entre eux par ce canal ; la donnée de référence reste l’API. Voir l’[ADR 004](decisions/004-temps-reel.md).
 
 Le contrôleur reçoit la commande via `#[MapRequestPayload]` puis appelle `AppController::dispatch()`. Les exceptions sont traduites par `Shared\Application\Listener\ExceptionListener` (403, 404, 409, 422, 500).
 
@@ -57,6 +62,8 @@ Raccordements livrés, à reproduire :
 | `Pilotage` — `PilotageAccessPolicy` | `Administration/Infrastructure/Adapter/Pilotage/AdminPilotageAccessPolicy` |
 
 Pilotage lit aussi l’API externe du concours par son port `WebcupFeedGateway`, implémenté dans sa propre infrastructure (`Infrastructure/Http/WebcupHttpFeedGateway`, cache de 20 s) ; voir [Pilotage](../../api/src/Pilotage/doc/README.md).
+
+Publications et alertes : BC `Communication` à construire, qui consultera Administration (droit de publier) et Citizen (audience) par ses ports ; voir l’[ADR 005](decisions/005-bc-communication.md).
 
 Point d’extension : un BC exposant son propre espace implémente `IAM\Application\Ports\Provider\AccessibleSpacesProvider` dans son infrastructure (tag `iam.accessible_spaces`).
 

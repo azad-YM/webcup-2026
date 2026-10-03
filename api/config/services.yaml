@@ -2,6 +2,16 @@ parameters:
     # Valeurs par défaut : le conteneur démarre sans ces variables ; sans clé, la route Pilotage répond 503.
     env(WEBCUP_API_URL): 'https://24h.webcup.fr/wp-json/webcup/v1/requests'
     env(WEBCUP_API_KEY): ''
+    # Temps réel : transport choisi par REALTIME_TRANSPORT (mercure | pusher | none), sans toucher au code.
+    env(REALTIME_TRANSPORT): 'mercure'
+    # Mercure : URL du hub vue par l'API ; sans secret, la publication est désactivée sans erreur.
+    env(MERCURE_URL): ''
+    env(MERCURE_JWT_SECRET): ''
+    # Pusher Channels : sans identifiants, la publication est désactivée sans erreur.
+    env(PUSHER_APP_ID): ''
+    env(PUSHER_KEY): ''
+    env(PUSHER_SECRET): ''
+    env(PUSHER_CLUSTER): 'eu'
 
 services:
     _defaults:
@@ -108,6 +118,31 @@ services:
     Symfony\Component\Messenger\MessageBusInterface $commandBus: '@command.bus'
     Symfony\Component\Messenger\MessageBusInterface $queryBus: '@query.bus'
     Symfony\Component\Messenger\MessageBusInterface $eventBus: '@event.bus'
+
+    # Temps réel : le port est fourni par la fabrique selon REALTIME_TRANSPORT ; chaque adaptateur
+    # est le seul endroit qui connaît son fournisseur. Ajouter un fournisseur = un adaptateur + une entrée du locator.
+    Shared\Infrastructure\Realtime\MercureRealtimePublisher:
+        arguments:
+            $hubUrl: '%env(MERCURE_URL)%'
+            $jwtSecret: '%env(MERCURE_JWT_SECRET)%'
+
+    Shared\Infrastructure\Realtime\PusherRealtimePublisher:
+        arguments:
+            $appId: '%env(PUSHER_APP_ID)%'
+            $key: '%env(PUSHER_KEY)%'
+            $secret: '%env(PUSHER_SECRET)%'
+            $cluster: '%env(PUSHER_CLUSTER)%'
+
+    Shared\Infrastructure\Realtime\RealtimePublisherFactory:
+        arguments:
+            $transports: !service_locator
+                mercure: '@Shared\Infrastructure\Realtime\MercureRealtimePublisher'
+                pusher: '@Shared\Infrastructure\Realtime\PusherRealtimePublisher'
+                none: '@Shared\Infrastructure\Realtime\NullRealtimePublisher'
+
+    Shared\Application\Ports\Service\RealtimePublisher:
+        factory: ['@Shared\Infrastructure\Realtime\RealtimePublisherFactory', 'create']
+        arguments: ['%env(REALTIME_TRANSPORT)%']
 
     Shared\Application\Listener\ExceptionListener:
         tags:

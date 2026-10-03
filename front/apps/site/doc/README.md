@@ -20,7 +20,7 @@ Le site réunit trois zones, chacune portée par un module `src/modules/<module>
 
 | Zone | Module | Routes | Public | Backend | Demandes |
 |---|---|---|---|---|---|
-| Vitrine officielle | `public` | `/`, `/services` (`?service=…`, `?q=…&categorie=…`), `/actualites` (`?article=…`) ; bandeau d’alerte (cible) | Tout le monde | [Administration](../../../../api/src/Administration/doc/README.md) (lot L3, L7) | D07, D05, D06, F28, F32, D18, F29 |
+| Vitrine officielle | `public` | `/`, `/services` (`?service=…`, `?q=…&categorie=…`), `/actualites` (`?article=…`) ; bandeau d’alerte (cible) | Tout le monde | [Administration](../../../../api/src/Administration/doc/README.md) (services, L3) ; Communication (publications et alertes, L3, L7 — [ADR 005](../../../../doc/technique/decisions/005-bc-communication.md)) | D07, D05, D06, F28, F32, D18, F29 |
 | Connexion et inscription | `auth` | `/connexion` (`?retour=…`), `/inscription` (2 étapes, `?etape=informations`) ; `/login` redirige vers `/connexion` ; `/sso` | Visiteurs | [IAM](../../../../api/src/IAM/doc/README.md), [Citizen](../../../../api/src/Citizen/doc/README.md#contrat-http--inscription-et-profil-lot-l1) | D01, D03 |
 | Espace citoyen | `citizen` | `/espace`, `/espace/profil`, puis `/espace/demandes` (L2) | Citoyens connectés | [Citizen](../../../../api/src/Citizen/doc/README.md) | D03, D12, D11, D04, F25, F26, F30 |
 
@@ -51,7 +51,7 @@ Export statique : pas de route dynamique ; les détails passent par des paramèt
 
 ## Limites et questions ouvertes
 
-- **Contenu local** : `LocalServiceCatalogGateway` et `LocalPublicationGateway` (`public/core/infrastructure/for-production/gateway/local`) servent 8 services et 3 actualités de démonstration. Ce n’est pas une intégration : au lot L3, Administration exposera le catalogue et les publications, et des adaptateurs HTTP implémentant les mêmes ports les remplaceront dans `StoreProvider`.
+- **Contenu local** : `LocalServiceCatalogGateway` et `LocalPublicationGateway` (`public/core/infrastructure/for-production/gateway/local`) servent 8 services et 3 actualités de démonstration. Ce n’est pas une intégration : au lot L3, Administration exposera le catalogue et Communication les publications, et des adaptateurs HTTP implémentant les mêmes ports les remplaceront dans `StoreProvider`.
 - « Mes demandes » est affiché « Bientôt disponible » dans l’espace (lot L2).
 - Langues proposées pour la préférence : français et anglais (D14, lot L5).
 - Quartier en saisie libre, en attendant la décision sur une liste fermée ([Citizen — questions ouvertes](../../../../api/src/Citizen/doc/README.md#questions-ouvertes)).
@@ -62,7 +62,8 @@ Export statique : pas de route dynamique ; les détails passent par des paramèt
 
 - [IAM](../../../../api/src/IAM/doc/README.md) : comptes, sessions et espaces.
 - [Citizen](../../../../api/src/Citizen/doc/README.md) : inscription citoyenne, profil, demandes.
-- [Administration](../../../../api/src/Administration/doc/README.md) (cible) : services et publications.
+- [Administration](../../../../api/src/Administration/doc/README.md) (cible) : services municipaux.
+- Communication (cible, [ADR 005](../../../../doc/technique/decisions/005-bc-communication.md)) : publications et alertes, affichées sans rechargement ([ADR 004](../../../../doc/technique/decisions/004-temps-reel.md)).
 
 [Installation et commandes](../README.md)
 

@@ -4,7 +4,7 @@
 [Accueil du projet](../../../../README.md) › [Documentation](../../../../doc/README.md) › Administration
 <!-- navigation:end -->
 
-Administration est le BC de l’**organisation municipale de Nova Terra**. Il répond à « qui travaille pour la ville et que peut-il faire ? » : il porte les membres de l’administration (agents, administrateurs), leurs rôles et le catalogue des permissions. Il décide de l’accès à l’espace de travail `admin` et autorise les opérations sensibles des autres BC. Il portera aussi ce que la ville met à disposition des habitants : le catalogue des services municipaux et les publications (cible).
+Administration est le BC de l’**organisation municipale de Nova Terra**. Il répond à « qui travaille pour la ville et que peut-il faire ? » : il porte les membres de l’administration (agents, administrateurs), leurs rôles et le catalogue des permissions. Il décide de l’accès à l’espace de travail `admin` et autorise les opérations sensibles des autres BC. Il portera aussi le catalogue des services municipaux (cible). Les publications et les alertes appartiennent au BC Communication ([ADR 005](../../../../doc/technique/decisions/005-bc-communication.md)), qui consultera Administration pour autoriser les agents.
 
 Administration ne connaît pas les mots de passe ni les sessions : chaque membre référence un compte [IAM](../../IAM/doc/README.md) par son `userId`. La création du compte est demandée à IAM via un port.
 
@@ -46,8 +46,7 @@ Les erreurs contractuelles `AccountAlreadyExists` et `AccountCreationRejected` a
 ## Cible retenue
 
 - **Services municipaux** : catalogue présenté aux habitants, avec mise en avant des services prioritaires (D05, F28).
-- **Publications** : annonces, changements de service, informations pratiques (D06).
-- **Alertes** : publications urgentes avec gravité, période de validité et audience (tous, un quartier, personnes vulnérables) — D18, F29, F30, F31 ; cadrage dans le [chantier](../../../../doc/chantier/README.md).
+- **Autorisation des publications et alertes** : adaptateur de la politique d’accès de Communication (D06, D18, F29, F30, F31 ; [ADR 005](../../../../doc/technique/decisions/005-bc-communication.md)).
 - **Recherche et filtres** dans le catalogue des services (F32).
 - Modification, suspension des membres ; modification et suppression des rôles.
 - Rattachement d’un compte IAM **existant** lors de l’ajout d’un membre (aujourd’hui refusé).
@@ -80,4 +79,5 @@ Les erreurs contractuelles `AccountAlreadyExists` et `AccountCreationRejected` a
 - [Pilotage](../../Pilotage/doc/README.md)
 - [Membres et habilitations](membres-et-habilitations.md)
 - [Admin — membres](../../../../front/apps/admin/doc/membres.md)
+- [ADR 005](../../../../doc/technique/decisions/005-bc-communication.md)
 <!-- backlinks:end -->

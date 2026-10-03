@@ -35,6 +35,17 @@ describe("Espace citoyen — profil", () => {
       .rejects.toMatchObject({ status: 404, code: CitizenErrorCode.notCitizen })
   })
 
+  it("active l’espace citoyen d’un compte existant puis recharge le profil", async () => {
+    const { store, citizenGateway, authSessionGateway } = createTestContext()
+    authSessionGateway.saveToken("token:agent@nova-terra.fr")
+    const subscription = store.dispatch(citizenApi.endpoints.getMyProfile.initiate())
+    await expect(subscription.unwrap()).rejects.toMatchObject({ status: 404 })
+    await store.dispatch(citizenApi.endpoints.activateMyCitizenAccount.initiate()).unwrap()
+    expect(citizenGateway.activations).toEqual(["agent@nova-terra.fr"])
+    await vi.waitFor(() => expect(citizenApi.endpoints.getMyProfile.select()(store.getState()).data?.id).toBeDefined())
+    subscription.unsubscribe()
+  })
+
   it("enregistre une saisie nettoyée et met le cache à jour", async () => {
     const { store, citizenGateway } = signedInCitizen()
     const subscription = store.dispatch(citizenApi.endpoints.getMyProfile.initiate())

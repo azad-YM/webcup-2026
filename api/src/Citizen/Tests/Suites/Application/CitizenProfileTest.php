@@ -152,6 +152,34 @@ final class CitizenProfileTest extends ApplicationTestCase
         self::assertCount(2, self::getContainer()->get(EntityManagerInterface::class)->getRepository(Citizen::class)->findAll());
     }
 
+    public function test_shouldActivateCitizenProfileForAnExistingAccount(): void
+    {
+        $this->authenticate('agent-user', 'agent@example.com');
+        $this->request('POST', '/api/citizen/me/activate');
+
+        self::assertResponseStatusCodeSame(200);
+        self::assertFalse($this->response()['profileCompleted']);
+        self::assertNotNull(self::getContainer()->get(CitizenRepository::class)->findByUserId('agent-user'));
+        $this->request('GET', self::URI);
+        self::assertResponseStatusCodeSame(200);
+    }
+
+    public function test_shouldKeepActivationIdempotentForACitizen(): void
+    {
+        $this->request('POST', '/api/citizen/me/activate');
+
+        self::assertResponseStatusCodeSame(200);
+        self::assertSame('citizen-id', $this->response()['id']);
+    }
+
+    public function test_shouldRejectAnonymousActivation(): void
+    {
+        self::$client->setServerParameter('HTTP_AUTHORIZATION', '');
+        $this->request('POST', '/api/citizen/me/activate');
+
+        self::assertResponseStatusCodeSame(401);
+    }
+
     private function authenticate(string $id, string $email): void
     {
         $account = new UserFixture($id, $email);

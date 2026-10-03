@@ -11,6 +11,8 @@ Les décisions structurantes sont consignées sous forme d’ADR (*Architecture 
 - [ADR 001 — Utiliser MySQL](001-mysql.md)
 - [ADR 002 — Frontières entre modules et architecture des accès](002-frontieres-et-acces.md)
 - [ADR 003 — Séparer l’identité des profils et habilitations métier](003-identite-et-habilitations.md)
+- [ADR 004 — Temps réel derrière un port, Mercure par défaut, fournisseur interchangeable](004-temps-reel.md)
+- [ADR 005 — Un BC Communication pour les publications et les alertes](005-bc-communication.md)
 
 ## Format recommandé
 
@@ -19,7 +21,7 @@ Chaque décision indique : le contexte, les options étudiées, la décision, se
 ## Décisions à instruire selon le produit
 
 1. Révocation et déconnexion communes des sessions entre applications.
-2. Stratégie d’audit, de notifications et de conservation des données (les alertes aux habitants des demandes D18, F29, F30 et F31 obligent à trancher la partie notifications).
+2. Stratégie d’audit, de notifications et de conservation des données (les alertes aux habitants des demandes D18, F29, F30 et F31 obligent à trancher la partie notifications ; la diffusion dans l’application est tranchée par l’[ADR 004](004-temps-reel.md), l’e-mail reste ouvert).
 3. Outbox si le transport Messenger quitte la base applicative.
 
 L’inscription publique est tranchée : elle est portée par [Citizen](../../../api/src/Citizen/doc/README.md#décisions-retenues). La route historique `/api/auth/register` a été retirée lors de la livraison de `POST /api/citizen/register`.
@@ -35,4 +37,6 @@ Une décision ouverte ne doit pas être présentée ailleurs comme validée.
 
 - [IAM — comptes et sessions](../../../api/src/IAM/doc/comptes-et-sessions.md)
 - [ADR 003](003-identite-et-habilitations.md)
+- [ADR 004](004-temps-reel.md)
+- [ADR 005](005-bc-communication.md)
 <!-- backlinks:end -->

@@ -31,10 +31,11 @@ Hors périmètre : comptes, mots de passe et connexion ([IAM](../../IAM/doc/READ
   1. e-mail et mot de passe (obligatoires) : création du compte IAM et du citoyen, puis connexion ;
   2. informations personnelles (facultatives) : l’étape peut être passée, et le citoyen peut les renseigner plus tard depuis son espace personnel.
 - **E-mail déjà utilisé** : l’inscription est refusée avec une invitation à se connecter.
+- **Compte existant sans profil citoyen** (par exemple un agent) : il active son espace citoyen en un clic, « Activer mon compte citoyen », sans nouvelle inscription.
 
 ## Livré
 
-Lot L1, tâches 1 à 3 (API). La page d’inscription et l’espace personnel du [site](../../../../front/apps/site/doc/README.md) sont en cours.
+Lot L1 (API), consommé par l’inscription et l’espace personnel du [site](../../../../front/apps/site/doc/README.md).
 
 ### Cas d’usage et routes
 
@@ -43,6 +44,7 @@ Lot L1, tâches 1 à 3 (API). La page d’inscription et l’espace personnel du
 | `RegisterCitizen` | `POST /api/citizen/register` (public, POST seulement) | `Application/Command/RegisterCitizen` |
 | `GetMyCitizenProfile` | `GET /api/citizen/me` | `Application/Query/GetMyCitizenProfile` |
 | `UpdateMyCitizenProfile` | `PUT /api/citizen/me` | `Application/Command/UpdateMyCitizenProfile` |
+| `ActivateMyCitizenAccount` | `POST /api/citizen/me/activate` | `Application/Command/ActivateMyCitizenAccount` |
 
 Les routes respectent le [contrat HTTP](#contrat-http--inscription-et-profil-lot-l1) ci-dessous. Précisions de comportement :
 
@@ -51,6 +53,7 @@ Les routes respectent le [contrat HTTP](#contrat-http--inscription-et-profil-lot
 - **Validation** : e-mail requis, valide, ≤ 255 caractères ; mot de passe de 8 à 72 **octets**. Erreur de forme → `422` `{ "path", "message" }`. Un refus résiduel d’IAM (`AccountCreationRejected`) → `422` `{ "error" }`.
 - **Profil** : `PUT` remplace l’ensemble du profil. Un champ absent, `null` ou ne contenant que des espaces est enregistré à `null` ; les valeurs sont enregistrées sans espaces de début et de fin. Les champs d’identité éventuellement présents dans le payload (`id`, `userId`) sont ignorés : le citoyen est toujours celui du compte connecté. Une valeur trop longue ou d’un autre type que chaîne → `422`, sans aucune écriture. La mise à jour ne publie pas d’événement.
 - **Compte non citoyen** (par exemple un agent) : `404` `{ "path", "message" }` sur `GET` et `PUT`. Sans JWT : `401` (réponse du firewall).
+- **Activation** : `ActivateMyCitizenAccount` crée le citoyen du compte connecté (sans payload) et répond `200` `CitizenProfile`. Elle est idempotente : un compte déjà citoyen retrouve son profil, sans doublon ni nouvel événement. Sinon, `CitizenRegistered` est publié comme à l’inscription.
 - `preferredLanguage` n’est contrôlé qu’en longueur (≤ 5) : la liste des langues n’est pas encore fermée (voir D14).
 
 ### Modèle et persistance
@@ -143,6 +146,7 @@ Contrat fixé avant développement : l’API (Citizen) et le site s’y conforme
 | POST | `/api/citizen/register` | public | `{ "email": string, "password": string (8–72 octets) }` | `200` `{ "citizenId": string }` | `422` payload invalide ; `409` e-mail déjà utilisé |
 | GET | `/api/citizen/me` | JWT | — | `200` `CitizenProfile` | `401` sans session ; `404` le compte n’est pas citoyen |
 | PUT | `/api/citizen/me` | JWT | tous les champs de `CitizenProfile` modifiables, chacun `string \| null` : `firstName`, `lastName` (≤ 100), `phone` (≤ 30), `address` (≤ 255), `district` (≤ 100), `preferredLanguage` (`fr` \| `en` \| …, ≤ 5) | `200` `CitizenProfile` | `401` ; `404` non citoyen ; `422` valeur invalide |
+| POST | `/api/citizen/me/activate` | JWT | — | `200` `CitizenProfile` (idempotent) | `401` sans session |
 
 Format des erreurs : celui du socle (`{ "path", "message" }` ou `{ "error" }` pour une règle métier, selon `ExceptionListener` et `AppController`). Le site affiche un message compréhensible pour chaque code, sans exposer le message technique.
 

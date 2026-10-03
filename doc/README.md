@@ -21,7 +21,8 @@ Pour comprendre une fonctionnalité, partir de l’application qui la présente 
 ## Documentation locale (API)
 
 - [IAM](../api/src/IAM/doc/README.md) : comptes, connexion, passage site → admin, espaces
-- [Administration](../api/src/Administration/doc/README.md) : membres, rôles, permissions ; services et publications (cible)
+- [Administration](../api/src/Administration/doc/README.md) : membres, rôles, permissions ; services municipaux (cible)
+- Communication : publications et alertes, BC à construire ([ADR 005](technique/decisions/005-bc-communication.md))
 - [Citizen](../api/src/Citizen/doc/README.md) : citoyens et demandes (inscription et profil livrés ; demandes à venir)
 - [Pilotage](../api/src/Pilotage/doc/README.md) : flux de l’API du concours Webcup pour les agents
 - [Shared](../api/src/Shared/doc/README.md) : primitives et conventions communes
