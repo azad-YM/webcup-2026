@@ -6,9 +6,9 @@
       <directory>src/IAM/Tests/Suites/Application</directory>
       <directory>src/IAM/Tests/Suites/Unit</directory>
     </testsuite>
-    <testsuite name="Example">
-      <directory>src/Example/Tests/Suites/Application</directory>
-      <directory>src/Example/Tests/Suites/Unit</directory>
+    <testsuite name="Administration">
+      <directory>src/Administration/Tests/Suites/Application</directory>
+      <directory>src/Administration/Tests/Suites/Unit</directory>
     </testsuite>
     <testsuite name="Shared">
       <directory>src/Shared/Tests/Suites/Application</directory>
@@ -17,7 +17,7 @@
   </testsuites>
   <source><include><directory suffix=".php">src</directory></include><exclude>
     <directory>src/IAM/Tests</directory>
-    <directory>src/Example/Tests</directory>
+    <directory>src/Administration/Tests</directory>
     <directory>src/Shared/Tests</directory>
   </exclude></source>
 </phpunit>

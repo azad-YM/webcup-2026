@@ -19,18 +19,12 @@ doctrine:
                 dir: '%kernel.project_dir%/src/IAM/Infrastructure/Doctrine/Entity'
                 prefix: 'IAM\Domain\Entity'
                 alias: IAM
-            Example:
+            Administration:
                 type: xml
                 is_bundle: false
-                dir: '%kernel.project_dir%/src/Example/Infrastructure/Doctrine/Entity'
-                prefix: 'Example\Domain\Entity'
-                alias: Example
-            Shared:
-                type: xml
-                is_bundle: false
-                dir: '%kernel.project_dir%/src/Shared/Infrastructure/Doctrine/Entity'
-                prefix: 'Shared\Domain\Entity'
-                alias: Shared
+                dir: '%kernel.project_dir%/src/Administration/Infrastructure/Doctrine/Entity'
+                prefix: 'Administration\Domain\Entity'
+                alias: Administration
         controller_resolver:
             auto_mapping: false
 

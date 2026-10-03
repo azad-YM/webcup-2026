@@ -38,8 +38,8 @@ describe("Core access management HTTP contracts", () => {
     const payload = { name: "Gestionnaire", permissions: permissions.slice(1) }
     const mutation = store.dispatch(accessManagementApi.endpoints.createRole.initiate(payload))
     await expect(mutation.unwrap()).resolves.toBeUndefined()
-    expect(fetch).toHaveBeenNthCalledWith(1, "https://api.example.test/api/iam/permissions", expect.objectContaining({ method: "GET", headers: { Authorization: "Bearer session-token" } }))
-    expect(fetch).toHaveBeenNthCalledWith(2, "https://api.example.test/api/iam/roles", expect.objectContaining({ method: "POST", body: JSON.stringify(payload), headers: { Authorization: "Bearer session-token", "Content-Type": "application/json" } }))
+    expect(fetch).toHaveBeenNthCalledWith(1, "https://api.example.test/api/administration/permissions", expect.objectContaining({ method: "GET", headers: { Authorization: "Bearer session-token" } }))
+    expect(fetch).toHaveBeenNthCalledWith(2, "https://api.example.test/api/administration/roles", expect.objectContaining({ method: "POST", body: JSON.stringify(payload), headers: { Authorization: "Bearer session-token", "Content-Type": "application/json" } }))
     expect(accessManagementApi.endpoints.listPermissions.select("admin")(store.getState()).data).toEqual(permissions)
     store.dispatch(sessionCleared())
     expect(accessManagementApi.endpoints.listPermissions.select("admin")(store.getState()).data).toBeUndefined()

@@ -1,15 +1,18 @@
-# Boilerplate
+# Nova Terra — plateforme de la ville
 
-Socle applicatif full-stack prêt à accueillir un produit : API Symfony découpée en bounded contexts (DDD / hexagonal), site public Next.js portant la connexion unique, application d’administration React et packages frontend partagés.
+Cœur numérique de Nova Terra, première ville humaine fondée sur une autre planète. Les habitants y accèdent aux services municipaux, s’informent, contactent la mairie, signalent un problème et suivent leurs demandes ; les agents disposent d’un espace de travail pour les traiter. Le projet est réalisé pendant les **24H By Webcup 2026** : les besoins de la ville arrivent par vagues via l’API du concours ([contexte](doc/contexte/README.md), [chantier](doc/chantier/README.md)).
 
-Le dépôt ne contient **aucun métier réel**. Le BC `Example` et le module frontend `example` sont des tranches verticales fictives, complètes et testées, à dupliquer pour démarrer un nouveau domaine.
+Le dépôt part d’un socle full-stack DDD / hexagonal : API Symfony découpée en bounded contexts, site public Next.js qui porte la connexion unique, application d’administration React et packages frontend partagés.
 
-## Ce qui est fourni
+## État actuel
 
-- **Authentification centralisée** : login JWT sur le site, liste des espaces accessibles, passage vers l’admin par code à usage unique + PKCE (aucun JWT dans une URL).
-- **Administration** : rôles, catalogue de permissions, membres d’administration, création du premier administrateur par CLI.
-- **Exemple de module métier** : CRUD d’éléments (`Item`) avec commandes/queries Messenger, événement de domaine, autorisation via un port intermodule, tests unitaires et HTTP.
-- **Socle de tests** : unitaires sans Docker, applicatifs sur MySQL 8.4 Testcontainers ; Vitest côté front.
+- **Livré** :
+  - connexion JWT sur le site et liste des espaces accessibles ;
+  - passage vers l’admin par code à usage unique et PKCE ;
+  - rôles, permissions et membres de l’administration ;
+  - création du premier administrateur par CLI ;
+  - tests unitaires et applicatifs (MySQL 8.4 Testcontainers), Vitest côté front.
+- **À construire** : espace citoyen, demandes citoyennes, services et publications, accessibilité, multilingue, consultation du flux Webcup. Voir le [chantier](doc/chantier/README.md).
 
 ## Organisation du dépôt
 
@@ -17,14 +20,15 @@ Le dépôt ne contient **aucun métier réel**. Le BC `Example` et le module fro
 .
 ├── api/                         API Symfony
 │   └── src/
-│       ├── IAM/                 BC identité et accès : comptes, sessions, rôles, permissions
-│       ├── Example/             BC d’exemple (Item)
+│       ├── IAM/                 comptes, connexion, passage site → admin, espaces
+│       ├── Administration/      membres, rôles, permissions (+ services, publications)
+│       ├── Citizen/             citoyens et demandes (documentation, code à créer)
 │       └── Shared/              primitives et kernel communs aux BC
-├── doc/                         architecture et décisions transverses
+├── doc/                         contexte produit, architecture, décisions, chantier
 ├── docker/                      environnements Docker Compose
 └── front/                       monorepo pnpm
-    ├── apps/admin/              application d’administration React/Vite
-    ├── apps/site/               site public Next.js (connexion unique)
+    ├── apps/admin/              espace de travail des agents (React/Vite)
+    ├── apps/site/               portail des habitants (Next.js, connexion unique)
     └── packages/                shared-ui, shared-utils, shared-config
 ```
 
@@ -86,13 +90,14 @@ cd front && pnpm --filter admin test --run && pnpm --filter site test
 
 ## Démarrer un nouveau domaine
 
-1. Backend : copier `api/src/Example` sous un nouveau BC, renommer namespaces, routes, mapping et table, puis suivre [Ajouter un module](api/README.md#ajouter-un-module).
-2. Frontend : copier `front/apps/admin/src/modules/example`, déclarer sa gateway dans le kernel, son API RTK dans le store et ses routes.
+1. Backend : créer le BC sur le modèle d’`api/src/Administration` (couches, tests, `doc`, `AGENTS.md`), puis suivre [Ajouter un module](api/README.md#ajouter-un-module).
+2. Frontend : créer le module sur le modèle de `front/apps/admin/src/modules/admin`, déclarer sa gateway dans le kernel, son API RTK dans le store et ses routes.
 3. Documenter le BC dans son dossier `doc` et le relier à l’[index](doc/README.md).
 
 ## Documentation
 
 - [Index de la documentation](doc/README.md)
+- [Contexte produit](doc/contexte/README.md) · [Chantier](doc/chantier/README.md)
 - [Architecture technique](doc/technique/architecture.md)
 - [API](api/README.md)
 - [Frontend](front/README.md)

@@ -5,7 +5,7 @@ const actions: Record<string, string> = {
   approve: "Approuver", reject: "Refuser", execute: "Exécuter",
 }
 const resources: Record<string, string> = {
-  role: "Rôles", member: "Membres", "role-assignment": "Attribution des rôles", item: "Éléments (exemple)",
+  role: "Rôles", member: "Membres", "role-assignment": "Attribution des rôles",
 }
 
 export const permissionLabel = (permission: Permission): string =>

@@ -31,7 +31,6 @@ export class AuthHttpGateway extends ApiClient implements AuthGateway {
     // Internal navigation, not the list of IAM portal destinations or operation permissions.
     return [
       { code: "admin", name: "Administration", description: "Rôles, membres et catalogue des permissions." },
-      { code: "example", name: "Exemple", description: "Module d’exemple : éléments fictifs branchés sur l’API." },
     ]
   }
 }

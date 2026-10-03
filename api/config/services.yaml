@@ -3,26 +3,15 @@ services:
         autowire: true
         autoconfigure: true
 
-    # Ports internes d'IAM.
-    IAM\Application\Ports\Provider\MemberAccountProvisioner:
-        alias: IAM\Infrastructure\Service\IAMMemberAccountProvisioner
-
-    IAM\Application\Ports\Provider\CurrentAccountProvider:
-        alias: IAM\Infrastructure\Service\IAMCurrentAccountProvider
-
-    # Port intermodule : port du consommateur (Example) -> adaptateur dans l'infrastructure du fournisseur (IAM).
-    Example\Application\Ports\Provider\ItemAccessPolicy:
-        alias: IAM\Infrastructure\Adapter\Example\AdminItemAccessPolicy
-
     IAM\:
         resource: '../src/IAM/'
         exclude:
             - '../src/IAM/Tests/'
 
-    Example\:
-        resource: '../src/Example/'
+    Administration\:
+        resource: '../src/Administration/'
         exclude:
-            - '../src/Example/Tests/'
+            - '../src/Administration/Tests/'
 
     Shared\:
         resource: '../src/Shared/'
@@ -30,33 +19,54 @@ services:
             - '../src/Shared/**/Tests/'
             - '../src/Shared/Infrastructure/Kernel.php'
 
+    # --- IAM : comptes et sessions ---
+
     IAM\Application\Ports\Repository\IUserRepository:
         alias: IAM\Infrastructure\Doctrine\Repository\DoctrineUserRepository
-
-    Example\Application\Ports\Repository\ItemRepository:
-        alias: Example\Infrastructure\Doctrine\Repository\DoctrineItemRepository
-
-    Shared\Infrastructure\Doctrine\Repository\SqlRoleRepository:
-        arguments:
-            $permissionsRepository: !tagged_iterator iam.access_permissions
-
-    IAM\Infrastructure\InMemory\InMemoryAdminPermissionRepository:
-        tags: ['iam.access_permissions']
-
-    IAM\Application\Command\CreateRole\CreateRoleHandler:
-        arguments:
-            $permissionRepository: '@IAM\Infrastructure\InMemory\InMemoryAdminPermissionRepository'
-
-    IAM\Application\Query\ListPermissions\ListPermissionsHandler:
-        arguments:
-            $permissions: '@IAM\Infrastructure\InMemory\InMemoryAdminPermissionRepository'
 
     IAM\Application\Query\ListMySpaces\ListMySpacesHandler:
         arguments:
             $providers: !tagged_iterator iam.accessible_spaces
 
-    IAM\Infrastructure\Service\AdminAccessibleSpacesProvider:
+    IAM\Application\Service\PortalAccessPolicy:
+        arguments:
+            $providers: !tagged_iterator iam.accessible_spaces
+
+    # --- Administration : membres, rôles, permissions ---
+
+    Administration\Infrastructure\Doctrine\Repository\SqlRoleRepository:
+        arguments:
+            $permissionsRepository: !tagged_iterator administration.permissions
+
+    Administration\Infrastructure\InMemory\InMemoryAdminPermissionRepository:
+        tags: ['administration.permissions']
+
+    Administration\Application\Command\CreateRole\CreateRoleHandler:
+        arguments:
+            $permissionRepository: '@Administration\Infrastructure\InMemory\InMemoryAdminPermissionRepository'
+
+    Administration\Application\Query\ListPermissions\ListPermissionsHandler:
+        arguments:
+            $permissions: '@Administration\Infrastructure\InMemory\InMemoryAdminPermissionRepository'
+
+    Administration\Infrastructure\Service\BootstrapAdminService:
+        arguments:
+            $permissions: '@Administration\Infrastructure\InMemory\InMemoryAdminPermissionRepository'
+
+    # --- Ports intermodules : port du consommateur -> adaptateur dans l'infrastructure du fournisseur ---
+
+    # Administration consomme IAM (compte connecté, création de compte).
+    Administration\Application\Ports\Provider\CurrentAccountProvider:
+        alias: IAM\Infrastructure\Adapter\Administration\IAMCurrentAccountProvider
+
+    Administration\Application\Ports\Provider\MemberAccountProvisioner:
+        alias: IAM\Infrastructure\Adapter\Administration\IAMMemberAccountProvisioner
+
+    # IAM consomme Administration (espace « admin » accessible aux membres actifs).
+    Administration\Infrastructure\Adapter\IAM\AdminAccessibleSpacesProvider:
         tags: ['iam.accessible_spaces']
+
+    # --- Socle ---
 
     Symfony\Component\Messenger\MessageBusInterface $commandBus: '@command.bus'
     Symfony\Component\Messenger\MessageBusInterface $queryBus: '@query.bus'
@@ -65,11 +75,3 @@ services:
     Shared\Application\Listener\ExceptionListener:
         tags:
             - { name: kernel.event_listener, event: kernel.exception, method: __invoke }
-
-    Shared\Infrastructure\Service\BootstrapAdminService:
-        arguments:
-            $permissions: '@IAM\Infrastructure\InMemory\InMemoryAdminPermissionRepository'
-
-    IAM\Application\Service\PortalAccessPolicy:
-        arguments:
-            $providers: !tagged_iterator iam.accessible_spaces

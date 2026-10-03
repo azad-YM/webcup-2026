@@ -4,11 +4,11 @@ iam:
         namespace: IAM\Application\Controller
     type: attribute
 
+administration:
+    resource:
+        path: ../src/Administration/Application/Controller/
+        namespace: Administration\Application\Controller
+    type: attribute
+
 api_login_check:
     path: /api/login_check
-
-example:
-    resource:
-        path: ../src/Example/Application/Controller/
-        namespace: Example\Application\Controller
-    type: attribute

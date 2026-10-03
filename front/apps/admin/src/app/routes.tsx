@@ -8,8 +8,6 @@ import { AdminLayout } from "@/modules/admin/ui/layouts/admin.layout"
 import { AdminComingSoonPage } from "@/modules/admin/ui/pages/coming-soon"
 import { AdminDashboardPage } from "@/modules/admin/ui/pages/dashboard"
 import { RolesPage } from "@/modules/admin/ui/pages/roles"
-import { ExampleLayout } from "@/modules/example/ui/layouts/example.layout"
-import { ItemsPage } from "@/modules/example/ui/pages/items"
 
 const ProtectedRoutes = () => {
   const profile = useGetProfileQuery()
@@ -49,14 +47,6 @@ export const router = createBrowserRouter([
           { index: true, element: <AdminDashboardPage /> },
           { path: "role", element: <RolesPage /> },
           { path: "member", element: <AdminComingSoonPage /> },
-        ],
-      },
-      {
-        path: "/example",
-        element: <ExampleLayout />,
-        children: [
-          { index: true, element: <Navigate to="/example/items" replace /> },
-          { path: "items", element: <ItemsPage /> },
         ],
       },
     ],

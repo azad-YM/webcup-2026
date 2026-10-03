@@ -12,7 +12,7 @@ Le formulaire charge le catalogue depuis l’API. La recherche porte sur les lib
 
 ## Contrats et composition
 
-Règles : [IAM — membres et habilitations](../../../../api/src/IAM/doc/membres-et-habilitations.md). Chaîne : formulaire → RTK Query (`accessManagementApi`) → use cases → `PermissionGateway` / `RoleHttpGateway` (`admin/core/infrastructure/for-production/gateway/http`). Le kernel injecte `AuthAccessSessionProvider`, adaptateur du module `auth` pour le port `AccessSessionProvider` du module `admin`.
+Règles : [Administration — membres et habilitations](../../../../api/src/Administration/doc/membres-et-habilitations.md). Routes : `GET /api/administration/permissions`, `POST /api/administration/roles`. Chaîne : formulaire → RTK Query (`accessManagementApi`) → use cases → `PermissionGateway` / `RoleHttpGateway` (`admin/core/infrastructure/for-production/gateway/http`). Le kernel injecte `AuthAccessSessionProvider`, adaptateur du module `auth` pour le port `AccessSessionProvider` du module `admin`.
 
 Un 401 invalide la session et vide le store ; un 403 ou une panne réseau conserve la session. La création exige `admin.role.write` et `admin.role-assignment.write`.
 
@@ -27,5 +27,5 @@ Liste, modification et suppression des rôles ne sont pas livrées.
 
 **Référencé depuis :**
 
-- [IAM](../../../../api/src/IAM/doc/membres-et-habilitations.md)
+- [Administration — membres et habilitations](../../../../api/src/Administration/doc/membres-et-habilitations.md)
 <!-- backlinks:end -->

@@ -7,7 +7,7 @@
 ## Comptes
 
 - Table `auth_users` : identifiant, e-mail unique, empreinte du mot de passe, nom.
-- `CreateAccount` (appelé par `AddMember` via le port interne `MemberAccountProvisioner`) normalise l’e-mail en minuscules, exige un mot de passe de 8 à 72 octets, refuse un e-mail existant (`EmailAlreadyUsed`) et ne remplace jamais un mot de passe existant. Il n’attribue aucun rôle.
+- `CreateAccount` (appelé par l’`AddMember` d’[Administration](../../Administration/doc/membres-et-habilitations.md) via l’adaptateur `Adapter/Administration/IAMMemberAccountProvisioner`) normalise l’e-mail en minuscules, exige un mot de passe de 8 à 72 octets, refuse un e-mail existant (`EmailAlreadyUsed`) et ne remplace jamais un mot de passe existant. Il n’attribue aucun rôle.
 
 ## Login et profil
 
@@ -17,7 +17,7 @@
 
 L’identité provient toujours du JWT vérifié, jamais d’un paramètre. Les espaces sont agrégés depuis les fournisseurs `AccessibleSpacesProvider` (tag `iam.accessible_spaces`) et dédupliqués par code ; une panne d’un fournisseur fait échouer la requête. Un espace affiché ne vaut pas autorisation API.
 
-Fournisseur branché : `AdminAccessibleSpacesProvider` (`Infrastructure/Service`) → espace `admin` pour tout membre actif.
+Fournisseur branché : `AdminAccessibleSpacesProvider`, dans l’infrastructure d’[Administration](../../Administration/doc/README.md) → espace `admin` pour tout membre actif.
 
 ## Passage site → admin (PKCE)
 
@@ -41,4 +41,5 @@ La déconnexion est locale à chaque application ; la révocation serveur commun
 
 - [Architecture technique](../../../../doc/technique/architecture.md)
 - [Parcours de connexion du site](../../../../front/apps/site/doc/parcours-connexion.md)
+- [Administration — membres et habilitations](../../Administration/doc/membres-et-habilitations.md)
 <!-- backlinks:end -->

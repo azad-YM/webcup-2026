@@ -7,22 +7,23 @@
 ## Vue d’ensemble
 
 ```text
-Site Next.js (connexion) ──┐
-Admin React/Vite ──────────┼──► API Symfony ──► MySQL 8.4
-                           │         │
-                           │         └──► Worker Messenger (transport Doctrine)
-                           └── code à usage unique + PKCE entre site et admin
+Site Next.js (portail citoyen) ──┐
+Admin React/Vite (agents) ───────┼──► API Symfony ──► MySQL 8.4
+                                 │         │
+                                 │         └──► Worker Messenger (transport Doctrine)
+                                 └── code à usage unique + PKCE entre site et admin
 ```
 
 ## API modulaire
 
-L’API est découpée en bounded contexts (BC) de même niveau : `IAM` et `Example`, plus le socle `Shared`. Un BC peut être subdivisé en sous-domaines (SD) lorsqu’il grossit. Chaque BC simple ou SD porte `Application`, `Domain`, `Infrastructure`, `Tests` et `doc`.
+L’API est découpée en bounded contexts (BC) de même niveau : `IAM`, `Administration` et `Citizen` (cible), plus le socle `Shared`. Un BC peut être subdivisé en sous-domaines (SD) lorsqu’il grossit. Chaque BC simple ou SD porte `Application`, `Domain`, `Infrastructure`, `Tests` et `doc`.
 
 ```text
 api/src/
-├── IAM/                        BC identité et accès : comptes, login JWT, codes de portail,
-│                               membres d’administration, rôles, permissions, espaces
-├── Example/                    BC simple d’exemple : Item (CRUD)
+├── IAM/                        BC identité : comptes, login JWT, codes de portail, espaces
+├── Administration/             BC organisation municipale : membres, rôles, permissions
+│                               (cible : services municipaux, publications)
+├── Citizen/                    BC relation habitants–ville : citoyens, demandes (doc seule)
 └── Shared/                     kernel, AppController, exceptions, AggregateRoot, ports techniques
 ```
 
@@ -47,15 +48,19 @@ Raccordements livrés, à reproduire :
 
 | Consommateur (port) | Fournisseur (adaptateur) |
 |---|---|
-| `Example` — `ItemAccessPolicy` | `IAM/Infrastructure/Adapter/Example/AdminItemAccessPolicy` |
+| `Administration` — `CurrentAccountProvider` | `IAM/Infrastructure/Adapter/Administration/IAMCurrentAccountProvider` |
+| `Administration` — `MemberAccountProvisioner` | `IAM/Infrastructure/Adapter/Administration/IAMMemberAccountProvisioner` |
+| `IAM` — `AccessibleSpacesProvider` | `Administration/Infrastructure/Adapter/IAM/AdminAccessibleSpacesProvider` |
 
 Point d’extension : un BC exposant son propre espace implémente `IAM\Application\Ports\Provider\AccessibleSpacesProvider` dans son infrastructure (tag `iam.accessible_spaces`).
 
-La CLI d’[initialisation de l’administrateur](../../api/src/Shared/doc/initialisation-admin.md) est l’unique exception explicite : elle compose compte, rôle et membre directement, hors workflows applicatifs.
+Répartition identité / profils métier : IAM ne connaît que des comptes ; un BC métier qui rattache un profil à un compte (membre, citoyen) porte le cas d’usage et demande la création du compte à IAM via son propre port, dans la même transaction. Voir l’[ADR 003](decisions/003-identite-et-habilitations.md).
+
+La CLI d’[initialisation de l’administrateur](../../api/src/Administration/doc/initialisation-admin.md) est l’unique exception explicite : elle compose compte, rôle et membre directement, hors workflows applicatifs.
 
 ## Frontend
 
-Monorepo pnpm : `apps/site`, `apps/admin`, `packages/shared-ui`, `packages/shared-utils`, `packages/shared-config`. Une application n’importe jamais le code interne d’une autre.
+Monorepo pnpm : `apps/site` (portail citoyen), `apps/admin` (espace de travail des agents), `packages/shared-ui`, `packages/shared-utils`, `packages/shared-config`. Une application n’importe jamais le code interne d’une autre.
 
 Chaque module d’application suit :
 
@@ -68,7 +73,7 @@ modules/<module>/
 └── ui/                         layouts, pages, sections, modals
 ```
 
-Chaîne : UI → RTK Query → use case (`withUseCase`) → port gateway → adaptateur injecté par le kernel (`modules/shared/core/config`). Entre modules frontend, même règle que le backend : l’admin et l’example définissent chacun leur port de session, implémenté par le module `auth`.
+Chaîne : UI → RTK Query → use case (`withUseCase`) → port gateway → adaptateur injecté par le kernel (`modules/shared/core/config`). Entre modules frontend, même règle que le backend : chaque module métier de l’admin (aujourd’hui `admin`) définit son port de session, implémenté par le module `auth`.
 
 ## Authentification
 
@@ -97,6 +102,8 @@ Les `AGENTS.md` sont répartis par périmètre : racine, `api/`, chaque BC/SD, `
 
 - [Documentation](../README.md)
 - [Documentation — IAM](../../api/src/IAM/doc/README.md)
-- [Documentation — Example](../../api/src/Example/doc/README.md)
+- [Documentation — Administration](../../api/src/Administration/doc/README.md)
 - [Documentation — Shared](../../api/src/Shared/doc/README.md)
+- [Contexte produit](../contexte/README.md)
+- [ADR 003](decisions/003-identite-et-habilitations.md)
 <!-- backlinks:end -->

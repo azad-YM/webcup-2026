@@ -1,10 +1,10 @@
-# Boilerplate — consignes communes
+# Nova Terra — consignes communes
 
 ## Avant de modifier
 
 Lire les `AGENTS.md` des répertoires parents et du périmètre modifié, y compris ceux des modules fournisseurs si une intégration les touche. Depuis la racine, lire explicitement les fichiers locaux des cibles avant de travailler. Les consignes locales précisent celles-ci ; elles ne lèvent pas les frontières architecturales.
 
-Consulter `doc/technique/architecture.md`, puis le `doc/README.md` du BC ou sous-domaine concerné et les pages qu’il référence. Pour le frontend, lire aussi le `doc/README.md` de l’application, qui pointe vers les sources métier. Distinguer les décisions retenues, le code livré et les fonctionnalités encore à construire. Préserver les modifications utilisateur et limiter le changement au besoin demandé.
+Consulter `doc/contexte/README.md` et `doc/chantier/README.md` pour le produit et l’avancement, `doc/technique/architecture.md`, puis le `doc/README.md` du BC ou sous-domaine concerné et les pages qu’il référence. Pour le frontend, lire aussi le `doc/README.md` de l’application, qui pointe vers les sources métier. Distinguer les décisions retenues, le code livré et les fonctionnalités encore à construire. Préserver les modifications utilisateur et limiter le changement au besoin demandé.
 
 ## Frontières obligatoires entre BC et sous-domaines
 
@@ -20,16 +20,16 @@ Les primitives réellement communes de `Shared` sont utilisables dans leur port�
 
 ### Exception d’initialisation CLI
 
-La CLI `IAM/Application/Cli/BootstrapAdminCommand` appelle directement
-`Shared/Infrastructure/Service/BootstrapAdminService`. Cette exception explicite
-assemble les entités compte IAM, rôle et membre IAM pour l’initialisation
-technique, dans une transaction, sans handler ni bus applicatif. Elle ne s’étend
-pas aux workflows HTTP ni aux autres services Shared. Voir la
-[procédure d’initialisation](api/src/Shared/doc/initialisation-admin.md).
+La CLI `Administration/Application/Cli/BootstrapAdminCommand` appelle directement
+`Administration/Infrastructure/Service/BootstrapAdminService`. Cette exception explicite
+assemble l’entité compte IAM avec le rôle et le membre d’Administration pour
+l’initialisation technique, dans une transaction, sans handler ni bus applicatif.
+Elle ne s’étend pas aux workflows HTTP ni aux autres services. Voir la
+[procédure d’initialisation](api/src/Administration/doc/initialisation-admin.md).
 
 ## Périmètres
 
-- Backend : `api/AGENTS.md`, puis `api/src/<BC>/AGENTS.md` (`IAM`, `Example`, `Shared`).
+- Backend : `api/AGENTS.md`, puis `api/src/<BC>/AGENTS.md` (`IAM`, `Administration`, `Citizen`, `Shared`).
 - Frontend : `front/AGENTS.md`, puis `front/apps/<application>/AGENTS.md` (`site`, `admin`).
 - Packages frontend partagés : `front/packages/AGENTS.md`.
 
@@ -37,7 +37,7 @@ Les profils sont des instructions de travail par répertoire ; ils ne démarrent
 
 ## Livraison
 
-Exécuter les vérifications adaptées aux fichiers touchés. Rapporter ce qui fonctionne, les limites réelles et les validations effectuées. Ne pas présenter les gateways locales ou en attente comme une intégration IAM livrée. Ne pas inclure les sorties de build, caches, clés ou secrets dans les changements source. Actualiser les contrats et la documentation lorsqu’ils évoluent.
+Exécuter les vérifications adaptées aux fichiers touchés. Rapporter ce qui fonctionne, les limites réelles et les validations effectuées. Ne pas présenter les gateways locales ou en attente comme une intégration IAM livrée. Ne pas inclure les sorties de build, caches, clés ou secrets dans les changements source. Actualiser les contrats et la documentation lorsqu’ils évoluent, ainsi que le statut des demandes dans `doc/chantier`.
 
 ## Propriété de la documentation
 

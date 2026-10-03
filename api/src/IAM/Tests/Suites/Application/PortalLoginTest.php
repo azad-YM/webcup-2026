@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\IAM\Suites\Application;
 
-use IAM\Domain\Entity\Member;
+use Administration\Domain\Entity\Member;
 use Doctrine\ORM\EntityManagerInterface;
 use IAM\Domain\Entity\PortalLoginCode;
 use IAM\Domain\Entity\User;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use PHPUnit\Framework\Attributes\Group;
-use Shared\Infrastructure\Service\BootstrapAdminService;
+use Administration\Infrastructure\Service\BootstrapAdminService;
 use Tests\Shared\Infrastructure\ApplicationTestCase;
 
 #[Group('Application')]
@@ -43,9 +43,9 @@ final class PortalLoginTest extends ApplicationTestCase
         self::assertResponseStatusCodeSame(200);
         self::assertSame('admin@example.com', $this->body()['email']);
         self::assertSame('admin', $this->body()['spaces'][0]['code']);
-        $this->request('GET', '/api/iam/permissions');
+        $this->request('GET', '/api/administration/permissions');
         self::assertResponseStatusCodeSame(200);
-        self::assertCount(6, $this->body());
+        self::assertCount(4, $this->body());
         $this->exchange($code);
         self::assertResponseStatusCodeSame(403);
     }

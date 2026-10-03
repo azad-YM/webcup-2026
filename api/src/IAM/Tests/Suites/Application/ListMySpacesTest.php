@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\IAM\Suites\Application;
 
-use IAM\Domain\Entity\Member;
+use Administration\Domain\Entity\Member;
 use Doctrine\ORM\EntityManagerInterface;
-use Shared\Domain\Entity\Role;
+use Administration\Domain\Entity\Role;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\Shared\Fixtures\UserFixture;
 use Tests\Shared\Infrastructure\ApplicationTestCase;

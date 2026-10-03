@@ -53,7 +53,7 @@
   "autoload": {
     "psr-4": {
       "IAM\\": "src/IAM/",
-      "Example\\": "src/Example/",
+      "Administration\\": "src/Administration/",
       "Shared\\": "src/Shared/"
     },
     "exclude-from-classmap": [
@@ -63,7 +63,7 @@
   "autoload-dev": {
     "psr-4": {
       "Tests\\IAM\\": "src/IAM/Tests/",
-      "Tests\\Example\\": "src/Example/Tests/",
+      "Tests\\Administration\\": "src/Administration/Tests/",
       "Tests\\Shared\\": "src/Shared/Tests/"
     }
   },

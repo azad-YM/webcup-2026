@@ -1,29 +1,26 @@
-# Admin — administration de l’application
+# Admin — espace de travail des agents
 
 <!-- navigation:start -->
 [Accueil du projet](../../../../README.md) › [Documentation](../../../../doc/README.md) › admin
 <!-- navigation:end -->
 
-L’admin est l’application des personnes qui administrent le produit : elles gèrent les rôles et, dans le module d’exemple, des éléments fictifs. Elle s’ouvre depuis la carte « Administration » du [site](../../site/doc/README.md), sans nouvelle saisie des identifiants.
+L’admin est l’espace de travail des agents et des administrateurs de Nova Terra, distinct du portail des habitants. Les administrateurs y gèrent les rôles et les membres. Les agents y traiteront les demandes citoyennes, publieront les informations de la ville et consulteront le flux de l’API du concours (voir le [chantier](../../../../doc/chantier/README.md)). Elle s’ouvre depuis la carte « Administration » du [site](../../site/doc/README.md), sans nouvelle saisie des identifiants.
+
+Aujourd’hui, seule la création des rôles est livrée.
 
 ## Parcours
 
 1. Depuis le site, la personne ouvre l’espace Administration : l’admin échange un code PKCE contre sa session (voir le [parcours de connexion](../../site/doc/parcours-connexion.md)).
 2. `AuthHttpGateway` charge le profil (`/api/iam/me`) et vérifie la présence de l’espace `admin` ; sinon, un message propose de revenir au site.
-3. `/espaces` liste les modules internes (Administration, Exemple) ; le sélecteur de la barre latérale permet d’en changer.
+3. `/espaces` liste les modules internes (aujourd’hui Administration) ; le sélecteur de la barre latérale permet d’en changer.
 
 ## Modules
 
 | Module | Routes | Backend propriétaire | Statut |
 |---|---|---|---|
-| Administration | `/admin`, `/admin/role`, `/admin/member` | [IAM](../../../../api/src/IAM/doc/README.md) | Rôles livrés ([détail](roles.md)) ; membres à venir |
-| Exemple | `/example/items` | [Example](../../../../api/src/Example/doc/README.md) | CRUD livré, gateway HTTP |
-
-### Module Exemple
-
-Liste des éléments avec états chargement / vide / erreur + « Réessayer », création et modification dans une modale (nom, description, statut en édition), suppression confirmée. Le formulaire signale un nom déjà utilisé avant l’envoi ; l’API reste l’autorité (422 affiché tel quel). Les erreurs 401, 403, 404 et réseau sont traduites par `ItemHttpGateway` ; seul le 401 invalide la session.
-
-Tests : règles de domaine (`item.test.ts`), use cases via le store RTK avec `InMemoryItemGateway`, contrat HTTP (`item.http.test.ts`).
+| Administration | `/admin`, `/admin/role`, `/admin/member` | [Administration](../../../../api/src/Administration/doc/README.md) | Rôles livrés ([détail](roles.md)) ; membres à venir (API livrée) |
+| Demandes citoyennes | à créer | [Citizen](../../../../api/src/Citizen/doc/README.md) | Cible (F22, D17) |
+| Pilotage | à créer | `Pilotage` (à créer) | Cible (D19) |
 
 ## Limites
 
@@ -40,6 +37,9 @@ La déconnexion est locale ; la révocation commune reste à concevoir. Les droi
 
 - [Documentation](../../../../doc/README.md)
 - [Site](../../site/doc/README.md)
-- [Example](../../../../api/src/Example/doc/README.md)
 - [IAM](../../../../api/src/IAM/doc/README.md)
+- [Administration](../../../../api/src/Administration/doc/README.md)
+- [Citizen](../../../../api/src/Citizen/doc/README.md)
+- [Contexte produit](../../../../doc/contexte/README.md)
+- [Chantier](../../../../doc/chantier/README.md)
 <!-- backlinks:end -->

@@ -1,0 +1,77 @@
+# Documentation — Administration
+
+<!-- navigation:start -->
+[Accueil du projet](../../../../README.md) › [Documentation](../../../../doc/README.md) › Administration
+<!-- navigation:end -->
+
+Administration est le BC de l’**organisation municipale de Nova Terra**. Il répond à « qui travaille pour la ville et que peut-il faire ? » : il porte les membres de l’administration (agents, administrateurs), leurs rôles et le catalogue des permissions. Il décide de l’accès à l’espace de travail `admin` et autorise les opérations sensibles des autres BC. Il portera aussi ce que la ville met à disposition des habitants : le catalogue des services municipaux et les publications (cible).
+
+Administration ne connaît pas les mots de passe ni les sessions : chaque membre référence un compte [IAM](../../IAM/doc/README.md) par son `userId`. La création du compte est demandée à IAM via un port.
+
+## Utilisateurs et consommateurs
+
+- **Administrateur** : crée les rôles, ajoute des agents ou d’autres administrateurs.
+- **Agent municipal** : membre disposant d’un rôle limité (traitement des demandes citoyennes, publication de contenus) — rôles à créer selon le [chantier](../../../../doc/chantier/README.md).
+- **Consommateurs techniques** :
+  - l’application [admin](../../../../front/apps/admin/doc/README.md) (rôles, membres) ;
+  - [IAM](../../IAM/doc/README.md), qui obtient l’espace `admin` via `AdminAccessibleSpacesProvider` ;
+  - [Citizen](../../Citizen/doc/README.md) (cible), autorisera les agents via un port à définir.
+
+## Livré
+
+| Méthode | Route | Rôle |
+|---|---|---|
+| GET | `/api/administration/permissions` | Catalogue des permissions |
+| POST | `/api/administration/roles` | Création d’un rôle |
+| POST | `/api/administration/members` | Ajout d’un membre et création de son compte IAM |
+
+CLI : `php bin/console app:admin:bootstrap` ([initialisation de l’administrateur principal](initialisation-admin.md)).
+
+## Ports et raccordements
+
+| Sens | Port (propriétaire) | Adaptateur (fournisseur) |
+|---|---|---|
+| Administration consomme IAM | `Application/Ports/Provider/CurrentAccountProvider` | `IAM/Infrastructure/Adapter/Administration/IAMCurrentAccountProvider` |
+| Administration consomme IAM | `Application/Ports/Provider/MemberAccountProvisioner` | `IAM/Infrastructure/Adapter/Administration/IAMMemberAccountProvisioner` |
+| IAM consomme Administration | `IAM\…\AccessibleSpacesProvider` | `Infrastructure/Adapter/IAM/AdminAccessibleSpacesProvider` |
+
+Les erreurs contractuelles `AccountAlreadyExists` et `AccountCreationRejected` appartiennent à Administration ; l’adaptateur IAM y traduit ses propres erreurs.
+
+## Cible retenue
+
+- **Services municipaux** : catalogue présenté aux habitants, avec mise en avant des services prioritaires (D05, F28).
+- **Publications** : annonces, changements de service, informations pratiques (D06).
+- **Alertes** : publications urgentes avec gravité, période de validité et audience (tous, un quartier, personnes vulnérables) — D18, F29, F30, F31 ; cadrage dans le [chantier](../../../../doc/chantier/README.md).
+- **Recherche et filtres** dans le catalogue des services (F32).
+- Rôles de référence **Agent** et **Administrateur** créés au démarrage (D08, D09).
+- Formulaire de création d’un membre dans l’admin (API livrée, écran à construire).
+- Liste, modification, suspension des membres et des rôles.
+- Rattachement d’un compte IAM **existant** lors de l’ajout d’un membre (aujourd’hui refusé).
+
+## Questions ouvertes
+
+- Permissions des agents sur Citizen : contexte `admin` ou contexte `citizen` dédié ? Le contrôle `AddMember` n’accepte aujourd’hui que des rôles du contexte `admin`.
+
+## Référence
+
+- [Membres et habilitations](membres-et-habilitations.md)
+- [Initialisation de l’administrateur principal](initialisation-admin.md)
+- [Architecture](../../../../doc/technique/architecture.md) · [ADR 003 — Identité et habilitations](../../../../doc/technique/decisions/003-identite-et-habilitations.md)
+
+<!-- backlinks:start -->
+---
+
+[← Retour à Documentation](../../../../doc/README.md)
+
+**Référencé depuis :**
+
+- [Documentation](../../../../doc/README.md)
+- [API](../../../README.md)
+- [IAM](../../IAM/doc/README.md)
+- [Admin](../../../../front/apps/admin/doc/README.md)
+- [Chantier](../../../../doc/chantier/README.md)
+- [Contexte produit](../../../../doc/contexte/README.md)
+- [ADR 003](../../../../doc/technique/decisions/003-identite-et-habilitations.md)
+- [Citizen](../../Citizen/doc/README.md)
+- [Membres et habilitations](membres-et-habilitations.md)
+<!-- backlinks:end -->
