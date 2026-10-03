@@ -1,11 +1,20 @@
 # Agent frontend Site
 
-Lire [la documentation de l’application](doc/README.md) et les documents IAM qu’elle référence.
+Lire [la documentation de l’application](doc/README.md), ses parcours et les documents IAM et Citizen qu’elle référence.
 
-Point d’entrée unique de connexion et de choix d’espace. Next.js App Router avec export statique, Redux Toolkit et RTK Query. Les usages navigateur sont dans des composants clients après initialisation ; le store est créé par instance dans `StoreProvider`. Ne pas importer le code de l’admin.
+Portail des habitants de Nova Terra : vitrine (`public`), connexion et inscription (`auth`), espace citoyen (`citizen`), socle (`shared`). Next.js App Router avec export statique (pas de route dynamique : paramètres d’URL), Redux Toolkit et RTK Query. Les usages navigateur sont dans des composants clients après initialisation ; le store est créé par instance dans `StoreProvider`, qui compose aussi les adaptateurs. Ne pas importer le code de l’admin.
 
-Parcours à préserver : rendre `/` public, proposer `/login` aux visiteurs non connectés, connecter via le use case, sauvegarder via `AuthSessionGateway`, revenir à `/`, charger les espaces avec skeletons, traiter liste vide et erreurs. Une carte unique reste sélectionnable, sans redirection automatique. La présence d’un jeton ne prouve pas les accès.
+Entre modules du site : port chez le consommateur, adaptateur dans `core/infrastructure/adapter/<consommateur>` du fournisseur, injection dans `StoreProvider` ; un écran qui réunit deux modules se compose dans `src/app/*/page.tsx` par props (slots). Pas d’import du store, des gateways concrètes ou de l’UI d’un autre module.
+
+Parcours à préserver :
+
+- `/` public ; en-tête avec Connexion / Créer un compte ou Mon espace / Déconnexion ; fil d’Ariane sur chaque page hors accueil ; lien d’évitement et `main#contenu`.
+- `/connexion` connecte via le use case, sauvegarde via `AuthSessionGateway`, puis va vers `/espace` ou la destination `?retour=` (liste fermée). `/login` redirige vers `/connexion` (l’admin l’utilise).
+- `/inscription` : compte (`POST /api/citizen/register` puis `login_check`), puis « Mes informations » que l’on peut passer. `PUT /api/citizen/me` remplace tout le profil : envoyer les six champs.
+- `/espace` : garde session puis `GET /api/citizen/me` ; `404` → message « compte non citoyen » et espaces IAM ; carte « Administration » conservée, une carte unique reste sélectionnable sans redirection automatique. La présence d’un jeton ne prouve pas les accès.
+- États chargement / vide / erreur avec « Réessayer » distincts ; un `401` ferme la session et vide les caches (`resetAccountCaches`), une panne réseau non.
+- Services et actualités viennent d’adaptateurs **locaux** de démonstration jusqu’au lot L3 : ne pas les présenter comme une intégration.
 
 Destinations IAM : `admin` (ajouter une entrée dans `SpaceCode`, `spaces-list.tsx`, `env.ts` et `/sso` pour une nouvelle application). Ne jamais transmettre de JWT dans une URL ; `/sso` ne redirige que vers le callback configuré.
 
-Commandes : `pnpm --filter site test`, `pnpm --filter site lint`, `pnpm --filter site build` (variables `NEXT_PUBLIC_API_BASE_URL`, `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_ADMIN_URL`).
+Commandes : `pnpm --filter site test`, `pnpm --filter site lint`, `pnpm --filter site build` (variables `NEXT_PUBLIC_API_BASE_URL`, `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_ADMIN_URL`). Ne pas committer `out/` après un build local.
