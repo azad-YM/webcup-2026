@@ -6,7 +6,8 @@ import {
 } from "@/modules/shared/core/lib/use-cases.decorator"
 import { login } from "../usecases/login.usecase"
 import { listSpaces } from "../usecases/list-spaces.usecase"
-import type { AuthSpace, LoginPayload } from "../dto/auth.dto"
+import { register } from "../usecases/register.usecase"
+import type { AuthSpace, LoginPayload, RegistrationPayload } from "../dto/auth.dto"
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fakeBaseQuery<QueryError>(),
@@ -15,10 +16,18 @@ export const authApi = createApi({
     loginWithCredentials: build.mutation<null, LoginPayload>({
       queryFn: withUseCase(login)
     }),
+    registerAccount: build.mutation<null, RegistrationPayload>({
+      queryFn: withUseCase(register)
+    }),
     listSpaces: build.query<AuthSpace[], void>({
       queryFn: withUseCase(listSpaces),
       keepUnusedDataFor: 0
     })
   })
 })
-export const { useLoginWithCredentialsMutation, useListSpacesQuery, useIssuePortalCodeMutation } = authApi
+export const {
+  useLoginWithCredentialsMutation,
+  useRegisterAccountMutation,
+  useListSpacesQuery,
+  useIssuePortalCodeMutation
+} = authApi

@@ -1,6 +1,6 @@
-# Site — connexion unique
+# Site — portail des habitants de Nova Terra
 
-Next.js App Router (export statique), Redux Toolkit et RTK Query. Le site porte le seul formulaire de connexion, affiche les espaces autorisés et transmet un code à usage unique à l’admin.
+Next.js App Router (export statique), Redux Toolkit et RTK Query. Le site présente la ville (services, actualités), porte le seul formulaire de connexion et l’inscription citoyenne, offre l’espace citoyen, affiche les espaces autorisés et transmet un code à usage unique à l’admin.
 
 ## Démarrer
 
@@ -19,11 +19,11 @@ Ces variables sont requises au build et déjà fournies dans `docker/compose.dev
 
 ## Fonctionnement
 
-- `/login` : `AuthHttpGateway` appelle `/api/login_check` ; le JWT est conservé derrière `AuthSessionGateway` (localStorage, clé `app.site.jwt`).
-- `/` : accueil public avec lien de connexion ; après connexion, liste des espaces (`/api/iam/me/spaces`) avec skeletons, état vide, erreur et nouvelle tentative ; revérifiée chaque minute.
+- `/connexion` : `AuthHttpGateway` appelle `/api/login_check` ; le JWT est conservé derrière `AuthSessionGateway` (localStorage, clé `app.site.jwt`). `/login` redirige vers `/connexion`.
+- `/inscription` : `CitizenHttpGateway` appelle `/api/citizen/register`, puis connexion automatique et étape facultative « Mes informations » (`PUT /api/citizen/me`).
+- `/espace`, `/espace/profil` : profil citoyen (`/api/citizen/me`) et liste des espaces IAM (`/api/iam/me/spaces`, revérifiée chaque minute).
+- `/`, `/services`, `/actualites` : vitrine, sur **contenu de démonstration local** jusqu’au lot L3.
 - `/sso` : reçoit la demande PKCE de l’admin, appelle `/api/iam/portal-codes` et redirige vers le callback configuré.
-- Un 401 supprime la session ; la déconnexion vide la session et le cache, synchronisés entre onglets.
+- Un 401 supprime la session ; la déconnexion vide la session et les caches, synchronisés entre onglets.
 
-Contenu de la page d’accueil : texte de remplacement à adapter au produit.
-
-[Parcours détaillé](doc/parcours-connexion.md)
+[Documentation de l’application](doc/README.md) · [Parcours de connexion](doc/parcours-connexion.md) · [Parcours citoyen](doc/parcours-citoyen.md)

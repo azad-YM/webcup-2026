@@ -4,42 +4,64 @@
 [Accueil du projet](../../../../README.md) › [Documentation](../../../../doc/README.md) › site
 <!-- navigation:end -->
 
-Le site est la porte d’entrée publique de Nova Terra. Il porte la connexion unique, et deviendra le portail des habitants : présentation de la ville et de ses services, actualités, inscription, espace personnel et suivi des demandes.
-
-Aujourd’hui, toute personne peut consulter l’accueil, puis se connecter une seule fois pour voir les espaces auxquels son compte a accès et les ouvrir sans ressaisir ses identifiants. L’accueil est encore un texte de remplacement (D07).
+Le site est la porte d’entrée publique de Nova Terra, première ville humaine sur une autre planète. Il présente la ville, ses services et ses actualités, porte la connexion unique et l’inscription citoyenne, et offre à chaque habitant un espace personnel.
 
 ## Utilisateurs et objectifs
 
-- Visiteur : consulter l’accueil public et choisir de se connecter.
-- Personne disposant d’un compte : se connecter, voir ses espaces, ouvrir l’administration si elle en est membre.
-- Personne sans espace : rester connectée et voir un état « aucun espace disponible ».
+- **Visiteur** : comprendre immédiatement où il est, trouver un service, lire les actualités, créer son compte.
+- **Citoyen** : se connecter, retrouver son espace personnel, compléter son profil ; bientôt envoyer et suivre ses demandes.
+- **Membre de l’administration** (agent, administrateur) : se connecter au même endroit et ouvrir l’admin depuis la carte « Administration ».
 
-Cible : visiteur qui s’inscrit (D01), citoyen qui retrouve son espace personnel, envoie et suit ses demandes (D03, D04, D11, D16, F25, F26), consulte services et publications (D05, D06, F28, F32), reçoit les alertes de la ville (D18, F29, F30, F31), avec accessibilité, fil d’Ariane et choix de la langue (F21, F23, F24, D15, D14). Suivi dans le [chantier](../../../../doc/chantier/README.md).
+Cible : demandes et suivi (D04, D11, D16, F25, F26), services et publications servis par l’API (D05, D06, F28, F32), alertes (D18, F29, F30, F31), réglages d’accessibilité et langue (F21, F23, F24, D14). Suivi dans le [chantier](../../../../doc/chantier/README.md).
 
-## Organisation cible
+## Organisation
 
 Le site réunit trois zones, chacune portée par un module `src/modules/<module>` :
 
 | Zone | Module | Routes | Public | Backend | Demandes |
 |---|---|---|---|---|---|
-| Vitrine officielle | `public` | `/`, `/services`, `/actualites`, bandeau d’alerte | Tout le monde | [Administration](../../../../api/src/Administration/doc/README.md) (lot L3, L7) | D07, D05, D06, F28, F32, D18, F29 |
-| Connexion et inscription | `auth` | `/connexion`, `/inscription` (2 étapes) ; `/login` redirige vers `/connexion` | Visiteurs | [IAM](../../../../api/src/IAM/doc/README.md), [Citizen](../../../../api/src/Citizen/doc/README.md#contrat-http--inscription-et-profil-lot-l1) | D01, D03 |
+| Vitrine officielle | `public` | `/`, `/services` (`?service=…`, `?q=…&categorie=…`), `/actualites` (`?article=…`) ; bandeau d’alerte (cible) | Tout le monde | [Administration](../../../../api/src/Administration/doc/README.md) (lot L3, L7) | D07, D05, D06, F28, F32, D18, F29 |
+| Connexion et inscription | `auth` | `/connexion` (`?retour=…`), `/inscription` (2 étapes, `?etape=informations`) ; `/login` redirige vers `/connexion` ; `/sso` | Visiteurs | [IAM](../../../../api/src/IAM/doc/README.md), [Citizen](../../../../api/src/Citizen/doc/README.md#contrat-http--inscription-et-profil-lot-l1) | D01, D03 |
 | Espace citoyen | `citizen` | `/espace`, `/espace/profil`, puis `/espace/demandes` (L2) | Citoyens connectés | [Citizen](../../../../api/src/Citizen/doc/README.md) | D03, D12, D11, D04, F25, F26, F30 |
 
-Socle commun (module `shared`) : en-tête et navigation, pied de page, fil d’Ariane (D15), réglages d’accessibilité (F21, F23, F24).
+Socle commun (module `shared`) : en-tête et navigation, pied de page, fil d’Ariane, lien d’évitement, champs de formulaire accessibles, états chargement / vide / erreur, composition des dépendances (`StoreProvider`).
 
-- La garde de l’espace citoyen exige une session, puis un profil citoyen (`GET /api/citizen/me`). Un compte non citoyen, par exemple un agent, voit un message et le lien vers l’administration.
-- Un membre de l’administration connecté garde l’accès à la carte « Administration » (liste des espaces IAM). Le passage vers l’admin reste en PKCE.
-- Export statique : pas de route dynamique ; utiliser des paramètres d’URL (`/espace/demandes?ref=…`).
+Frontières entre modules (même règle que le backend) :
+
+| Besoin | Port (consommateur) | Adaptateur (fournisseur) |
+|---|---|---|
+| Créer un compte à l’inscription | `auth` : `AccountRegistrationGateway` | `citizen/core/infrastructure/adapter/auth/CitizenAccountRegistrationAdapter` |
+| Jeton de session pour les appels Citizen | `citizen` : `CitizenSessionProvider` | `auth/core/infrastructure/adapter/citizen/AuthCitizenSessionAdapter` |
+| Étape « Mes informations », espaces IAM dans `/espace` | — | composition dans `src/app/*/page.tsx` (slots React) |
+
+Export statique : pas de route dynamique ; les détails passent par des paramètres d’URL.
+
+## Parcours
+
+- [Connexion et accès aux espaces](parcours-connexion.md) : `/connexion`, `/login`, liste des espaces IAM, passage PKCE vers l’admin.
+- [Parcours citoyen](parcours-citoyen.md) : inscription en deux étapes, espace personnel, profil.
+- Vitrine : accueil (présentation, « Que souhaitez-vous faire ? », recherche de service, services les plus demandés, dernières actualités, appel à créer un compte), catalogue des services avec recherche et filtre par thème, fiche d’un service, liste et lecture des actualités.
 
 ## Livré
 
-Connexion HTTP, garde de session, cartes issues de l’API, états chargement / vide / erreur, déconnexion locale et passage PKCE vers l’admin. Détails : [parcours de connexion](parcours-connexion.md).
+- **Socle** : identité Nova Terra (emblème, textes, métadonnées), en-tête avec navigation (Accueil, Services, Actualités ; Connexion / Créer un compte ou Mon espace / Déconnexion selon la session ; menu mobile), pied de page, fil d’Ariane sur toutes les pages sauf l’accueil (premier niveau), lien « Aller au contenu », landmarks (`header`, `nav`, `main`, `footer`), focus visible, titres hiérarchisés, champs reliés à leur aide et à leur erreur (`aria-describedby`, `aria-invalid`), annonces `aria-live`, mouvements réduits si demandé.
+- **Connexion** (IAM, livrée) : `/connexion`, retour vers la page demandée (liste fermée), `/login` conservé en redirection, liste des espaces, `/sso`.
+- **Inscription et espace citoyen** : code conforme au contrat Citizen L1, testé contre un double et un `fetch` simulé. Le bout en bout dépend de l’API Citizen (agent A) — voir [parcours citoyen](parcours-citoyen.md#dépendances-et-limites).
+- **Vitrine** : pages et recherche livrées, **sur contenu de démonstration local** (voir limites).
+
+## Limites et questions ouvertes
+
+- **Contenu local** : `LocalServiceCatalogGateway` et `LocalPublicationGateway` (`public/core/infrastructure/for-production/gateway/local`) servent 8 services et 3 actualités de démonstration. Ce n’est pas une intégration : au lot L3, Administration exposera le catalogue et les publications, et des adaptateurs HTTP implémentant les mêmes ports les remplaceront dans `StoreProvider`.
+- « Mes demandes » est affiché « Bientôt disponible » dans l’espace (lot L2).
+- Langues proposées pour la préférence : français et anglais (D14, lot L5).
+- Quartier en saisie libre, en attendant la décision sur une liste fermée ([Citizen — questions ouvertes](../../../../api/src/Citizen/doc/README.md#questions-ouvertes)).
+- Réglages d’affichage (contraste renforcé, taille du texte) et audit lecteur d’écran restent à faire (F21, F23, F24).
+- La déconnexion reste locale ; la révocation commune est à livrer côté IAM.
 
 ## Backend propriétaire
 
 - [IAM](../../../../api/src/IAM/doc/README.md) : comptes, sessions et espaces.
-- [Citizen](../../../../api/src/Citizen/doc/README.md) (cible) : inscription citoyenne, demandes.
+- [Citizen](../../../../api/src/Citizen/doc/README.md) : inscription citoyenne, profil, demandes.
 - [Administration](../../../../api/src/Administration/doc/README.md) (cible) : services et publications.
 
 [Installation et commandes](../README.md)
@@ -57,4 +79,6 @@ Connexion HTTP, garde de session, cartes issues de l’API, états chargement / 
 - [Citizen](../../../../api/src/Citizen/doc/README.md)
 - [Contexte produit](../../../../doc/contexte/README.md)
 - [Administration](../../../../api/src/Administration/doc/README.md)
+- [Parcours de connexion](parcours-connexion.md)
+- [Parcours citoyen](parcours-citoyen.md)
 <!-- backlinks:end -->

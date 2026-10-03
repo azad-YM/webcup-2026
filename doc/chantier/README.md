@@ -20,7 +20,7 @@ Les lots regroupent les demandes qui partagent un même modèle ou un même écr
 | Lot | Contenu | Demandes | XP | Statut |
 |---|---|---|---|---|
 | L0 | Séparer l’identité (IAM) des membres et rôles (Administration), retirer le gabarit Example, cadrer Citizen — [ADR 003](../technique/decisions/003-identite-et-habilitations.md) | — | — | ✅ |
-| L1 | Comptes et profils : inscription citoyenne, espace personnel, rôles Agent et Administrateur, formulaire de membre | D01, D03, D08, D09 | 1 500 | 🟡 API Citizen livrée (tâches 1 à 3) |
+| L1 | Comptes et profils : inscription citoyenne, espace personnel, rôles Agent et Administrateur, formulaire de membre | D01, D03, D08, D09 | 1 500 | 🟡 API Citizen et site livrés (tâches 1 à 4) ; admin en cours |
 | L2 | Demandes citoyennes : envoi, confirmation, signalement, suivi, file des agents, compteur d’attente | D04, D16, F25, D11, F26, F22, D17 | 2 390 | ⬜ |
 | L3 | Services municipaux (avec recherche et filtres), publications, page d’accueil | D05, D06, F28, F32, D07 | 1 550 | ⬜ |
 | L7 | Alertes et diffusion : message général, alerte ciblée par quartier, avis d’annonce importante, recommandations aux personnes vulnérables | D18, F29, F30, F31 | 3 080 | ⬜ |
@@ -49,7 +49,7 @@ Décisions : [Citizen — décisions retenues](../../api/src/Citizen/doc/README.
 3. ✅ Cas d’usage `GetMyCitizenProfile` et `UpdateMyCitizenProfile` (champs facultatifs : prénom, nom, téléphone, adresse, quartier, langue).
 
    Détail et écarts éventuels : [Citizen — livré](../../api/src/Citizen/doc/README.md#livré).
-4. Site : inscription en deux étapes (compte, puis « Mes informations » que l’on peut passer), connexion automatique, espace personnel `/espace` avec le nom du citoyen, l’invitation à compléter le profil et des raccourcis.
+4. ✅ Site : inscription en deux étapes (compte, puis « Mes informations » que l’on peut passer), connexion automatique, espace personnel `/espace` avec le nom du citoyen, l’invitation à compléter le profil et des raccourcis. Voir le [parcours citoyen](../../front/apps/site/doc/parcours-citoyen.md) ; parcours de bout en bout à vérifier dans le navigateur.
 5. Administration : rôles de référence Agent et Administrateur à l’initialisation, et formulaire « Ajouter un membre » dans l’admin.
 
 ### L7 — Alertes et diffusion (à cadrer)
@@ -61,7 +61,8 @@ Décisions : [Citizen — décisions retenues](../../api/src/Citizen/doc/README.
 
 ### Socle produit
 
-- Remplacer l’habillage « Boilerplate » du site et de l’admin par l’identité de Nova Terra.
+- Remplacer l’habillage « Boilerplate » du site et de l’admin par l’identité de Nova Terra. Site : fait (en-tête, navigation, pied de page, fil d’Ariane, base d’accessibilité) ; admin : à faire.
+- Vitrine du site : structure livrée (accueil, services avec recherche et filtre, actualités) sur un adaptateur **local** de démonstration ; brancher l’HTTP d’Administration au lot L3 ([site](../../front/apps/site/doc/README.md#limites-et-questions-ouvertes)).
 - Ajouter `WEBCUP_API_KEY` à `api/.env.example`, sans valeur, et définir la vraie clé dans `api/.env.local` pour le lot L6.
 
 ## Quand une vague arrive
@@ -89,4 +90,5 @@ Décisions : [Citizen — décisions retenues](../../api/src/Citizen/doc/README.
 - [Contexte produit](../contexte/README.md)
 - [Administration](../../api/src/Administration/doc/README.md)
 - [Citizen](../../api/src/Citizen/doc/README.md)
+- [Site](../../front/apps/site/doc/README.md)
 <!-- backlinks:end -->

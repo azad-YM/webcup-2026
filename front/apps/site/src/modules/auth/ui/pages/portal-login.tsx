@@ -4,6 +4,8 @@ import { siteEnv } from "@/config/env"
 import { SessionGuard } from "../components/session-guard"
 import { useIssuePortalCodeMutation } from "../../core/application/rtk-api/auth"
 import { useSession } from "@/modules/shared/ui/store-provider"
+import Link from "next/link"
+import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
 
 function PortalLogin() {
   const [issue, result] = useIssuePortalCodeMutation()
@@ -31,10 +33,15 @@ function PortalLogin() {
     if (result.error && "status" in result.error && result.error.status === 401) logout()
   }, [result.error, logout])
   const failed = invalid || result.isError
-  return <main className="grid min-h-screen place-items-center p-6"><div>
+  return <PageBody narrow>
     <p role={failed ? "alert" : "status"}>{failed ? "Impossible d’ouvrir cet espace. Revenez au choix des espaces pour réessayer." : "Ouverture de votre espace…"}</p>
-    {failed && <a href="/" className="mt-4 block underline">Choisir un espace</a>}
-  </div></main>
+    {failed && <Link href="/espace" className="mt-4 block font-medium text-teal-800 underline">Choisir un espace</Link>}
+  </PageBody>
 }
 
-export function PortalLoginPage() { return <SessionGuard><PortalLogin /></SessionGuard> }
+export function PortalLoginPage() {
+  return <>
+    <PageHeader trail={[{ label: "Mon espace", href: "/espace" }, { label: "Ouverture d’un espace" }]} title="Ouverture d’un espace de travail" />
+    <SessionGuard><PortalLogin /></SessionGuard>
+  </>
+}

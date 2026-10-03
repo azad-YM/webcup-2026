@@ -3,11 +3,20 @@ import { siteEnv } from "@/config/env"
 
 export const dynamic = "force-static"
 
+const PUBLIC_PAGES: { path: string; priority: number }[] = [
+  { path: "/", priority: 1 },
+  { path: "/services/", priority: 0.8 },
+  { path: "/actualites/", priority: 0.8 },
+  { path: "/inscription/", priority: 0.5 },
+  { path: "/connexion/", priority: 0.3 },
+]
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [{
-    url: siteEnv.siteUrl,
-    lastModified: new Date(),
+  const lastModified = new Date()
+  return PUBLIC_PAGES.map(({ path, priority }) => ({
+    url: path === "/" ? siteEnv.siteUrl : `${siteEnv.siteUrl}${path}`,
+    lastModified,
     changeFrequency: "weekly",
-    priority: 1,
-  }]
+    priority,
+  }))
 }
