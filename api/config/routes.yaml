@@ -22,6 +22,12 @@ pilotage:
         namespace: Pilotage\Application\Controller
     type: attribute
 
+shared_realtime:
+    resource:
+        path: ../src/Shared/Infrastructure/Realtime/Http/
+        namespace: Shared\Infrastructure\Realtime\Http
+    type: attribute
+
 api_login_check:
     path: /api/login_check
 

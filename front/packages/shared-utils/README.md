@@ -42,6 +42,6 @@ Les applications dont les signatures diffèrent conservent leur propre câblage.
 - [Admin](../../apps/admin/doc/README.md)
 <!-- backlinks:end -->
 
-## Abonnement temps réel
+## `realtime`
 
-Export `./realtime` : `BrowserRealtimeSubscriber(options).subscribe(topic, callback, eventNames)` retourne la fonction de nettoyage. Chaque module consommateur définit son port applicatif compatible. `options` contient `transport` (`mercure`, `pusher`, `none`), `url`, `key`, `cluster` et `authorize(topic, socketId?)`, callback HTTP authentifié retournant `{token? , auth?}`. La route du BC vérifie les droits sur le topic exact avant d'appeler le signataire technique. Topics privés : `private.*`, traduits en canaux `private-*` Pusher. Pusher utilise ici son protocole WebSocket directement, sans dépendance au SDK. Les écrans conservent un polling de 60 secondes et invalident leurs caches à réception ; aucune donnée métier n'est reconstruite depuis le message. Nettoyer l'abonnement lors du changement de compte.
+Client du flux temps réel SSE de l’API (`GET /api/realtime/stream`) : `openRealtimeStream` (topics publics, ou privés avec un ticket ; reprise après refus depuis le dernier identifiant reçu) et `createRealtimeTicketProvider` (échange du JWT contre un ticket). Voir l’[ADR 004](../../../doc/technique/decisions/004-temps-reel.md).

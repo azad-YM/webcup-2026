@@ -42,7 +42,7 @@ api/src/
 
 ### Temps réel
 
-Un BC qui veut faire apparaître un changement sans rechargement écoute son événement de domaine dans un handler applicatif et appelle le port technique `Shared\Application\Ports\Service\RealtimePublisher`. Le fournisseur est un réglage d’infrastructure : `RealtimePublisherFactory` fournit le port selon `REALTIME_TRANSPORT` (`mercure` par défaut, `pusher`, `none`) ; chaque adaptateur de `Shared\Infrastructure\Realtime` est le seul code qui connaît son fournisseur. Les BC ne communiquent jamais entre eux par ce canal ; la donnée de référence reste l’API. Voir l’[ADR 004](decisions/004-temps-reel.md).
+Un BC qui veut faire apparaître un changement sans rechargement écoute son événement de domaine dans un handler applicatif et appelle le port technique `Shared\Application\Ports\Service\RealtimePublisher`. Le fournisseur est un réglage d’infrastructure : `RealtimePublisherFactory` fournit le port selon `REALTIME_TRANSPORT` (`database` par défaut : buffer `realtime_event` lu par le flux SSE `GET /api/realtime/stream` ; `mercure`, `pusher`, `none`). Chaque BC déclare les topics privés de ses utilisateurs via `RealtimeAudienceProvider` ; chaque adaptateur de `Shared\Infrastructure\Realtime` est le seul code qui connaît son fournisseur. Les BC ne communiquent jamais entre eux par ce canal ; la donnée de référence reste l’API. Voir l’[ADR 004](decisions/004-temps-reel.md).
 
 Le contrôleur reçoit la commande via `#[MapRequestPayload]` puis appelle `AppController::dispatch()`. Les exceptions sont traduites par `Shared\Application\Listener\ExceptionListener` (403, 404, 409, 422, 500).
 
