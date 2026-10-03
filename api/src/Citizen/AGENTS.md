@@ -2,7 +2,7 @@
 
 Lire d’abord [la documentation locale](doc/README.md) et le [chantier](../../../doc/chantier/README.md).
 
-Citizen porte la relation entre les habitants et la ville : inscription, profil citoyen, demandes et signalements, suivi de leur traitement. Livré : inscription publique (`RegisterCitizen`), lecture et mise à jour du profil (`GetMyCitizenProfile`, `UpdateMyCitizenProfile`) ; voir la section « Livré » de la doc. Les demandes (lot L2) restent à construire sur le même modèle ; `Administration` reste la référence pour une politique d’autorisation (`CreateRole`).
+Citizen porte la relation entre les habitants et la ville : inscription, profil citoyen, demandes et signalements, suivi de leur traitement. Livré : inscription publique (`RegisterCitizen`), lecture et mise à jour du profil (`GetMyCitizenProfile`, `UpdateMyCitizenProfile`, quartier validé par Administration), préférences d’alerte (`GetMyAlertPreference`, `SetMyAlertPreference` : consentement aux alertes sanitaires) ; voir la section « Livré » de la doc. Les demandes (lot L2) restent à construire sur le même modèle ; `Administration` reste la référence pour une politique d’autorisation (`CreateRole`).
 
 Règles :
 
@@ -11,6 +11,7 @@ Règles :
 - Le profil personnel est optionnel et modifiable plus tard ; aucune règle ne doit l’exiger pour utiliser la plateforme, sauf si une demande Webcup le justifie explicitement.
 - Les droits des agents passent par un port de Citizen implémenté dans `Administration/Infrastructure/Adapter/Citizen`. Ne jamais lire les tables d’IAM ou d’Administration.
 - Une demande ne référence un service que par son identifiant.
+- Citizen fournit à Communication l’audience du citoyen connecté (`Infrastructure/Adapter/Communication/CitizenAudienceProvider`) et accorde les topics temps réel des alertes ciblées (`Infrastructure/Adapter/Shared/CitizenAlertRealtimeAudience`) ; ne jamais exposer de donnée de santé, seulement le consentement.
 - Un citoyen ne voit que ses propres données ; l’identité vient toujours du compte connecté, jamais du payload.
 - Le contrat HTTP de la doc est consommé par le site : toute évolution est faite dans la doc d’abord.
 - Une erreur contractuelle qui doit produire `409` étend `Shared\Domain\Exception\ConflitException` (une `\DomainException` est traduite en `422` par `AppController`).

@@ -40,6 +40,10 @@ Garde : une session est requise (sinon invitation à se connecter, avec retour v
 
 Même garde. Formulaire pré-rempli. `PUT /api/citizen/me` **remplace tout le profil** : le site envoie toujours les six champs, champ vide → `null`. Après l’enregistrement : « Vos informations ont été enregistrées. » (annonce `aria-live`) et lien de retour vers l’espace. Un `422` rattaché à un champ s’affiche sous ce champ ; la saisie est conservée en cas d’erreur.
 
+Le **quartier** se choisit dans une liste fermée (Nord, Sud, Est, Ouest, Centre, Port) chargée depuis `GET /api/administration/districts` ; il sert aux alertes ciblées. Une valeur ancienne hors liste reste affichée pour ne pas être effacée.
+
+Sous l’espace personnel, la section **« Notifications de la ville »** affiche les alertes qui concernent le citoyen, les annonces importantes et la case de consentement aux alertes sanitaires : voir [vitrine et alertes](vitrine-et-alertes.md).
+
 ## Dépendances et limites
 
 - Le parcours de bout en bout dépend de l’API Citizen (lot L1, agent A). Sans elle, `/espace` affiche « ce compte n’est pas un compte citoyen » (la route répond `404`) et l’inscription échoue avec un message ; la connexion IAM et la carte « Administration » continuent de fonctionner.
@@ -59,4 +63,5 @@ Code : modules `auth` (`ui/pages/registration.tsx`, `core/application/usecases/r
 - [Parcours de connexion](parcours-connexion.md)
 - [Chantier](../../../../doc/chantier/README.md)
 - [Registre des demandes](../../../../doc/chantier/demandes.md)
+- [Vitrine et alertes](vitrine-et-alertes.md)
 <!-- backlinks:end -->

@@ -21,7 +21,7 @@ Citizen est le BC de la **relation entre les habitants et la ville de Nova Terra
 - Cycle de vie d’une demande et historique de ses étapes.
 - Indicateurs de charge pour les agents.
 
-Hors périmètre : comptes, mots de passe et connexion ([IAM](../../IAM/doc/README.md)) ; rôles et droits des agents, services municipaux et publications ([Administration](../../Administration/doc/README.md)).
+Hors périmètre : comptes, mots de passe et connexion ([IAM](../../IAM/doc/README.md)) ; rôles et droits des agents, services municipaux et liste des quartiers ([Administration](../../Administration/doc/README.md)) ; publications et alertes ([Communication](../../Communication/doc/README.md)).
 
 ## Décisions retenues
 
@@ -31,6 +31,8 @@ Hors périmètre : comptes, mots de passe et connexion ([IAM](../../IAM/doc/READ
   1. e-mail et mot de passe (obligatoires) : création du compte IAM et du citoyen, puis connexion ;
   2. informations personnelles (facultatives) : l’étape peut être passée, et le citoyen peut les renseigner plus tard depuis son espace personnel.
 - **E-mail déjà utilisé** : l’inscription est refusée avec une invitation à se connecter.
+- **Quartier** : liste fermée gérée par Administration (Nord, Sud, Est, Ouest, Centre, Port), choisie dans un sélecteur du profil.
+- **Alertes sanitaires** : consentement explicite et révocable, sans donnée de santé (F31).
 - **Compte existant sans profil citoyen** (par exemple un agent) : il active son espace citoyen en un clic, « Activer mon compte citoyen », sans nouvelle inscription.
 
 ## Livré
@@ -56,6 +58,18 @@ Les routes respectent le [contrat HTTP](#contrat-http--inscription-et-profil-lot
 - **Activation** : `ActivateMyCitizenAccount` crée le citoyen du compte connecté (sans payload) et répond `200` `CitizenProfile`. Elle est idempotente : un compte déjà citoyen retrouve son profil, sans doublon ni nouvel événement. Sinon, `CitizenRegistered` est publié comme à l’inscription.
 - `preferredLanguage` n’est contrôlé qu’en longueur (≤ 5) : la liste des langues n’est pas encore fermée (voir D14).
 
+### Quartier et préférences d’alerte (lot L7, non vérifié dans un navigateur)
+
+| Cas d’usage | Route | Code |
+|---|---|---|
+| `GetMyAlertPreference` | `GET /api/citizen/me/alert-preferences` → `200 {district, healthConsent}` | `Application/Query/GetMyAlertPreference` |
+| `SetMyAlertPreference` | `PUT /api/citizen/me/alert-preferences` `{healthConsent: bool}` → `200 {district, healthConsent}` | `Application/Command/SetMyAlertPreference` |
+
+- **Quartier en liste fermée** : `PUT /api/citizen/me` refuse un quartier hors de la liste d’Administration (`400`, « Quartier inconnu… ») via le port `DistrictDirectory`. Le site propose un sélecteur alimenté par `GET /api/administration/districts`. Une valeur enregistrée avant cette règle reste lisible.
+- **Consentement aux alertes sanitaires** (F31) : explicite, facultatif, révocable à tout moment depuis l’espace citoyen ; par défaut, aucun consentement. Aucune donnée médicale n’est demandée ni stockée : seule la case cochée. Agrégat `Domain/Entity/AlertPreference`, table `citizen_alert_preference` (migration `Version20261003003000`).
+- `404` pour un compte non citoyen, `401` sans JWT ; l’identité vient toujours du compte connecté.
+- Aucun test automatisé n’a été écrit pour ces cas d’usage (décision d’économie du chantier).
+
 ### Modèle et persistance
 
 - Agrégat `Domain/Entity/Citizen` (`id`, `userId`, `registeredAt`, champs de profil facultatifs) ; `register()` enregistre `CitizenRegistered` ; `isProfileCompleted()` calcule l’indicateur.
@@ -68,6 +82,14 @@ Les routes respectent le [contrat HTTP](#contrat-http--inscription-et-profil-lot
 |---|---|---|
 | Créer le compte d’un nouveau citoyen | `Application/Ports/Provider/CitizenAccountProvisioner` : `create(email, password): string` (userId) ; lève `Application/Exception/AccountAlreadyExists` (409) ou `AccountCreationRejected` (422) | `IAM/Infrastructure/Adapter/Citizen/IAMCitizenAccountProvisioner` (appelle `CreateAccount`, traduit `EmailAlreadyUsed` et la violation d’unicité) |
 | Connaître le compte connecté | `Application/Ports/Provider/CurrentAccountProvider` : `userId(): string` | `IAM/Infrastructure/Adapter/Citizen/IAMCurrentAccountProvider` |
+| Valider le quartier du profil | `Application/Ports/Provider/DistrictDirectory` : `exists(district): bool` | `Administration/Infrastructure/Adapter/Citizen/AdminCitizenDistrictDirectory` |
+
+Citizen fournit aussi des adaptateurs aux autres modules :
+
+| Consommateur | Port | Adaptateur (Citizen) |
+|---|---|---|
+| [Communication](../../Communication/doc/README.md) (notifications ciblées) | `Communication\Application\Ports\Provider\AudienceProvider` | `Infrastructure/Adapter/Communication/CitizenAudienceProvider` (quartier, consentement du citoyen connecté) |
+| Temps réel (Shared) | `Shared\Application\Ports\Provider\RealtimeAudienceProvider` | `Infrastructure/Adapter/Shared/CitizenRealtimeAudience` (`citizen.{id}`) et `CitizenAlertRealtimeAudience` (`district.{quartier en minuscules}`, `alerts.health` si consentement), topics définis par Communication |
 
 Alias déclarés dans `config/services.yaml` (section « Ports intermodules »).
 
@@ -166,8 +188,6 @@ Pas d’espace IAM « citoyen » : l’espace citoyen est une zone du site, qui 
 
 - Liste des langues acceptées pour `preferredLanguage` (aujourd’hui seulement limitée à 5 caractères).
 - Inscription « en double clic » : deux requêtes simultanées avec le même e-mail ; la seconde doit échouer sur la contrainte d’unicité d’IAM, que l’adaptateur traduit en `AccountAlreadyExists` (`409`) ; ce cas n’est pas couvert par un test de concurrence.
-- Liste des quartiers de Nova Terra : liste fermée gérée par Administration, ou saisie libre ?
-- Alertes aux personnes vulnérables (F31) : faut-il un champ facultatif « je souhaite recevoir les alertes sanitaires » ? Il faudrait un consentement explicite, sans donnée de santé détaillée.
 - Transitions de statut autorisées et motif obligatoire en cas de rejet.
 
 ## Référence
@@ -193,4 +213,6 @@ Pas d’espace IAM « citoyen » : l’espace citoyen est une zone du site, qui 
 - [Architecture technique](../../../../doc/technique/architecture.md)
 - [Registre des demandes](../../../../doc/chantier/demandes.md)
 - [Site — parcours citoyen](../../../../front/apps/site/doc/parcours-citoyen.md)
+- [Communication](../../Communication/doc/README.md)
+- [Site — vitrine et alertes](../../../../front/apps/site/doc/vitrine-et-alertes.md)
 <!-- backlinks:end -->

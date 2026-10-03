@@ -21,16 +21,16 @@ Pour comprendre une fonctionnalité, partir de l’application qui la présente 
 ## Documentation locale (API)
 
 - [IAM](../api/src/IAM/doc/README.md) : comptes, connexion, passage site → admin, espaces
-- [Administration](../api/src/Administration/doc/README.md) : membres, rôles, permissions ; services municipaux (cible)
-- Communication : publications et alertes, BC à construire ([ADR 005](technique/decisions/005-bc-communication.md))
-- [Citizen](../api/src/Citizen/doc/README.md) : citoyens et demandes (inscription et profil livrés ; demandes à venir)
+- [Administration](../api/src/Administration/doc/README.md) : membres, rôles, permissions ; services municipaux (état, horaires des transports) et liste des quartiers
+- [Communication](../api/src/Communication/doc/README.md) : publications et alertes, diffusées en temps réel ([ADR 005](technique/decisions/005-bc-communication.md))
+- [Citizen](../api/src/Citizen/doc/README.md) : citoyens et demandes (inscription, profil et préférences d’alerte livrés ; demandes à venir)
 - [Pilotage](../api/src/Pilotage/doc/README.md) : flux de l’API du concours Webcup pour les agents
 - [Shared](../api/src/Shared/doc/README.md) : primitives et conventions communes
 
 ## Applications
 
-- [site](../front/apps/site/doc/README.md) : portail des habitants (connexion livrée, espace citoyen à construire)
-- [admin](../front/apps/admin/doc/README.md) : espace de travail des agents et des administrateurs (membres, rôles, flux Nova Terra)
+- [site](../front/apps/site/doc/README.md) : portail des habitants (connexion, espace citoyen, vitrine sur l’API, alertes et notifications)
+- [admin](../front/apps/admin/doc/README.md) : espace de travail des agents et des administrateurs (membres, rôles, flux Nova Terra, contenus de la ville)
 
 ## Maintenance
 
