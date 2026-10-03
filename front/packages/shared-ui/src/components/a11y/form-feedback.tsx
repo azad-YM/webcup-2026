@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useRef, type ReactNode } from "react"
 import { CircleAlert } from "lucide-react"
-import { cn } from "@boilerplate/shared-ui/lib"
+import { cn } from "../../lib/utils"
 
 export type FieldErrorItem = { fieldId: string; message: string }
 

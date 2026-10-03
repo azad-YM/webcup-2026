@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useRef, useState, type ReactNode } from "react"
 import { Lightbulb, X } from "lucide-react"
-import { cn } from "@boilerplate/shared-ui/lib"
+import { cn } from "../../lib/utils"
 import { useAccessibilityPreferences } from "./preferences-provider"
 
 /**

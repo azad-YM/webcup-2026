@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { ChevronRight } from "lucide-react"
-import { cn } from "@boilerplate/shared-ui/lib"
+import { cn } from "../../lib/utils"
 
 /** Lien d’évitement (F41) : premier élément focalisable, mène au contenu principal. */
 export function SkipLink({ targetId = "contenu", children = "Aller au contenu" }: { targetId?: string; children?: ReactNode }) {

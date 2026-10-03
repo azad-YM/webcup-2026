@@ -1,7 +1,7 @@
 "use client"
 import { useId, useState } from "react"
 import { Accessibility } from "lucide-react"
-import { cn } from "@boilerplate/shared-ui/lib"
+import { cn } from "../../lib/utils"
 import { TEXT_SIZES, TEXT_SIZE_LABELS, type TextSize } from "../../a11y/display-preferences"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../shadcn/dialog"
 import { useAccessibilityPreferences } from "./preferences-provider"
