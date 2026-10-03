@@ -37,6 +37,10 @@ L’admin regroupe toutes les opérations de la mairie. Un module par domaine, c
 | `content` | Administration (services), Communication (publications, alertes — [ADR 005](../../../../doc/technique/decisions/005-bc-communication.md)) | Services (état, horaires), publications, alertes | L3, L7, L9 |
 | `pilotage` | Pilotage | Flux de l’API Webcup | L6 |
 
+## Accessibilité
+
+Zone principale commune `AdminContent` (lien d’évitement, fil d’Ariane, bouton « Affichage », focus sur le titre après navigation), statuts sans couleur seule, erreurs reliées aux champs, libellés simplifiés : voir [accessibilité](accessibilite.md) (lot L4, 🟡 non vérifié dans un navigateur).
+
 ## Temps réel
 
 Port `shared/core/ports/realtime-subscriber.ts` (`RealtimeSubscriber`), implémenté par `shared/core/infrastructure/sse-realtime.subscriber.ts` avec le client `@boilerplate/shared-utils/realtime` et injecté par le kernel : un seul flux SSE (`GET /api/realtime/stream`, ticket `POST /api/realtime/tickets`) par onglet, ouvert au premier écran abonné ([ADR 004](../../../../doc/technique/decisions/004-temps-reel.md)). Les écrans invalident leur cache RTK Query à réception et gardent un rafraîchissement de secours de 60 s.
@@ -62,6 +66,7 @@ La déconnexion volontaire est locale ; seuls la suspension et la suppression d�
 - [Pilotage](../../../../api/src/Pilotage/doc/README.md)
 - [Communication](../../../../api/src/Communication/doc/README.md)
 - [Contenus](contenus.md)
+- [Accessibilité](accessibilite.md)
 - [Contexte produit](../../../../doc/contexte/README.md)
 - [Chantier](../../../../doc/chantier/README.md)
 - [Demandes citoyennes](demandes.md)

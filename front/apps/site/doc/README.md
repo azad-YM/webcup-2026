@@ -46,6 +46,7 @@ Export statique : pas de route dynamique ; les détails passent par des paramèt
 - [Parcours citoyen](parcours-citoyen.md) : inscription en deux étapes, espace personnel, profil, [demandes citoyennes](parcours-citoyen.md#4-demandes-citoyennes-lot-l2) (envoi, confirmation, suivi).
 - [Parcours citoyen](parcours-citoyen.md) : inscription en deux étapes, espace personnel, profil.
 - [Vitrine, alertes et notifications](vitrine-et-alertes.md) : services (état, horaires), actualités, bandeau d’alertes, notifications citoyennes, temps réel.
+- [Accessibilité, repères et langage clair](accessibilite.md) (lot L4, 🟡 non vérifié dans un navigateur) : panneau « Affichage » (taille du texte, contraste élevé, animations), clavier, lecteur d’écran, statuts sans couleur seule, guide de première visite et astuces, glossaire `/aide/glossaire`.
 - Vitrine : accueil (présentation, « Que souhaitez-vous faire ? », recherche de service, services les plus demandés, dernières actualités, appel à créer un compte), catalogue des services avec recherche et filtre par thème, fiche d’un service, liste et lecture des actualités.
 
 ## Livré
@@ -97,5 +98,6 @@ Export statique : pas de route dynamique ; les détails passent par des paramèt
 - [Parcours de connexion](parcours-connexion.md)
 - [Parcours citoyen](parcours-citoyen.md)
 - [Vitrine et alertes](vitrine-et-alertes.md)
+- [Accessibilité](accessibilite.md)
 - [Communication](../../../../api/src/Communication/doc/README.md)
 <!-- backlinks:end -->
