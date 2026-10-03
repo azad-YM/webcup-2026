@@ -18,9 +18,6 @@
       <directory>src/Pilotage/Tests/Suites/Application</directory>
       <directory>src/Pilotage/Tests/Suites/Unit</directory>
     </testsuite>
-    <testsuite name="Communication">
-      <directory>src/Communication/Tests/Suites</directory>
-    </testsuite>
     <testsuite name="Shared">
       <directory>src/Shared/Tests/Suites/Application</directory>
       <directory>src/Shared/Tests/Suites/Unit</directory>
@@ -32,6 +29,5 @@
     <directory>src/Citizen/Tests</directory>
     <directory>src/Pilotage/Tests</directory>
     <directory>src/Shared/Tests</directory>
-    <directory>src/Communication/Tests</directory>
   </exclude></source>
 </phpunit>

@@ -1,2 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"><entity name="Citizen\Domain\Entity\AlertPreference" table="citizen_alert_preferences"><id name="citizenId" column="citizen_id" type="string" length="36"/><field name="healthConsent" column="health_consent" type="boolean"/></entity></doctrine-mapping>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="Citizen\Domain\Entity\AlertPreference" table="citizen_alert_preference">
+        <id name="citizenId" column="citizen_id" type="string" length="36"/>
+        <field name="healthConsent" column="health_consent" type="boolean"/>
+    </entity>
+</doctrine-mapping>

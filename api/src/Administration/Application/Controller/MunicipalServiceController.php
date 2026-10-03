@@ -1,14 +1,47 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Administration\Application\Controller;
+
 use Administration\Application\Command\SaveMunicipalService\SaveMunicipalServiceCommand;
+use Administration\Application\Query\GetMunicipalService\GetMunicipalServiceQuery;
+use Administration\Application\Query\ListDistricts\ListDistrictsQuery;
 use Administration\Application\Query\ListMunicipalServices\ListMunicipalServicesQuery;
 use Shared\Application\Lib\AppController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
-final class MunicipalServiceController extends AppController {
- #[Route('/api/administration/services',methods:['GET'],format:'json')]
- public function list(): JsonResponse { return $this->dispatchQuery(new ListMunicipalServicesQuery()); }
- #[Route('/api/administration/services',methods:['PUT'],format:'json')]
- public function save(#[MapRequestPayload] SaveMunicipalServiceCommand $cmd): JsonResponse { return $this->dispatch($cmd); }
+
+/** Public catalogue of municipal services and closed list of districts; edition by agents. */
+final class MunicipalServiceController extends AppController
+{
+    #[Route('/api/administration/services', methods: ['GET'], format: 'json')]
+    public function list(Request $request): JsonResponse
+    {
+        return $this->dispatchQuery(new ListMunicipalServicesQuery(
+            $request->query->getString('q') ?: null,
+            $request->query->getString('category') ?: null,
+            $request->query->getBoolean('featured'),
+        ));
+    }
+
+    #[Route('/api/administration/services/{id}', methods: ['GET'], format: 'json', requirements: ['id' => '[a-z0-9][a-z0-9-]{0,79}'])]
+    public function show(string $id): JsonResponse
+    {
+        return $this->dispatchQuery(new GetMunicipalServiceQuery($id));
+    }
+
+    #[Route('/api/administration/services', methods: ['PUT'], format: 'json')]
+    public function save(#[MapRequestPayload] SaveMunicipalServiceCommand $cmd): JsonResponse
+    {
+        return $this->dispatch($cmd);
+    }
+
+    #[Route('/api/administration/districts', methods: ['GET'], format: 'json')]
+    public function districts(): JsonResponse
+    {
+        return $this->dispatchQuery(new ListDistrictsQuery());
+    }
 }

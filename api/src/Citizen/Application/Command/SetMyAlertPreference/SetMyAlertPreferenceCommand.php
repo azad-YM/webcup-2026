@@ -1,3 +1,12 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Citizen\Application\Command\SetMyAlertPreference;
-final readonly class SetMyAlertPreferenceCommand { public function __construct(public bool $healthConsent) {} }
+
+use Symfony\Component\Validator\Constraints as Assert;
+
+final readonly class SetMyAlertPreferenceCommand
+{
+    public function __construct(#[Assert\NotNull] public bool $healthConsent) {}
+}

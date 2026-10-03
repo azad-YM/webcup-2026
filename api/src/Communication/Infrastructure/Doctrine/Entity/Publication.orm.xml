@@ -1,2 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"><entity name="Communication\Domain\Entity\Publication" table="communications"><id name="id" type="string" length="80"/><field name="data" type="json"/></entity></doctrine-mapping>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="Communication\Domain\Entity\Publication" table="communication_publication">
+        <id name="id" type="string" length="80"/>
+        <field name="title" type="string" length="200"/>
+        <field name="category" type="string" length="80"/>
+        <field name="summary" type="text"/>
+        <field name="body" type="json"/>
+        <field name="important" type="boolean"/>
+        <field name="state" type="string" length="20"/>
+        <field name="publishedAt" column="published_at" type="datetime_immutable" nullable="true"/>
+        <field name="updatedAt" column="updated_at" type="datetime_immutable"/>
+    </entity>
+</doctrine-mapping>

@@ -1,3 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Citizen\Application\Query\GetMyAlertPreference;
-final class GetMyAlertPreferenceQuery {}
+
+final readonly class GetMyAlertPreferenceQuery {}

@@ -175,17 +175,15 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.exception, method: __invoke }
 
-    Shared\Application\Ports\Service\RealtimeSubscriptionGrant:
-        alias: Shared\Infrastructure\Realtime\SignedRealtimeSubscriptionGrant
-
-    Shared\Infrastructure\Realtime\SignedRealtimeSubscriptionGrant:
-        arguments:
-            $transport: '%env(REALTIME_TRANSPORT)%'
-            $mercureSecret: '%env(MERCURE_JWT_SECRET)%'
-            $pusherKey: '%env(PUSHER_KEY)%'
-            $pusherSecret: '%env(PUSHER_SECRET)%'
-
+    # Communication consomme Administration (permission de publier, liste fermée des quartiers)
+    # et Citizen (audience du citoyen connecté : quartier, consentement aux alertes sanitaires).
     Communication\Application\Ports\Provider\CommunicationAccessPolicy:
         alias: Administration\Infrastructure\Adapter\Communication\AdminCommunicationAccessPolicy
+    Communication\Application\Ports\Provider\DistrictDirectory:
+        alias: Administration\Infrastructure\Adapter\Communication\AdminCommunicationDistrictDirectory
     Communication\Application\Ports\Provider\AudienceProvider:
         alias: Citizen\Infrastructure\Adapter\Communication\CitizenAudienceProvider
+
+    # Citizen consomme Administration (liste fermée des quartiers du profil).
+    Citizen\Application\Ports\Provider\DistrictDirectory:
+        alias: Administration\Infrastructure\Adapter\Citizen\AdminCitizenDistrictDirectory
