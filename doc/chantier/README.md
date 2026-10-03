@@ -11,7 +11,7 @@ Suivi des travaux de la plateforme pendant les 24H By Webcup : ce qui est livré
 
 ## État du flux
 
-Relevé du 2026-10-03 : vagues 6 (H+7), 7 (H+8) et 8 (H+9) diffusées, 50 demandes visibles pour 26 170 XP.
+Relevé du 2026-10-03 : vagues 9 (H+10) à 13 (H+14) diffusées, 71 demandes visibles pour 43 770 XP.
 
 ## Lots
 
@@ -34,6 +34,13 @@ Les lots regroupent les demandes qui partagent un même modèle ou un même écr
 | L12 | Traçabilité : journal des actions de l’administration (qui a fait quoi, quand), consultable par les agents | F47, F48 | 1 600 | 🟡 BC [Audit](../../api/src/Audit/doc/README.md) et écran « Journal des actions » ; non testés |
 | L13 | Tableau de bord de l’activité pour les agents | F50 | 990 | 🟡 [tableau de bord](../../front/apps/admin/doc/pilotage.md#tableau-de-bord-de-lactivité-f50-non-testé) ; non testé |
 | L14 | Participation : usage des données et remontée d’inquiétudes, soutien d’une demande — [Citizen](../../api/src/Citizen/doc/participation.md), [site](../../front/apps/site/doc/parcours-citoyen.md), [admin](../../front/apps/admin/doc/demandes.md) | F51, F52 | 1 650 | 🟡 API, site et admin livrés ; ni testés ni vérifiés dans le navigateur |
+| L15 | Connexion renforcée : connexion sans mot de passe, vérification supplémentaire, alerte de connexion depuis un nouvel appareil | D02, F53, F54 | 2 720 | ⬜ |
+| L16 | Mes données : export clair des informations personnelles, récapitulatif téléchargeable des demandes | F55, F56 | 1 700 | ⬜ |
+| L17 | Sobriété et performance : diagnostic environnemental, chargement sobre, connexion lente, médias légers, appareils peu puissants, version allégée | F57, F58, F59, F60, F61, F62 | 4 600 | ⬜ |
+| L18 | Services hors service : désactivation rapide par les administrateurs, état visible avant la démarche (prolonge L9) | F63, F64 | 1 440 | ⬜ |
+| L19 | Participation : projets en cours, consultations et avis, boîte à idées | F65, F66, F67, F68 | 2 960 | ⬜ |
+| L20 | Protection des données : durcissement contre les failles, données administratives réservées aux agents habilités | F69, F70 | 2 660 | ⬜ |
+| L21 | Nouveaux arrivants : accès sans e-mail et en plusieurs langues (avec L5), orientation « par où commencer » | F71, F72 | 1 520 | ⬜ |
 
 ## Travail en parallèle
 

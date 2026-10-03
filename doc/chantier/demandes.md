@@ -98,10 +98,56 @@ Statuts : ⬜ à faire · 🟡 en cours · ⚠️ partiel · ✅ livré · ⏸�
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
-| F49 | 1 | 330 | Être informé quand sa demande change d’état | L2 | Citizen, site | 🟡 |
+| F49 | 1 | 330 | Être informé quand sa demande change d’état | L2 | Citizen, site | 🟡 centre « Mes notifications » de `/espace`, bandeau et pastille, temps réel `notification.created` ([Citizen](../../api/src/Citizen/doc/notifications.md)) ; ni testé ni vérifié dans le navigateur |
 | F50 | 3 | 990 | Tableau de bord simplifié de l’activité de la plateforme pour les agents | L13 | Pilotage, admin | 🟡 `/pilotage/tableau-de-bord` sur `GET /api/pilotage/activity` (chiffres des BC propriétaires par ports, relecture 60 s) ; non testé, non vérifié dans un navigateur |
-| F51 | 3 | 990 | Comprendre l’usage de ses données et faire remonter ses inquiétudes, avec trace de prise en compte | L14 | Citizen, site, admin | 🟡 |
-| F52 | 2 | 660 | Soutenir une demande déjà déposée par d’autres habitants | L14 | Citizen, site | 🟡 |
+| F51 | 3 | 990 | Comprendre l’usage de ses données et faire remonter ses inquiétudes, avec trace de prise en compte | L14 | Citizen, site, admin | 🟡 page `/vos-donnees`, inquiétudes avec accusé `INQ-…` et suivi ([participation](../../api/src/Citizen/doc/participation.md)) ; ni testé ni vérifié dans le navigateur |
+| F52 | 2 | 660 | Soutenir une demande déjà déposée par d’autres habitants | L14 | Citizen, site | 🟡 signalements publics et soutien unique par habitant ([participation](../../api/src/Citizen/doc/participation.md)) ; ni testé ni vérifié dans le navigateur |
+
+## Vague 9 (H+10) — « Confiance et maîtrise des données »
+
+| Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
+|---|---|---|---|---|---|---|
+| D02 | 3 | 1 020 | Se connecter sans mot de passe classique, avec un haut niveau de sécurité et un parcours compréhensible | L15 | IAM, site | ⬜ |
+| F53 | 3 | 1 020 | Vérification supplémentaire pour sécuriser les comptes citoyens | L15 | IAM, site | ⬜ |
+| F54 | 2 | 680 | Être prévenu d’une connexion à son compte depuis un nouvel appareil | L15 | IAM, Citizen, site | ⬜ |
+| F55 | 3 | 1 020 | Récupérer les informations personnelles que la ville possède sur soi, sous une forme claire et exploitable | L16 | Citizen, site | ⬜ |
+| F56 | 2 | 680 | Télécharger un récapitulatif lisible de ses demandes | L16 | Citizen, site | ⬜ |
+
+## Vague 10 (H+11) — « Confiance et maîtrise des données »
+
+| Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
+|---|---|---|---|---|---|---|
+| F57 | 2 | 700 | Évaluer la performance environnementale du site et l’alléger | L17 | site, admin | ⬜ |
+| F58 | 3 | 1 050 | Appliquer des choix de conception et de chargement sobres sur les principaux parcours | L17 | site, admin | ⬜ |
+| F59 | 2 | 700 | Rester utilisable avec une connexion très lente | L17 | site | ⬜ |
+| F60 | 1 | 350 | Images et médias qui n’alourdissent pas inutilement les pages | L17 | site, Communication | ⬜ |
+
+## Vague 11 (H+12) — « Confiance et maîtrise des données »
+
+| Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
+|---|---|---|---|---|---|---|
+| F61 | 3 | 1 080 | Rester rapide sur des appareils peu puissants | L17 | site, admin | ⬜ |
+| F62 | 2 | 720 | Version plus simple et plus rapide de certaines pages | L17 | site | ⬜ |
+| F63 | 3 | 1 080 | Les administrateurs désactivent rapidement un service défectueux | L18 | Administration, Citizen, admin | ⬜ |
+| F64 | 1 | 360 | Voir l’état actuel d’un service avant de commencer une démarche | L18 | Administration, site | ⬜ |
+
+## Vague 12 (H+13) — « Participation et nouveaux usages »
+
+| Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
+|---|---|---|---|---|---|---|
+| F65 | 3 | 1 110 | Soumettre certaines décisions à l’avis des habitants, avec trace de la contribution | L19 | Participation, site, admin | ⬜ |
+| F66 | 2 | 740 | Donner son avis sur un projet sans vote officiel, et savoir qu’il est enregistré | L19 | Participation, site | ⬜ |
+| F67 | 2 | 740 | Consulter les projets en cours dans la ville | L19 | Participation, site, admin | ⬜ |
+| F68 | 1 | 370 | Proposer des idées pour améliorer la colonie | L19 | Participation, site, admin | ⬜ |
+
+## Vague 13 (H+14) — « Participation et nouveaux usages »
+
+| Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
+|---|---|---|---|---|---|---|
+| F69 | 4 | 1 520 | Protéger les données sensibles contre l’exploitation d’une faille, de façon perceptible sans compliquer l’usage | L20 | tous les BC, IAM | ⬜ |
+| F70 | 3 | 1 140 | Réserver strictement certaines données administratives aux agents autorisés | L20 | Administration, admin | ⬜ |
+| F71 | 3 | 1 140 | Accueillir des habitants sans adresse e-mail et ne parlant pas tous la même langue | L21 | IAM, Citizen, site, admin | ⬜ |
+| F72 | 1 | 380 | Nouvel arrivant : savoir par où commencer sans refaire l’inscription | L21 | site, Citizen | ⬜ |
 
 ## Vagues suivantes
 
