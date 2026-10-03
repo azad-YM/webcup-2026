@@ -1,10 +1,9 @@
 /**
- * CONTENU DE DÉMONSTRATION — adaptateur local, à remplacer au lot L3.
+ * CONTENU DE DÉMONSTRATION — n’est plus branché sur le site.
  *
- * Ces services et publications ne viennent pas de l’API : le catalogue des
- * services et les publications appartiennent au BC Administration, qui ne les
- * expose pas encore. Ils permettent de construire et de tester la vitrine.
- * Voir front/apps/site/doc/README.md (« Limites »).
+ * Le site lit le catalogue des services (Administration) et les publications
+ * (Communication) par HTTP ; ce contenu a servi de jeu initial à la migration
+ * `Version20261003003000`. Il ne reste ici que pour les tests de la vitrine.
  */
 import type { MunicipalService } from "../../../../domain/municipal-service"
 import type { Publication } from "../../../../domain/publication"
@@ -24,7 +23,12 @@ export const DEMO_SERVICES: MunicipalService[] = [
     ],
     contact: { place: "Hôtel de ville, dôme central — guichet 1", hours: "Du lundi au vendredi, 8 h 30 – 17 h", phone: "01 00 00 10 10" },
     featured: true,
-    keywords: ["acte", "naissance", "mariage", "décès", "recensement", "arrivée", "élections", "papiers", "identité"]
+    keywords: ["acte", "naissance", "mariage", "décès", "recensement", "arrivée", "élections", "papiers", "identité"],
+    status: "available",
+    statusMessage: "",
+    returnAt: null,
+    alternative: "",
+    transport: null
   },
   {
     id: "sante",
@@ -40,7 +44,12 @@ export const DEMO_SERVICES: MunicipalService[] = [
     ],
     contact: { place: "Centre médical, quartier Aurore", hours: "Tous les jours, 7 h – 21 h ; urgences 24 h / 24", phone: "15" },
     featured: true,
-    keywords: ["médecin", "soins", "urgence", "vaccin", "téléconsultation", "radiation", "rayonnement", "hôpital"]
+    keywords: ["médecin", "soins", "urgence", "vaccin", "téléconsultation", "radiation", "rayonnement", "hôpital"],
+    status: "available",
+    statusMessage: "",
+    returnAt: null,
+    alternative: "",
+    transport: null
   },
   {
     id: "voirie-eclairage",
@@ -55,7 +64,12 @@ export const DEMO_SERVICES: MunicipalService[] = [
     ],
     contact: { place: "Centre technique municipal, zone nord", hours: "Du lundi au samedi, 7 h – 18 h", phone: "01 00 00 20 20" },
     featured: true,
-    keywords: ["route", "rue", "trottoir", "passerelle", "lampadaire", "lumière", "travaux", "signalement", "panne"]
+    keywords: ["route", "rue", "trottoir", "passerelle", "lampadaire", "lumière", "travaux", "signalement", "panne"],
+    status: "available",
+    statusMessage: "",
+    returnAt: null,
+    alternative: "",
+    transport: null
   },
   {
     id: "transports",
@@ -70,7 +84,12 @@ export const DEMO_SERVICES: MunicipalService[] = [
     ],
     contact: { place: "Gare centrale des navettes", hours: "Tous les jours, 6 h – 23 h", phone: "01 00 00 30 30" },
     featured: true,
-    keywords: ["navette", "bus", "rover", "horaire", "abonnement", "déplacement", "mobilité"]
+    keywords: ["navette", "bus", "rover", "horaire", "abonnement", "déplacement", "mobilité"],
+    status: "available",
+    statusMessage: "",
+    returnAt: null,
+    alternative: "",
+    transport: null
   },
   {
     id: "eau-energie",
@@ -85,7 +104,12 @@ export const DEMO_SERVICES: MunicipalService[] = [
     ],
     contact: { place: "Régie de l’eau et de l’énergie, dôme est", hours: "Du lundi au vendredi, 8 h – 17 h ; astreinte 24 h / 24", phone: "01 00 00 40 40" },
     featured: false,
-    keywords: ["eau", "électricité", "énergie", "solaire", "fuite", "coupure", "facture", "abonnement"]
+    keywords: ["eau", "électricité", "énergie", "solaire", "fuite", "coupure", "facture", "abonnement"],
+    status: "available",
+    statusMessage: "",
+    returnAt: null,
+    alternative: "",
+    transport: null
   },
   {
     id: "logement",
@@ -100,7 +124,12 @@ export const DEMO_SERVICES: MunicipalService[] = [
     ],
     contact: { place: "Hôtel de ville, dôme central — guichet 4", hours: "Du lundi au vendredi, 9 h – 16 h", phone: "01 00 00 50 50" },
     featured: false,
-    keywords: ["logement", "module", "habitat", "appartement", "aide", "loyer", "attribution"]
+    keywords: ["logement", "module", "habitat", "appartement", "aide", "loyer", "attribution"],
+    status: "available",
+    statusMessage: "",
+    returnAt: null,
+    alternative: "",
+    transport: null
   },
   {
     id: "education",
@@ -115,7 +144,12 @@ export const DEMO_SERVICES: MunicipalService[] = [
     ],
     contact: { place: "Maison de l’enfance, quartier des Pionniers", hours: "Du lundi au vendredi, 8 h – 18 h", phone: "01 00 00 60 60" },
     featured: false,
-    keywords: ["école", "crèche", "enfant", "cantine", "inscription", "périscolaire", "famille"]
+    keywords: ["école", "crèche", "enfant", "cantine", "inscription", "périscolaire", "famille"],
+    status: "available",
+    statusMessage: "",
+    returnAt: null,
+    alternative: "",
+    transport: null
   },
   {
     id: "proprete-recyclage",
@@ -130,7 +164,12 @@ export const DEMO_SERVICES: MunicipalService[] = [
     ],
     contact: { place: "Centre de recyclage, zone sud", hours: "Du mardi au samedi, 8 h – 17 h", phone: "01 00 00 70 70" },
     featured: false,
-    keywords: ["déchets", "poubelle", "tri", "recyclage", "compost", "encombrant", "collecte", "propreté"]
+    keywords: ["déchets", "poubelle", "tri", "recyclage", "compost", "encombrant", "collecte", "propreté"],
+    status: "available",
+    statusMessage: "",
+    returnAt: null,
+    alternative: "",
+    transport: null
   }
 ]
 
@@ -145,7 +184,8 @@ export const DEMO_PUBLICATIONS: Publication[] = [
       "Les consultations sont sans rendez-vous le matin. L’après-midi est réservé aux rendez-vous et aux bilans de prévention liés aux rayonnements. Les urgences restent assurées 24 h / 24.",
       "La téléconsultation reste disponible jour et nuit depuis la page du service Santé."
     ],
-    publishedAt: "2026-10-02T09:00:00+00:00"
+    publishedAt: "2026-10-02T09:00:00+00:00",
+    important: false
   },
   {
     id: "travaux-avenue-pionniers",
@@ -157,7 +197,8 @@ export const DEMO_PUBLICATIONS: Publication[] = [
       "Les travaux se dérouleront du 7 au 11 octobre, de 8 h à 17 h. La circulation des navettes est maintenue ; les piétons sont invités à emprunter la passerelle couverte côté serres.",
       "Pour toute question, contactez le centre technique municipal."
     ],
-    publishedAt: "2026-09-29T14:00:00+00:00"
+    publishedAt: "2026-09-29T14:00:00+00:00",
+    important: false
   },
   {
     id: "accueil-nouveaux-arrivants",
@@ -169,6 +210,7 @@ export const DEMO_PUBLICATIONS: Publication[] = [
       "Sur place, le service de l’état civil procède au recensement et remet à chaque foyer son kit d’accueil : plan de la ville, horaires des navettes et informations de santé.",
       "Vous pouvez aussi créer dès maintenant votre compte citoyen sur ce site pour retrouver vos démarches dans votre espace personnel."
     ],
-    publishedAt: "2026-09-25T10:00:00+00:00"
+    publishedAt: "2026-09-25T10:00:00+00:00",
+    important: false
   }
 ]

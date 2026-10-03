@@ -1,7 +1,7 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { withUseCase, type QueryError } from "@/modules/shared/core/lib/use-cases.decorator"
 import type { CitizenProfile, CitizenProfileDraft } from "../../domain/citizen-profile"
-import { activateMyCitizenAccount, getMyProfile, updateMyProfile } from "../usecases/my-profile.usecase"
+import { activateMyCitizenAccount, getMyProfile, listDistricts, updateMyProfile } from "../usecases/my-profile.usecase"
 
 export const citizenApi = createApi({
   reducerPath: "citizenApi",
@@ -12,6 +12,7 @@ export const citizenApi = createApi({
       queryFn: withUseCase(getMyProfile),
       providesTags: ["MyProfile"]
     }),
+    listDistricts: build.query<string[], void>({ queryFn: withUseCase(listDistricts), keepUnusedDataFor: 3600 }),
     // Le cache du profil est en erreur (404) : on le recharge plutôt que de le remplacer.
     activateMyCitizenAccount: build.mutation<CitizenProfile, void>({
       queryFn: withUseCase(activateMyCitizenAccount),
@@ -32,4 +33,4 @@ export const citizenApi = createApi({
   })
 })
 
-export const { useGetMyProfileQuery, useUpdateMyProfileMutation, useActivateMyCitizenAccountMutation } = citizenApi
+export const { useListDistrictsQuery, useGetMyProfileQuery, useUpdateMyProfileMutation, useActivateMyCitizenAccountMutation } = citizenApi

@@ -1,10 +1,6 @@
 /**
- * ADAPTATEURS LOCAUX — pas une intégration API.
- *
- * Ils servent le contenu de démonstration de `demo-content.ts` tant que
- * Administration n’expose pas le catalogue et les publications (lot L3).
- * Au lot L3, les remplacer dans `StoreProvider` par des adaptateurs HTTP
- * implémentant les mêmes ports.
+ * ADAPTATEURS LOCAUX — plus branchés sur le site (lot L3 livré : adaptateur HTTP
+ * `HttpPublicContentGateway`). Conservés uniquement pour les tests existants.
  */
 import type { PublicationGateway } from "../../../../application/ports/gateway/publication.gateway"
 import type { ServiceCatalogGateway } from "../../../../application/ports/gateway/service-catalog.gateway"

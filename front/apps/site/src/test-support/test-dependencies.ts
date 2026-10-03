@@ -7,6 +7,8 @@ import { InMemoryAuthGateway, InMemoryAuthSessionGateway } from "@/modules/auth/
 import { CitizenAccountRegistrationAdapter } from "@/modules/citizen/core/infrastructure/adapter/auth/citizen-account-registration.adapter"
 import { InMemoryCitizenGateway } from "@/modules/citizen/core/infrastructure/for-tests/citizen.in-memory.gateway"
 import { InMemoryPublicationGateway, InMemoryServiceCatalogGateway } from "@/modules/public/core/infrastructure/for-tests/public-content.in-memory.gateway"
+import { InMemoryAlertsGateway } from "@/modules/public/core/infrastructure/for-tests/alerts.in-memory.gateway"
+import { InMemoryCityFeedGateway } from "@/modules/public/core/infrastructure/for-tests/city-feed.in-memory.gateway"
 import type { Dependencies } from "@/modules/shared/core/config/dependencies"
 import { createStore } from "@/modules/shared/core/config/store"
 
@@ -24,6 +26,8 @@ export function createTestContext(overrides: Partial<Dependencies> = {}) {
     citizenSessionProvider: new AuthCitizenSessionAdapter(overrides.authSessionGateway ?? authSessionGateway),
     serviceCatalogGateway,
     publicationGateway,
+    alertsGateway: new InMemoryAlertsGateway(),
+    cityFeedGateway: new InMemoryCityFeedGateway(),
     ...overrides
   }
   return {

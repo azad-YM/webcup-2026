@@ -7,12 +7,14 @@ import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
 import { SelectField, TextField } from "@/modules/shared/ui/components/form-field"
 import { EmptyState, ErrorState, LoadingState, SkeletonCards } from "@/modules/shared/ui/components/states"
-import { useListServicesQuery } from "../../core/application/rtk-api/public"
+import { CONTENT_POLLING_MS, useListServicesQuery } from "../../core/application/rtk-api/public"
 import {
   filterServices,
   findService,
+  isDisrupted,
   isServiceCategory,
   SERVICE_CATEGORIES,
+  SERVICE_STATUS_LABELS,
   type MunicipalService,
   type ServiceCategory
 } from "../../core/domain/municipal-service"
@@ -77,6 +79,39 @@ function ServiceCatalog({ services }: { services: MunicipalService[] }) {
   )
 }
 
+const returnFormat = new Intl.DateTimeFormat("fr-FR", { dateStyle: "full", timeStyle: "short" })
+
+/** F38 : prévenir avant toute démarche qu’un service est perturbé, quand revenir et quoi faire. */
+function ServiceStatusNotice({ service }: { service: MunicipalService }) {
+  if (!isDisrupted(service)) {
+    return <p className="mt-4 inline-flex rounded-full bg-teal-50 px-3 py-1 text-sm font-medium text-teal-900">{SERVICE_STATUS_LABELS.available}</p>
+  }
+  return (
+    <div role="status" className="mt-6 rounded-xl border-l-4 border-amber-500 bg-amber-50 p-5 text-amber-950">
+      <h2 className="text-lg font-semibold">{SERVICE_STATUS_LABELS[service.status]}</h2>
+      <p className="mt-2 whitespace-pre-line">{service.statusMessage}</p>
+      {service.returnAt && (
+        <p className="mt-2"><strong>Retour prévu :</strong> <time dateTime={service.returnAt}>{returnFormat.format(new Date(service.returnAt))}</time></p>
+      )}
+      {service.alternative && <p className="mt-2 whitespace-pre-line"><strong>En attendant :</strong> {service.alternative}</p>}
+    </div>
+  )
+}
+
+/** F36 : horaires et informations des transports municipaux. */
+function TransportTimetable({ transport }: { transport: NonNullable<MunicipalService["transport"]> }) {
+  return (
+    <section aria-labelledby="titre-horaires" className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
+      <h2 id="titre-horaires" className="text-xl font-semibold">Horaires et informations des transports</h2>
+      <dl className="mt-4 space-y-4 text-slate-800">
+        <div><dt className="font-semibold">Lignes et trajets</dt><dd className="mt-1 whitespace-pre-line">{transport.route}</dd></div>
+        <div><dt className="font-semibold">Horaires</dt><dd className="mt-1 whitespace-pre-line">{transport.timetable}</dd></div>
+        {transport.information && <div><dt className="font-semibold">Informations pratiques</dt><dd className="mt-1 whitespace-pre-line">{transport.information}</dd></div>}
+      </dl>
+    </section>
+  )
+}
+
 function ServiceDetail({ service }: { service: MunicipalService }) {
   const Icon = serviceIcon(service.id)
   return (
@@ -84,8 +119,8 @@ function ServiceDetail({ service }: { service: MunicipalService }) {
       <div>
         <Icon className="size-10 text-teal-700" aria-hidden="true" />
         <p className="mt-4 text-lg leading-8 text-slate-800">{service.description}</p>
-        {service.status && service.status !== "operational" && <div role="status" className="mt-4 rounded-xl border border-amber-300 bg-amber-50 p-4"><strong>{service.status === "maintenance" ? "Service en maintenance" : "Service interrompu"}</strong><p>{service.statusMessage}</p></div>}
-        {service.transport && <section className="mt-6 rounded-xl border p-5"><h2 className="text-xl font-semibold">Horaires et informations transport</h2><dl className="mt-3 space-y-3"><div><dt className="font-semibold">Trajet</dt><dd>{service.transport.route}</dd></div><div><dt className="font-semibold">Horaires</dt><dd className="whitespace-pre-line">{service.transport.timetable}</dd></div><div><dt className="font-semibold">Informations pratiques</dt><dd>{service.transport.information}</dd></div></dl></section>}
+        <ServiceStatusNotice service={service} />
+        {service.transport && <TransportTimetable transport={service.transport} />}
         <h2 className="mt-8 text-xl font-semibold">Ce que vous pouvez faire</h2>
         <ul className="mt-4 list-disc space-y-2 pl-6 text-slate-800">
           {service.actions.map((action) => <li key={action}>{action}</li>)}
@@ -112,7 +147,7 @@ function ServiceDetail({ service }: { service: MunicipalService }) {
 
 export function ServicesPage() {
   const serviceId = useSearchParams().get("service")
-  const { data, error, isFetching, refetch } = useListServicesQuery(undefined, { pollingInterval: 60_000 })
+  const { data, error, isFetching, refetch } = useListServicesQuery(undefined, { pollingInterval: CONTENT_POLLING_MS })
   const service = data && serviceId ? findService(data, serviceId) : null
   const header = service
     ? <PageHeader trail={[{ label: "Services", href: "/services" }, { label: service.name }]} title={service.name} lead={service.summary} />

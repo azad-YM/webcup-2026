@@ -1,22 +1,52 @@
-import { BrowserRealtimeSubscriber, type RealtimeOptions } from "@boilerplate/shared-utils/realtime"
 import { AppError } from "@/modules/shared/core/lib/use-cases.decorator"
-import type { PublicSessionProvider } from "../../../../application/ports/provider/public-session.provider"
 import type { AlertsGateway } from "../../../../application/ports/gateway/alerts.gateway"
-import type { CityNotice, AlertPreference } from "../../../../domain/alert"
+import type { PublicSessionProvider } from "../../../../application/ports/provider/public-session.provider"
+import type { AlertPreference, CitizenNotifications, CityAlert } from "../../../../domain/alert"
+
+/**
+ * Alertes (Communication) et préférences d’alerte (Citizen) :
+ * `GET /communication/alerts` (public), `GET /communication/me/notifications`,
+ * `GET|PUT /citizen/me/alert-preferences`.
+ */
 export class AlertsHttpGateway implements AlertsGateway {
- private readonly realtime: BrowserRealtimeSubscriber
- constructor(private readonly baseUrl: string, private readonly session: PublicSessionProvider, options: RealtimeOptions) { this.realtime = new BrowserRealtimeSubscriber(options) }
- private async request<T>(path: string, authenticated: boolean, body?: unknown): Promise<T> {
-  const token = authenticated ? this.session.getToken() : null
-  if (authenticated && !token) throw new AppError(401, "Connectez-vous pour retrouver vos notifications.")
-  let response: Response
-  try { response = await fetch(`${this.baseUrl.replace(/\/$/, "")}${path}`, { method: body === undefined ? "GET" : "PUT", headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}), "Content-Type": "application/json" }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) }) } catch { throw new AppError("NETWORK_ERROR", "Impossible de charger les alertes. Réessayez.") }
-  if (!response.ok) throw new AppError(response.status, response.status === 404 ? "Activez votre espace citoyen pour recevoir les notifications." : "Impossible de charger les alertes.")
-  return response.json() as Promise<T>
- }
- alerts() { return this.request<CityNotice[]>("/communication/alerts", false) }
- notifications() { return this.request<CityNotice[]>("/communication/notifications", true) }
- preferences() { return this.request<AlertPreference>("/citizen/me/alert-preferences", true) }
- setConsent(healthConsent: boolean) { return this.request<void>("/citizen/me/alert-preferences", true, { healthConsent }) }
- subscribe(onChange: () => void) { return this.realtime.subscribe("public.alerts", onChange) }
+  constructor(private readonly apiBaseUrl: string, private readonly session: PublicSessionProvider) {}
+
+  private async request<T>(path: string, options: { authenticated: boolean; body?: unknown }): Promise<T> {
+    const token = options.authenticated ? this.session.getToken() : null
+    if (options.authenticated && !token) throw new AppError(401, "Connectez-vous pour retrouver vos notifications.")
+    let response: Response
+    try {
+      response = await fetch(`${this.apiBaseUrl.replace(/\/$/, "")}${path}`, {
+        method: options.body === undefined ? "GET" : "PUT",
+        headers: {
+          Accept: "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...(options.body === undefined ? {} : { "Content-Type": "application/json" })
+        },
+        ...(options.body === undefined ? {} : { body: JSON.stringify(options.body) })
+      })
+    } catch {
+      throw new AppError("NETWORK_ERROR", "Impossible de charger les alertes. Vérifiez votre connexion puis réessayez.")
+    }
+    if (response.status === 401) throw new AppError(401, "Votre session a expiré. Veuillez vous reconnecter.")
+    if (response.status === 404) throw new AppError(404, "Les notifications sont réservées aux comptes citoyens.", { code: "NOT_CITIZEN" })
+    if (!response.ok) throw new AppError(response.status, "Les alertes sont momentanément indisponibles. Réessayez dans quelques instants.")
+    return (await response.json()) as T
+  }
+
+  listAlerts() {
+    return this.request<CityAlert[]>("/communication/alerts", { authenticated: false })
+  }
+
+  myNotifications() {
+    return this.request<CitizenNotifications>("/communication/me/notifications", { authenticated: true })
+  }
+
+  myPreference() {
+    return this.request<AlertPreference>("/citizen/me/alert-preferences", { authenticated: true })
+  }
+
+  setHealthConsent(healthConsent: boolean) {
+    return this.request<AlertPreference>("/citizen/me/alert-preferences", { authenticated: true, body: { healthConsent } })
+  }
 }

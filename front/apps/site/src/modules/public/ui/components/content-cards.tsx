@@ -13,7 +13,7 @@ import {
   Recycle,
   type LucideIcon
 } from "@boilerplate/shared-ui/components/icon"
-import { SERVICE_CATEGORIES, type MunicipalService } from "../../core/domain/municipal-service"
+import { isDisrupted, SERVICE_CATEGORIES, SERVICE_STATUS_LABELS, type MunicipalService } from "../../core/domain/municipal-service"
 import { formatPublicationDate, type Publication } from "../../core/domain/publication"
 
 const SERVICE_ICONS: Record<string, LucideIcon> = {
@@ -47,7 +47,9 @@ export function ServiceCard({ service, headingLevel = 3 }: { service: MunicipalS
         </Link>
       </Heading>
       <p className="mt-2 flex-1 text-slate-700">{service.summary}</p>
-        {service.status && service.status !== "operational" && <p className="mt-2 font-semibold text-amber-800">{service.status === "maintenance" ? "En maintenance" : "Service interrompu"}</p>}
+      {isDisrupted(service) && (
+        <p className="mt-3 rounded-lg bg-amber-100 px-3 py-1 text-sm font-semibold text-amber-950">{SERVICE_STATUS_LABELS[service.status]}</p>
+      )}
       <span className="mt-4 inline-flex items-center gap-2 font-medium text-teal-800" aria-hidden="true">
         Voir le service <ArrowRight className="size-4 transition group-hover:translate-x-1" />
       </span>
@@ -61,6 +63,7 @@ export function PublicationCard({ publication, headingLevel = 3 }: { publication
     <article className="group relative flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-teal-600 hover:shadow-md">
       <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
         <span className="rounded-full bg-amber-100 px-3 py-0.5 font-medium text-amber-900">{publication.category}</span>
+        {publication.important && <span className="rounded-full bg-red-100 px-3 py-0.5 font-semibold text-red-900">Annonce importante</span>}
         <time dateTime={publication.publishedAt} className="text-slate-600">{formatPublicationDate(publication.publishedAt)}</time>
       </p>
       <Heading className="mt-3 text-lg font-semibold text-slate-950">

@@ -5,7 +5,7 @@ import { ArrowLeft } from "@boilerplate/shared-ui/components/icon"
 import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
 import { EmptyState, ErrorState, LoadingState, SkeletonCards } from "@/modules/shared/ui/components/states"
-import { useListPublicationsQuery } from "../../core/application/rtk-api/public"
+import { CONTENT_POLLING_MS, useListPublicationsQuery } from "../../core/application/rtk-api/public"
 import { findPublication, formatPublicationDate, type Publication } from "../../core/domain/publication"
 import { PublicationCard } from "../components/content-cards"
 
@@ -14,6 +14,7 @@ function PublicationDetail({ publication }: { publication: Publication }) {
     <article className="max-w-3xl">
       <p className="flex flex-wrap items-center gap-3 text-sm">
         <span className="rounded-full bg-amber-100 px-3 py-0.5 font-medium text-amber-900">{publication.category}</span>
+        {publication.important && <span className="rounded-full bg-red-100 px-3 py-0.5 font-semibold text-red-900">Annonce importante</span>}
         <span className="text-slate-700">Publié le <time dateTime={publication.publishedAt}>{formatPublicationDate(publication.publishedAt)}</time></span>
       </p>
       <div className="mt-6 space-y-4 text-lg leading-8 text-slate-800">
@@ -30,7 +31,7 @@ function PublicationDetail({ publication }: { publication: Publication }) {
 
 export function PublicationsPage() {
   const articleId = useSearchParams().get("article")
-  const { data, error, isFetching, refetch } = useListPublicationsQuery()
+  const { data, error, isFetching, refetch } = useListPublicationsQuery(undefined, { pollingInterval: CONTENT_POLLING_MS })
   const publication = data && articleId ? findPublication(data, articleId) : null
   return (
     <>

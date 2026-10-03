@@ -1,0 +1,15 @@
+/**
+ * Abonnement aux changements publiés par la ville (alertes, publications), sans rechargement.
+ * Le message dit seulement ce qui a changé : l’écran recharge ses données depuis l’API
+ * et garde un rafraîchissement périodique de secours.
+ */
+export type CityFeedEventType = "alert.published" | "alert.withdrawn" | "publication.published" | "publication.important"
+
+export type CityFeedEvent = { type: CityFeedEventType; id: string | null }
+
+export interface CityFeedGateway {
+  /** Retourne la fonction de désabonnement. Un seul flux est partagé par tous les abonnés. */
+  subscribe(listener: (event: CityFeedEvent) => void): () => void
+  /** Rouvre le flux après un changement de session (topics privés du citoyen connecté). */
+  restart(): void
+}

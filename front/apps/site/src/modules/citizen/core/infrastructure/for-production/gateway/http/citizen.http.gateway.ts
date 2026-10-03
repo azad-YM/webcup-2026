@@ -63,6 +63,8 @@ export class CitizenHttpGateway extends ApiClient implements CitizenGateway {
           ? `${PROFILE_LABELS[field as ProfileField]} : cette valeur n’est pas acceptée. Vérifiez la saisie.`
           : "Certaines informations ne sont pas acceptées. Vérifiez la saisie.",
         { code: CitizenErrorCode.invalidPayload, field })
+      case 400:
+        return new AppError(400, "Certaines informations ne sont pas acceptées. Vérifiez la saisie.", { code: CitizenErrorCode.invalidPayload })
       default:
         return new AppError(error.status, UNAVAILABLE_MESSAGE)
     }
@@ -80,6 +82,10 @@ export class CitizenHttpGateway extends ApiClient implements CitizenGateway {
   updateMyProfile(token: string, update: CitizenProfileUpdate): Promise<CitizenProfile> {
     const body = Object.fromEntries(PROFILE_FIELDS.map((field) => [field, update[field]]))
     return this.execute("profile", () => this.put<CitizenProfile>("/citizen/me", body, ApiClient.authHeaders(token)))
+  }
+
+  listDistricts(): Promise<string[]> {
+    return this.execute("profile", () => this.get<string[]>("/administration/districts"))
   }
 
   activateMyCitizenAccount(token: string): Promise<CitizenProfile> {

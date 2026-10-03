@@ -1,6 +1,10 @@
 import type { UseCase } from "@/modules/shared/core/lib/use-cases.decorator"
-import type { CityNotice, AlertPreference } from "../../domain/alert"
-export const listAlerts: UseCase<void, CityNotice[]> = deps => deps.alertsGateway.alerts()
-export const listNotifications: UseCase<void, CityNotice[]> = deps => deps.alertsGateway.notifications()
-export const getAlertPreference: UseCase<void, AlertPreference> = deps => deps.alertsGateway.preferences()
-export const setAlertConsent: UseCase<boolean, void> = (deps, consent) => deps.alertsGateway.setConsent(consent)
+import type { AlertPreference, CitizenNotifications, CityAlert } from "../../domain/alert"
+
+export const listAlerts: UseCase<void, CityAlert[]> = (dependencies) => dependencies.alertsGateway.listAlerts()
+
+export const getMyNotifications: UseCase<void, CitizenNotifications> = (dependencies) => dependencies.alertsGateway.myNotifications()
+
+export const getMyAlertPreference: UseCase<void, AlertPreference> = (dependencies) => dependencies.alertsGateway.myPreference()
+
+export const setHealthConsent: UseCase<boolean, AlertPreference> = (dependencies, consent) => dependencies.alertsGateway.setHealthConsent(consent)

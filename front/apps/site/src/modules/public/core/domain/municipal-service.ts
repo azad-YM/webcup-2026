@@ -1,7 +1,7 @@
 /**
  * Service municipal présenté sur la vitrine.
- * Le catalogue appartient à Administration (lot L3) ; ce modèle est la vue
- * consommée par le site.
+ * Le catalogue appartient à Administration (`GET /administration/services`) ;
+ * ce modèle est la vue consommée par le site.
  */
 export const SERVICE_CATEGORIES = {
   demarches: "Démarches et citoyenneté",
@@ -14,6 +14,10 @@ export const SERVICE_CATEGORIES = {
 
 export type ServiceCategory = keyof typeof SERVICE_CATEGORIES
 
+export type ServiceStatus = "available" | "maintenance" | "incident"
+
+export type TransportInformation = { route: string; timetable: string; information: string }
+
 export type MunicipalService = {
   id: string
   name: string
@@ -21,14 +25,28 @@ export type MunicipalService = {
   summary: string
   description: string
   actions: string[]
-  contact: { place: string; hours: string; phone?: string }
+  contact: { place: string; hours: string; phone?: string | null }
   /** Mis en avant sur l’accueil (service prioritaire ou très demandé). */
   featured: boolean
   keywords: string[]
-  status?: "operational" | "maintenance" | "interrupted"
-  statusMessage?: string
-  transport?: { route: string; timetable: string; information: string } | null
+  /** État du service (F38) : une perturbation est expliquée avant toute démarche. */
+  status: ServiceStatus
+  statusMessage: string
+  /** Date ISO de retour prévue, si connue. */
+  returnAt: string | null
+  /** Que faire en attendant (autre guichet, téléservice…). */
+  alternative: string
+  /** Horaires et informations des transports municipaux (F36), pour un service de mobilité. */
+  transport: TransportInformation | null
 }
+
+export const SERVICE_STATUS_LABELS: Record<ServiceStatus, string> = {
+  available: "Service disponible",
+  maintenance: "Service en maintenance",
+  incident: "Service perturbé (incident)"
+}
+
+export const isDisrupted = (service: Pick<MunicipalService, "status">) => service.status !== "available"
 
 export type ServiceFilter = { query?: string; category?: ServiceCategory | null }
 
