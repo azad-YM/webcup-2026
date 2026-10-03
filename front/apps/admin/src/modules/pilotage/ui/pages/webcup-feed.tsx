@@ -3,7 +3,7 @@ import { Button, Label } from "@boilerplate/shared-ui/components"
 import { RequestTable } from "../sections/webcup-feed/request-table"
 import { SessionSummary } from "../sections/webcup-feed/session-summary"
 import { useWebcupFeed } from "../sections/webcup-feed/use-webcup-feed"
-import { waveLabel } from "../../core/domain/webcup-feed"
+import { TRACKING_LABELS, waveLabel, type TrackingStatus } from "../../core/domain/webcup-feed"
 
 const timeFormat = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })
 const selectClass = "flex h-9 w-full rounded-lg border border-input bg-background px-3 text-sm focus-visible:outline-2 focus-visible:outline-ring"
@@ -44,6 +44,17 @@ export function WebcupFeedPage() {
         <>
           <SessionSummary feed={data} countdown={page.countdown} />
 
+          <section aria-labelledby="tracking-title" className="rounded-2xl bg-white p-4 shadow-sm">
+            <h2 id="tracking-title" className="text-lg font-semibold">Suivi de l’équipe</h2>
+            <dl className="mt-3 grid gap-4 sm:grid-cols-4">
+              <div><dt className="text-sm text-muted-foreground">XP des demandes faites</dt><dd className="text-2xl font-semibold tabular-nums">{page.totals.done}</dd></div>
+              <div><dt className="text-sm text-muted-foreground">XP restants</dt><dd className="text-2xl font-semibold tabular-nums">{page.totals.remaining}</dd></div>
+              <div><dt className="text-sm text-muted-foreground">Demandes faites</dt><dd className="text-2xl font-semibold tabular-nums">{page.totals.doneCount}</dd></div>
+              <div><dt className="text-sm text-muted-foreground">En cours / à faire</dt><dd className="text-2xl font-semibold tabular-nums">{page.totals.inProgressCount} / {page.totals.todoCount}</dd></div>
+            </dl>
+            {!data.canEditTracking && <p className="mt-3 text-sm text-muted-foreground">Lecture seule : seul un administrateur (permission admin.pilotage.write) modifie le suivi.</p>}
+          </section>
+
           <section aria-labelledby="requests-title" className="space-y-4">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
@@ -68,6 +79,13 @@ export function WebcupFeedPage() {
                     {page.difficulties.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
                   </select>
                 </div>
+                <div className="w-44 space-y-1">
+                  <Label htmlFor="filter-tracking">Suivi</Label>
+                  <select id="filter-tracking" className={selectClass} value={page.filters.tracking ?? "all"} onChange={event => page.setTracking(event.target.value as "all" | TrackingStatus)}>
+                    <option value="all">Tous</option>
+                    {(Object.keys(TRACKING_LABELS) as TrackingStatus[]).map(status => <option key={status} value={status}>{status === "done" ? "Faits" : TRACKING_LABELS[status]}</option>)}
+                  </select>
+                </div>
                 {page.newCodes.size > 0 && (
                   <Button type="button" variant="ghost" onClick={page.acknowledgeAll}>Tout marquer comme vu</Button>
                 )}
@@ -78,7 +96,7 @@ export function WebcupFeedPage() {
             ) : page.visibleRequests.length === 0 ? (
               <p role="status" className="rounded-2xl bg-white p-6 text-sm text-muted-foreground shadow-sm">Aucune demande ne correspond à ces filtres.</p>
             ) : (
-              <RequestTable requests={page.visibleRequests} newCodes={page.newCodes} />
+              <RequestTable requests={page.visibleRequests} newCodes={page.newCodes} canEditTracking={data.canEditTracking} />
             )}
           </section>
         </>

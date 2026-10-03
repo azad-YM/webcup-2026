@@ -31,8 +31,8 @@ Les lots regroupent les demandes qui partagent un même modèle ou un même écr
 | L9 | Services pratiques : transports (horaires et infos), service interrompu ou en maintenance — [Administration](../../api/src/Administration/doc/README.md) | F36, F38 | 1 180 | 🟡 état du service et horaires sur les fiches, saisis dans l’admin ; non vérifié dans un navigateur, aucun test écrit |
 | L10 | Rendez-vous avec un agent et rappel | F39, F40 | 900 | ⬜ |
 | L11 | Carte des services : localiser les services physiques, hôpitaux et urgences | F45, F46 | 1 280 | ⬜ |
-| L12 | Traçabilité : journal des actions de l’administration (qui a fait quoi, quand), consultable par les agents | F47, F48 | 1 600 | ⬜ |
-| L13 | Tableau de bord de l’activité pour les agents | F50 | 990 | ⬜ |
+| L12 | Traçabilité : journal des actions de l’administration (qui a fait quoi, quand), consultable par les agents | F47, F48 | 1 600 | 🟡 BC [Audit](../../api/src/Audit/doc/README.md) et écran « Journal des actions » ; non testés |
+| L13 | Tableau de bord de l’activité pour les agents | F50 | 990 | 🟡 [tableau de bord](../../front/apps/admin/doc/pilotage.md#tableau-de-bord-de-lactivité-f50-non-testé) ; non testé |
 | L14 | Participation : usage des données et remontée d’inquiétudes, soutien d’une demande | F51, F52 | 1 650 | ⬜ |
 
 ## Travail en parallèle

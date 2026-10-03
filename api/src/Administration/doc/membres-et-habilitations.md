@@ -7,7 +7,7 @@
 ## Modèle
 
 - **Permission** : triplet `context.resource.action` (actions : `read`, `write`, `delete`, `approve`, `reject`, `execute`).
-- **Catalogue** (`Infrastructure/InMemory/InMemoryAdminPermissionRepository`, étiquette `administration.permissions`) : `admin.role.read`, `admin.role.write`, `admin.member.read`, `admin.member.write`, `admin.role-assignment.write`, `admin.pilotage.read`, `admin.request.read` (file des demandes citoyennes), `admin.request.write` (traitement des demandes), `admin.citizen.read`, `admin.citizen.write` (comptes citoyens, L8), `admin.security.read` (journal de sécurité, L8).
+- **Catalogue** (`Infrastructure/InMemory/InMemoryAdminPermissionRepository`, étiquette `administration.permissions`) : `admin.role.read`, `admin.role.write`, `admin.member.read`, `admin.member.write`, `admin.role-assignment.write`, `admin.pilotage.read`, `admin.pilotage.write` (suivi des demandes Webcup), `admin.audit.read` (journal des actions, L12), `admin.request.read` (file des demandes citoyennes), `admin.request.write` (traitement des demandes), `admin.citizen.read`, `admin.citizen.write` (comptes citoyens, L8), `admin.security.read` (journal de sécurité, L8).
 - **Rôle** : nom + liste de permissions (table `roles`).
 - **Membre** : référence un compte [IAM](../../IAM/doc/README.md) (`userId`, sans association ORM), porte des `roleIds` et un statut actif (table `admin_members`, un membre par compte).
 
@@ -20,7 +20,7 @@ Créés ou resynchronisés par la [CLI d’initialisation](initialisation-admin.
 | Identifiant | Nom | Permissions |
 |---|---|---|
 | `principal-administrator` | Administrateur principal | tout le catalogue |
-| `municipal-agent` | Agent municipal | `admin.pilotage.read`, `admin.request.read`, `admin.request.write`, `admin.citizen.read`, `admin.citizen.write`. Le journal de sécurité (`admin.security.read`) reste réservé à l’administrateur principal. |
+| `municipal-agent` | Agent municipal | `admin.pilotage.read` (flux, tableau de bord F50), `admin.request.read`, `admin.request.write`, `admin.service.write`, `admin.communication.write`, `admin.citizen.read`, `admin.citizen.write`, `admin.audit.read` (journal des actions sans les connexions bloquées). Le journal de sécurité (`admin.security.read`) et la modification du suivi Webcup (`admin.pilotage.write`) restent réservés à l’administrateur principal. |
 
 Un administrateur attribue le rôle « Agent municipal » depuis la page Membres de l’admin.
 
@@ -42,7 +42,8 @@ Refus d’autorisation → 403 ; règle métier ou payload invalide → 422 ; to
 
 | Port consommateur | Adaptateur | Permissions |
 |---|---|---|
-| [Pilotage](../../Pilotage/doc/README.md) — `PilotageAccessPolicy` | `Adapter/Pilotage/AdminPilotageAccessPolicy` | `admin.pilotage.read` (membre actif) |
+| [Pilotage](../../Pilotage/doc/README.md) — `PilotageAccessPolicy` | `Adapter/Pilotage/AdminPilotageAccessPolicy` | `admin.pilotage.read` (flux, tableau de bord), `admin.pilotage.write` (suivi) — membre actif |
+| [Audit](../../Audit/doc/README.md) — `AuditAccessPolicy` | `Adapter/Audit/AdminAuditAccessPolicy` | `admin.audit.read` ; `admin.security.read` pour les lignes `iam.login.*` |
 | [Citizen](../../Citizen/doc/compte-et-securite.md) — `CitizenAccountAccessPolicy` | `Adapter/Citizen/AdminCitizenAccountAccessPolicy` | `admin.citizen.read` (liste) ; `admin.citizen.write` (suspension). `isProtectedAccount(userId)` : vrai si le compte est un membre actif, ce qui interdit sa suppression depuis le site et sa suspension comme citoyen. |
 | [IAM](../../IAM/doc/comptes-et-sessions.md#protection-contre-les-tentatives-de-connexion-f37) — `SecurityJournalAccessPolicy` | `Adapter/IAM/AdminSecurityJournalAccessPolicy` | `admin.security.read` (membre actif) |
 | [Citizen](../../Citizen/doc/README.md) — `RequestAccessPolicy` | `Adapter/Citizen/AdminRequestAccessPolicy` | lecture : `admin.request.read` ; traitement : `admin.request.read` + `admin.request.write` (membre actif) |

@@ -4,8 +4,15 @@ declare(strict_types=1);
 
 namespace Pilotage\Application\Ports\Provider;
 
-/** Decides whether the connected account may follow the contest feed. Implemented by the BC that owns the agents. */
+/** Decides what the connected account may do in Pilotage. Implemented by the BC that owns the agents. */
 interface PilotageAccessPolicy
 {
+    /** Read the contest feed and its tracking (`admin.pilotage.read`). */
     public function canReadWebcupFeed(): bool;
+
+    /** Update the team tracking of the contest requests (`admin.pilotage.write`). */
+    public function canEditTracking(): bool;
+
+    /** Read the activity dashboard of the platform (`admin.pilotage.read`). */
+    public function canReadActivityDashboard(): bool;
 }

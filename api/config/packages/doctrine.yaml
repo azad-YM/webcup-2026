@@ -43,6 +43,18 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Communication/Infrastructure/Doctrine/Entity'
                 prefix: 'Communication\Domain\Entity'
                 alias: Communication
+            Pilotage:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Pilotage/Infrastructure/Doctrine/Entity'
+                prefix: 'Pilotage\Domain\Entity'
+                alias: Pilotage
+            Audit:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Audit/Infrastructure/Doctrine/Entity'
+                prefix: 'Audit\Domain\Entity'
+                alias: Audit
         controller_resolver:
             auto_mapping: false
 

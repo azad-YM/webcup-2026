@@ -11,7 +11,9 @@ import {
   filterRequests,
   newRequestCodes,
   secondsUntilNextWave,
+  trackingTotals,
   waveOptions,
+  type TrackingStatus,
   type RequestFilters,
 } from "../../../core/domain/webcup-feed"
 
@@ -34,7 +36,7 @@ export function useWebcupFeed() {
   const seen = useGetSeenRequestCodesQuery(undefined, { refetchOnMountOrArgChange: true })
   const [markSeen] = useMarkRequestsSeenMutation()
   const [acknowledged, setAcknowledged] = useState<string[] | null>(null)
-  const [filters, setFilters] = useState<RequestFilters>({ wave: "all", difficulty: "all" })
+  const [filters, setFilters] = useState<RequestFilters>({ wave: "all", difficulty: "all", tracking: "all" })
   const now = useNow(1000)
 
   const data = feed.data
@@ -58,6 +60,8 @@ export function useWebcupFeed() {
     filters,
     setWave: (wave: string) => setFilters(current => ({ ...current, wave })),
     setDifficulty: (difficulty: string) => setFilters(current => ({ ...current, difficulty })),
+    setTracking: (tracking: "all" | TrackingStatus) => setFilters(current => ({ ...current, tracking })),
+    totals: trackingTotals(requests),
     waves: waveOptions(requests),
     difficulties: difficultyOptions(requests),
     visibleRequests: filterRequests(requests, filters),

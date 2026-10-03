@@ -7,6 +7,7 @@ namespace Citizen\Application\Command\SetCitizenSuspension;
 use Citizen\Application\Ports\Provider\CitizenAccountManager;
 use Citizen\Application\Ports\Provider\CitizenAccountAccessPolicy;
 use Citizen\Application\Ports\Repository\CitizenRepository;
+use Shared\Application\Ports\Service\AuditTrail;
 use Shared\Domain\Exception\AccessDeniedException;
 use Shared\Domain\Exception\ConflitException;
 use Shared\Domain\Exception\NotFoundException;
@@ -15,7 +16,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler(bus: 'command.bus')]
 final readonly class SetCitizenSuspensionHandler
 {
-    public function __construct(private CitizenRepository $citizens, private CitizenAccountManager $accounts, private CitizenAccountAccessPolicy $access) {}
+    public function __construct(private CitizenRepository $citizens, private CitizenAccountManager $accounts, private CitizenAccountAccessPolicy $access, private ?AuditTrail $audit = null) {}
     public function __invoke(SetCitizenSuspensionCommand $cmd): array
     {
         if (!$this->access->canManageAccounts()) throw new AccessDeniedException('Citizen account management is not allowed.');
@@ -25,6 +26,7 @@ final readonly class SetCitizenSuspensionHandler
         $this->accounts->suspend($citizen->userId, $cmd->suspended);
         $citizen->setSuspended($cmd->suspended);
         $this->citizens->save($citizen);
+        $this->audit?->record($cmd->suspended ? 'citizen.account.suspended' : 'citizen.account.reactivated', 'citizen-account', $citizen->id, $cmd->suspended ? 'Compte citoyen suspendu.' : 'Compte citoyen réactivé.', ['userId' => $citizen->userId]);
         return ['id' => $citizen->id, 'status' => $citizen->status()];
     }
 }

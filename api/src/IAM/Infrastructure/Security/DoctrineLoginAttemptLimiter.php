@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use IAM\Application\Ports\Repository\LoginSecurityEventRepository;
 use IAM\Application\Ports\Service\LoginAttemptLimiter;
 use IAM\Domain\Entity\LoginSecurityEvent;
+use Shared\Application\Ports\Service\AuditTrail;
 use Shared\Application\Ports\Service\IClock;
 use Shared\Application\Ports\Service\IIdProvider;
 
@@ -36,6 +37,7 @@ final readonly class DoctrineLoginAttemptLimiter implements LoginAttemptLimiter
         private IClock $clock,
         private IIdProvider $ids,
         private LoginSecurityEventRepository $journal,
+        private ?AuditTrail $audit = null,
     ) {}
 
     public function retryAfter(string $email, string $ip): int
@@ -92,6 +94,15 @@ final readonly class DoctrineLoginAttemptLimiter implements LoginAttemptLimiter
                 $failures,
                 $duration,
             ));
+            $target = $scope === 'ip' ? mb_substr($ip, 0, 45) : mb_substr($email, 0, 120);
+            $this->audit?->record(
+                'iam.login.blocked',
+                'login',
+                $target,
+                sprintf('Connexion bloquée %d min après %d échecs (%s).', (int) ceil($duration / 60), $failures, $scope),
+                ['scope' => $scope, 'ip' => mb_substr($ip, 0, 45), 'failures' => $failures, 'lockedSeconds' => $duration],
+                sprintf('Anonyme (%s)', $target),
+            );
         }
         return $lock;
     }

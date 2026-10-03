@@ -6,7 +6,7 @@
 
 Pilotage est le BC du **suivi de l’activité de la ville par ses agents**. Il répond à « qu’attend la ville en ce moment ? » en relayant, de façon lisible, le flux de l’[API du concours Webcup](../../../../doc/contexte/README.md#lapi-du-concours-webcup) : état de la session (vague courante, prochaine vague) et demandes déjà diffusées. Il répond à la demande **D19** : un espace des agents distinct de l’espace citoyen, qui affiche les informations transmises par l’API Nova Terra.
 
-Pilotage ne stocke rien et ne connaît ni comptes ni rôles : il lit l’API du concours côté serveur (la clé ne quitte jamais le serveur) et demande à [Administration](../../Administration/doc/README.md) si la personne connectée peut consulter le flux.
+Pilotage répond aussi à **F50** (tableau de bord simplifié de l’activité) et porte le **suivi interne des demandes Webcup** par l’équipe. Il ne stocke que ce suivi et ne connaît ni comptes ni rôles : il lit l’API du concours côté serveur (la clé ne quitte jamais le serveur) et demande à [Administration](../../Administration/doc/README.md) si la personne connectée peut consulter le flux.
 
 ## Consommateurs
 
@@ -68,12 +68,31 @@ Déclarées dans `api/.env.example` ; valeurs par défaut dans `config/services.
 | `WEBCUP_API_URL` | `https://24h.webcup.fr/wp-json/webcup/v1/requests` | Endpoint lu en `GET` |
 | `WEBCUP_API_KEY` | vide (→ 503) | Clé du concours, à définir uniquement dans `api/.env.local` |
 
+### Suivi des demandes Webcup (outil de l’équipe, non testé)
+
+Un suivi par `requestCode` (table `pilotage_request_tracking`) : `status` (`todo`, `in_progress`, `done`), `links` (au plus 10, `{label ≤ 80, url http(s) ≤ 500}`), `note` (≤ 500), `updatedAt`, `updatedBy` (nom du compte, sinon e-mail).
+
+- Lecture : fusionné dans `GET /api/pilotage/webcup-feed` → `requests[].tracking` (`null` si jamais suivi, à lire comme `todo`) et `canEditTracking` (le compte détient `admin.pilotage.write`).
+- `PUT /api/pilotage/tracking/{requestCode}` avec `{status, links, note}` : crée ou remplace le suivi ; `admin.pilotage.write` requis (403 sinon ; rôle « Administrateur principal », pas l’agent municipal) ; payload invalide → 422. Réponse : le suivi. Chaque mise à jour est journalisée (`pilotage.tracking.updated`, [Audit](../../Audit/doc/README.md)).
+- Pré-remplissage : la migration `Version20261003009000` insère le statut de chaque code depuis le [registre du chantier](../../../../doc/chantier/demandes.md) (🟡/⚠️ → `in_progress`, ✅ → `done`, ⬜ → `todo`). La base de développement créée par `doctrine:schema:update` n’a pas ce pré-remplissage.
+
+### Tableau de bord de l’activité (F50)
+
+`GET /api/pilotage/activity` (`admin.pilotage.read`, agents compris) : `{generatedAt, recentHours: 24, requests: {byStatus, waiting, open, recent, oldestWaitingSince}, citizens: {active, suspended, recent}, communication: {activeAlerts, criticalAlerts, scheduledAlerts, publishedPublications, draftPublications}, security: {suspendedAccounts, blockedLogins}, administration: {activeMembers, services, disruptedServices}}`. Comptages seulement, aucune donnée personnelle. Chaque bloc vient de son propriétaire par un port de Pilotage ; « récent » = 24 dernières heures. Pas de temps réel : l’admin relit toutes les 60 s.
+
 ## Ports et raccordements
 
 | Sens | Port (propriétaire) | Adaptateur (fournisseur) |
 |---|---|---|
 | Pilotage consomme l’API du concours | `Application/Ports/Gateway/WebcupFeedGateway` | `Infrastructure/Http/WebcupHttpFeedGateway` |
-| Pilotage consomme Administration | `Application/Ports/Provider/PilotageAccessPolicy` | `Administration/Infrastructure/Adapter/Pilotage/AdminPilotageAccessPolicy` (`admin.pilotage.read`) |
+| Pilotage consomme Administration | `Application/Ports/Provider/PilotageAccessPolicy` | `Administration/Infrastructure/Adapter/Pilotage/AdminPilotageAccessPolicy` (`admin.pilotage.read`, `admin.pilotage.write`) |
+| Pilotage consomme IAM (auteur du suivi) | `Application/Ports/Provider/CurrentAgentProvider` | `IAM/Infrastructure/Adapter/Pilotage/IAMPilotageCurrentAgent` |
+| Tableau de bord ← Citizen | `Application/Ports/Provider/Activity/CitizenActivityProvider` | `Citizen/Infrastructure/Adapter/Pilotage/CitizenPilotageActivity` |
+| Tableau de bord ← Communication | `Application/Ports/Provider/Activity/CommunicationActivityProvider` | `Communication/Infrastructure/Adapter/Pilotage/CommunicationPilotageActivity` |
+| Tableau de bord ← IAM | `Application/Ports/Provider/Activity/AccountSecurityActivityProvider` | `IAM/Infrastructure/Adapter/Pilotage/IAMPilotageSecurityActivity` |
+| Tableau de bord ← Administration | `Application/Ports/Provider/Activity/AdministrationActivityProvider` | `Administration/Infrastructure/Adapter/Pilotage/AdminPilotageActivity` |
+
+Chaque adaptateur compte uniquement sur les tables de son propre BC.
 
 Les erreurs contractuelles `WebcupApiKeyMissing`, `WebcupApiKeyRejected` et `WebcupFeedUnavailable` appartiennent à Pilotage.
 
@@ -86,6 +105,7 @@ Les erreurs contractuelles `WebcupApiKeyMissing`, `WebcupApiKeyRejected` et `Web
 
 - Type exact de `xp_available` : non documenté. Un nombre est repris tel quel ; un booléen est interprété comme « tout `xp_total` » ou `0`. À vérifier sur une vraie réponse.
 - Valeurs possibles de `session.status` et de `difficulty` : affichées telles quelles.
+- Suivi et tableau de bord : aucun test écrit (décision d’économie du chantier).
 - Pas d’historique : Pilotage n’enregistre pas les vagues passées ; la mise en évidence des nouvelles demandes est faite par le navigateur de l’agent.
 
 <!-- backlinks:start -->
@@ -104,4 +124,5 @@ Les erreurs contractuelles `WebcupApiKeyMissing`, `WebcupApiKeyRejected` et `Web
 - [Admin](../../../../front/apps/admin/doc/README.md)
 - [Admin — flux Nova Terra](../../../../front/apps/admin/doc/pilotage.md)
 - [Chantier](../../../../doc/chantier/README.md)
+- [Audit](../../Audit/doc/README.md)
 <!-- backlinks:end -->
