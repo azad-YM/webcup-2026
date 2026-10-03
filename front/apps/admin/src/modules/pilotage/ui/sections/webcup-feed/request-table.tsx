@@ -1,12 +1,14 @@
 import { Badge, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@boilerplate/shared-ui/components"
 import { difficultyLabel, waveKey, waveLabel, type WebcupRequest } from "../../../core/domain/webcup-feed"
+import { TrackingCell } from "./tracking-cell"
 
 type Props = {
   requests: WebcupRequest[]
   newCodes: Set<string>
+  canEditTracking: boolean
 }
 
-export function RequestTable({ requests, newCodes }: Props) {
+export function RequestTable({ requests, newCodes, canEditTracking }: Props) {
   return (
     <div className="overflow-x-auto rounded-lg border bg-white">
       <Table>
@@ -14,6 +16,7 @@ export function RequestTable({ requests, newCodes }: Props) {
         <TableHeader>
           <TableRow>
             <TableHead scope="col">Code</TableHead>
+            <TableHead scope="col">Suivi de l’équipe</TableHead>
             <TableHead scope="col">Demandeur</TableHead>
             <TableHead scope="col">Difficulté</TableHead>
             <TableHead scope="col" className="text-right">XP</TableHead>
@@ -33,6 +36,9 @@ export function RequestTable({ requests, newCodes }: Props) {
                     {isNew && <Badge>Nouvelle</Badge>}
                     {request.isAiRequest && <Badge variant="outline">IA</Badge>}
                   </span>
+                </TableCell>
+                <TableCell className="align-top whitespace-normal">
+                  <TrackingCell request={request} canEdit={canEditTracking} />
                 </TableCell>
                 <TableCell className="align-top whitespace-normal">
                   <span className="block">{request.requesterName ?? "—"}</span>

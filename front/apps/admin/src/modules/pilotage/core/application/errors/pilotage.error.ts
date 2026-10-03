@@ -5,6 +5,7 @@ export type PilotageErrorKind =
   | "key-rejected"
   | "upstream-unavailable"
   | "unavailable"
+  | "invalid"
 
 export class PilotageError extends Error {
   constructor(public readonly kind: PilotageErrorKind, message: string) {

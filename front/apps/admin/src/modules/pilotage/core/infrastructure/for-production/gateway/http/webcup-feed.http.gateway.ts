@@ -2,7 +2,7 @@ import { ApiClient, ApiHttpError } from "@boilerplate/shared-utils/api-client"
 import { PilotageError } from "../../../../application/errors/pilotage.error"
 import type { WebcupFeedGateway } from "../../../../application/ports/gateway/webcup-feed.gateway"
 import type { PilotageSessionProvider } from "../../../../application/ports/provider/pilotage-session.provider"
-import type { WebcupFeed } from "../../../../domain/webcup-feed"
+import type { RequestTracking, TrackingInput, WebcupFeed } from "../../../../domain/webcup-feed"
 
 export class WebcupFeedHttpGateway extends ApiClient implements WebcupFeedGateway {
   constructor(baseUrl: string, private readonly session: PilotageSessionProvider) {
@@ -13,6 +13,22 @@ export class WebcupFeedHttpGateway extends ApiClient implements WebcupFeedGatewa
     try {
       return await this.getAuth<WebcupFeed>("/pilotage/webcup-feed")
     } catch (error) {
+      throw this.translate(error)
+    }
+  }
+
+  async updateTracking(requestCode: string, input: TrackingInput): Promise<RequestTracking> {
+    try {
+      return await this.putAuth<RequestTracking>(`/pilotage/tracking/${encodeURIComponent(requestCode)}`, input)
+    } catch (error) {
+      if (error instanceof ApiHttpError && error.status === 403) {
+        throw new PilotageError("forbidden", "Seul un administrateur (permission admin.pilotage.write) peut modifier le suivi.")
+      }
+      if (error instanceof ApiHttpError && error.status === 422) {
+        const message = (error.payload as { message?: unknown; error?: unknown } | undefined)
+        const text = typeof message?.error === "string" ? message.error : typeof message?.message === "string" ? message.message : null
+        throw new PilotageError("invalid", text ?? "Suivi refusé : vérifiez le statut, la note (500 caractères) et les liens (adresses http(s)).")
+      }
       throw this.translate(error)
     }
   }
