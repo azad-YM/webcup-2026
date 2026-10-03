@@ -1,5 +1,5 @@
 import { Outlet } from "react-router"
-import { Activity } from "@boilerplate/shared-ui/components/icon"
+import { Activity, LayoutDashboard } from "@boilerplate/shared-ui/components/icon"
 import { Sidebar, SidebarContent, SidebarHeader, SidebarInset, SidebarProvider, SidebarRail, SidebarTrigger } from "@boilerplate/shared-ui/components"
 import { ModuleSwitcher } from "@/modules/shared/ui/components/sidebar/module-switcher"
 import { NavMain } from "@/modules/shared/ui/components/sidebar/nav-main"
@@ -7,6 +7,7 @@ import { NavUser } from "@/modules/shared/ui/components/sidebar/nav-user"
 
 const navigation = [
   { title: "Flux Nova Terra", icon: Activity, url: "/pilotage" },
+  { title: "Tableau de bord", icon: LayoutDashboard, url: "/pilotage/tableau-de-bord" },
 ]
 
 export function PilotageLayout() {

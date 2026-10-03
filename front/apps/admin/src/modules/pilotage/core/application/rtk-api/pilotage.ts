@@ -5,9 +5,13 @@ import type { RequestTracking, TrackingInput, WebcupFeed } from "../../domain/we
 import { getWebcupFeed } from "../usecases/get-webcup-feed.usecase"
 import { getSeenRequestCodes, markRequestsSeen } from "../usecases/seen-requests.usecase"
 import { updateTracking } from "../usecases/update-tracking.usecase"
+import { getActivityDashboard } from "../usecases/get-activity-dashboard.usecase"
+import type { ActivityDashboard } from "../../domain/activity-dashboard"
 
 /** The agents' page refreshes the feed every 30 s; the server itself keeps the API answer for 20 s. */
 export const WEBCUP_FEED_POLLING_MS = 30_000
+/** The activity dashboard (F50) refreshes every minute. */
+export const ACTIVITY_POLLING_MS = 60_000
 
 export const pilotageApi = createApi({
   reducerPath: "pilotageApi",
@@ -15,6 +19,9 @@ export const pilotageApi = createApi({
   endpoints: (build) => ({
     getWebcupFeed: build.query<WebcupFeed, void>({
       queryFn: withUseCase(getWebcupFeed),
+    }),
+    getActivityDashboard: build.query<ActivityDashboard, void>({
+      queryFn: withUseCase(getActivityDashboard),
     }),
     getSeenRequestCodes: build.query<string[] | null, void>({
       queryFn: withUseCase(getSeenRequestCodes),
@@ -36,4 +43,4 @@ export const pilotageApi = createApi({
   }),
 })
 
-export const { useGetWebcupFeedQuery, useGetSeenRequestCodesQuery, useMarkRequestsSeenMutation, useUpdateTrackingMutation } = pilotageApi
+export const { useGetWebcupFeedQuery, useGetSeenRequestCodesQuery, useMarkRequestsSeenMutation, useUpdateTrackingMutation, useGetActivityDashboardQuery } = pilotageApi

@@ -12,6 +12,7 @@ import type { RealtimeSubscriber } from "@/modules/shared/core/ports/realtime-su
 import type { CitizenAccountsGateway } from "@/modules/citizen-accounts/core/application/ports/gateway/citizen-accounts.gateway"
 import type { SecurityJournalGateway } from "@/modules/security/core/application/ports/gateway/security-journal.gateway"
 import type { AuditJournalGateway } from "@/modules/audit/core/application/ports/gateway/audit-journal.gateway"
+import type { ActivityDashboardGateway } from "@/modules/pilotage/core/application/ports/gateway/activity-dashboard.gateway"
 import type { ContentGateway } from "@/modules/content/core/application/ports/gateway/content.gateway"
 
 export type Dependencies = {
@@ -30,4 +31,5 @@ export type Dependencies = {
   realtime: RealtimeSubscriber
   contentGateway: ContentGateway
   auditJournalGateway: AuditJournalGateway
+  activityDashboardGateway: ActivityDashboardGateway
 }

@@ -6,6 +6,7 @@ import { ContentHttpGateway } from "@/modules/content/core/infrastructure/for-pr
 import { AuthContentSessionProvider } from "@/modules/auth/core/infrastructure/adapter/content/auth-content-session.provider"
 import { AuditJournalHttpGateway } from "@/modules/audit/core/infrastructure/for-production/gateway/http/audit-journal.http.gateway"
 import { AuthAuditSessionProvider } from "@/modules/auth/core/infrastructure/adapter/audit/auth-audit-session.provider"
+import { ActivityDashboardHttpGateway } from "@/modules/pilotage/core/infrastructure/for-production/gateway/http/activity-dashboard.http.gateway"
 import { sessionCleared } from "./session"
 import { AuthAccessSessionProvider } from "@/modules/auth/core/infrastructure/adapter/admin/auth-access-session.provider"
 import { PermissionHttpGateway } from "@/modules/admin/core/infrastructure/for-production/gateway/http/permission.http.gateway"
@@ -54,6 +55,7 @@ export class App {
       roleGateway: new RoleHttpGateway(apiBaseUrl, adminSession),
       memberGateway: new MemberHttpGateway(apiBaseUrl, adminSession),
       webcupFeedGateway: new WebcupFeedHttpGateway(apiBaseUrl, pilotageSession),
+      activityDashboardGateway: new ActivityDashboardHttpGateway(apiBaseUrl, pilotageSession),
       seenRequestsGateway: new SeenRequestsLocalStorageGateway(),
       requestQueueGateway: new RequestQueueHttpGateway(apiBaseUrl, requestSession),
       // One stream per tab; the list gathers the events listened to by the admin screens.

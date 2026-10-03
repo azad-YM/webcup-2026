@@ -18,6 +18,17 @@ export function AdminDashboardPage() {
         </p>
       </section>
 
+      <Link
+        to="/pilotage/tableau-de-bord"
+        className="group flex items-center justify-between gap-4 rounded-2xl bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+      >
+        <span>
+          <span className="block text-lg font-semibold">Tableau de bord de l’activité</span>
+          <span className="mt-1 block text-sm text-muted-foreground">Demandes en attente, citoyens inscrits, alertes en cours, comptes suspendus, connexions bloquées.</span>
+        </span>
+        <ArrowUpRight className="size-5 shrink-0 text-slate-400 transition group-hover:text-slate-900" />
+      </Link>
+
       <section className="grid gap-4 md:grid-cols-2">
         {adminEntities.map((entity) => (
           <Link

@@ -13,6 +13,7 @@ import { AdminDashboardPage } from "@/modules/admin/ui/pages/dashboard"
 import { RolesPage } from "@/modules/admin/ui/pages/roles"
 import { PilotageLayout } from "@/modules/pilotage/ui/layouts/pilotage.layout"
 import { WebcupFeedPage } from "@/modules/pilotage/ui/pages/webcup-feed"
+import { ActivityDashboardPage } from "@/modules/pilotage/ui/pages/activity-dashboard"
 import { RequestsLayout } from "@/modules/requests/ui/layouts/requests.layout"
 import { RequestQueuePage } from "@/modules/requests/ui/pages/request-queue"
 import { ContentLayout } from "@/modules/content/ui/layouts/content.layout"
@@ -77,6 +78,7 @@ export const router = createBrowserRouter([
         element: <PilotageLayout />,
         children: [
           { index: true, element: <WebcupFeedPage /> },
+          { path: "tableau-de-bord", element: <ActivityDashboardPage /> },
         ],
       },
       {
