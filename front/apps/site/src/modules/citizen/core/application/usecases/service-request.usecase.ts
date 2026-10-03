@@ -21,6 +21,7 @@ export const submitRequest: UseCase<RequestDraft, ServiceRequest> = async (depen
     subject: draft.subject.trim(),
     description: draft.description.trim(),
     location: draft.location.trim(),
-    serviceId: draft.serviceId
+    serviceId: draft.serviceId,
+    isPublic: draft.type === "report" && Boolean(draft.isPublic)
   })
 }

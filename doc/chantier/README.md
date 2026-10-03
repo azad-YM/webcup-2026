@@ -33,7 +33,7 @@ Les lots regroupent les demandes qui partagent un même modèle ou un même écr
 | L11 | Carte des services : localiser les services physiques, hôpitaux et urgences | F45, F46 | 1 280 | ⬜ |
 | L12 | Traçabilité : journal des actions de l’administration (qui a fait quoi, quand), consultable par les agents | F47, F48 | 1 600 | ⬜ |
 | L13 | Tableau de bord de l’activité pour les agents | F50 | 990 | ⬜ |
-| L14 | Participation : usage des données et remontée d’inquiétudes, soutien d’une demande | F51, F52 | 1 650 | ⬜ |
+| L14 | Participation : usage des données et remontée d’inquiétudes, soutien d’une demande — [Citizen](../../api/src/Citizen/doc/participation.md), [site](../../front/apps/site/doc/parcours-citoyen.md), [admin](../../front/apps/admin/doc/demandes.md) | F51, F52 | 1 650 | 🟡 API, site et admin livrés ; ni testés ni vérifiés dans le navigateur |
 
 ## Travail en parallèle
 

@@ -147,6 +147,11 @@ function RequestDetail({ reference }: { reference: string }) {
             {request.location && (
               <p className="mt-5 flex items-start gap-2 text-slate-800"><MapPin className="mt-0.5 size-5 shrink-0 text-teal-700" aria-hidden="true" /><span><span className="font-medium">Lieu : </span>{request.location}</span></p>
             )}
+            {request.isPublic && (
+              <p className="mt-4 rounded-xl bg-teal-50 p-3 text-slate-900">
+                Signalement visible des autres habitants · <span className="font-semibold">{request.supportCount ?? 0} soutien{(request.supportCount ?? 0) > 1 ? "s" : ""}</span>
+              </p>
+            )}
             <h3 className="mt-6 font-semibold text-slate-950">Votre message</h3>
             <p className="mt-2 whitespace-pre-wrap text-slate-800">{request.description}</p>
           </article>

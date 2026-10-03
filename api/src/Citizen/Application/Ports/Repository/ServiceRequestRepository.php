@@ -22,4 +22,7 @@ interface ServiceRequestRepository
     public function findQueue(?string $status, int $offset, int $limit): array;
 
     public function countByStatus(?string $status): int;
+
+    /** @return list<ServiceRequest> signalements publics non clos, les plus récents d'abord (F52) */
+    public function findPublic(int $limit): array;
 }

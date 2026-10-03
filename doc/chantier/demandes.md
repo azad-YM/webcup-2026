@@ -100,8 +100,8 @@ Statuts : ⬜ à faire · 🟡 en cours · ⚠️ partiel · ✅ livré · ⏸�
 |---|---|---|---|---|---|---|
 | F49 | 1 | 330 | Être informé quand sa demande change d’état | L2 | Citizen, site | 🟡 |
 | F50 | 3 | 990 | Tableau de bord simplifié de l’activité de la plateforme pour les agents | L13 | Pilotage, admin | ⬜ |
-| F51 | 3 | 990 | Comprendre l’usage de ses données et faire remonter ses inquiétudes, avec trace de prise en compte | L14 | Citizen, site, admin | ⬜ |
-| F52 | 2 | 660 | Soutenir une demande déjà déposée par d’autres habitants | L14 | Citizen, site | ⬜ |
+| F51 | 3 | 990 | Comprendre l’usage de ses données et faire remonter ses inquiétudes, avec trace de prise en compte | L14 | Citizen, site, admin | 🟡 |
+| F52 | 2 | 660 | Soutenir une demande déjà déposée par d’autres habitants | L14 | Citizen, site | 🟡 |
 
 ## Vagues suivantes
 

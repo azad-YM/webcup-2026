@@ -25,9 +25,11 @@ final readonly class ServiceRequestView
         public array $allowedTransitions,
         public string $createdAt,
         public string $updatedAt,
+        public bool $isPublic,
+        public int $supportCount,
     ) {}
 
-    public static function fromRequest(ServiceRequest $request): self
+    public static function fromRequest(ServiceRequest $request, int $supportCount = 0): self
     {
         return new self(
             $request->id,
@@ -42,6 +44,8 @@ final readonly class ServiceRequestView
             $request->allowedTransitions(),
             $request->createdAt->format(\DateTimeInterface::ATOM),
             $request->updatedAt()->format(\DateTimeInterface::ATOM),
+            $request->isPublic(),
+            $supportCount,
         );
     }
 }

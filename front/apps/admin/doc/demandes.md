@@ -33,6 +33,10 @@ Module `requests` : `core/domain/service-request.ts`, `core/application/{rtk-api
 
 `/demandes/rendez-vous` (entrée « Rendez-vous » du module) : choix du jour (aujourd’hui par défaut, dans le fuseau de la ville), tableau des créneaux (heure, service, lieu, citoyen et référence `RDV-…` s’il est réservé, sinon « Libre »), badge « N réservé(s) ». Avec `admin.request.write` : formulaire « Ouvrir des créneaux » (service du catalogue, premier créneau, durée, nombre, lieu, pièces à apporter) et bouton « Retirer » sur un créneau libre (`409` si un habitant vient de le réserver). Temps réel : `appointment.changed` sur `administration.requests` ; polling de 60 s. API : [Citizen — rendez-vous](../../../../api/src/Citizen/doc/rendez-vous.md). Code : `requests/core/{domain/agent-desk.ts, application/ports/gateway/agent-desk.gateway.ts, application/rtk-api/agent-desk.ts, infrastructure/for-production/gateway/http/agent-desk.http.gateway.ts}`, `requests/ui/pages/appointments.tsx`.
 
+## Inquiétudes des habitants (L14)
+
+`/demandes/inquietudes` (entrée « Inquiétudes » du module) : badge « N à prendre en compte », filtre par état (par défaut « Reçue »), chaque inquiétude avec thème, message et trace des étapes. Avec `admin.request.write` : « Marquer comme prise en compte » (commentaire facultatif) et « Envoyer la réponse » (réponse obligatoire), visibles par l’habitant et notifiées dans son espace. L’identité de l’habitant n’est pas affichée. API : [Citizen — participation](../../../../api/src/Citizen/doc/participation.md). Code : `requests/ui/pages/concerns.tsx` et le port `AgentDeskGateway`.
+
 ## Limites
 
 - Aucun test automatisé ; parcours non vérifié dans un navigateur.
@@ -52,4 +56,5 @@ Module `requests` : `core/domain/service-request.ts`, `core/application/{rtk-api
 - [Chantier](../../../../doc/chantier/README.md)
 - [Registre des demandes](../../../../doc/chantier/demandes.md)
 - [Citizen — rendez-vous](../../../../api/src/Citizen/doc/rendez-vous.md)
+- [Citizen — participation](../../../../api/src/Citizen/doc/participation.md)
 <!-- backlinks:end -->

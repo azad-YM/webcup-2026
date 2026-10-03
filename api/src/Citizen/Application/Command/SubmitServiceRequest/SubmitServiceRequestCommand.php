@@ -24,5 +24,7 @@ final readonly class SubmitServiceRequestCommand
         public ?string $location = null,
         #[Assert\Length(max: ServiceRequest::SERVICE_ID_MAX)]
         public ?string $serviceId = null,
+        /** F52 : rendre le signalement visible des autres habitants (sujet, lieu, état ; jamais l'auteur). */
+        public bool $isPublic = false,
     ) {}
 }

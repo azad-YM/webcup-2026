@@ -70,6 +70,14 @@ Code : module `citizen` (`ui/pages/service-requests.tsx`, `ui/pages/new-service-
 - « Déplacer » (même service, nouveau créneau, confirmation) et « Annuler » (confirmation explicite). Créneau pris entre-temps : message clair et nouveau choix.
 - Rappels la veille et 2 h avant dans « Mes notifications » (temps réel). Données : port `AppointmentGateway` → `AppointmentHttpGateway`, RTK `appointmentsApi`, événement `appointment.changed` ; contrat dans [Citizen — rendez-vous](../../../../api/src/Citizen/doc/rendez-vous.md).
 
+## Participer (`/espace/participation`, F51, F52)
+
+- Raccourci « Participer » de `/espace` (pastille des réponses non lues). Page `citizen/ui/pages/participation.tsx`.
+- **Soutenir une demande d’habitants** (F52) : signalements publics (objet, lieu, état, date ; ni auteur ni message), compteur « N habitants soutiennent cette demande », bouton « Je soutiens », trace « Vous soutenez cette demande » et « Retirer mon soutien » ; « C’est votre signalement » pour les siens. Le formulaire de signalement propose la case facultative « Rendre ce signalement visible des autres habitants » ; le détail d’une de mes demandes publiques affiche son nombre de soutiens.
+- **Faire remonter une inquiétude** (F51) : thème, objet, message ; accusé de réception immédiat avec la référence `INQ-…` (focus) ; « Suivi de mes inquiétudes » avec chaque étape (reçue, prise en compte, réponse de la mairie) ; notification à chaque action d’un agent.
+- **Vos données** (`/vos-donnees`, public, lien dans le pied de page et la page Participer) : quelles données, pourquoi, combien de temps, qui y accède, vos droits (`public/ui/pages/your-data.tsx`).
+- Données : port `ParticipationGateway` → `ParticipationHttpGateway`, RTK `participationApi` ; contrat dans [Citizen — participation](../../../../api/src/Citizen/doc/participation.md).
+
 ## 5. Supprimer mon compte (`/espace/profil`, F33)
 
 Lot L8, 🟡 non vérifié dans un navigateur. Sous le formulaire du profil, la section « Supprimer mon compte » explique l’effet (profil et identifiants effacés, sessions fermées, historique des démarches conservé sans identité). « Demander la suppression » ouvre un formulaire : mot de passe actuel **et** case « Je comprends que cette suppression est définitive » obligatoires. `DELETE /api/citizen/me` `{password}` :
@@ -112,4 +120,5 @@ Code : modules `auth` (`ui/pages/registration.tsx`, `core/application/usecases/r
 - [Vitrine et alertes](vitrine-et-alertes.md)
 - [Citizen — notifications](../../../../api/src/Citizen/doc/notifications.md)
 - [Citizen — rendez-vous](../../../../api/src/Citizen/doc/rendez-vous.md)
+- [Citizen — participation](../../../../api/src/Citizen/doc/participation.md)
 <!-- backlinks:end -->

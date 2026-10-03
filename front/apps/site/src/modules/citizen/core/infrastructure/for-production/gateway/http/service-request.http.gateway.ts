@@ -44,7 +44,8 @@ export class ServiceRequestHttpGateway extends ApiClient implements ServiceReque
       subject: draft.subject,
       description: draft.description,
       location: draft.location || null,
-      serviceId: draft.serviceId
+      serviceId: draft.serviceId,
+      isPublic: Boolean(draft.isPublic)
     }, ApiClient.authHeaders(token)))
   }
 }

@@ -17,6 +17,9 @@ export type ServiceRequest = {
   allowedTransitions: RequestStatus[]
   createdAt: string
   updatedAt: string
+  /** F52 : signalement visible des autres habitants. */
+  isPublic?: boolean
+  supportCount?: number
 }
 
 export type RequestDraft = {
@@ -25,6 +28,8 @@ export type RequestDraft = {
   description: string
   location: string
   serviceId: string | null
+  /** F52 : partager le signalement (sujet, lieu, état) avec les autres habitants. */
+  isPublic?: boolean
 }
 
 export const REQUEST_TYPE_LABELS: Record<RequestType, string> = {

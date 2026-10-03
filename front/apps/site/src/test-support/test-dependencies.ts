@@ -37,6 +37,12 @@ export function createTestContext(overrides: Partial<Dependencies> = {}) {
       book: async () => { throw new Error("Not configured") },
       change: async () => { throw new Error("Not configured") }
     },
+    participationGateway: {
+      listPublicRequests: async () => [],
+      support: async () => { throw new Error("Not configured") },
+      listConcerns: async () => [],
+      raiseConcern: async () => { throw new Error("Not configured") }
+    },
     serviceCatalogGateway,
     publicationGateway,
     alertsGateway: new InMemoryAlertsGateway(),

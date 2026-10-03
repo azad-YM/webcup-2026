@@ -33,6 +33,39 @@ export type SlotSeries = {
   instructions: string | null
 }
 
+/** Inquiétudes des habitants (Citizen L14, F51) — contrat `api/src/Citizen/doc/participation.md`. */
+export type ConcernStatus = "received" | "in_review" | "answered"
+
+export type AgentConcern = {
+  id: string
+  reference: string
+  topic: "data" | "service" | "security" | "other"
+  subject: string
+  message: string
+  status: ConcernStatus
+  response: string | null
+  trail: { status: ConcernStatus; at: string; comment: string | null }[]
+  createdAt: string
+  updatedAt: string
+}
+
+export type ConcernQueue = { items: AgentConcern[]; receivedCount: number; canProcess: boolean }
+
+export type ConcernHandling = { concernId: string; status: "in_review" | "answered"; comment: string | null }
+
+export const CONCERN_TOPIC_LABELS: Record<AgentConcern["topic"], string> = {
+  data: "Données personnelles",
+  service: "Service de la ville",
+  security: "Sécurité du compte",
+  other: "Autre",
+}
+
+export const CONCERN_STATUS_LABELS: Record<ConcernStatus, string> = {
+  received: "Reçue",
+  in_review: "Prise en compte",
+  answered: "Répondue",
+}
+
 /** Heure locale de la ville lue dans la chaîne ISO (indépendante du fuseau du navigateur). */
 export const localTime = (iso: string) => iso.slice(11, 16)
 

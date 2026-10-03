@@ -48,6 +48,8 @@ class ServiceRequest
     private array $steps = [];
     private \DateTimeImmutable $updatedAt;
     private int $version = 1;
+    /** F52 : signalement rendu visible des autres habitants (sans données personnelles), sur choix de l'auteur. */
+    private bool $isPublic = false;
 
     private function __construct(
         public readonly string $id,
@@ -73,6 +75,7 @@ class ServiceRequest
         ?string $location,
         ?string $serviceId,
         \DateTimeImmutable $at,
+        bool $isPublic = false,
     ): self {
         $subject = trim($subject);
         $description = trim($description);
@@ -95,6 +98,8 @@ class ServiceRequest
         }
 
         $request = new self($id, $citizenId, $reference, $type, $subject, $description, $location, $serviceId, $at);
+        // Seul un signalement sur l'espace public peut être partagé ; un message à la mairie reste privé.
+        $request->isPublic = $isPublic && $type === self::TYPE_REPORT;
         $request->steps[] = ['status' => self::SUBMITTED, 'at' => $at->format(\DateTimeInterface::ATOM), 'comment' => null];
         $request->record(new ServiceRequestSubmitted($id, $citizenId, $reference));
 
@@ -128,6 +133,13 @@ class ServiceRequest
     }
 
     public function status(): string { return $this->status; }
+    public function isPublic(): bool { return $this->isPublic; }
+
+    /** Un soutien n'a de sens que sur un signalement public encore en cours. */
+    public function canBeSupported(): bool
+    {
+        return $this->isPublic && !in_array($this->status, [self::RESOLVED, self::REJECTED], true);
+    }
     public function updatedAt(): \DateTimeImmutable { return $this->updatedAt; }
 
     /** @return list<array{status: string, at: string, comment: ?string}> */

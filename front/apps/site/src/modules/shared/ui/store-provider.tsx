@@ -25,6 +25,7 @@ import { NotificationHttpGateway } from "@/modules/citizen/core/infrastructure/f
 import { NOTIFICATION_EVENTS } from "@/modules/citizen/core/application/rtk-api/notifications"
 import { AppointmentHttpGateway } from "@/modules/citizen/core/infrastructure/for-production/gateway/http/appointment.http.gateway"
 import { APPOINTMENT_EVENTS } from "@/modules/citizen/core/application/rtk-api/appointments"
+import { ParticipationHttpGateway } from "@/modules/citizen/core/infrastructure/for-production/gateway/http/participation.http.gateway"
 import { SseRealtimeSubscriber } from "../core/infrastructure/realtime/sse-realtime.subscriber"
 import { HttpPublicContentGateway } from "@/modules/public/core/infrastructure/for-production/gateway/http/public-content.http.gateway"
 import { AlertsHttpGateway } from "@/modules/public/core/infrastructure/for-production/gateway/http/alerts.http.gateway"
@@ -65,6 +66,7 @@ function createDependencies(): Dependencies {
     serviceRequestGateway: new ServiceRequestHttpGateway(siteEnv.apiBaseUrl),
     notificationGateway: new NotificationHttpGateway(siteEnv.apiBaseUrl),
     appointmentGateway: new AppointmentHttpGateway(siteEnv.apiBaseUrl),
+    participationGateway: new ParticipationHttpGateway(siteEnv.apiBaseUrl),
     // Contenus publiés par les BC propriétaires (Administration, Communication) et flux temps réel.
     serviceCatalogGateway: publicContent,
     publicationGateway: publicContent,

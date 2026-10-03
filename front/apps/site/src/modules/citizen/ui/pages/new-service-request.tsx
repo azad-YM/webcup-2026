@@ -131,6 +131,22 @@ function RequestForm({ initialType, onSent }: { initialType: RequestType; onSent
         error={errors.location}
         onChange={(event) => update("location", event.target.value)}
       />
+      {report && (
+        <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <input
+            id="demande-publique"
+            type="checkbox"
+            className="mt-1 size-5 accent-teal-700"
+            checked={Boolean(draft.isPublic)}
+            onChange={(event) => setDraft((current) => ({ ...current, isPublic: event.target.checked }))}
+            aria-describedby="demande-publique-aide"
+          />
+          <div>
+            <label htmlFor="demande-publique" className="font-medium text-slate-950">Rendre ce signalement visible des autres habitants</label>
+            <p id="demande-publique-aide" className="text-sm text-slate-700">Seuls l’objet, le lieu et l’état seront affichés, jamais votre nom ni votre message. D’autres habitants pourront le soutenir. Facultatif.</p>
+          </div>
+        </div>
+      )}
       <FormAnnouncement tone="error">{failure && failure.status !== 401 ? failure.data : null}</FormAnnouncement>
       <button
         type="submit"

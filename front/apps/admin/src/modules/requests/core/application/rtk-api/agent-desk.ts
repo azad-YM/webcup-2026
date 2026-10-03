@@ -1,6 +1,6 @@
 import { withUseCase, type UseCase } from "@/modules/shared/core/config/use-cases"
 import type { Dependencies } from "@/modules/shared/core/config/dependencies"
-import type { AppointmentDay, SlotSeries } from "../../domain/agent-desk"
+import type { AppointmentDay, ConcernHandling, ConcernQueue, ConcernStatus, SlotSeries } from "../../domain/agent-desk"
 import { requestsApi } from "./requests"
 
 /** Événements Citizen sur `administration.requests` qui changent le guichet. */
@@ -21,8 +21,16 @@ const removeSlot: UseCase<string, null> = async (_dispatch, _getState, dependenc
   return null
 }
 
+const concernQueue: UseCase<ConcernStatus | null, ConcernQueue> = async (_dispatch, _getState, dependencies, status) =>
+  dependencies.agentDeskGateway.concernQueue(status)
+
+const handleConcern: UseCase<ConcernHandling, null> = async (_dispatch, _getState, dependencies, handling) => {
+  await dependencies.agentDeskGateway.handleConcern(handling)
+  return null
+}
+
 /** Endpoints du guichet injectés dans l'API RTK du module (même cache et même nettoyage de session). */
-export const agentDeskApi = requestsApi.enhanceEndpoints({ addTagTypes: ["AppointmentDay"] }).injectEndpoints({
+export const agentDeskApi = requestsApi.enhanceEndpoints({ addTagTypes: ["AppointmentDay", "Concerns"] }).injectEndpoints({
   endpoints: (build) => ({
     appointmentDay: build.query<AppointmentDay, string>({
       queryFn: withUseCase(appointmentDay),
@@ -49,7 +57,15 @@ export const agentDeskApi = requestsApi.enhanceEndpoints({ addTagTypes: ["Appoin
       queryFn: withUseCase(removeSlot),
       invalidatesTags: ["AppointmentDay"],
     }),
+    concernQueue: build.query<ConcernQueue, ConcernStatus | null>({
+      queryFn: withUseCase(concernQueue),
+      providesTags: ["Concerns"],
+    }),
+    handleConcern: build.mutation<null, ConcernHandling>({
+      queryFn: withUseCase(handleConcern),
+      invalidatesTags: ["Concerns"],
+    }),
   }),
 })
 
-export const { useAppointmentDayQuery, useOpenSlotsMutation, useRemoveSlotMutation } = agentDeskApi
+export const { useAppointmentDayQuery, useOpenSlotsMutation, useRemoveSlotMutation, useConcernQueueQuery, useHandleConcernMutation } = agentDeskApi
