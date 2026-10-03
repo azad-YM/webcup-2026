@@ -1,3 +1,4 @@
+import { AlertCircle, CheckCircle2, Info } from "@boilerplate/shared-ui/components/icon"
 import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from "react"
 
 type FieldFrameProps = {
@@ -6,6 +7,8 @@ type FieldFrameProps = {
   hint?: ReactNode
   error?: string
   optional?: boolean
+  /** Identifiants supplémentaires (ex. message d’erreur global du formulaire). */
+  extraDescribedBy?: string
   children: (aria: { "aria-describedby"?: string; "aria-invalid"?: true }) => ReactNode
 }
 
@@ -13,10 +16,10 @@ type FieldFrameProps = {
  * Cadre commun des champs : libellé relié, aide et erreur annoncées via
  * `aria-describedby`, état invalide exposé aux technologies d’assistance.
  */
-function FieldFrame({ id, label, hint, error, optional, children }: FieldFrameProps) {
+function FieldFrame({ id, label, hint, error, optional, extraDescribedBy, children }: FieldFrameProps) {
   const hintId = hint ? `${id}-aide` : undefined
   const errorId = error ? `${id}-erreur` : undefined
-  const describedBy = [hintId, errorId].filter(Boolean).join(" ") || undefined
+  const describedBy = [hintId, errorId, extraDescribedBy].filter(Boolean).join(" ") || undefined
   return (
     <div>
       <label htmlFor={id} className="block font-medium text-slate-900">
@@ -25,7 +28,12 @@ function FieldFrame({ id, label, hint, error, optional, children }: FieldFramePr
       </label>
       {hint && <p id={hintId} className="mt-1 text-sm text-slate-600">{hint}</p>}
       {children({ "aria-describedby": describedBy, ...(error ? { "aria-invalid": true as const } : {}) })}
-      {error && <p id={errorId} className="mt-2 text-sm font-medium text-red-700">{error}</p>}
+      {error && (
+        <p id={errorId} className="mt-2 flex items-start gap-1.5 text-sm font-medium text-red-700">
+          <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+          <span><span className="sr-only">Erreur : </span>{error}</span>
+        </p>
+      )}
     </div>
   )
 }
@@ -41,9 +49,9 @@ type TextFieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "id" | "childr
   optional?: boolean
 }
 
-export function TextField({ id, label, hint, error, optional, className, ...input }: TextFieldProps) {
+export function TextField({ id, label, hint, error, optional, className, "aria-describedby": extraDescribedBy, ...input }: TextFieldProps) {
   return (
-    <FieldFrame id={id} label={label} hint={hint} error={error} optional={optional}>
+    <FieldFrame id={id} label={label} hint={hint} error={error} optional={optional} extraDescribedBy={extraDescribedBy}>
       {(aria) => <input id={id} name={id} {...input} {...aria} className={`${controlClass(error)} ${className ?? ""}`} />}
     </FieldFrame>
   )
@@ -92,7 +100,7 @@ export function SelectField({ id, label, hint, error, optional, options, placeho
  * Zone d’annonce d’un formulaire : toujours présente dans le DOM pour que les
  * lecteurs d’écran annoncent son contenu quand il change.
  */
-export function FormAnnouncement({ tone, children }: { tone: "error" | "success" | "info"; children?: ReactNode }) {
+export function FormAnnouncement({ tone, children, id }: { tone: "error" | "success" | "info"; children?: ReactNode; id?: string }) {
   const styles = {
     error: "border-red-200 bg-red-50 text-red-900",
     success: "border-emerald-200 bg-emerald-50 text-emerald-900",
@@ -100,7 +108,12 @@ export function FormAnnouncement({ tone, children }: { tone: "error" | "success"
   }[tone]
   return (
     <div aria-live={tone === "error" ? "assertive" : "polite"} aria-atomic="true">
-      {children ? <div className={`rounded-xl border p-4 ${styles}`}>{children}</div> : null}
+      {children ? (
+        <div id={id} className={`flex items-start gap-3 rounded-xl border p-4 ${styles}`}>
+          {tone === "error" ? <AlertCircle className="mt-0.5 size-5 shrink-0" aria-hidden="true" /> : tone === "success" ? <CheckCircle2 className="mt-0.5 size-5 shrink-0" aria-hidden="true" /> : <Info className="mt-0.5 size-5 shrink-0" aria-hidden="true" />}
+          <div className="min-w-0 flex-1">{tone === "error" && <span className="sr-only">Erreur : </span>}{children}</div>
+        </div>
+      ) : null}
     </div>
   )
 }

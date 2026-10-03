@@ -35,7 +35,7 @@ export function NavUser() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="rounded-full" aria-label="Ouvrir le menu utilisateur">
+        <Button variant="ghost" size="icon" className="rounded-full" aria-label={`Mon compte : ${name}`}>
           <Avatar className="size-9">
             <AvatarFallback>{isLoading ? "…" : initials}</AvatarFallback>
           </Avatar>
@@ -53,7 +53,7 @@ export function NavUser() {
           onClick={() => void handleLogout()}
           disabled={isLoggingOut}
         >
-          <LogOut />
+          <LogOut aria-hidden="true" />
           {isLoggingOut ? "Déconnexion..." : "Se déconnecter"}
         </Button>
       </PopoverContent>

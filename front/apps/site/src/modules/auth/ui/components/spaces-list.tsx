@@ -43,7 +43,7 @@ export function SpacesList({ variant = "full" }: { variant?: "full" | "compact" 
   if (unauthorized)
     return compact ? null : (
       <p role="status" className="mt-6">
-        Votre session a expiré. Reconnectez-vous.
+        Vous avez été déconnecté pour votre sécurité. Reconnectez-vous.
       </p>
     )
   if (ready && !hasToken)

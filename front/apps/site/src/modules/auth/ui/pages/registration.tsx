@@ -61,7 +61,7 @@ export function RegistrationPage({ profileStep }: { profileStep: ReactNode }) {
         trail={step === 1 ? [{ label: "Créer un compte" }] : [{ label: "Créer un compte", href: "/inscription" }, { label: "Mes informations" }]}
         title={step === 1 ? "Créer mon compte citoyen" : "Mes informations"}
         lead={step === 1
-          ? "En créant votre compte, vous devenez citoyen de Nova Terra et retrouvez vos démarches dans votre espace personnel."
+          ? "En créant votre compte, vous devenez citoyen de Nova Terra et suivez vos demandes dans votre espace personnel."
           : "Votre compte est créé et vous êtes connecté. Ces informations sont facultatives : vous pourrez les compléter plus tard."}
       >
         <Stepper current={step} />

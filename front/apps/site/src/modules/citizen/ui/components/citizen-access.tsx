@@ -40,7 +40,7 @@ export function CitizenAccessState({ access, returnTo, nonCitizenFallback }: {
       <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8" role="status">
         <LogIn className="size-8 text-teal-700" aria-hidden="true" />
         <h2 className="mt-4 text-xl font-semibold">Connectez-vous pour accéder à votre espace</h2>
-        <p className="mt-2 text-slate-700">{access.unauthorized ? "Votre session a expiré. " : ""}Votre espace citoyen est réservé aux habitants connectés.</p>
+        <p className="mt-2 text-slate-700">{access.unauthorized ? "Vous avez été déconnecté pour votre sécurité. " : ""}Votre espace citoyen est réservé aux habitants connectés.</p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link href={`/connexion?retour=${returnTo}` as Route} className="rounded-xl bg-teal-700 px-5 py-3 font-medium text-white hover:bg-teal-800">Se connecter</Link>
           <Link href="/inscription" className="rounded-xl border border-slate-300 px-5 py-3 font-medium hover:bg-slate-50">Créer un compte</Link>

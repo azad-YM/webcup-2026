@@ -19,6 +19,7 @@ export function SiteFooter() {
               <li key={item.href}><Link href={item.href} className="hover:text-white hover:underline">{item.label}</Link></li>
             ))}
             <li><Link href="/espace" className="hover:text-white hover:underline">Mon espace citoyen</Link></li>
+            <li><Link href="/aide/glossaire" className="hover:text-white hover:underline">Glossaire : les mots du site expliqués</Link></li>
           </ul>
         </nav>
         <div>

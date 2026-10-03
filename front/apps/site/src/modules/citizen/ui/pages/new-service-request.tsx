@@ -4,6 +4,7 @@ import Link from "next/link"
 import type { Route } from "next"
 import { useSearchParams } from "next/navigation"
 import { CheckCircle2, Send } from "@boilerplate/shared-ui/components/icon"
+import { ContextualTip } from "@boilerplate/shared-ui/components/a11y"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
 import { useSession } from "@/modules/shared/ui/store-provider"
 import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
@@ -24,7 +25,7 @@ import {
 } from "../../core/domain/service-request"
 
 const TITLES: Record<RequestType, { title: string; lead: string }> = {
-  contact: { title: "Contacter la mairie", lead: "Posez une question ou adressez un message aux services municipaux. Vous recevrez une référence pour suivre votre demande." },
+  contact: { title: "Contacter la mairie", lead: "Posez une question ou adressez un message aux services municipaux. Vous recevrez un numéro de suivi pour suivre votre demande." },
   report: { title: "Signaler un problème", lead: "Voirie, éclairage, propreté, inondation… Décrivez le problème et indiquez où il se trouve." }
 }
 
@@ -48,9 +49,14 @@ export function NewServiceRequestPage() {
         ) : sent ? (
           <Confirmation request={sent} onAnother={() => setSent(null)} />
         ) : (
+          <>
+          <ContextualTip hintId="astuce-premiere-demande" title="Pour une réponse plus rapide" className="mb-6">
+            Écrivez simplement ce qui se passe et, pour un problème, l’endroit exact. Vous pourrez suivre la réponse dans « Mes demandes ».
+          </ContextualTip>
           <section aria-label="Formulaire de demande" className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
             <RequestForm key={initialType} initialType={initialType} onSent={setSent} />
           </section>
+          </>
         )}
       </PageBody>
     </>
@@ -152,7 +158,7 @@ function Confirmation({ request, onAnother }: { request: ServiceRequest; onAnoth
       <h2 id="titre-confirmation" ref={titleRef} tabIndex={-1} className="mt-4 text-2xl font-semibold text-slate-950 focus:outline-none">
         Votre demande a bien été envoyée
       </h2>
-      <p className="mt-3 text-slate-800">La mairie l’a reçue le <time dateTime={request.createdAt}>{formatDateTime(request.createdAt)}</time>. Conservez sa référence :</p>
+      <p className="mt-3 text-slate-800">La mairie l’a reçue le <time dateTime={request.createdAt}>{formatDateTime(request.createdAt)}</time>. Notez son <Link href={"/aide/glossaire#numero-de-suivi" as Route} className="underline underline-offset-4">numéro de suivi</Link> :</p>
       <p className="mt-3 inline-block rounded-xl border border-emerald-300 bg-white px-4 py-2 font-mono text-2xl font-semibold tracking-wide text-slate-950">{request.reference}</p>
       <dl className="mt-5 grid gap-3 sm:grid-cols-2">
         <div><dt className="text-sm text-slate-600">Objet</dt><dd className="font-medium text-slate-900">{request.subject}</dd></div>

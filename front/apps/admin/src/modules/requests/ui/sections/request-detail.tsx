@@ -93,13 +93,13 @@ function ProcessForm({ request }: { request: ServiceRequest }) {
           rows={3}
           required={rejecting}
           aria-invalid={failure ? true : undefined}
-          aria-describedby="request-comment-help"
+          aria-describedby={failure ? "request-comment-help request-comment-error" : "request-comment-help"}
           onChange={event => { setComment(event.target.value); setValidation(null) }}
         />
         <p id="request-comment-help" className="text-xs text-muted-foreground">Visible par le citoyen dans la chronologie de sa demande.</p>
       </div>
       <div aria-live="assertive" aria-atomic="true">
-        {failure && <p role="alert" className="rounded-md border border-red-200 bg-red-50 p-2 text-sm text-red-800">{failure}</p>}
+        {failure && <p id="request-comment-error" role="alert" className="rounded-md border border-red-200 bg-red-50 p-2 text-sm text-red-800">{failure}</p>}
       </div>
       <div aria-live="polite">{isSuccess && !failure && <p className="text-sm text-emerald-800">Étape enregistrée.</p>}</div>
       <Button type="submit" disabled={isLoading} variant={rejecting ? "destructive" : "default"}>

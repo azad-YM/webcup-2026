@@ -1,4 +1,5 @@
 import { getErrorMessage } from "@boilerplate/shared-utils/error.utils"
+import { StatusBadge } from "@boilerplate/shared-ui/components/a11y"
 import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@boilerplate/shared-ui/components"
 import { useListMembersQuery } from "../../../core/application/rtk-api/access-management"
 
@@ -46,7 +47,7 @@ export function MemberList() {
                         )}
                       </TableCell>
                       <TableCell>
-                        <Badge variant={member.active ? "outline" : "destructive"}>{member.active ? "Actif" : "Inactif"}</Badge>
+                        <StatusBadge tone={member.active ? "success" : "danger"} label={member.active ? "Actif" : "Inactif"} />
                       </TableCell>
                     </TableRow>
                   ))}

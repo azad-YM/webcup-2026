@@ -4,7 +4,7 @@
  * ce modèle est la vue consommée par le site.
  */
 export const SERVICE_CATEGORIES = {
-  demarches: "Démarches et citoyenneté",
+  demarches: "Papiers et citoyenneté",
   "cadre-de-vie": "Cadre de vie",
   "sante-solidarite": "Santé et solidarité",
   mobilite: "Mobilité",

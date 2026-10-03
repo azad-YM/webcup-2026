@@ -29,15 +29,16 @@ const ProtectedRoutes = () => {
   }
 
   if (profile.isError) {
-    return <main className="grid min-h-screen place-items-center p-6"><div>
-      <p role="alert">{getErrorMessage(profile.error)}</p>
-      <button className="mt-4 underline" onClick={() => void profile.refetch()}>Réessayer</button>
+    return <main id="contenu" className="grid min-h-screen place-items-center p-6"><div>
+      <h1 className="text-xl font-semibold">Impossible de vérifier votre accès</h1>
+      <p role="alert" className="mt-2">{getErrorMessage(profile.error)}</p>
+      <button type="button" className="mt-4 underline" onClick={() => void profile.refetch()}>Réessayer</button>
       <a className="ml-4 underline" href={import.meta.env.VITE_SITE_URL || "http://localhost:5178"}>Revenir au site</a>
     </div></main>
   }
 
   if (profile.isLoading) {
-    return <main className="grid min-h-screen place-items-center">Chargement...</main>
+    return <main id="contenu" className="grid min-h-screen place-items-center"><p role="status">Vérification de votre accès…</p></main>
   }
 
   return <Outlet />

@@ -6,6 +6,7 @@ import { LogOut, Menu, UserRound, X } from "@boilerplate/shared-ui/components/ic
 import { useSession } from "../store-provider"
 import { isCurrentSection, MAIN_NAVIGATION } from "../navigation"
 import { NovaTerraWordmark } from "./nova-terra-logo"
+import { DisplayPreferencesButton } from "@boilerplate/shared-ui/components/a11y"
 
 const navLink = (active: boolean) =>
   `rounded-lg px-3 py-2 text-base font-medium transition ${active ? "bg-teal-50 text-teal-900" : "text-slate-700 hover:bg-slate-100 hover:text-slate-950"}`
@@ -50,8 +51,8 @@ export function SiteHeader() {
   const open = openOn === pathname
   const close = () => setOpenOn(null)
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 site-header border-b border-slate-200 bg-white/95 backdrop-blur">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
         <Link href="/" className="rounded-lg" aria-label="Nova Terra, retour à l’accueil">
           <NovaTerraWordmark />
         </Link>
@@ -68,6 +69,7 @@ export function SiteHeader() {
           </ul>
         </nav>
         <div className="hidden items-center gap-2 md:flex">
+          <DisplayPreferencesButton showHintsReset className="text-slate-800 hover:bg-slate-100" />
           <SessionActions />
         </div>
         <button
@@ -95,6 +97,7 @@ export function SiteHeader() {
           </ul>
         </nav>
         <div className="mt-3 flex flex-wrap gap-2 border-t border-slate-200 pt-3">
+          <DisplayPreferencesButton showHintsReset className="text-slate-800 hover:bg-slate-100" />
           <SessionActions onNavigate={close} />
         </div>
       </div>

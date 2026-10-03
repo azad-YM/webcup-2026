@@ -7,6 +7,9 @@ import { siteEnv } from "@/config/env"
 import { SkipLink, MAIN_CONTENT_ID } from "@/modules/shared/ui/layout/skip-link"
 import { SiteHeader } from "@/modules/shared/ui/layout/site-header"
 import { SiteFooter } from "@/modules/shared/ui/layout/site-footer"
+import { displayPreferencesBootScript } from "@boilerplate/shared-ui/a11y"
+import { SiteAccessibilityProvider } from "@/modules/shared/ui/accessibility-provider"
+import { DISPLAY_PREFERENCES_KEY } from "@/modules/shared/ui/accessibility-keys"
 
 const description = "Le portail officiel de Nova Terra, première ville humaine sur une autre planète : services municipaux, actualités et espace citoyen."
 
@@ -20,8 +23,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr">
+    <html lang="fr" suppressHydrationWarning>
+      <head>
+        {/* Préférences d’affichage appliquées avant le premier rendu : pas de flash (L4). */}
+        <script dangerouslySetInnerHTML={{ __html: displayPreferencesBootScript(DISPLAY_PREFERENCES_KEY) }} />
+      </head>
       <body className="flex min-h-screen flex-col">
+        <SiteAccessibilityProvider>
         <StoreProvider>
           <SkipLink />
           <SiteHeader />
@@ -31,6 +39,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           </main>
           <SiteFooter />
         </StoreProvider>
+        </SiteAccessibilityProvider>
       </body>
     </html>
   )

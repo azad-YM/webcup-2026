@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react"
-import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label, Textarea } from "@boilerplate/shared-ui/components"
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label, Textarea } from "@boilerplate/shared-ui/components"
 import { getErrorMessage } from "@boilerplate/shared-utils/error.utils"
+import { StatusBadge } from "@boilerplate/shared-ui/components/a11y"
 import { useListPublicationsQuery, useSavePublicationMutation } from "../../core/application/rtk-api/content"
 import { fromLines, newPublication, STATE_LABELS, toLines, type ContentState, type Publication } from "../../core/domain/content"
 import { ListState, selectClass } from "../components/content-states"
@@ -94,8 +95,8 @@ export function PublicationsPage() {
                   <p className="font-medium">{item.title}</p>
                   <p className="text-sm text-muted-foreground">{item.category}{item.publishedAt ? ` · publiée le ${new Date(item.publishedAt).toLocaleDateString("fr-FR")}` : ""}</p>
                   <div className="mt-1 flex gap-2">
-                    <Badge variant={item.state === "published" ? "default" : "secondary"}>{STATE_LABELS[item.state]}</Badge>
-                    {item.important && <Badge variant="destructive">Importante</Badge>}
+                    <StatusBadge tone={item.state === "published" ? "success" : item.state === "draft" ? "pending" : "neutral"} label={STATE_LABELS[item.state]} srPrefix="État :" />
+                    {item.important && <StatusBadge tone="warning" label="Importante" />}
                   </div>
                 </div>
                 <Button type="button" variant="outline" size="sm" onClick={() => setEditing(item)}>Modifier</Button>

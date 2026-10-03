@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label, Textarea } from "@boilerplate/shared-ui/components"
 import { getErrorMessage } from "@boilerplate/shared-utils/error.utils"
+import { StatusBadge } from "@boilerplate/shared-ui/components/a11y"
 import { useListServicesQuery, useSaveServiceMutation } from "../../core/application/rtk-api/content"
 import {
   fromLines,
@@ -192,7 +193,7 @@ export function ServicesPage() {
                   <p className="font-medium">{item.name}</p>
                   <p className="text-sm text-muted-foreground">{SERVICE_CATEGORIES[item.category] ?? item.category}</p>
                   <div className="mt-1 flex flex-wrap gap-2">
-                    <Badge variant={item.status === "available" ? "secondary" : "destructive"}>{SERVICE_STATUS_LABELS[item.status]}</Badge>
+                    <StatusBadge tone={item.status === "available" ? "success" : item.status === "maintenance" ? "warning" : "danger"} label={SERVICE_STATUS_LABELS[item.status]} srPrefix="État :" />
                     {item.featured && <Badge variant="outline">Mis en avant</Badge>}
                     {item.transport && <Badge variant="outline">Horaires</Badge>}
                   </div>

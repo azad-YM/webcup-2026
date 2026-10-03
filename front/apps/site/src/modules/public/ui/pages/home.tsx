@@ -12,7 +12,7 @@ function Tasks() {
     { title: "Trouver un service", text: "État civil, santé, transports, logement…", href: "/services", icon: Search },
     { title: "Lire les actualités", text: "Travaux, santé, vie municipale.", href: "/actualites", icon: Newspaper },
     connected
-      ? { title: "Accéder à mon espace", text: "Mon profil et mes démarches.", href: "/espace", icon: UserRound }
+      ? { title: "Accéder à mon espace", text: "Mon profil et mes demandes.", href: "/espace", icon: UserRound }
       : { title: "Créer mon compte", text: "Devenez citoyen en ligne en une minute.", href: "/inscription", icon: UserPlus },
     connected
       ? { title: "Compléter mon profil", text: "Nom, quartier, langue préférée.", href: "/espace/profil", icon: UserRound }
@@ -48,7 +48,7 @@ function AccountCallToAction() {
           <p className="mt-3 text-lg text-teal-50">
             {hasToken
               ? "Retrouvez votre profil, contactez la mairie et suivez toutes vos demandes."
-              : "Créez votre compte citoyen pour retrouver vos démarches, être informé de ce qui concerne votre quartier et contacter la mairie."}
+              : "Créez votre compte citoyen pour suivre vos demandes, être informé de ce qui concerne votre quartier et contacter la mairie."}
           </p>
         </div>
         <Link href={hasToken ? "/espace" : "/inscription"} className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-white px-6 py-3 font-semibold text-teal-900 hover:bg-teal-50">
@@ -71,7 +71,7 @@ export function HomePage() {
           <h1 id="titre-accueil" className="mt-4 max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">Bienvenue à Nova Terra</h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">
             Nova Terra est la première ville fondée par l’humanité sur une autre planète. Sur ce portail, trouvez un service municipal,
-            suivez l’actualité de la ville et retrouvez vos démarches dans votre espace citoyen.
+            suivez l’actualité de la ville et suivez vos demandes dans votre espace citoyen.
           </p>
           <form action="/services/" method="get" role="search" aria-label="Rechercher un service" className="mt-8 flex max-w-xl flex-col gap-3 sm:flex-row">
             <label htmlFor="recherche-accueil" className="sr-only">Rechercher un service municipal</label>
@@ -99,7 +99,7 @@ export function HomePage() {
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <h2 id="titre-services" className="text-3xl font-semibold tracking-tight">Services les plus demandés</h2>
-              <p className="mt-2 text-slate-700">Les démarches essentielles de la vie à Nova Terra.</p>
+              <p className="mt-2 text-slate-700">Les services essentiels de la vie à Nova Terra.</p>
             </div>
             <Link href="/services" className="inline-flex items-center gap-2 font-medium text-teal-800 underline underline-offset-4">
               Tous les services <ArrowRight className="size-4" aria-hidden="true" />

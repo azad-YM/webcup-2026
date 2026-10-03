@@ -27,18 +27,18 @@ Statuts : ⬜ à faire · 🟡 en cours · ⚠️ partiel · ✅ livré · ⏸�
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
-| F21 | 2 | 520 | Utilisable avec un lecteur d’écran (boutons, formulaires, structure) | L4 | site, admin | ⚠️ base site : landmarks, lien d’évitement, champs étiquetés, erreurs reliées, annonces `aria-live`, focus visible ; audit et admin à faire |
-| F23 | 2 | 520 | Affichage plus contrasté et moins fatigant | L4 | site, admin | ⬜ |
-| F24 | 1 | 260 | Agrandir le texte sans casser la mise en page | L4 | site, admin | ⬜ |
+| F21 | 2 | 520 | Utilisable avec un lecteur d’écran (boutons, formulaires, structure) | L4 | site, admin | 🟡 repères, champs et erreurs reliés, annonces, focus après navigation (site et admin) — [site](../../front/apps/site/doc/accessibilite.md), [admin](../../front/apps/admin/doc/accessibilite.md) ; non vérifié dans un navigateur |
+| F23 | 2 | 520 | Affichage plus contrasté et moins fatigant | L4 | site, admin | 🟡 palette AA, mode contraste élevé (panneau « Affichage ») — [site](../../front/apps/site/doc/accessibilite.md), [admin](../../front/apps/admin/doc/accessibilite.md) ; non vérifié |
+| F24 | 1 | 260 | Agrandir le texte sans casser la mise en page | L4 | site, admin | 🟡 taille du texte 100/125/150 % en rem, sans flash — [site](../../front/apps/site/doc/accessibilite.md), [admin](../../front/apps/admin/doc/accessibilite.md) ; non vérifié |
 
 ## Vague 2 (H+3) — « Premiers habitants »
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
 | D11 | 2 | 540 | Retrouver ses demandes, leur état et les étapes déjà réalisées | L2 | Citizen, site | 🟡 « Mes demandes » : état et chronologie des étapes horodatées (`/espace/demandes?ref=…`) ; ni testé ni vérifié dans le navigateur |
-| D12 | 2 | 540 | Première connexion guidée : profil, trouver un service, lancer une démarche | L4 | site, Citizen | ⚠️ invitation à compléter le profil et raccourcis dans l’espace ; parcours guidé complet à faire |
+| D12 | 2 | 540 | Première connexion guidée : profil, trouver un service, lancer une démarche | L4 | site, Citizen | 🟡 guide de première visite en 3 étapes sur `/espace`, masquable et mémorisé — [site](../../front/apps/site/doc/accessibilite.md) ; non vérifié |
 | D14 | 2 | 540 | Choisir une autre langue pour l’interface | L5 | site | ⬜ |
-| D15 | 1 | 270 | Repère de navigation (fil d’Ariane) et retour aux niveaux précédents | L4 | site, admin | ⚠️ site : fil d’Ariane sur toutes les pages hors accueil (premier niveau) ; admin à faire |
+| D15 | 1 | 270 | Repère de navigation (fil d’Ariane) et retour aux niveaux précédents | L4 | site, admin | 🟡 site : toutes les pages hors accueil ; admin : fil calculé depuis l’adresse — [site](../../front/apps/site/doc/accessibilite.md), [admin](../../front/apps/admin/doc/accessibilite.md) ; non vérifié |
 | D16 | 1 | 270 | Confirmation claire immédiatement après l’envoi d’une demande | L2 | Citizen, site | 🟡 écran de confirmation avec la référence `NT-AAAA-NNNN` juste après l’envoi ; ni testé ni vérifié dans le navigateur |
 | D17 | 1 | 270 | Nombre de demandes en attente de prise en charge, d’un coup d’œil | L2 | Citizen, admin | 🟡 badge « N en attente » (`pendingCount`) dans la file de l’admin, mis à jour en temps réel ; ni testé ni vérifié dans le navigateur |
 | F25 | 2 | 540 | Signaler un problème sur la voie publique avec description et lieu | L2 | Citizen, site | 🟡 « Signaler un problème » avec description et lieu obligatoire ; ni testé ni vérifié dans le navigateur |
@@ -62,7 +62,7 @@ Statuts : ⬜ à faire · 🟡 en cours · ⚠️ partiel · ✅ livré · ⏸�
 |---|---|---|---|---|---|---|
 | F33 | 1 | 290 | Le citoyen peut supprimer son compte, sans qu’une personne non autorisée puisse le faire | L8 | Citizen, IAM, site | 🟡 livré ([règles](../../api/src/Citizen/doc/compte-et-securite.md)), non vérifié dans un navigateur |
 | F34 | 2 | 580 | Les agents administrent les comptes citoyens (consulter, suspendre…), sans accès non autorisé | L8 | Citizen, Administration, admin | 🟡 livré ([page](../../front/apps/admin/doc/comptes-citoyens.md)), non vérifié dans un navigateur |
-| F35 | 1 | 290 | Indications contextuelles au bon moment pour les premières actions, sans long guide | L4 | site | ⬜ |
+| F35 | 1 | 290 | Indications contextuelles au bon moment pour les premières actions, sans long guide | L4 | site | 🟡 astuces refermables (services, nouvelle demande), vues une fois — [site](../../front/apps/site/doc/accessibilite.md) ; non vérifié |
 | F36 | 2 | 580 | Consulter les horaires et informations des transports municipaux, utiles à sa situation | L9 | Administration, site | 🟡 horaires et informations des transports sur la fiche des services de mobilité, saisis dans l’admin ; non vérifié dans un navigateur |
 
 ## Vague 5 (H+6) — « Informer et servir »
@@ -78,12 +78,12 @@ Statuts : ⬜ à faire · 🟡 en cours · ⚠️ partiel · ✅ livré · ⏸�
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
-| D13 | 1 | 310 | Remplacer les mots difficiles par un langage clair, sans jargon technique | L4 | site, admin | ⬜ |
-| D20 | 3 | 930 | Plateforme utilisable par les personnes en situation de handicap, sans parcours à part | L4 | site, admin | ⬜ |
-| F41 | 2 | 620 | Toutes les actions atteignables au clavier seul | L4 | site, admin | ⬜ |
-| F42 | 3 | 930 | Formulaires, composants, champs et erreurs réellement accessibles aux technologies d’assistance | L4 | site, admin | ⬜ |
-| F43 | 1 | 310 | Ne pas dépendre de la couleur seule pour distinguer l’information | L4 | site, admin | ⬜ |
-| F44 | 2 | 620 | Agrandir le contenu (zoom) sans casser l’affichage | L4 | site, admin | ⬜ |
+| D13 | 1 | 310 | Remplacer les mots difficiles par un langage clair, sans jargon technique | L4 | site, admin | 🟡 libellés simplifiés, erreurs techniques traduites, glossaire `/aide/glossaire` — [site](../../front/apps/site/doc/accessibilite.md), [admin](../../front/apps/admin/doc/accessibilite.md) ; non vérifié |
+| D20 | 3 | 930 | Plateforme utilisable par les personnes en situation de handicap, sans parcours à part | L4 | site, admin | 🟡 réglages intégrés aux mêmes pages, pas de parcours à part — [site](../../front/apps/site/doc/accessibilite.md), [admin](../../front/apps/admin/doc/accessibilite.md) ; non vérifié |
+| F41 | 2 | 620 | Toutes les actions atteignables au clavier seul | L4 | site, admin | 🟡 focus toujours visible, liens d’évitement site et admin, dialogues piégés avec Échap, retour du focus — [site](../../front/apps/site/doc/accessibilite.md), [admin](../../front/apps/admin/doc/accessibilite.md) ; non vérifié |
+| F42 | 3 | 930 | Formulaires, composants, champs et erreurs réellement accessibles aux technologies d’assistance | L4 | site, admin | 🟡 `label`, `aria-describedby`, `aria-invalid`, erreurs annoncées et reliées (site et admin) — [site](../../front/apps/site/doc/accessibilite.md), [admin](../../front/apps/admin/doc/accessibilite.md) ; non vérifié |
+| F43 | 1 | 310 | Ne pas dépendre de la couleur seule pour distinguer l’information | L4 | site, admin | 🟡 `StatusBadge` icône + libellé + bordure, liens soulignés — [site](../../front/apps/site/doc/accessibilite.md), [admin](../../front/apps/admin/doc/accessibilite.md) ; non vérifié |
+| F44 | 2 | 620 | Agrandir le contenu (zoom) sans casser l’affichage | L4 | site, admin | 🟡 mise en page fluide à 200 % / 320 px, en-tête non collant au besoin — [site](../../front/apps/site/doc/accessibilite.md), [admin](../../front/apps/admin/doc/accessibilite.md) ; non vérifié |
 
 ## Vague 7 (H+8) — « Inclusion et structuration »
 

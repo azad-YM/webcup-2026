@@ -1,6 +1,7 @@
 import { useState } from "react"
-import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label, Textarea } from "@boilerplate/shared-ui/components"
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label, Textarea } from "@boilerplate/shared-ui/components"
 import { getErrorMessage } from "@boilerplate/shared-utils/error.utils"
+import { StatusBadge } from "@boilerplate/shared-ui/components/a11y"
 import { useListAlertsQuery, useListDistrictsQuery, useSaveAlertMutation } from "../../core/application/rtk-api/content"
 import {
   AUDIENCE_LABELS,
@@ -58,7 +59,7 @@ function AlertForm({ initial, onDone }: { initial: Alert; onDone: () => void }) 
                 </select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="alert-audience">Audience</Label>
+                <Label htmlFor="alert-audience">Qui doit la recevoir ?</Label>
                 <select id="alert-audience" className={selectClass} value={draft.audience} onChange={(event) => setDraft({ ...draft, audience: event.target.value as AlertAudience })}>
                   {Object.entries(AUDIENCE_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
                 </select>
@@ -128,9 +129,9 @@ export function AlertsPage() {
                     {item.audience === "district" ? `Quartier ${item.district}` : AUDIENCE_LABELS[item.audience]} · du {new Date(item.startsAt).toLocaleString("fr-FR")} au {new Date(item.endsAt).toLocaleString("fr-FR")}
                   </p>
                   <div className="mt-1 flex flex-wrap gap-2">
-                    <Badge variant={item.severity === "critical" ? "destructive" : "secondary"}>{SEVERITY_LABELS[item.severity]}</Badge>
-                    <Badge variant="outline">{STATE_LABELS[item.state]}</Badge>
-                    {isAlertActive(item) && <Badge>En cours</Badge>}
+                    <StatusBadge tone={item.severity === "critical" ? "danger" : item.severity === "warning" ? "warning" : "info"} label={SEVERITY_LABELS[item.severity]} srPrefix="Gravité :" />
+                    <StatusBadge tone={item.state === "published" ? "success" : item.state === "draft" ? "pending" : "neutral"} label={STATE_LABELS[item.state]} srPrefix="État :" />
+                    {isAlertActive(item) && <StatusBadge tone="progress" label="En cours" />}
                   </div>
                 </div>
                 <Button type="button" variant="outline" size="sm" onClick={() => setEditing(item)}>Modifier</Button>
@@ -142,7 +143,7 @@ export function AlertsPage() {
       <div>
         {editing
           ? <AlertForm key={editing.id ?? "nouvelle"} initial={editing} onDone={() => setEditing(null)} />
-          : <p className="rounded-lg border border-dashed p-6 text-sm text-muted-foreground">Choisissez une alerte à modifier ou créez-en une.</p>}
+          : <p className="rounded-lg border border-dashed p-6 text-sm text-muted-foreground">Choisissez une alerte à modifier, ou créez-en une avec « Nouvelle alerte ».</p>}
       </div>
     </div>
   )

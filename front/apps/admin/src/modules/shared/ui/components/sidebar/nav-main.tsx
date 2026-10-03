@@ -23,7 +23,8 @@ export function NavMain({ items }: { items: NavItem[] }) {
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+      <SidebarGroupLabel id="titre-navigation-espace">Navigation</SidebarGroupLabel>
+      <nav aria-labelledby="titre-navigation-espace">
       <SidebarMenu>
         {items.map((item) => {
           const isActive = pathname === item.url ||
@@ -31,8 +32,8 @@ export function NavMain({ items }: { items: NavItem[] }) {
           return (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild tooltip={item.title} isActive={isActive}>
-                <Link to={item.url}>
-                  {item.icon && <item.icon />}
+                <Link to={item.url} aria-current={pathname === item.url ? "page" : undefined}>
+                  {item.icon && <item.icon aria-hidden="true" />}
                   <span>{item.title}</span>
                 </Link>
               </SidebarMenuButton>
@@ -41,7 +42,7 @@ export function NavMain({ items }: { items: NavItem[] }) {
                   {item.items.map((child) => (
                     <SidebarMenuSubItem key={child.url}>
                       <SidebarMenuSubButton asChild isActive={pathname === child.url}>
-                        <Link to={child.url}>{child.title}</Link>
+                        <Link to={child.url} aria-current={pathname === child.url ? "page" : undefined}>{child.title}</Link>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                   ))}
@@ -51,6 +52,7 @@ export function NavMain({ items }: { items: NavItem[] }) {
           )
         })}
       </SidebarMenu>
+      </nav>
     </SidebarGroup>
   )
 }

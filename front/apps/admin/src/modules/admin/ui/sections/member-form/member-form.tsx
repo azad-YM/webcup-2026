@@ -10,7 +10,7 @@ export function MemberForm() {
     <Card>
       <CardHeader>
         <CardTitle>Ajouter un membre</CardTitle>
-        <CardDescription>Crée le compte de connexion de la personne et lui attribue ses rôles.</CardDescription>
+        <CardDescription>Créez le compte de connexion de la personne et choisissez ses rôles.</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={form.onSubmit} className="space-y-6">
@@ -21,7 +21,7 @@ export function MemberForm() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="member-email">E-mail</Label>
-              <Input id="member-email" name="email" type="email" required autoComplete="off" value={form.email} onChange={event => form.setEmail(event.target.value)} placeholder="camille.martin@novaterra.example" />
+              <Input id="member-email" name="email" type="email" required aria-invalid={form.creationError ? true : undefined} aria-describedby={form.creationError ? "member-form-error" : undefined} autoComplete="off" value={form.email} onChange={event => form.setEmail(event.target.value)} placeholder="camille.martin@novaterra.example" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="member-password">Mot de passe initial</Label>
@@ -56,8 +56,8 @@ export function MemberForm() {
               )}
             </fieldset>
           </fieldset>
-          {form.creationError && <p role="alert" className="text-sm text-destructive">{form.creationError}</p>}
-          {form.success && <p role="status" className="text-sm text-green-700">{form.success}</p>}
+          {form.creationError && <p id="member-form-error" role="alert" className="text-sm font-medium text-destructive"><span className="sr-only">Erreur : </span>{form.creationError}</p>}
+          {form.success && <p role="status" className="text-sm font-medium text-green-800">✓ {form.success}</p>}
           <Button type="submit" disabled={!form.canSubmit}>{form.creation.isLoading ? "Ajout…" : "Ajouter le membre"}</Button>
         </form>
       </CardContent>

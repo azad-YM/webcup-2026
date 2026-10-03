@@ -25,3 +25,5 @@ export * from "./shadcn/switch"
 export * from "./shadcn/tabs"
 
 export * from "./file-uploader"
+
+export * from "./a11y"

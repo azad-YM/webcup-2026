@@ -121,7 +121,7 @@ function RequestDetail({ reference }: { reference: string }) {
         <LoadingState label="Chargement de la demande…" />
       ) : failure && !request ? (
         failure.status === 401 ? null : failure.status === 404
-          ? <EmptyState title="Cette demande est introuvable dans votre espace.">Vérifiez la référence ou revenez à la liste de vos demandes.</EmptyState>
+          ? <EmptyState title="Cette demande est introuvable dans votre espace.">Vérifiez le numéro de suivi ou revenez à la liste de vos demandes.</EmptyState>
           : <ErrorState message={failure.data} onRetry={() => void query.refetch()} retrying={query.isFetching} />
       ) : request ? (
         <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
