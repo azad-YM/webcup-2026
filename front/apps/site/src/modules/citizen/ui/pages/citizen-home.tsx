@@ -2,7 +2,7 @@
 import Link from "next/link"
 import type { Route } from "next"
 import type { ReactNode } from "react"
-import { ArrowRight, ClipboardList, Newspaper, Search, Sparkles, UserRound } from "@boilerplate/shared-ui/components/icon"
+import { ArrowRight, ClipboardList, Megaphone, MessageSquare, Newspaper, Search, Sparkles, UserRound } from "@boilerplate/shared-ui/components/icon"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
 import { greeting, PREFERRED_LANGUAGES, type CitizenProfile } from "../../core/domain/citizen-profile"
 import { CitizenAccessState, useCitizenAccess } from "../components/citizen-access"
@@ -10,9 +10,11 @@ import { CitizenAccessState, useCitizenAccess } from "../components/citizen-acce
 type Shortcut = { title: string; text: string; href?: Route; icon: typeof Search; soon?: boolean }
 
 const SHORTCUTS: Shortcut[] = [
+  { title: "Contacter la mairie", text: "Posez une question ou adressez un message aux services municipaux.", href: "/espace/demandes/nouvelle?type=contact" as Route, icon: MessageSquare },
+  { title: "Signaler un problème", text: "Voirie, éclairage, propreté, inondation… indiquez le lieu, la mairie s’en occupe.", href: "/espace/demandes/nouvelle?type=report" as Route, icon: Megaphone },
+  { title: "Mes demandes", text: "Retrouvez vos demandes, leur état et chaque étape de leur traitement.", href: "/espace/demandes", icon: ClipboardList },
   { title: "Trouver un service", text: "État civil, santé, transports, logement… toutes les démarches de la ville.", href: "/services", icon: Search },
   { title: "Actualités de la ville", text: "Les dernières informations publiées par la mairie.", href: "/actualites", icon: Newspaper },
-  { title: "Mes demandes", text: "Envoyer un message à la mairie, signaler un problème et suivre vos demandes.", icon: ClipboardList, soon: true },
   { title: "Mon profil", text: "Vos coordonnées, votre quartier et votre langue préférée.", href: "/espace/profil", icon: UserRound }
 ]
 
@@ -92,7 +94,7 @@ export function CitizenHomePage({ spaces, spacesForNonCitizen }: { spaces: React
             )}
             <section aria-labelledby="titre-raccourcis">
               <h2 id="titre-raccourcis" className="text-2xl font-semibold tracking-tight">Que souhaitez-vous faire ?</h2>
-              <ul className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              <ul className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {SHORTCUTS.map((shortcut) => <li key={shortcut.title}><ShortcutCard shortcut={shortcut} /></li>)}
               </ul>
             </section>

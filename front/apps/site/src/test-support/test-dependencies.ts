@@ -17,11 +17,17 @@ export function createTestContext(overrides: Partial<Dependencies> = {}) {
   const serviceCatalogGateway = new InMemoryServiceCatalogGateway()
   const publicationGateway = new InMemoryPublicationGateway()
   const dependencies: Dependencies = {
+    realtime: { subscribe: () => () => undefined },
     authGateway,
     authSessionGateway,
     accountRegistrationGateway: new CitizenAccountRegistrationAdapter(citizenGateway),
     citizenGateway,
     citizenSessionProvider: new AuthCitizenSessionAdapter(overrides.authSessionGateway ?? authSessionGateway),
+    serviceRequestGateway: {
+      listMine: async () => [],
+      getMine: async () => { throw new Error("Not configured") },
+      submit: async () => { throw new Error("Not configured") }
+    },
     serviceCatalogGateway,
     publicationGateway,
     ...overrides

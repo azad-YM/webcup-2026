@@ -11,12 +11,14 @@ Administration ne connaît pas les mots de passe ni les sessions : chaque membre
 ## Utilisateurs et consommateurs
 
 - **Administrateur** : crée les rôles, ajoute des agents ou d’autres administrateurs.
-- **Agent municipal** : membre disposant du rôle de référence `municipal-agent` (« Agent municipal »), créé par la CLI d’initialisation ; il consulte aujourd’hui le flux de pilotage et recevra les permissions de traitement des demandes citoyennes au lot L2 (voir le [chantier](../../../../doc/chantier/README.md)).
+- **Agent municipal** : membre disposant du rôle de référence `municipal-agent` (« Agent municipal »), créé par la CLI d’initialisation ; il consulte le flux de pilotage et traite les demandes citoyennes (`admin.request.read`, `admin.request.write`, lot L2).
+- **Administrateur existant** : relancer la [CLI d’initialisation](initialisation-admin.md) pour ajouter les nouvelles permissions du catalogue au rôle « Administrateur principal » et resynchroniser « Agent municipal ».
 - **Consommateurs techniques** :
   - l’application [admin](../../../../front/apps/admin/doc/README.md) (rôles, membres) ;
   - [IAM](../../IAM/doc/README.md), qui obtient l’espace `admin` via `AdminAccessibleSpacesProvider` ;
   - [Pilotage](../../Pilotage/doc/README.md), qui réserve le flux du concours aux membres ayant `admin.pilotage.read` via `AdminPilotageAccessPolicy` ;
-  - [Citizen](../../Citizen/doc/README.md) (cible), autorisera les agents via un port à définir.
+  - [Citizen](../../Citizen/doc/README.md), qui réserve la file des demandes aux membres ayant `admin.request.read` (et `admin.request.write` pour les traiter) via `AdminRequestAccessPolicy` ;
+  - le flux temps réel de [Shared](../../Shared/doc/README.md), qui ouvre le topic `administration.requests` à ces mêmes membres via `AdminRequestsRealtimeAudience` ([ADR 004](../../../../doc/technique/decisions/004-temps-reel.md)).
 
 ## Livré
 
@@ -42,6 +44,10 @@ Interface : la page [Membres](../../../../front/apps/admin/doc/membres.md) de l�
 | Pilotage consomme Administration | `Pilotage\Application\Ports\Provider\PilotageAccessPolicy` | `Infrastructure/Adapter/Pilotage/AdminPilotageAccessPolicy` (`admin.pilotage.read`) |
 | Citizen consomme Administration (L8) | `Citizen\Application\Ports\Provider\CitizenAccountAccessPolicy` | `Infrastructure/Adapter/Citizen/AdminCitizenAccountAccessPolicy` (`admin.citizen.read`, `admin.citizen.write`) |
 | IAM consomme Administration (L8) | `IAM\Application\Ports\Provider\SecurityJournalAccessPolicy` | `Infrastructure/Adapter/IAM/AdminSecurityJournalAccessPolicy` (`admin.security.read`) |
+| Citizen consomme Administration | `Citizen\Application\Ports\Provider\RequestAccessPolicy` | `Infrastructure/Adapter/Citizen/AdminRequestAccessPolicy` (`admin.request.read` ; traitement : `admin.request.read` + `admin.request.write`) |
+| Shared (flux temps réel) consomme Administration | `Shared\Application\Ports\Provider\RealtimeAudienceProvider` (tag automatique) | `Infrastructure/Adapter/Shared/AdminRequestsRealtimeAudience` : topic `administration.requests` pour `admin.request.read` |
+
+Les deux adaptateurs s’appuient sur les requêtes internes `CheckCurrentMemberPermissions` (compte connecté) et `CheckMemberPermissions` (compte donné, utilisé par le flux temps réel) : membre actif, union des permissions de ses rôles.
 
 Les erreurs contractuelles `AccountAlreadyExists` et `AccountCreationRejected` appartiennent à Administration ; l’adaptateur IAM y traduit ses propres erreurs.
 

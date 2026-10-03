@@ -7,7 +7,7 @@
 ## Modèle
 
 - **Permission** : triplet `context.resource.action` (actions : `read`, `write`, `delete`, `approve`, `reject`, `execute`).
-- **Catalogue** (`Infrastructure/InMemory/InMemoryAdminPermissionRepository`, étiquette `administration.permissions`) : `admin.role.read`, `admin.role.write`, `admin.member.read`, `admin.member.write`, `admin.role-assignment.write`, `admin.pilotage.read`, `admin.citizen.read`, `admin.citizen.write`, `admin.security.read` (L8).
+- **Catalogue** (`Infrastructure/InMemory/InMemoryAdminPermissionRepository`, étiquette `administration.permissions`) : `admin.role.read`, `admin.role.write`, `admin.member.read`, `admin.member.write`, `admin.role-assignment.write`, `admin.pilotage.read`, `admin.request.read` (file des demandes citoyennes), `admin.request.write` (traitement des demandes), `admin.citizen.read`, `admin.citizen.write` (comptes citoyens, L8), `admin.security.read` (journal de sécurité, L8).
 - **Rôle** : nom + liste de permissions (table `roles`).
 - **Membre** : référence un compte [IAM](../../IAM/doc/README.md) (`userId`, sans association ORM), porte des `roleIds` et un statut actif (table `admin_members`, un membre par compte).
 
@@ -20,7 +20,7 @@ Créés ou resynchronisés par la [CLI d’initialisation](initialisation-admin.
 | Identifiant | Nom | Permissions |
 |---|---|---|
 | `principal-administrator` | Administrateur principal | tout le catalogue |
-| `municipal-agent` | Agent municipal | `admin.pilotage.read`, `admin.citizen.read`, `admin.citizen.write` (L8 ; les permissions de traitement des demandes s’ajouteront au lot L2). Le journal de sécurité (`admin.security.read`) reste réservé à l’administrateur principal ou à un rôle créé pour cela. |
+| `municipal-agent` | Agent municipal | `admin.pilotage.read`, `admin.request.read`, `admin.request.write`, `admin.citizen.read`, `admin.citizen.write`. Le journal de sécurité (`admin.security.read`) reste réservé à l’administrateur principal. |
 
 Un administrateur attribue le rôle « Agent municipal » depuis la page Membres de l’admin.
 
@@ -45,6 +45,8 @@ Refus d’autorisation → 403 ; règle métier ou payload invalide → 422 ; to
 | [Pilotage](../../Pilotage/doc/README.md) — `PilotageAccessPolicy` | `Adapter/Pilotage/AdminPilotageAccessPolicy` | `admin.pilotage.read` (membre actif) |
 | [Citizen](../../Citizen/doc/compte-et-securite.md) — `CitizenAccountAccessPolicy` | `Adapter/Citizen/AdminCitizenAccountAccessPolicy` | `admin.citizen.read` (liste) ; `admin.citizen.write` (suspension). `isProtectedAccount(userId)` : vrai si le compte est un membre actif, ce qui interdit sa suppression depuis le site et sa suspension comme citoyen. |
 | [IAM](../../IAM/doc/comptes-et-sessions.md#protection-contre-les-tentatives-de-connexion-f37) — `SecurityJournalAccessPolicy` | `Adapter/IAM/AdminSecurityJournalAccessPolicy` | `admin.security.read` (membre actif) |
+| [Citizen](../../Citizen/doc/README.md) — `RequestAccessPolicy` | `Adapter/Citizen/AdminRequestAccessPolicy` | lecture : `admin.request.read` ; traitement : `admin.request.read` + `admin.request.write` (membre actif) |
+| [Shared](../../Shared/doc/README.md) — `RealtimeAudienceProvider` | `Adapter/Shared/AdminRequestsRealtimeAudience` | topic `administration.requests` : `admin.request.read` (membre actif) |
 
 Initialisation du premier administrateur : [procédure CLI](initialisation-admin.md).
 
@@ -62,4 +64,5 @@ Initialisation du premier administrateur : [procédure CLI](initialisation-admin
 - [IAM — comptes et sessions](../../IAM/doc/comptes-et-sessions.md)
 - [Pilotage](../../Pilotage/doc/README.md)
 - [Citizen — compte et sécurité](../../Citizen/doc/compte-et-securite.md)
+- [Citizen](../../Citizen/doc/README.md)
 <!-- backlinks:end -->

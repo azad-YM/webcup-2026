@@ -21,7 +21,7 @@ Les lots regroupent les demandes qui partagent un même modèle ou un même écr
 |---|---|---|---|---|
 | L0 | Séparer l’identité (IAM) des membres et rôles (Administration), retirer le gabarit Example, cadrer Citizen — [ADR 003](../technique/decisions/003-identite-et-habilitations.md) | — | — | ✅ |
 | L1 | Comptes et profils : inscription citoyenne, espace personnel, rôles Agent et Administrateur, formulaire de membre | D01, D03, D08, D09 | 1 500 | 🟡 tâches 1 à 5 livrées ; parcours à vérifier dans le navigateur |
-| L2 | Demandes citoyennes : envoi, confirmation, signalement, suivi, file des agents, compteur d’attente | D04, D16, F25, D11, F26, F22, D17 | 2 390 | ⬜ |
+| L2 | Demandes citoyennes : envoi, confirmation, signalement, suivi, file des agents, compteur d’attente — [Citizen](../../api/src/Citizen/doc/README.md#livré--demandes-citoyennes-lot-l2), [site](../../front/apps/site/doc/parcours-citoyen.md#4-demandes-citoyennes-lot-l2), [admin](../../front/apps/admin/doc/demandes.md) | D04, D16, F25, D11, F26, F22, D17 | 2 390 | 🟡 API, site, admin et temps réel livrés ; ni testés ni vérifiés dans le navigateur |
 | L3 | Services municipaux (avec recherche et filtres), publications, page d’accueil | D05, D06, F28, F32, D07 | 1 550 | ⬜ |
 | L7 | Alertes et diffusion : message général, alerte ciblée par quartier, avis d’annonce importante, recommandations aux personnes vulnérables | D18, F29, F30, F31 | 3 080 | ⬜ |
 | L4 | Accessibilité et repères : lecteur d’écran, contraste, taille du texte, fil d’Ariane, première connexion, indications contextuelles | F21, F23, F24, D15, D12, F35 | 2 400 | ⬜ |
@@ -55,9 +55,17 @@ Décisions : [Citizen — décisions retenues](../../api/src/Citizen/doc/README.
 4. ✅ Site : inscription en deux étapes (compte, puis « Mes informations » que l’on peut passer), connexion automatique, espace personnel `/espace` avec le nom du citoyen, l’invitation à compléter le profil et des raccourcis. Voir le [parcours citoyen](../../front/apps/site/doc/parcours-citoyen.md) ; parcours de bout en bout à vérifier dans le navigateur.
 5. ✅ Administration : rôles de référence « Agent municipal » et « Administrateur principal » à l’initialisation, liste des rôles et des membres, formulaire « Ajouter un membre » dans l’admin ([membres](../../front/apps/admin/doc/membres.md)).
 
+### L2 — Demandes citoyennes
+
+1. ✅ API Citizen : `ServiceRequest` (référence `NT-2026-0042`, type `contact` \| `report`, statuts et étapes, motif obligatoire au rejet), envoi, « mes demandes », file des agents et changement de statut ; port `RequestAccessPolicy` implémenté par Administration (`admin.request.read`, `admin.request.write`, ajoutées au rôle « Agent municipal ») ; migration `Version20261003002000`.
+2. ✅ Temps réel : projection `request.submitted` / `request.status_changed` vers `citizen.{citizenId}` et `administration.requests` ; audience `administration.requests` fournie par Administration.
+3. ✅ Site : « Contacter la mairie », « Signaler un problème », confirmation avec la référence, « Mes demandes » (liste, détail `?ref=`, chronologie), raccourcis de `/espace`, abonnement temps réel.
+4. ✅ Admin : module « Demandes citoyennes » (`/demandes`) : file filtrable, badge « N en attente », traitement avec commentaire, abonnement temps réel.
+5. ⬜ Vérifier le parcours dans le navigateur (migration appliquée, worker actif, CLI d’initialisation relancée pour les nouvelles permissions) ; écrire les tests unitaires et applicatifs.
+
 ### L7 — Alertes et diffusion (à cadrer)
 
-Décisions : BC propriétaire `Communication` ([ADR 005](../technique/decisions/005-bc-communication.md)) ; diffusion sans rechargement par le port `RealtimePublisher` et le transport `database` : buffer `realtime_event` + flux SSE `GET /api/realtime/stream` ([ADR 004](../technique/decisions/004-temps-reel.md)). Livré : socle (publisher, flux unique avec ticket et `Last-Event-ID`, audience Citizen `citizen.{id}`, client `@boilerplate/shared-utils/realtime`, purge). À faire par lot : handlers de projection, `RealtimeAudienceProvider` d’Administration et de Communication, port d’abonnement de chaque application ; le BC Communication reste à créer.
+Décisions : BC propriétaire `Communication` ([ADR 005](../technique/decisions/005-bc-communication.md)) ; diffusion sans rechargement par le port `RealtimePublisher` et le transport `database` : buffer `realtime_event` + flux SSE `GET /api/realtime/stream` ([ADR 004](../technique/decisions/004-temps-reel.md)). Livré : socle (publisher, flux unique avec ticket et `Last-Event-ID`, audience Citizen `citizen.{id}`, client `@boilerplate/shared-utils/realtime`, purge) ; au lot L2 : projection des demandes, audience `administration.requests` d’Administration, port d’abonnement du site et de l’admin (un flux SSE par onglet). À faire : handlers de projection et `RealtimeAudienceProvider` de Communication ; le BC Communication reste à créer.
 
 - Une **alerte** est une publication urgente avec un niveau de gravité, une période de validité et une audience : tous les habitants, un quartier, ou les personnes ayant demandé les alertes sanitaires.
 - Elle s’affiche en bandeau sur le site pendant sa validité (D18, F29) et apparaît dans les notifications de l’espace personnel des citoyens concernés (F30).

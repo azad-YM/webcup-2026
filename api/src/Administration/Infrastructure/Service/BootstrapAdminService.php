@@ -19,8 +19,8 @@ final readonly class BootstrapAdminService
     public const ROLE_ID = 'principal-administrator';
     public const AGENT_ROLE_ID = 'municipal-agent';
     public const AGENT_ROLE_NAME = 'Agent municipal';
-    /** Reference permissions of the municipal agent; request processing permissions join in lot L2. */
-    public const AGENT_PERMISSIONS = ['admin.pilotage.read', 'admin.citizen.read', 'admin.citizen.write'];
+    /** Reference permissions of the municipal agent: Webcup feed (L6), citizen requests (L2), citizen accounts (L8). */
+    public const AGENT_PERMISSIONS = ['admin.pilotage.read', 'admin.request.read', 'admin.request.write', 'admin.citizen.read', 'admin.citizen.write'];
 
     public function __construct(
         private EntityManagerInterface $manager,

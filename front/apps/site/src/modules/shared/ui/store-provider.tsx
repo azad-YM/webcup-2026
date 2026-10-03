@@ -23,6 +23,9 @@ import {
   LocalPublicationGateway,
   LocalServiceCatalogGateway
 } from "@/modules/public/core/infrastructure/for-production/gateway/local/public-content.local.gateway"
+import { ServiceRequestHttpGateway } from "@/modules/citizen/core/infrastructure/for-production/gateway/http/service-request.http.gateway"
+import { REQUEST_EVENTS } from "@/modules/citizen/core/application/rtk-api/service-requests"
+import { SseRealtimeSubscriber } from "../core/infrastructure/realtime/sse-realtime.subscriber"
 
 type Session = {
   ready: boolean
@@ -38,11 +41,14 @@ function createDependencies(): Dependencies {
   const authSessionGateway = new LocalStorageAuthSessionGateway()
   const citizenGateway = new CitizenHttpGateway(siteEnv.apiBaseUrl)
   return {
+    // Un seul flux SSE par onglet ; la liste réunit les événements écoutés par les écrans du site.
+    realtime: new SseRealtimeSubscriber(siteEnv.apiBaseUrl, () => authSessionGateway.getToken(), [...REQUEST_EVENTS]),
     authGateway: new AuthHttpGateway(siteEnv.apiBaseUrl),
     authSessionGateway,
     accountRegistrationGateway: new CitizenAccountRegistrationAdapter(citizenGateway),
     citizenGateway,
     citizenSessionProvider: new AuthCitizenSessionAdapter(authSessionGateway),
+    serviceRequestGateway: new ServiceRequestHttpGateway(siteEnv.apiBaseUrl),
     // Contenu de démonstration local : à remplacer par l’HTTP d’Administration au lot L3.
     serviceCatalogGateway: new LocalServiceCatalogGateway(),
     publicationGateway: new LocalPublicationGateway()

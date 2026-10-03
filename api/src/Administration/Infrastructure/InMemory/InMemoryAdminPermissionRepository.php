@@ -20,6 +20,8 @@ class InMemoryAdminPermissionRepository implements IPermissionRepository {
             new Permission('admin', 'citizen', 'read'),
             new Permission('admin', 'citizen', 'write'),
             new Permission('admin', 'security', 'read'),
+            new Permission('admin', 'request', 'read'),
+            new Permission('admin', 'request', 'write'),
         ];
     }
 

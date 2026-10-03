@@ -5,8 +5,12 @@ import type { CitizenGateway } from "@/modules/citizen/core/application/ports/ga
 import type { CitizenSessionProvider } from "@/modules/citizen/core/application/ports/provider/citizen-session.provider"
 import type { ServiceCatalogGateway } from "@/modules/public/core/application/ports/gateway/service-catalog.gateway"
 import type { PublicationGateway } from "@/modules/public/core/application/ports/gateway/publication.gateway"
+import type { ServiceRequestGateway } from "@/modules/citizen/core/application/ports/gateway/service-request.gateway"
+import type { RealtimeSubscriber } from "../application/ports/realtime-subscriber"
 
 export type Dependencies = {
+  // temps réel (un flux SSE par onglet)
+  realtime: RealtimeSubscriber
   // auth
   authGateway: AuthGateway
   authSessionGateway: AuthSessionGateway
@@ -14,6 +18,7 @@ export type Dependencies = {
   // citizen
   citizenGateway: CitizenGateway
   citizenSessionProvider: CitizenSessionProvider
+  serviceRequestGateway: ServiceRequestGateway
   // public (adaptateurs locaux jusqu’au lot L3)
   serviceCatalogGateway: ServiceCatalogGateway
   publicationGateway: PublicationGateway

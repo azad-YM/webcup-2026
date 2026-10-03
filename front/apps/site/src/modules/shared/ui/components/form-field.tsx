@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from "react"
+import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from "react"
 
 type FieldFrameProps = {
   id: string
@@ -45,6 +45,22 @@ export function TextField({ id, label, hint, error, optional, className, ...inpu
   return (
     <FieldFrame id={id} label={label} hint={hint} error={error} optional={optional}>
       {(aria) => <input id={id} name={id} {...input} {...aria} className={`${controlClass(error)} ${className ?? ""}`} />}
+    </FieldFrame>
+  )
+}
+
+type TextAreaFieldProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "id" | "children"> & {
+  id: string
+  label: string
+  hint?: ReactNode
+  error?: string
+  optional?: boolean
+}
+
+export function TextAreaField({ id, label, hint, error, optional, className, ...textarea }: TextAreaFieldProps) {
+  return (
+    <FieldFrame id={id} label={label} hint={hint} error={error} optional={optional}>
+      {(aria) => <textarea id={id} name={id} {...textarea} {...aria} className={`${controlClass(error)} ${className ?? ""}`} />}
     </FieldFrame>
   )
 }

@@ -13,6 +13,10 @@ import { SeenRequestsLocalStorageGateway } from "@/modules/pilotage/core/infrast
 import { AuthSessionLocalStorageGateway } from "@/modules/auth/core/infrastructure/for-production/gateway/local/auth-session.local-storage.gateway"
 import { AuthHttpGateway } from "@/modules/auth/core/infrastructure/for-production/gateway/http/auth.http.gateway"
 import { PortalLoginHttpGateway } from "@/modules/auth/core/infrastructure/for-production/gateway/http/portal-login.http.gateway"
+import { AuthRequestSessionProvider } from "@/modules/auth/core/infrastructure/adapter/requests/auth-request-session.provider"
+import { RequestQueueHttpGateway } from "@/modules/requests/core/infrastructure/for-production/gateway/http/request-queue.http.gateway"
+import { REQUEST_EVENTS } from "@/modules/requests/core/application/rtk-api/requests"
+import { SseRealtimeSubscriber } from "../infrastructure/sse-realtime.subscriber"
 import type { Dependencies } from "./dependencies"
 import { createStore, type AppStore } from "./store"
 
@@ -33,6 +37,7 @@ export class App {
     // Each consumer module owns its session port; the auth module provides one adapter per consumer.
     const adminSession = new AuthAccessSessionProvider(authSessionGateway, onSessionInvalidated)
     const pilotageSession = new AuthPilotageSessionProvider(authSessionGateway, onSessionInvalidated)
+    const requestSession = new AuthRequestSessionProvider(authSessionGateway, onSessionInvalidated)
 
     return {
       citizenAccountsGateway: new CitizenAccountsHttpGateway(apiBaseUrl, new AuthAccountSessionProvider(authSessionGateway, onSessionInvalidated)),
@@ -45,6 +50,9 @@ export class App {
       memberGateway: new MemberHttpGateway(apiBaseUrl, adminSession),
       webcupFeedGateway: new WebcupFeedHttpGateway(apiBaseUrl, pilotageSession),
       seenRequestsGateway: new SeenRequestsLocalStorageGateway(),
+      requestQueueGateway: new RequestQueueHttpGateway(apiBaseUrl, requestSession),
+      // One stream per tab; the list gathers the events listened to by the admin screens.
+      realtime: new SseRealtimeSubscriber(apiBaseUrl, () => authSessionGateway.getToken(), [...REQUEST_EVENTS]),
     }
   }
 }
