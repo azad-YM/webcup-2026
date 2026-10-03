@@ -7,4 +7,16 @@ nelmio_cors:
         allow_methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
         max_age: 3600
     paths:
-        '^/api/': ~
+        '^/api/': 
+            origin_regex: true
+            allow_origin:
+                - '^http://localhost:[0-9]+$'
+                - '^https?://admin\.adumillion\.lescomores\.webcup\.hodi\.cloud$'
+                - '^https?://adumillion\.lescomores\.webcup\.hodi\.cloud$'
+                - '^https?://api\.adumillion\.lescomores\.webcup\.hodi\.cloud$'
+            allow_methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE']
+            allow_headers: ['Content-Type', 'Authorization']
+            expose_headers: ['Link']
+            max_age: 3600
+        '^/': # Apply to all other paths if needed, but configure carefully
+            allow_origin: [] 
