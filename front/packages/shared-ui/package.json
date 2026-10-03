@@ -42,10 +42,12 @@
     "./global.css": "./src/styles/global.css",
     "./postcss.config": "./postcss.config.mjs",
     "./components": "./src/components/index.ts",
+    "./components/a11y": "./src/components/a11y/index.ts",
     "./components/*": "./src/components/*",
     "./components/icon": "./src/components/icon/index.ts",
     "./lib": "./src/lib/index.ts",
     "./hooks": "./src/hooks/index.ts",
-    "./hooks/*": "./src/hooks/*"
+    "./hooks/*": "./src/hooks/*",
+    "./a11y": "./src/a11y/index.ts"
   }
 }
