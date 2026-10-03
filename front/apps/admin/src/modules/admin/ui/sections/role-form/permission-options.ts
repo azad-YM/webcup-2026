@@ -6,6 +6,7 @@ const actions: Record<string, string> = {
 }
 const resources: Record<string, string> = {
   role: "Rôles", member: "Membres", "role-assignment": "Attribution des rôles",
+  pilotage: "Flux Nova Terra (pilotage)",
 }
 
 export const permissionLabel = (permission: Permission): string =>

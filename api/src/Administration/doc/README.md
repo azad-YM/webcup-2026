@@ -11,7 +11,7 @@ Administration ne connaît pas les mots de passe ni les sessions : chaque membre
 ## Utilisateurs et consommateurs
 
 - **Administrateur** : crée les rôles, ajoute des agents ou d’autres administrateurs.
-- **Agent municipal** : membre disposant d’un rôle limité (traitement des demandes citoyennes, publication de contenus) — rôles à créer selon le [chantier](../../../../doc/chantier/README.md).
+- **Agent municipal** : membre disposant du rôle de référence `municipal-agent` (« Agent municipal »), créé par la CLI d’initialisation ; il consulte aujourd’hui le flux de pilotage et recevra les permissions de traitement des demandes citoyennes au lot L2 (voir le [chantier](../../../../doc/chantier/README.md)).
 - **Consommateurs techniques** :
   - l’application [admin](../../../../front/apps/admin/doc/README.md) (rôles, membres) ;
   - [IAM](../../IAM/doc/README.md), qui obtient l’espace `admin` via `AdminAccessibleSpacesProvider` ;
@@ -22,10 +22,14 @@ Administration ne connaît pas les mots de passe ni les sessions : chaque membre
 | Méthode | Route | Rôle |
 |---|---|---|
 | GET | `/api/administration/permissions` | Catalogue des permissions |
+| GET | `/api/administration/roles` | Liste des rôles `{id, name, permissions[]}` |
 | POST | `/api/administration/roles` | Création d’un rôle |
+| GET | `/api/administration/members` | Liste des membres `{id, userId, name, roles[{id, name}], active}` |
 | POST | `/api/administration/members` | Ajout d’un membre et création de son compte IAM |
 
-CLI : `php bin/console app:admin:bootstrap` ([initialisation de l’administrateur principal](initialisation-admin.md)).
+CLI : `php bin/console app:admin:bootstrap` ([initialisation de l’administrateur principal et des rôles de référence](initialisation-admin.md)).
+
+Interface : la page [Membres](../../../../front/apps/admin/doc/membres.md) de l’admin liste les membres et ajoute un membre ; la page [Rôles](../../../../front/apps/admin/doc/roles.md) crée les rôles.
 
 ## Ports et raccordements
 
@@ -43,9 +47,7 @@ Les erreurs contractuelles `AccountAlreadyExists` et `AccountCreationRejected` a
 - **Publications** : annonces, changements de service, informations pratiques (D06).
 - **Alertes** : publications urgentes avec gravité, période de validité et audience (tous, un quartier, personnes vulnérables) — D18, F29, F30, F31 ; cadrage dans le [chantier](../../../../doc/chantier/README.md).
 - **Recherche et filtres** dans le catalogue des services (F32).
-- Rôles de référence **Agent** et **Administrateur** créés au démarrage (D08, D09).
-- Formulaire de création d’un membre dans l’admin (API livrée, écran à construire).
-- Liste, modification, suspension des membres et des rôles.
+- Modification, suspension des membres ; modification et suppression des rôles.
 - Rattachement d’un compte IAM **existant** lors de l’ajout d’un membre (aujourd’hui refusé).
 
 ## Questions ouvertes

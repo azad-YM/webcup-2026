@@ -2,6 +2,7 @@ import { sessionCleared } from "./session"
 import { AuthAccessSessionProvider } from "@/modules/auth/core/infrastructure/adapter/admin/auth-access-session.provider"
 import { PermissionHttpGateway } from "@/modules/admin/core/infrastructure/for-production/gateway/http/permission.http.gateway"
 import { RoleHttpGateway } from "@/modules/admin/core/infrastructure/for-production/gateway/http/role.http.gateway"
+import { MemberHttpGateway } from "@/modules/admin/core/infrastructure/for-production/gateway/http/member.http.gateway"
 import { AuthSessionLocalStorageGateway } from "@/modules/auth/core/infrastructure/for-production/gateway/local/auth-session.local-storage.gateway"
 import { AuthHttpGateway } from "@/modules/auth/core/infrastructure/for-production/gateway/http/auth.http.gateway"
 import { PortalLoginHttpGateway } from "@/modules/auth/core/infrastructure/for-production/gateway/http/portal-login.http.gateway"
@@ -31,6 +32,7 @@ export class App {
       portalLoginGateway: new PortalLoginHttpGateway(apiBaseUrl, siteUrl, authSessionGateway),
       permissionGateway: new PermissionHttpGateway(apiBaseUrl, adminSession),
       roleGateway: new RoleHttpGateway(apiBaseUrl, adminSession),
+      memberGateway: new MemberHttpGateway(apiBaseUrl, adminSession),
     }
   }
 }

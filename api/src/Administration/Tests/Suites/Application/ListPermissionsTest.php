@@ -36,14 +36,16 @@ final class ListPermissionsTest extends ApplicationTestCase
         self::assertSame([
             ['context' => 'admin', 'resource' => 'role', 'action' => 'read'],
             ['context' => 'admin', 'resource' => 'role', 'action' => 'write'],
+            ['context' => 'admin', 'resource' => 'member', 'action' => 'read'],
             ['context' => 'admin', 'resource' => 'member', 'action' => 'write'],
             ['context' => 'admin', 'resource' => 'role-assignment', 'action' => 'write'],
+            ['context' => 'admin', 'resource' => 'pilotage', 'action' => 'read'],
         ], $permissions);
         $this->request('POST', '/api/administration/roles', ['name' => 'From catalog', 'permissions' => $permissions]);
         self::assertResponseStatusCodeSame(200);
         $created = array_values(array_filter(self::getContainer()->get(IRoleRepository::class)->findAll(), fn (Role $role) => $role->name === 'From catalog'));
         self::assertCount(1, $created);
-        self::assertCount(4, $created[0]->permissions);
+        self::assertCount(6, $created[0]->permissions);
     }
 
     public function testRejectsAnonymous(): void

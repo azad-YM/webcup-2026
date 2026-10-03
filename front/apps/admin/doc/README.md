@@ -6,7 +6,7 @@
 
 L’admin est l’espace de travail des agents et des administrateurs de Nova Terra, distinct du portail des habitants. Les administrateurs y gèrent les rôles et les membres. Les agents y traiteront les demandes citoyennes, publieront les informations de la ville et consulteront le flux de l’API du concours (voir le [chantier](../../../../doc/chantier/README.md)). Elle s’ouvre depuis la carte « Administration » du [site](../../site/doc/README.md), sans nouvelle saisie des identifiants.
 
-Aujourd’hui, seule la création des rôles est livrée.
+Livré : création des rôles, liste et ajout des membres ([membres](membres.md)).
 
 ## Parcours
 
@@ -18,7 +18,7 @@ Aujourd’hui, seule la création des rôles est livrée.
 
 | Module | Routes | Backend propriétaire | Statut |
 |---|---|---|---|
-| Administration | `/admin`, `/admin/role`, `/admin/member` | [Administration](../../../../api/src/Administration/doc/README.md) | Rôles livrés ([détail](roles.md)) ; membres à venir (API livrée) |
+| Administration | `/admin`, `/admin/role`, `/admin/member` | [Administration](../../../../api/src/Administration/doc/README.md) | Création des rôles ([détail](roles.md)) ; liste et ajout des membres ([détail](membres.md)) |
 | Demandes citoyennes | à créer | [Citizen](../../../../api/src/Citizen/doc/README.md) | Cible (F22, D17) |
 | Pilotage | à créer | `Pilotage` (à créer) | Cible (D19) |
 

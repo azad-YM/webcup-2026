@@ -21,4 +21,9 @@ final readonly class DoctrineMemberRepository implements MemberRepository
         }
     }
     public function findByUserId(string $userId): ?Member { return $this->manager->getRepository(Member::class)->findOneBy(['userId' => $userId]); }
+
+    public function findAll(): array
+    {
+        return array_values($this->manager->getRepository(Member::class)->findBy([], ['name' => 'ASC', 'id' => 'ASC']));
+    }
 }

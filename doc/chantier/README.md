@@ -48,7 +48,7 @@ Décisions : [Citizen — décisions retenues](../../api/src/Citizen/doc/README.
 2. Cas d’usage `RegisterCitizen` `{email, password}` : route publique dans le firewall, création du compte via un port de Citizen implémenté dans `IAM/Infrastructure/Adapter/Citizen`, puis création du citoyen dans la même transaction. Un e-mail déjà utilisé est refusé. Retirer `/api/auth/register`.
 3. Cas d’usage `GetMyCitizenProfile` et `UpdateMyCitizenProfile` (champs facultatifs : prénom, nom, téléphone, adresse, quartier, langue).
 4. Site : inscription en deux étapes (compte, puis « Mes informations » que l’on peut passer), connexion automatique, espace personnel `/espace` avec le nom du citoyen, l’invitation à compléter le profil et des raccourcis.
-5. Administration : rôles de référence Agent et Administrateur à l’initialisation, et formulaire « Ajouter un membre » dans l’admin.
+5. ✅ Administration : rôles de référence « Agent municipal » et « Administrateur principal » à l’initialisation, liste des rôles et des membres, formulaire « Ajouter un membre » dans l’admin ([membres](../../front/apps/admin/doc/membres.md)).
 
 ### L7 — Alertes et diffusion (à cadrer)
 
