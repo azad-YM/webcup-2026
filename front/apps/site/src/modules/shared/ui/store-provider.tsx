@@ -19,13 +19,13 @@ import {
 import { AuthCitizenSessionAdapter } from "@/modules/auth/core/infrastructure/adapter/citizen/auth-citizen-session.adapter"
 import { CitizenHttpGateway } from "@/modules/citizen/core/infrastructure/for-production/gateway/http/citizen.http.gateway"
 import { CitizenAccountRegistrationAdapter } from "@/modules/citizen/core/infrastructure/adapter/auth/citizen-account-registration.adapter"
-import {
-  LocalPublicationGateway,
-  LocalServiceCatalogGateway
-} from "@/modules/public/core/infrastructure/for-production/gateway/local/public-content.local.gateway"
 import { ServiceRequestHttpGateway } from "@/modules/citizen/core/infrastructure/for-production/gateway/http/service-request.http.gateway"
 import { REQUEST_EVENTS } from "@/modules/citizen/core/application/rtk-api/service-requests"
 import { SseRealtimeSubscriber } from "../core/infrastructure/realtime/sse-realtime.subscriber"
+import { HttpPublicContentGateway } from "@/modules/public/core/infrastructure/for-production/gateway/http/public-content.http.gateway"
+import { AlertsHttpGateway } from "@/modules/public/core/infrastructure/for-production/gateway/http/alerts.http.gateway"
+import { SseCityFeedGateway } from "@/modules/public/core/infrastructure/for-production/gateway/realtime/city-feed.sse.gateway"
+import { AuthPublicSessionAdapter } from "@/modules/auth/core/infrastructure/adapter/public/auth-public-session.adapter"
 
 type Session = {
   ready: boolean
@@ -40,6 +40,8 @@ const SessionContext = createContext<Session | null>(null)
 function createDependencies(): Dependencies {
   const authSessionGateway = new LocalStorageAuthSessionGateway()
   const citizenGateway = new CitizenHttpGateway(siteEnv.apiBaseUrl)
+  const publicSession = new AuthPublicSessionAdapter(authSessionGateway)
+  const publicContent = new HttpPublicContentGateway(siteEnv.apiBaseUrl)
   return {
     // Un seul flux SSE par onglet ; la liste réunit les événements écoutés par les écrans du site.
     realtime: new SseRealtimeSubscriber(siteEnv.apiBaseUrl, () => authSessionGateway.getToken(), [...REQUEST_EVENTS]),
@@ -49,9 +51,11 @@ function createDependencies(): Dependencies {
     citizenGateway,
     citizenSessionProvider: new AuthCitizenSessionAdapter(authSessionGateway),
     serviceRequestGateway: new ServiceRequestHttpGateway(siteEnv.apiBaseUrl),
-    // Contenu de démonstration local : à remplacer par l’HTTP d’Administration au lot L3.
-    serviceCatalogGateway: new LocalServiceCatalogGateway(),
-    publicationGateway: new LocalPublicationGateway()
+    // Contenus publiés par les BC propriétaires (Administration, Communication) et flux temps réel.
+    serviceCatalogGateway: publicContent,
+    publicationGateway: publicContent,
+    alertsGateway: new AlertsHttpGateway(siteEnv.apiBaseUrl, publicSession),
+    cityFeedGateway: new SseCityFeedGateway(siteEnv.apiBaseUrl, publicSession)
   }
 }
 
@@ -60,6 +64,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     const dependencies = createDependencies()
     return {
       authSessionGateway: dependencies.authSessionGateway,
+      cityFeedGateway: dependencies.cityFeedGateway,
       store: createStore(dependencies)
     }
   })
@@ -87,13 +92,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     } finally {
       setSession({ ready: true, hasToken: false, storageError: false })
       resetAccountCaches(runtime.store)
+      runtime.cityFeedGateway.restart()
     }
   }, [runtime])
+  // Connexion ou déconnexion : le flux temps réel rouvre avec (ou sans) les topics privés du citoyen.
+  useEffect(() => {
+    if (session.ready) runtime.cityFeedGateway.restart()
+  }, [session.ready, session.hasToken, runtime])
   useEffect(() => {
     refresh()
     const onStorage = (event: StorageEvent) => {
       if (event.key === SESSION_KEY || event.key === null) {
         resetAccountCaches(runtime.store)
+        runtime.cityFeedGateway.restart()
         refresh()
       }
     }

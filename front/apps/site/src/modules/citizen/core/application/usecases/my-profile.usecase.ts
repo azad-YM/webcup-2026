@@ -16,6 +16,8 @@ const requireToken = (token: string | null) => {
 export const getMyProfile: UseCase<void, CitizenProfile> = async (dependencies) =>
   dependencies.citizenGateway.getMyProfile(requireToken(dependencies.citizenSessionProvider.getToken()))
 
+export const listDistricts: UseCase<void, string[]> = async (dependencies) => dependencies.citizenGateway.listDistricts()
+
 export const activateMyCitizenAccount: UseCase<void, CitizenProfile> = async (dependencies) =>
   dependencies.citizenGateway.activateMyCitizenAccount(requireToken(dependencies.citizenSessionProvider.getToken()))
 

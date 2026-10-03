@@ -52,6 +52,10 @@ export class InMemoryCitizenGateway implements CitizenGateway {
     return { deleted: true }
   }
 
+  async listDistricts() {
+    return ["Nord", "Sud", "Est", "Ouest", "Centre", "Port"]
+  }
+
   async register(payload: CitizenRegistration) {
     this.consumeFailure()
     this.registrations.push(payload)

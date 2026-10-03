@@ -37,6 +37,12 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Citizen/Infrastructure/Doctrine/Entity'
                 prefix: 'Citizen\Domain\Entity'
                 alias: Citizen
+            Communication:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Communication/Infrastructure/Doctrine/Entity'
+                prefix: 'Communication\Domain\Entity'
+                alias: Communication
         controller_resolver:
             auto_mapping: false
 

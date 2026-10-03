@@ -68,6 +68,9 @@ Lot L8, 🟡 non vérifié dans un navigateur. Sous le formulaire du profil, la 
 | `401` | Session expirée : déconnexion. |
 
 Règles (anonymisation, compte agent protégé) : [Citizen — compte et sécurité](../../../../api/src/Citizen/doc/compte-et-securite.md). Code : `citizen/ui/sections/delete-account.tsx`, `citizen/core/application/usecases/delete-my-account.usecase.ts`.
+Le **quartier** se choisit dans une liste fermée (Nord, Sud, Est, Ouest, Centre, Port) chargée depuis `GET /api/administration/districts` ; il sert aux alertes ciblées. Une valeur ancienne hors liste reste affichée pour ne pas être effacée.
+
+Sous l’espace personnel, la section **« Notifications de la ville »** affiche les alertes qui concernent le citoyen, les annonces importantes et la case de consentement aux alertes sanitaires : voir [vitrine et alertes](vitrine-et-alertes.md).
 
 ## Dépendances et limites
 
@@ -92,4 +95,5 @@ Code : modules `auth` (`ui/pages/registration.tsx`, `core/application/usecases/r
 - [Citizen — compte et sécurité](../../../../api/src/Citizen/doc/compte-et-securite.md)
 - [Citizen](../../../../api/src/Citizen/doc/README.md)
 - [Admin — demandes citoyennes](../../admin/doc/demandes.md)
+- [Vitrine et alertes](vitrine-et-alertes.md)
 <!-- backlinks:end -->

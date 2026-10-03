@@ -2,6 +2,8 @@ import { CitizenAccountsHttpGateway } from "@/modules/citizen-accounts/core/infr
 import { AuthAccountSessionProvider } from "@/modules/auth/core/infrastructure/adapter/citizen-accounts/auth-account-session.provider"
 import { SecurityJournalHttpGateway } from "@/modules/security/core/infrastructure/for-production/gateway/http/security-journal.http.gateway"
 import { AuthSecuritySessionProvider } from "@/modules/auth/core/infrastructure/adapter/security/auth-security-session.provider"
+import { ContentHttpGateway } from "@/modules/content/core/infrastructure/for-production/gateway/http/content.http.gateway"
+import { AuthContentSessionProvider } from "@/modules/auth/core/infrastructure/adapter/content/auth-content-session.provider"
 import { sessionCleared } from "./session"
 import { AuthAccessSessionProvider } from "@/modules/auth/core/infrastructure/adapter/admin/auth-access-session.provider"
 import { PermissionHttpGateway } from "@/modules/admin/core/infrastructure/for-production/gateway/http/permission.http.gateway"
@@ -38,6 +40,7 @@ export class App {
     const adminSession = new AuthAccessSessionProvider(authSessionGateway, onSessionInvalidated)
     const pilotageSession = new AuthPilotageSessionProvider(authSessionGateway, onSessionInvalidated)
     const requestSession = new AuthRequestSessionProvider(authSessionGateway, onSessionInvalidated)
+    const contentSession = new AuthContentSessionProvider(authSessionGateway, onSessionInvalidated)
 
     return {
       citizenAccountsGateway: new CitizenAccountsHttpGateway(apiBaseUrl, new AuthAccountSessionProvider(authSessionGateway, onSessionInvalidated)),
@@ -53,6 +56,7 @@ export class App {
       requestQueueGateway: new RequestQueueHttpGateway(apiBaseUrl, requestSession),
       // One stream per tab; the list gathers the events listened to by the admin screens.
       realtime: new SseRealtimeSubscriber(apiBaseUrl, () => authSessionGateway.getToken(), [...REQUEST_EVENTS]),
+      contentGateway: new ContentHttpGateway(apiBaseUrl, contentSession),
     }
   }
 }

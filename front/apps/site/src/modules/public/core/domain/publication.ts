@@ -1,5 +1,6 @@
 /**
- * Publication de la ville (actualité). Propriétaire : Administration (lot L3).
+ * Publication de la ville (actualité). Propriétaire : Communication
+ * (`GET /communication/publications`).
  */
 export type Publication = {
   id: string
@@ -7,6 +8,8 @@ export type Publication = {
   category: string
   summary: string
   body: string[]
+  /** Annonce importante (F30), signalée aussi dans les notifications des citoyens. */
+  important: boolean
   /** Date ISO 8601. */
   publishedAt: string
 }

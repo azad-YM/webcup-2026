@@ -11,6 +11,7 @@ import { authApi } from "@/modules/auth/core/application/rtk-api/auth"
 import { accessManagementApi } from "@/modules/admin/core/application/rtk-api/access-management"
 import { pilotageApi } from "@/modules/pilotage/core/application/rtk-api/pilotage"
 import { requestsApi } from "@/modules/requests/core/application/rtk-api/requests"
+import { contentApi } from "@/modules/content/core/application/rtk-api/content"
 import type { Dependencies } from "./dependencies"
 import { sessionCleared } from "./session"
 
@@ -27,6 +28,7 @@ const reducers = combineReducers({
   [accessManagementApi.reducerPath]: accessManagementApi.reducer,
   [pilotageApi.reducerPath]: pilotageApi.reducer,
   [requestsApi.reducerPath]: requestsApi.reducer,
+  [contentApi.reducerPath]: contentApi.reducer,
 })
 
 // A session change (logout, 401, other tab) wipes every cache.
@@ -58,6 +60,7 @@ export const createStore = (config: {
         accessManagementApi.middleware,
         pilotageApi.middleware,
         requestsApi.middleware,
+        contentApi.middleware,
       )
 
       return middleware

@@ -2,7 +2,7 @@
 
 ## Structure
 
-BC : `IAM` (comptes et sessions), `Administration` (membres, rôles, permissions de la ville), `Citizen` (citoyens : inscription et profil livrés ; demandes à venir), `Pilotage` (flux de l’API du concours pour les agents). `Shared` est le socle transversal. Un BC peut être découpé en sous-domaines (SD) lorsqu’il grossit ; les règles ci-dessous s’appliquent alors aussi entre SD.
+BC : `IAM` (comptes et sessions), `Administration` (membres, rôles, permissions de la ville), `Citizen` (citoyens : inscription et profil livrés ; demandes à venir), `Communication` (publications et alertes aux habitants), `Pilotage` (flux de l’API du concours pour les agents). `Shared` est le socle transversal. Un BC peut être découpé en sous-domaines (SD) lorsqu’il grossit ; les règles ci-dessous s’appliquent alors aussi entre SD.
 
 Chaque BC simple ou SD porte `Application`, `Domain`, `Infrastructure`, `Tests` et `doc`. Lire son `doc/README.md` avant de modifier ses règles ; les décisions transverses restent dans la documentation centrale. Les namespaces suivent le chemin sous `src`.
 

@@ -2,6 +2,7 @@
 import type { ReactNode } from "react"
 import { FormAnnouncement, SelectField, TextField } from "@/modules/shared/ui/components/form-field"
 import { PREFERRED_LANGUAGES, PROFILE_LABELS, PROFILE_MAX_LENGTHS, type CitizenProfile } from "../../../core/domain/citizen-profile"
+import { useListDistrictsQuery } from "../../../core/application/rtk-api/citizen"
 import { profileFieldId, useProfileForm } from "./profile-form.hook"
 
 const LANGUAGE_OPTIONS = PREFERRED_LANGUAGES.map((language) => ({ value: language.code, label: language.label }))
@@ -14,7 +15,11 @@ export function ProfileForm({ profile, submitLabel, onSaved, secondaryAction, su
   successExtra?: ReactNode
 }) {
   const { draft, errors, status, isLoading, change, submit } = useProfileForm(profile, onSaved)
-  const text = (field: "firstName" | "lastName" | "phone" | "address" | "district", props: { autoComplete: string; type?: string; hint?: string }) => (
+  const districts = useListDistrictsQuery()
+  // Liste fermée d’Administration ; une valeur ancienne hors liste reste visible pour ne pas l’effacer.
+  const districtOptions = [...(districts.data ?? []), ...(draft.district && !districts.data?.includes(draft.district) ? [draft.district] : [])]
+    .map((district) => ({ value: district, label: district }))
+  const text = (field: "firstName" | "lastName" | "phone" | "address", props: { autoComplete: string; type?: string; hint?: string }) => (
     <TextField
       id={profileFieldId(field)}
       label={PROFILE_LABELS[field]}
@@ -42,7 +47,17 @@ export function ProfileForm({ profile, submitLabel, onSaved, secondaryAction, su
       <fieldset className="grid gap-5 sm:grid-cols-2">
         <legend className="mb-4 text-lg font-semibold">Coordonnées</legend>
         {text("phone", { autoComplete: "tel", type: "tel", hint: "Pour que les services puissent vous recontacter." })}
-        {text("district", { autoComplete: "address-level3", hint: "Pour recevoir les informations et alertes de votre quartier." })}
+        <SelectField
+          id={profileFieldId("district")}
+          label={PROFILE_LABELS.district}
+          optional
+          placeholder={districts.isError ? "Liste des quartiers indisponible" : "Non précisé"}
+          hint="Pour recevoir les informations et alertes de votre quartier."
+          options={districtOptions}
+          value={draft.district}
+          error={errors.district}
+          onChange={(event) => change("district", event.target.value)}
+        />
         <div className="sm:col-span-2">{text("address", { autoComplete: "street-address" })}</div>
       </fieldset>
       <fieldset>

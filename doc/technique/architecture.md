@@ -16,7 +16,7 @@ Admin React/Vite (agents) ───────┼──► API Symfony ──�
 
 ## API modulaire
 
-L’API est découpée en bounded contexts (BC) de même niveau : `IAM`, `Administration`, `Citizen` et `Pilotage`, plus le socle `Shared`. Un BC peut être subdivisé en sous-domaines (SD) lorsqu’il grossit. Chaque BC simple ou SD porte `Application`, `Domain`, `Infrastructure`, `Tests` et `doc`.
+L’API est découpée en bounded contexts (BC) de même niveau : `IAM`, `Administration`, `Citizen`, `Communication` et `Pilotage`, plus le socle `Shared`. Un BC peut être subdivisé en sous-domaines (SD) lorsqu’il grossit. Chaque BC simple ou SD porte `Application`, `Domain`, `Infrastructure`, `Tests` et `doc`.
 
 ```text
 api/src/
@@ -24,8 +24,11 @@ api/src/
 ├── Administration/             BC organisation municipale : membres, rôles, permissions
 │                               (cible : services municipaux)
 ├── Citizen/                    BC relation habitants–ville : citoyens (inscription, profil), demandes et file des agents
+├── Administration/             BC organisation municipale : membres, rôles, permissions,
+│                               services municipaux (état, transports), liste des quartiers
+├── Citizen/                    BC relation habitants–ville : citoyens (inscription, profil, préférences d’alerte) ; demandes à venir
 ├── Pilotage/                   BC pilotage : flux de l’API du concours Webcup (sans persistance)
-├── Communication/              BC à construire : publications, alertes, audiences (ADR 005)
+├── Communication/              BC information aux habitants : publications, alertes, audiences (ADR 005)
 └── Shared/                     kernel, AppController, exceptions, AggregateRoot, ports techniques (dont temps réel)
 ```
 
@@ -68,10 +71,15 @@ Raccordements livrés, à reproduire :
 | `Shared` (flux temps réel) — `RealtimeAudienceProvider` (tag `shared.realtime_audience`) | `Citizen/Infrastructure/Adapter/Shared/CitizenRealtimeAudience` (`citizen.{citizenId}`), `Administration/Infrastructure/Adapter/Shared/AdminRequestsRealtimeAudience` (`administration.requests`) |
 
 Temps réel : Citizen projette ses événements de domaine de demande (`PublishServiceRequestRealtime`) vers le port `RealtimePublisher` ; voir l’[ADR 004](decisions/004-temps-reel.md).
+| `Communication` — `CommunicationAccessPolicy` | `Administration/Infrastructure/Adapter/Communication/AdminCommunicationAccessPolicy` |
+| `Communication` — `DistrictDirectory` | `Administration/Infrastructure/Adapter/Communication/AdminCommunicationDistrictDirectory` |
+| `Communication` — `AudienceProvider` | `Citizen/Infrastructure/Adapter/Communication/CitizenAudienceProvider` |
+| `Citizen` — `DistrictDirectory` | `Administration/Infrastructure/Adapter/Citizen/AdminCitizenDistrictDirectory` |
+| `Shared` — `RealtimeAudienceProvider` (topics des alertes ciblées) | `Citizen/Infrastructure/Adapter/Shared/CitizenAlertRealtimeAudience` |
 
 Pilotage lit aussi l’API externe du concours par son port `WebcupFeedGateway`, implémenté dans sa propre infrastructure (`Infrastructure/Http/WebcupHttpFeedGateway`, cache de 20 s) ; voir [Pilotage](../../api/src/Pilotage/doc/README.md).
 
-Publications et alertes : BC `Communication` à construire, qui consultera Administration (droit de publier) et Citizen (audience) par ses ports ; voir l’[ADR 005](decisions/005-bc-communication.md).
+Publications et alertes : BC [Communication](../../api/src/Communication/doc/README.md), qui consulte Administration (droit de publier, quartiers) et Citizen (audience) par ses ports et projette ses événements vers le temps réel (`public.alerts`, `public.publications`, `district.{quartier}`, `alerts.health`) ; voir l’[ADR 005](decisions/005-bc-communication.md).
 
 Point d’extension : un BC exposant son propre espace implémente `IAM\Application\Ports\Provider\AccessibleSpacesProvider` dans son infrastructure (tag `iam.accessible_spaces`).
 
@@ -126,6 +134,7 @@ Les `AGENTS.md` sont répartis par périmètre : racine, `api/`, chaque BC/SD, `
 - [Documentation](../README.md)
 - [Documentation — IAM](../../api/src/IAM/doc/README.md)
 - [Documentation — Administration](../../api/src/Administration/doc/README.md)
+- [Documentation — Communication](../../api/src/Communication/doc/README.md)
 - [Documentation — Citizen](../../api/src/Citizen/doc/README.md)
 - [Documentation — Shared](../../api/src/Shared/doc/README.md)
 - [Documentation — Pilotage](../../api/src/Pilotage/doc/README.md)

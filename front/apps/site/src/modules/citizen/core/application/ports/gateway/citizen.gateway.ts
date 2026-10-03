@@ -21,4 +21,6 @@ export interface CitizenGateway {
   updateMyProfile(token: string, update: CitizenProfileUpdate): Promise<CitizenProfile>
   /** Rend citoyen le compte connecté (ex. agent) ; idempotent. */
   activateMyCitizenAccount(token: string): Promise<CitizenProfile>
+  /** Liste fermée des quartiers, gérée par Administration (`GET /administration/districts`). */
+  listDistricts(): Promise<string[]>
 }

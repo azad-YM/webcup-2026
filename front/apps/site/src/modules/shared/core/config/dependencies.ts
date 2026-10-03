@@ -7,6 +7,8 @@ import type { ServiceCatalogGateway } from "@/modules/public/core/application/po
 import type { PublicationGateway } from "@/modules/public/core/application/ports/gateway/publication.gateway"
 import type { ServiceRequestGateway } from "@/modules/citizen/core/application/ports/gateway/service-request.gateway"
 import type { RealtimeSubscriber } from "../application/ports/realtime-subscriber"
+import type { AlertsGateway } from "@/modules/public/core/application/ports/gateway/alerts.gateway"
+import type { CityFeedGateway } from "@/modules/public/core/application/ports/gateway/city-feed.gateway"
 
 export type Dependencies = {
   // temps réel (un flux SSE par onglet)
@@ -19,7 +21,9 @@ export type Dependencies = {
   citizenGateway: CitizenGateway
   citizenSessionProvider: CitizenSessionProvider
   serviceRequestGateway: ServiceRequestGateway
-  // public (adaptateurs locaux jusqu’au lot L3)
+  // public : services (Administration), publications et alertes (Communication), flux temps réel
   serviceCatalogGateway: ServiceCatalogGateway
   publicationGateway: PublicationGateway
+  alertsGateway: AlertsGateway
+  cityFeedGateway: CityFeedGateway
 }

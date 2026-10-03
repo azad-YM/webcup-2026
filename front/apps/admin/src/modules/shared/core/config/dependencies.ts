@@ -11,6 +11,7 @@ import type { RealtimeSubscriber } from "@/modules/shared/core/ports/realtime-su
 
 import type { CitizenAccountsGateway } from "@/modules/citizen-accounts/core/application/ports/gateway/citizen-accounts.gateway"
 import type { SecurityJournalGateway } from "@/modules/security/core/application/ports/gateway/security-journal.gateway"
+import type { ContentGateway } from "@/modules/content/core/application/ports/gateway/content.gateway"
 
 export type Dependencies = {
   citizenAccountsGateway: CitizenAccountsGateway
@@ -26,4 +27,5 @@ export type Dependencies = {
   requestQueueGateway: RequestQueueGateway
   /** One SSE stream per tab, shared by the screens (ADR 004). */
   realtime: RealtimeSubscriber
+  contentGateway: ContentGateway
 }

@@ -4,7 +4,7 @@
 [Accueil du projet](../../../README.md) › [Documentation](../../README.md) › [Architecture](../README.md) › [Décisions](README.md) › ADR 005
 <!-- navigation:end -->
 
-- Statut : accepté, BC à construire (lots L3 et L7)
+- Statut : accepté, BC créé (lots L3 et L7 — [documentation](../../../api/src/Communication/doc/README.md))
 - Date : 2026-10-03
 - Précise : [ADR 003](003-identite-et-habilitations.md), qui plaçait les publications dans Administration
 
@@ -36,7 +36,7 @@ Le catalogue des **services municipaux** (D05, F28, F32) reste dans Administrati
 
 - Les alertes actives sont lisibles par une requête (bandeau du site, espace personnel) ; le temps réel ne fait qu’accélérer leur apparition.
 - Le BC sera créé sur le modèle d’Administration (autoload, services, routes, mapping, suite PHPUnit, `doc`, `AGENTS.md`) au premier lot qui en a besoin.
-- Questions ouvertes reprises du [chantier](../../chantier/README.md) : liste fermée des quartiers, notifications par e-mail, consentement pour les alertes sanitaires.
+- Décidé ensuite : quartiers en liste fermée gérée par Administration (port `DistrictDirectory` de Communication et de Citizen) ; consentement explicite aux alertes sanitaires porté par Citizen ; recommandations rédigées à la main. Question ouverte : notifications par e-mail ([chantier](../../chantier/README.md)).
 
 <!-- backlinks:start -->
 ---
@@ -54,4 +54,5 @@ Le catalogue des **services municipaux** (D05, F28, F32) reste dans Administrati
 - [Documentation](../../README.md)
 - [Site](../../../front/apps/site/doc/README.md)
 - [Admin](../../../front/apps/admin/doc/README.md)
+- [Communication](../../../api/src/Communication/doc/README.md)
 <!-- backlinks:end -->

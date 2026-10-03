@@ -1,3 +1,4 @@
+import { AlertBanner } from "@/modules/public/ui/sections/alerts"
 import { StoreProvider } from "@/modules/shared/ui/store-provider"
 import type { Metadata } from "next"
 import "@boilerplate/shared-ui/global.css"
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <StoreProvider>
           <SkipLink />
           <SiteHeader />
+          <AlertBanner />
           <main id={MAIN_CONTENT_ID} tabIndex={-1} className="flex-1">
             {children}
           </main>

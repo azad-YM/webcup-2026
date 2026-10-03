@@ -13,7 +13,7 @@ Parcours à préserver :
 - `/inscription` : compte (`POST /api/citizen/register` puis `login_check`), puis « Mes informations » que l’on peut passer. `PUT /api/citizen/me` remplace tout le profil : envoyer les six champs.
 - `/espace` : garde session puis `GET /api/citizen/me` ; `404` → message « compte non citoyen » et espaces IAM ; carte « Administration » conservée, une carte unique reste sélectionnable sans redirection automatique. La présence d’un jeton ne prouve pas les accès.
 - États chargement / vide / erreur avec « Réessayer » distincts ; un `401` ferme la session et vide les caches (`resetAccountCaches`), une panne réseau non.
-- Services et actualités viennent d’adaptateurs **locaux** de démonstration jusqu’au lot L3 : ne pas les présenter comme une intégration.
+- Services (Administration), actualités et alertes (Communication) viennent de l’API (`HttpPublicContentGateway`, `AlertsHttpGateway`) ; le flux temps réel du module `public` passe par le port `CityFeedGateway` (un seul flux SSE, rouvert à chaque changement de session) avec un `pollingInterval` de secours de 60 s. Les adaptateurs locaux ne servent plus qu’aux tests. Voir [vitrine et alertes](doc/vitrine-et-alertes.md).
 
 Destinations IAM : `admin` (ajouter une entrée dans `SpaceCode`, `spaces-list.tsx`, `env.ts` et `/sso` pour une nouvelle application). Ne jamais transmettre de JWT dans une URL ; `/sso` ne redirige que vers le callback configuré.
 

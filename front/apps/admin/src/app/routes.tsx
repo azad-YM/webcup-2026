@@ -14,6 +14,10 @@ import { PilotageLayout } from "@/modules/pilotage/ui/layouts/pilotage.layout"
 import { WebcupFeedPage } from "@/modules/pilotage/ui/pages/webcup-feed"
 import { RequestsLayout } from "@/modules/requests/ui/layouts/requests.layout"
 import { RequestQueuePage } from "@/modules/requests/ui/pages/request-queue"
+import { ContentLayout } from "@/modules/content/ui/layouts/content.layout"
+import { PublicationsPage } from "@/modules/content/ui/pages/publications"
+import { AlertsPage } from "@/modules/content/ui/pages/alerts"
+import { ServicesPage } from "@/modules/content/ui/pages/services"
 
 const ProtectedRoutes = () => {
   const profile = useGetProfileQuery()
@@ -55,6 +59,15 @@ export const router = createBrowserRouter([
           { path: "member", element: <MembersPage /> },
           { path: "citizens", element: <CitizenAccountsPage /> },
           { path: "security", element: <LoginSecurityPage /> },
+        ],
+      },
+      {
+        path: "/contenus",
+        element: <ContentLayout />,
+        children: [
+          { index: true, element: <PublicationsPage /> },
+          { path: "alertes", element: <AlertsPage /> },
+          { path: "services", element: <ServicesPage /> },
         ],
       },
       {

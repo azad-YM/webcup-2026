@@ -14,9 +14,9 @@ Le projet est réalisé pendant les **24H By Webcup 2026**. Les besoins de la vi
 
 | Profil | Application | Ce qu’il fait | Propriétaire backend |
 |---|---|---|---|
-| Visiteur | site | Découvre la ville, ses services et ses actualités ; s’inscrit | Administration (contenus), Citizen (inscription) |
-| Citoyen | site | Se connecte, complète son profil, envoie des demandes, suit leur traitement | Citizen |
-| Agent municipal | admin | Traite les demandes, publie des informations, suit le flux du concours | Citizen, Administration, Pilotage |
+| Visiteur | site | Découvre la ville, ses services et ses actualités, voit les alertes ; s’inscrit | Administration (services), Communication (publications, alertes), Citizen (inscription) |
+| Citoyen | site | Se connecte, complète son profil, reçoit les alertes qui le concernent, envoie des demandes, suit leur traitement | Citizen, Communication |
+| Agent municipal | admin | Traite les demandes, publie des informations et des alertes, tient le catalogue des services, suit le flux du concours | Citizen, Communication, Administration, Pilotage |
 | Administrateur | admin | Gère les membres et leurs rôles | Administration |
 
 Un même compte ([IAM](../../api/src/IAM/doc/README.md)) peut porter plusieurs profils : un agent peut aussi être citoyen.
@@ -28,14 +28,14 @@ IAM ─────────────── comptes, connexion, passage si
  ▲         ▲
  │ port    │ port (création de compte, compte connecté)
  │         │
-Administration ──── membres, rôles, permissions ; services municipaux (cible)
+Administration ──── membres, rôles, permissions ; services municipaux, quartiers
  ▲
  │ port (droits des agents)
  │
-Citizen ─────────── citoyens (inscription, profil livrés), demandes, suivi (cible)
+Citizen ─────────── citoyens (inscription, profil, préférences d’alerte livrés), demandes, suivi (cible)
 
-Communication ───── publications, alertes, audiences (cible, ADR 005)
-   │ port (droit de publier) → Administration
+Communication ───── publications, alertes, audiences (livré, ADR 005)
+   │ port (droit de publier, quartiers) → Administration
    └ port (quartier, consentement du citoyen) → Citizen
 
 Pilotage ────────── flux de l’API du concours pour les agents
@@ -45,7 +45,7 @@ Pilotage ────────── flux de l’API du concours pour les age
 
 Communication est décidé par l’[ADR 005](../technique/decisions/005-bc-communication.md) ; ses mises à jour sans rechargement passent par le port temps réel de l’[ADR 004](../technique/decisions/004-temps-reel.md).
 
-- [IAM](../../api/src/IAM/doc/README.md) · [Administration](../../api/src/Administration/doc/README.md) · [Citizen](../../api/src/Citizen/doc/README.md) · [Pilotage](../../api/src/Pilotage/doc/README.md)
+- [IAM](../../api/src/IAM/doc/README.md) · [Administration](../../api/src/Administration/doc/README.md) · [Citizen](../../api/src/Citizen/doc/README.md) · [Communication](../../api/src/Communication/doc/README.md) · [Pilotage](../../api/src/Pilotage/doc/README.md)
 - Applications : [site](../../front/apps/site/doc/README.md) (portail citoyen) · [admin](../../front/apps/admin/doc/README.md) (espace des agents)
 - Décision de découpage : [ADR 003](../technique/decisions/003-identite-et-habilitations.md)
 
@@ -74,4 +74,5 @@ C’est le **flux des besoins de la ville**, au fil des 24 heures. Il ne s’agi
 - [Accueil du projet](../../README.md)
 - [Chantier](../chantier/README.md)
 - [Registre des demandes](../chantier/demandes.md)
+- [Communication](../../api/src/Communication/doc/README.md)
 <!-- backlinks:end -->

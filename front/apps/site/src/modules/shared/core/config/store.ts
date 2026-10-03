@@ -1,3 +1,4 @@
+import { alertsApi } from "@/modules/public/core/application/rtk-api/alerts"
 import { configureStore } from "@reduxjs/toolkit"
 import { authApi } from "@/modules/auth/core/application/rtk-api/auth"
 import { citizenApi } from "@/modules/citizen/core/application/rtk-api/citizen"
@@ -8,6 +9,7 @@ import type { Dependencies } from "./dependencies"
 export const createStore = (dependencies: Dependencies) =>
   configureStore({
     reducer: {
+      [alertsApi.reducerPath]: alertsApi.reducer,
       [authApi.reducerPath]: authApi.reducer,
       [citizenApi.reducerPath]: citizenApi.reducer,
       [serviceRequestsApi.reducerPath]: serviceRequestsApi.reducer,
@@ -15,6 +17,7 @@ export const createStore = (dependencies: Dependencies) =>
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({ thunk: { extraArgument: dependencies } }).concat(
+        alertsApi.middleware,
         authApi.middleware,
         citizenApi.middleware,
         serviceRequestsApi.middleware,
@@ -28,6 +31,7 @@ export type AppDispatch = AppStore["dispatch"]
 
 /** Vide les caches liés au compte connecté (déconnexion, changement de compte). */
 export const resetAccountCaches = (store: AppStore) => {
+  store.dispatch(alertsApi.util.resetApiState())
   store.dispatch(authApi.util.resetApiState())
   store.dispatch(citizenApi.util.resetApiState())
   store.dispatch(serviceRequestsApi.util.resetApiState())

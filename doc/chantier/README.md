@@ -22,13 +22,13 @@ Les lots regroupent les demandes qui partagent un même modèle ou un même écr
 | L0 | Séparer l’identité (IAM) des membres et rôles (Administration), retirer le gabarit Example, cadrer Citizen — [ADR 003](../technique/decisions/003-identite-et-habilitations.md) | — | — | ✅ |
 | L1 | Comptes et profils : inscription citoyenne, espace personnel, rôles Agent et Administrateur, formulaire de membre | D01, D03, D08, D09 | 1 500 | 🟡 tâches 1 à 5 livrées ; parcours à vérifier dans le navigateur |
 | L2 | Demandes citoyennes : envoi, confirmation, signalement, suivi, file des agents, compteur d’attente — [Citizen](../../api/src/Citizen/doc/README.md#livré--demandes-citoyennes-lot-l2), [site](../../front/apps/site/doc/parcours-citoyen.md#4-demandes-citoyennes-lot-l2), [admin](../../front/apps/admin/doc/demandes.md) | D04, D16, F25, D11, F26, F22, D17 | 2 390 | 🟡 API, site, admin et temps réel livrés ; ni testés ni vérifiés dans le navigateur |
-| L3 | Services municipaux (avec recherche et filtres), publications, page d’accueil | D05, D06, F28, F32, D07 | 1 550 | ⬜ |
-| L7 | Alertes et diffusion : message général, alerte ciblée par quartier, avis d’annonce importante, recommandations aux personnes vulnérables | D18, F29, F30, F31 | 3 080 | ⬜ |
+| L3 | Services municipaux (avec recherche et filtres), publications, page d’accueil — [Administration](../../api/src/Administration/doc/README.md), [Communication](../../api/src/Communication/doc/README.md), [vitrine](../../front/apps/site/doc/vitrine-et-alertes.md), [contenus](../../front/apps/admin/doc/contenus.md) | D05, D06, F28, F32, D07 | 1 550 | 🟡 API, vitrine sur l’HTTP et module `content` livrés ; non vérifié dans un navigateur, aucun test écrit |
+| L7 | Alertes et diffusion : message général, alerte ciblée par quartier, avis d’annonce importante, recommandations aux personnes vulnérables — [Communication](../../api/src/Communication/doc/README.md) | D18, F29, F30, F31 | 3 080 | 🟡 alertes, bandeau temps réel, notifications citoyennes, consentement sanitaire livrés ; non vérifié dans un navigateur, aucun test écrit |
 | L4 | Accessibilité et repères : lecteur d’écran, contraste, taille du texte, fil d’Ariane, première connexion, indications contextuelles | F21, F23, F24, D15, D12, F35 | 2 400 | ⬜ |
 | L5 | Multilingue : interface, puis contenus | D14, F27 | 1 080 | ⬜ |
 | L6 | Pilotage : flux de l’API Webcup dans l’espace des agents — [Pilotage](../../api/src/Pilotage/doc/README.md), [page](../../front/apps/admin/doc/pilotage.md) | D19 | 750 | 🟡 livré, à vérifier avec la vraie clé |
 | L8 | Compte et sécurité : suppression de son compte, administration des comptes citoyens par les agents, protection contre les tentatives de connexion — [Citizen](../../api/src/Citizen/doc/compte-et-securite.md), [IAM](../../api/src/IAM/doc/comptes-et-sessions.md#protection-contre-les-tentatives-de-connexion-f37), pages [comptes citoyens](../../front/apps/admin/doc/comptes-citoyens.md) et [sécurité](../../front/apps/admin/doc/securite.md) | F33, F34, F37 | 1 770 | 🟡 livré, non testé, à vérifier dans un navigateur |
-| L9 | Services pratiques : transports (horaires et infos), service interrompu ou en maintenance | F36, F38 | 1 180 | ⬜ |
+| L9 | Services pratiques : transports (horaires et infos), service interrompu ou en maintenance — [Administration](../../api/src/Administration/doc/README.md) | F36, F38 | 1 180 | 🟡 état du service et horaires sur les fiches, saisis dans l’admin ; non vérifié dans un navigateur, aucun test écrit |
 | L10 | Rendez-vous avec un agent et rappel | F39, F40 | 900 | ⬜ |
 
 ## Travail en parallèle
@@ -66,17 +66,21 @@ Décisions : [Citizen — décisions retenues](../../api/src/Citizen/doc/README.
 ### L7 — Alertes et diffusion (à cadrer)
 
 Décisions : BC propriétaire `Communication` ([ADR 005](../technique/decisions/005-bc-communication.md)) ; diffusion sans rechargement par le port `RealtimePublisher` et le transport `database` : buffer `realtime_event` + flux SSE `GET /api/realtime/stream` ([ADR 004](../technique/decisions/004-temps-reel.md)). Livré : socle (publisher, flux unique avec ticket et `Last-Event-ID`, audience Citizen `citizen.{id}`, client `@boilerplate/shared-utils/realtime`, purge) ; au lot L2 : projection des demandes, audience `administration.requests` d’Administration, port d’abonnement du site et de l’admin (un flux SSE par onglet). À faire : handlers de projection et `RealtimeAudienceProvider` de Communication ; le BC Communication reste à créer.
+### L3, L7, L9 — Contenus, alertes et services pratiques (livrés, à vérifier)
+
+Décisions : BC propriétaire `Communication` ([ADR 005](../technique/decisions/005-bc-communication.md)) ; diffusion sans rechargement par le port `RealtimePublisher` et le transport `database` : buffer `realtime_event` + flux SSE `GET /api/realtime/stream` ([ADR 004](../technique/decisions/004-temps-reel.md)). Livré : socle (publisher, flux unique avec ticket et `Last-Event-ID`, audience Citizen `citizen.{id}`, client `@boilerplate/shared-utils/realtime`, purge) ; BC [Communication](../../api/src/Communication/doc/README.md) (publications, alertes, projection temps réel `alert.published`, `alert.withdrawn`, `publication.important`) ; topics privés `district.{quartier}` et `alerts.health` accordés par Citizen ; port d’abonnement du module `public` du site. Reste : `RealtimeAudienceProvider` d’Administration (L2), fusion des flux du site (module `public` et demandes) en un seul flux par onglet lors de l’intégration.
 
 - Une **alerte** est une publication urgente avec un niveau de gravité, une période de validité et une audience : tous les habitants, un quartier, ou les personnes ayant demandé les alertes sanitaires.
 - Elle s’affiche en bandeau sur le site pendant sa validité (D18, F29) et apparaît dans les notifications de l’espace personnel des citoyens concernés (F30).
-- F31 est marquée « liée à l’IA » : un agent pourrait générer des recommandations adaptées à chaque audience avec un modèle Claude, puis les relire avant publication.
 - Décidé : quartiers en **liste fermée** (Nord, Sud, Est, Ouest, Centre, Port) gérée par Administration ; recommandations F31 **rédigées à la main** par les agents (pas de génération par IA pour l’instant).
-- Questions : notifications par e-mail en plus de l’application ? consentement pour les alertes sanitaires.
+- Consentement aux alertes sanitaires : explicite, facultatif, révocable, porté par Citizen (aucune donnée de santé).
+- À vérifier dans un navigateur : parcours agent (publier une alerte de quartier) → citoyen du quartier (bandeau et notifications sans rechargement). Appliquer d’abord la migration `Version20261003003000` (tables et contenu initial) et faire tourner le worker Messenger.
+- Question : notifications par e-mail en plus de l’application ?
 
 ### Socle produit
 
 - Remplacer l’habillage « Boilerplate » par l’identité de Nova Terra. Site : fait (en-tête, navigation, pied de page, fil d’Ariane, base d’accessibilité) ; admin : à faire.
-- Vitrine du site : structure livrée (accueil, services avec recherche et filtre, actualités) sur un adaptateur **local** de démonstration ; brancher l’HTTP d’Administration au lot L3 ([site](../../front/apps/site/doc/README.md#limites-et-questions-ouvertes)).
+- Vitrine du site : branchée sur l’API (lot L3) ; les adaptateurs locaux ne servent plus qu’aux tests existants ([site](../../front/apps/site/doc/README.md#limites-et-questions-ouvertes)).
 - ✅ `WEBCUP_API_URL` et `WEBCUP_API_KEY` déclarés dans `api/.env.example` (clé vide). Reste à définir la vraie clé dans `api/.env.local` et à vérifier la page sur la vraie API.
 
 ## Quand une vague arrive
@@ -105,4 +109,7 @@ Décisions : BC propriétaire `Communication` ([ADR 005](../technique/decisions/
 - [Administration](../../api/src/Administration/doc/README.md)
 - [Citizen](../../api/src/Citizen/doc/README.md)
 - [Site](../../front/apps/site/doc/README.md)
+- [Communication](../../api/src/Communication/doc/README.md)
+- [Admin — contenus](../../front/apps/admin/doc/contenus.md)
+- [Site — vitrine et alertes](../../front/apps/site/doc/vitrine-et-alertes.md)
 <!-- backlinks:end -->

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="Administration\Domain\Entity\MunicipalService" table="municipal_service">
+        <id name="id" type="string" length="80"/>
+        <field name="name" type="string" length="200"/>
+        <field name="category" type="string" length="40"/>
+        <field name="summary" type="text"/>
+        <field name="description" type="text"/>
+        <field name="actions" type="json"/>
+        <field name="contact" type="json"/>
+        <field name="featured" type="boolean"/>
+        <field name="keywords" type="json"/>
+        <field name="status" type="string" length="20"/>
+        <field name="statusMessage" column="status_message" type="text"/>
+        <field name="returnAt" column="return_at" type="datetime_immutable" nullable="true"/>
+        <field name="alternative" type="text"/>
+        <field name="transport" type="json" nullable="true"/>
+        <field name="updatedAt" column="updated_at" type="datetime_immutable"/>
+    </entity>
+</doctrine-mapping>

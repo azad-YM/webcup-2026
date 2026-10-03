@@ -1,4 +1,4 @@
-import { LayoutDashboard, Settings, ShieldAlert, Users } from "@boilerplate/shared-ui/components/icon"
+import { LayoutDashboard, Megaphone, Settings, ShieldAlert, Users } from "@boilerplate/shared-ui/components/icon"
 import { Sidebar, SidebarContent, SidebarHeader, SidebarRail } from "@boilerplate/shared-ui/components"
 import { ModuleSwitcher } from "@/modules/shared/ui/components/sidebar/module-switcher"
 import { NavMain } from "@/modules/shared/ui/components/sidebar/nav-main"
@@ -20,6 +20,11 @@ const navigation = [
       title: entity.title,
       url: `/admin/${entity.code}`,
     })),
+  },
+  {
+    title: "Contenus de la ville",
+    icon: Megaphone,
+    url: "/contenus",
   },
 ]
 

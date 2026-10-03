@@ -36,6 +36,10 @@ services:
         exclude:
             - '../src/Citizen/Tests/'
 
+    Communication\:
+        resource: '../src/Communication/'
+        exclude: ['../src/Communication/Tests/']
+
     Pilotage\:
         resource: '../src/Pilotage/'
         exclude:
@@ -190,3 +194,15 @@ services:
     Citizen\Application\Command\DeleteMyCitizenAccount\DeleteMyCitizenAccountHandler:
         arguments:
             $dataErasers: !tagged_iterator citizen.account_data_eraser
+    # Communication consomme Administration (permission de publier, liste fermée des quartiers)
+    # et Citizen (audience du citoyen connecté : quartier, consentement aux alertes sanitaires).
+    Communication\Application\Ports\Provider\CommunicationAccessPolicy:
+        alias: Administration\Infrastructure\Adapter\Communication\AdminCommunicationAccessPolicy
+    Communication\Application\Ports\Provider\DistrictDirectory:
+        alias: Administration\Infrastructure\Adapter\Communication\AdminCommunicationDistrictDirectory
+    Communication\Application\Ports\Provider\AudienceProvider:
+        alias: Citizen\Infrastructure\Adapter\Communication\CitizenAudienceProvider
+
+    # Citizen consomme Administration (liste fermée des quartiers du profil).
+    Citizen\Application\Ports\Provider\DistrictDirectory:
+        alias: Administration\Infrastructure\Adapter\Citizen\AdminCitizenDistrictDirectory

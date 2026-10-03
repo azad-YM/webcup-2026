@@ -4,7 +4,7 @@
 [Accueil du projet](../../../../README.md) › [Documentation](../../../../doc/README.md) › Administration
 <!-- navigation:end -->
 
-Administration est le BC de l’**organisation municipale de Nova Terra**. Il répond à « qui travaille pour la ville et que peut-il faire ? » : il porte les membres de l’administration (agents, administrateurs), leurs rôles et le catalogue des permissions. Il décide de l’accès à l’espace de travail `admin` et autorise les opérations sensibles des autres BC. Il portera aussi le catalogue des services municipaux (cible). Les publications et les alertes appartiennent au BC Communication ([ADR 005](../../../../doc/technique/decisions/005-bc-communication.md)), qui consultera Administration pour autoriser les agents.
+Administration est le BC de l’**organisation municipale de Nova Terra**. Il répond à « qui travaille pour la ville et que peut-il faire ? » : il porte les membres de l’administration (agents, administrateurs), leurs rôles et le catalogue des permissions. Il décide de l’accès à l’espace de travail `admin` et autorise les opérations sensibles des autres BC. Il porte aussi le **catalogue des services municipaux** (fiche, mise en avant, état du service, horaires des transports) et la **liste fermée des quartiers**. Les publications et les alertes appartiennent au BC [Communication](../../Communication/doc/README.md) ([ADR 005](../../../../doc/technique/decisions/005-bc-communication.md)), qui consulte Administration pour autoriser les agents et valider les quartiers.
 
 Administration ne connaît pas les mots de passe ni les sessions : chaque membre référence un compte [IAM](../../IAM/doc/README.md) par son `userId`. La création du compte est demandée à IAM via un port.
 
@@ -19,6 +19,9 @@ Administration ne connaît pas les mots de passe ni les sessions : chaque membre
   - [Pilotage](../../Pilotage/doc/README.md), qui réserve le flux du concours aux membres ayant `admin.pilotage.read` via `AdminPilotageAccessPolicy` ;
   - [Citizen](../../Citizen/doc/README.md), qui réserve la file des demandes aux membres ayant `admin.request.read` (et `admin.request.write` pour les traiter) via `AdminRequestAccessPolicy` ;
   - le flux temps réel de [Shared](../../Shared/doc/README.md), qui ouvre le topic `administration.requests` à ces mêmes membres via `AdminRequestsRealtimeAudience` ([ADR 004](../../../../doc/technique/decisions/004-temps-reel.md)).
+  - [Citizen](../../Citizen/doc/README.md), qui valide le quartier du profil via `AdminCitizenDistrictDirectory` (et autorisera les agents via un port à définir) ;
+  - [Communication](../../Communication/doc/README.md), qui autorise les agents via `AdminCommunicationAccessPolicy` (`admin.communication.write`) et valide le quartier d’une alerte via `AdminCommunicationDistrictDirectory` ;
+  - le [site](../../../../front/apps/site/doc/README.md) (catalogue public, fiche, état, horaires, sélecteur de quartier) et le module `content` de l’[admin](../../../../front/apps/admin/doc/contenus.md) (gestion du catalogue).
 
 ## Livré
 
@@ -29,6 +32,34 @@ Administration ne connaît pas les mots de passe ni les sessions : chaque membre
 | POST | `/api/administration/roles` | Création d’un rôle |
 | GET | `/api/administration/members` | Liste des membres `{id, userId, name, roles[{id, name}], active}` |
 | POST | `/api/administration/members` | Ajout d’un membre et création de son compte IAM |
+
+### Services municipaux et quartiers (lots L3 et L9, non vérifiés dans un navigateur)
+
+| Méthode | Route | Accès | Rôle |
+|---|---|---|---|
+| GET | `/api/administration/services` | public | Catalogue ; filtres facultatifs `?q=` (tous les termes, sans accents ni casse, dans le nom, le résumé, le thème et les mots-clés), `?category=`, `?featured=1`. Tri : mis en avant d’abord, puis par nom |
+| GET | `/api/administration/services/{id}` | public | Fiche d’un service, sinon `404` |
+| PUT | `/api/administration/services` | `admin.service.write` | Crée ou remplace un service (identifiant fourni) ; réponse : la fiche |
+| GET | `/api/administration/districts` | public | Liste fermée des quartiers : `["Nord","Sud","Est","Ouest","Centre","Port"]` |
+
+Fiche d’un service :
+
+```json
+{ "id": "transports", "name": "Transports", "category": "mobilite", "summary": "…", "description": "…",
+  "actions": ["…"], "contact": {"place": "…", "hours": "…", "phone": "…"}, "featured": true, "keywords": ["…"],
+  "status": "available", "statusMessage": "", "returnAt": null, "alternative": "",
+  "transport": {"route": "…", "timetable": "…", "information": "…"}, "updatedAt": "…" }
+```
+
+Règles :
+
+- Identifiant : minuscules, chiffres et tirets (80 caractères), non modifiable. Thèmes : `demarches`, `cadre-de-vie`, `sante-solidarite`, `mobilite`, `habitat`, `famille`. Nom, thème, résumé, description, au moins une démarche, lieu et horaires d’accueil requis.
+- **Mise en avant** (F28) : `featured` affiche le service dans « Services les plus demandés » de l’accueil.
+- **État** (F38) : `available`, `maintenance` ou `incident`. Hors `available`, un message aux habitants est obligatoire ; une date de retour (`returnAt`) et une alternative sont facultatives. Revenir à `available` efface ces champs.
+- **Transports** (F36) : `transport` (lignes et trajets, horaires, informations pratiques) n’est accepté que pour un service du thème `mobilite`.
+- Une règle refusée répond `400` avec un message français ; rien n’est enregistré.
+- Contenu initial : les huit services de la vitrine (dont les horaires des navettes) sont insérés par la migration `Version20261003003000` (table `municipal_service`).
+- Aucun test automatisé n’a été écrit pour ces cas d’usage (décision d’économie du chantier).
 
 CLI : `php bin/console app:admin:bootstrap` ([initialisation de l’administrateur principal et des rôles de référence](initialisation-admin.md)).
 
@@ -48,14 +79,18 @@ Interface : la page [Membres](../../../../front/apps/admin/doc/membres.md) de l�
 | Shared (flux temps réel) consomme Administration | `Shared\Application\Ports\Provider\RealtimeAudienceProvider` (tag automatique) | `Infrastructure/Adapter/Shared/AdminRequestsRealtimeAudience` : topic `administration.requests` pour `admin.request.read` |
 
 Les deux adaptateurs s’appuient sur les requêtes internes `CheckCurrentMemberPermissions` (compte connecté) et `CheckMemberPermissions` (compte donné, utilisé par le flux temps réel) : membre actif, union des permissions de ses rôles.
+| Communication consomme Administration | `Communication\Application\Ports\Provider\CommunicationAccessPolicy` | `Infrastructure/Adapter/Communication/AdminCommunicationAccessPolicy` (`admin.communication.write`) |
+| Communication consomme Administration | `Communication\Application\Ports\Provider\DistrictDirectory` | `Infrastructure/Adapter/Communication/AdminCommunicationDistrictDirectory` |
+| Citizen consomme Administration | `Citizen\Application\Ports\Provider\DistrictDirectory` | `Infrastructure/Adapter/Citizen/AdminCitizenDistrictDirectory` |
+
+Permissions ajoutées au catalogue : `admin.service.write` (catalogue des services) et `admin.communication.write` (publications et alertes), données au rôle de référence « Agent municipal » par la CLI d’initialisation.
 
 Les erreurs contractuelles `AccountAlreadyExists` et `AccountCreationRejected` appartiennent à Administration ; l’adaptateur IAM y traduit ses propres erreurs.
 
 ## Cible retenue
 
-- **Services municipaux** : catalogue présenté aux habitants, avec mise en avant des services prioritaires (D05, F28).
-- **Autorisation des publications et alertes** : adaptateur de la politique d’accès de Communication (D06, D18, F29, F30, F31 ; [ADR 005](../../../../doc/technique/decisions/005-bc-communication.md)).
-- **Recherche et filtres** dans le catalogue des services (F32).
+- Suppression ou archivage d’un service du catalogue ; ordre de mise en avant choisi par les agents.
+- Gestion de la liste des quartiers par les agents (aujourd’hui fixée dans `Domain/VO/District`).
 - Modification, suspension des membres ; modification et suppression des rôles.
 - Rattachement d’un compte IAM **existant** lors de l’ajout d’un membre (aujourd’hui refusé).
 
@@ -84,8 +119,11 @@ Les erreurs contractuelles `AccountAlreadyExists` et `AccountCreationRejected` a
 - [Contexte produit](../../../../doc/contexte/README.md)
 - [ADR 003](../../../../doc/technique/decisions/003-identite-et-habilitations.md)
 - [Citizen](../../Citizen/doc/README.md)
+- [Communication](../../Communication/doc/README.md)
+- [Admin — contenus](../../../../front/apps/admin/doc/contenus.md)
 - [Pilotage](../../Pilotage/doc/README.md)
 - [Membres et habilitations](membres-et-habilitations.md)
 - [Admin — membres](../../../../front/apps/admin/doc/membres.md)
 - [ADR 005](../../../../doc/technique/decisions/005-bc-communication.md)
+- [Site — vitrine et alertes](../../../../front/apps/site/doc/vitrine-et-alertes.md)
 <!-- backlinks:end -->

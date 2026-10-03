@@ -30,3 +30,9 @@ shared_realtime:
 
 api_login_check:
     path: /api/login_check
+
+communication:
+    resource:
+        path: ../src/Communication/Application/Controller/
+        namespace: Communication\Application\Controller
+    type: attribute
