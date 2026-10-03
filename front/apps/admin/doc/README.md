@@ -22,6 +22,17 @@ Aujourd’hui, seule la création des rôles est livrée.
 | Demandes citoyennes | à créer | [Citizen](../../../../api/src/Citizen/doc/README.md) | Cible (F22, D17) |
 | Pilotage | à créer | `Pilotage` (à créer) | Cible (D19) |
 
+## Organisation cible
+
+L’admin regroupe toutes les opérations de la mairie. Un module par domaine, chacun branché sur le BC propriétaire :
+
+| Module | Backend | Contenu | Lots |
+|---|---|---|---|
+| `admin` | Administration | Membres, rôles | L1 |
+| `requests` | Citizen | File des demandes, compteur d’attente, traitement | L2 |
+| `content` | Administration | Services, publications, alertes | L3, L7 |
+| `pilotage` | Pilotage | Flux de l’API Webcup | L6 |
+
 ## Limites
 
 La déconnexion est locale ; la révocation commune reste à concevoir. Les droits affichés ne remplacent pas les contrôles serveur.

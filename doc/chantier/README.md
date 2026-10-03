@@ -28,6 +28,16 @@ Les lots regroupent les demandes qui partagent un même modèle ou un même écr
 | L5 | Multilingue : interface, puis contenus | D14, F27 | 1 080 | ⬜ |
 | L6 | Pilotage : flux de l’API Webcup dans l’espace des agents | D19 | 750 | ⬜ |
 
+## Travail en parallèle
+
+Des agents travaillent en même temps dans des worktrees git séparés, chacun sur sa branche et dans sa zone de fichiers. Les contrats partagés sont fixés avant le lancement. L’intégration (fusion, résolution des conflits de configuration, vérification) est faite sur `socle/nova-terra`.
+
+| Agent | Périmètre | Zone de fichiers | Contrat |
+|---|---|---|---|
+| A — Citizen API | L1 tâches 1 à 3 | `api/src/Citizen`, `api/src/IAM/Infrastructure/Adapter/Citizen`, config API | [Contrat HTTP Citizen](../../api/src/Citizen/doc/README.md#contrat-http--inscription-et-profil-lot-l1) |
+| B — Site | L1 tâche 4, socle du site, structure de la vitrine | `front/apps/site` | Même contrat, consommé côté site |
+| C — Admin et Pilotage | L1 tâche 5, puis L6 | `api/src/Administration`, `api/src/Pilotage`, `front/apps/admin`, config API | Routes Pilotage à documenter dans son BC |
+
 ## Prochaines tâches
 
 ### L1 — Comptes et profils

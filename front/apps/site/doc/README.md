@@ -16,6 +16,22 @@ Aujourd’hui, toute personne peut consulter l’accueil, puis se connecter une 
 
 Cible : visiteur qui s’inscrit (D01), citoyen qui retrouve son espace personnel, envoie et suit ses demandes (D03, D04, D11, D16, F25, F26), consulte services et publications (D05, D06, F28, F32), reçoit les alertes de la ville (D18, F29, F30, F31), avec accessibilité, fil d’Ariane et choix de la langue (F21, F23, F24, D15, D14). Suivi dans le [chantier](../../../../doc/chantier/README.md).
 
+## Organisation cible
+
+Le site réunit trois zones, chacune portée par un module `src/modules/<module>` :
+
+| Zone | Module | Routes | Public | Backend | Demandes |
+|---|---|---|---|---|---|
+| Vitrine officielle | `public` | `/`, `/services`, `/actualites`, bandeau d’alerte | Tout le monde | [Administration](../../../../api/src/Administration/doc/README.md) (lot L3, L7) | D07, D05, D06, F28, F32, D18, F29 |
+| Connexion et inscription | `auth` | `/connexion`, `/inscription` (2 étapes) ; `/login` redirige vers `/connexion` | Visiteurs | [IAM](../../../../api/src/IAM/doc/README.md), [Citizen](../../../../api/src/Citizen/doc/README.md#contrat-http--inscription-et-profil-lot-l1) | D01, D03 |
+| Espace citoyen | `citizen` | `/espace`, `/espace/profil`, puis `/espace/demandes` (L2) | Citoyens connectés | [Citizen](../../../../api/src/Citizen/doc/README.md) | D03, D12, D11, D04, F25, F26, F30 |
+
+Socle commun (module `shared`) : en-tête et navigation, pied de page, fil d’Ariane (D15), réglages d’accessibilité (F21, F23, F24).
+
+- La garde de l’espace citoyen exige une session, puis un profil citoyen (`GET /api/citizen/me`). Un compte non citoyen, par exemple un agent, voit un message et le lien vers l’administration.
+- Un membre de l’administration connecté garde l’accès à la carte « Administration » (liste des espaces IAM). Le passage vers l’admin reste en PKCE.
+- Export statique : pas de route dynamique ; utiliser des paramètres d’URL (`/espace/demandes?ref=…`).
+
 ## Livré
 
 Connexion HTTP, garde de session, cartes issues de l’API, états chargement / vide / erreur, déconnexion locale et passage PKCE vers l’admin. Détails : [parcours de connexion](parcours-connexion.md).

@@ -70,13 +70,47 @@ Le profil est « complété » quand les champs facultatifs utiles sont renseign
 - **Mes demandes** : liste, statut et chronologie des étapes (D11, F26).
 - **File des agents** : liste filtrable par statut, compteur « en attente », changement de statut avec commentaire (F22, D17).
 
+## Contrat HTTP — inscription et profil (lot L1)
+
+Contrat fixé avant développement : l’API (Citizen) et le site s’y conforment. Toute évolution est faite ici d’abord.
+
+**Vue `CitizenProfile`** (réponse commune) :
+
+```json
+{
+  "id": "uuid",
+  "firstName": null,
+  "lastName": null,
+  "phone": null,
+  "address": null,
+  "district": null,
+  "preferredLanguage": null,
+  "registeredAt": "2026-10-03T14:30:00+00:00",
+  "profileCompleted": false
+}
+```
+
+`profileCompleted` vaut `true` quand `firstName`, `lastName` et `district` sont renseignés. L’e-mail n’est pas dans cette vue : le site le lit via `GET /api/iam/me`.
+
+| Méthode | Route | Accès | Corps | Succès | Erreurs |
+|---|---|---|---|---|---|
+| POST | `/api/citizen/register` | public | `{ "email": string, "password": string (8–72 octets) }` | `200` `{ "citizenId": string }` | `422` payload invalide ; `409` e-mail déjà utilisé |
+| GET | `/api/citizen/me` | JWT | — | `200` `CitizenProfile` | `401` sans session ; `404` le compte n’est pas citoyen |
+| PUT | `/api/citizen/me` | JWT | tous les champs de `CitizenProfile` modifiables, chacun `string \| null` : `firstName`, `lastName` (≤ 100), `phone` (≤ 30), `address` (≤ 255), `district` (≤ 100), `preferredLanguage` (`fr` \| `en` \| …, ≤ 5) | `200` `CitizenProfile` | `401` ; `404` non citoyen ; `422` valeur invalide |
+
+Format des erreurs : celui du socle (`{ "path", "message" }` ou `{ "error" }` pour une règle métier, selon `ExceptionListener` et `AppController`). Le site affiche un message compréhensible pour chaque code, sans exposer le message technique.
+
+Enchaînement côté site : `POST /api/citizen/register` → `POST /api/login_check` avec les mêmes identifiants → étape « Mes informations » (`PUT /api/citizen/me`, facultative) → `/espace`.
+
 ## Ports prévus
 
-| Besoin de Citizen | Fournisseur |
-|---|---|
-| Créer le compte d’un nouveau citoyen | IAM (`Adapter/Citizen`) |
-| Connaître le compte connecté | IAM (`Adapter/Citizen`) |
-| Vérifier qu’un agent peut lire ou traiter les demandes | Administration (`Adapter/Citizen`) |
+| Besoin de Citizen | Port (Citizen) | Adaptateur (fournisseur) |
+|---|---|---|
+| Créer le compte d’un nouveau citoyen | `Application/Ports/Provider/CitizenAccountProvisioner` : `create(email, password): string` (userId), lève `Citizen\Application\Exception\AccountAlreadyExists` | `IAM/Infrastructure/Adapter/Citizen/IAMCitizenAccountProvisioner` (appelle `CreateAccount` ; nom du compte = partie locale de l’e-mail) |
+| Connaître le compte connecté | `Application/Ports/Provider/CurrentAccountProvider` : `userId(): string` | `IAM/Infrastructure/Adapter/Citizen/IAMCurrentAccountProvider` |
+| Vérifier qu’un agent peut lire ou traiter les demandes (lot L2) | à définir | `Administration/Infrastructure/Adapter/Citizen/…` |
+
+Pas d’espace IAM « citoyen » : l’espace citoyen est une zone du site, qui reconnaît un citoyen grâce à `GET /api/citizen/me`.
 
 ## Questions ouvertes
 
