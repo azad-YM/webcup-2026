@@ -30,6 +30,7 @@ export function createTestContext(overrides: Partial<Dependencies> = {}) {
       getMine: async () => { throw new Error("Not configured") },
       submit: async () => { throw new Error("Not configured") }
     },
+    notificationGateway: { list: async () => ({ items: [], unreadCount: 0 }), markRead: async () => undefined },
     serviceCatalogGateway,
     publicationGateway,
     alertsGateway: new InMemoryAlertsGateway(),

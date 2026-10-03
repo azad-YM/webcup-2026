@@ -276,6 +276,7 @@ Pas d’espace IAM « citoyen » : l’espace citoyen est une zone du site, qui 
 
 ## Référence
 
+- [Notifications de l’espace citoyen (F49)](notifications.md)
 - [Compte et sécurité — suppression, suspension, liste des comptes (L8)](compte-et-securite.md)
 - [Architecture technique](../../../../doc/technique/architecture.md) · [ADR 003 — Identité et habilitations](../../../../doc/technique/decisions/003-identite-et-habilitations.md) · [ADR 004 — Temps réel](../../../../doc/technique/decisions/004-temps-reel.md)
 - [IAM — comptes et sessions](../../IAM/doc/comptes-et-sessions.md)
@@ -302,4 +303,5 @@ Pas d’espace IAM « citoyen » : l’espace citoyen est une zone du site, qui 
 - [ADR 004 — Temps réel](../../../../doc/technique/decisions/004-temps-reel.md)
 - [Communication](../../Communication/doc/README.md)
 - [Site — vitrine et alertes](../../../../front/apps/site/doc/vitrine-et-alertes.md)
+- [Notifications](notifications.md)
 <!-- backlinks:end -->

@@ -21,6 +21,8 @@ import { CitizenHttpGateway } from "@/modules/citizen/core/infrastructure/for-pr
 import { CitizenAccountRegistrationAdapter } from "@/modules/citizen/core/infrastructure/adapter/auth/citizen-account-registration.adapter"
 import { ServiceRequestHttpGateway } from "@/modules/citizen/core/infrastructure/for-production/gateway/http/service-request.http.gateway"
 import { REQUEST_EVENTS } from "@/modules/citizen/core/application/rtk-api/service-requests"
+import { NotificationHttpGateway } from "@/modules/citizen/core/infrastructure/for-production/gateway/http/notification.http.gateway"
+import { NOTIFICATION_EVENTS } from "@/modules/citizen/core/application/rtk-api/notifications"
 import { SseRealtimeSubscriber } from "../core/infrastructure/realtime/sse-realtime.subscriber"
 import { HttpPublicContentGateway } from "@/modules/public/core/infrastructure/for-production/gateway/http/public-content.http.gateway"
 import { AlertsHttpGateway } from "@/modules/public/core/infrastructure/for-production/gateway/http/alerts.http.gateway"
@@ -47,6 +49,7 @@ function createDependencies(): Dependencies {
   // `citizen` (demandes, notifications) comme `public` (alertes, publications, via `CityFeedGateway`).
   const realtime = new SseRealtimeSubscriber(siteEnv.apiBaseUrl, () => authSessionGateway.getToken(), [
     ...REQUEST_EVENTS,
+    ...NOTIFICATION_EVENTS,
     ...CITY_FEED_EVENTS
   ])
   return {
@@ -57,6 +60,7 @@ function createDependencies(): Dependencies {
     citizenGateway,
     citizenSessionProvider: new AuthCitizenSessionAdapter(authSessionGateway),
     serviceRequestGateway: new ServiceRequestHttpGateway(siteEnv.apiBaseUrl),
+    notificationGateway: new NotificationHttpGateway(siteEnv.apiBaseUrl),
     // Contenus publiés par les BC propriétaires (Administration, Communication) et flux temps réel.
     serviceCatalogGateway: publicContent,
     publicationGateway: publicContent,

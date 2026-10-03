@@ -6,22 +6,32 @@ import { ArrowRight, ClipboardList, Megaphone, MessageSquare, Newspaper, Search,
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
 import { greeting, PREFERRED_LANGUAGES, type CitizenProfile } from "../../core/domain/citizen-profile"
 import { CitizenAccessState, useCitizenAccess } from "../components/citizen-access"
+import { NotificationCenter } from "../sections/notification-center"
+import { NOTIFICATIONS_POLLING_MS, useListMyNotificationsQuery } from "../../core/application/rtk-api/notifications"
+import { unreadOfKind, type NotificationKind } from "../../core/domain/notification"
 
-type Shortcut = { title: string; text: string; href?: Route; icon: typeof Search; soon?: boolean }
+type Shortcut = { title: string; text: string; href?: Route; icon: typeof Search; soon?: boolean; notifications?: NotificationKind }
 
 const SHORTCUTS: Shortcut[] = [
   { title: "Contacter la mairie", text: "Posez une question ou adressez un message aux services municipaux.", href: "/espace/demandes/nouvelle?type=contact" as Route, icon: MessageSquare },
   { title: "Signaler un problème", text: "Voirie, éclairage, propreté, inondation… indiquez le lieu, la mairie s’en occupe.", href: "/espace/demandes/nouvelle?type=report" as Route, icon: Megaphone },
-  { title: "Mes demandes", text: "Retrouvez vos demandes, leur état et chaque étape de leur traitement.", href: "/espace/demandes", icon: ClipboardList },
+  { title: "Mes demandes", text: "Retrouvez vos demandes, leur état et chaque étape de leur traitement.", href: "/espace/demandes", icon: ClipboardList, notifications: "request.status_changed" },
   { title: "Trouver un service", text: "État civil, santé, transports, logement… toutes les démarches de la ville.", href: "/services", icon: Search },
   { title: "Actualités de la ville", text: "Les dernières informations publiées par la mairie.", href: "/actualites", icon: Newspaper },
   { title: "Mon profil", text: "Vos coordonnées, votre quartier et votre langue préférée.", href: "/espace/profil", icon: UserRound }
 ]
 
-function ShortcutCard({ shortcut }: { shortcut: Shortcut }) {
+function ShortcutCard({ shortcut, unread = 0 }: { shortcut: Shortcut; unread?: number }) {
   const body = (
     <>
-      <shortcut.icon className="size-7 text-teal-700" aria-hidden="true" />
+      <span className="flex items-start justify-between gap-3">
+        <shortcut.icon className="size-7 text-teal-700" aria-hidden="true" />
+        {unread > 0 && (
+          <span className="rounded-full bg-amber-500 px-2.5 py-0.5 text-sm font-semibold text-slate-950">
+            {unread}<span className="sr-only"> nouveauté{unread > 1 ? "s" : ""}</span>
+          </span>
+        )}
+      </span>
       <h3 className="mt-4 text-lg font-semibold text-slate-950">{shortcut.title}</h3>
       <p className="mt-2 flex-1 text-slate-700">{shortcut.text}</p>
       {shortcut.soon ? (
@@ -68,6 +78,8 @@ function ProfileSummary({ profile }: { profile: CitizenProfile }) {
 export function CitizenHomePage({ spaces, spacesForNonCitizen }: { spaces: ReactNode; spacesForNonCitizen: ReactNode }) {
   const access = useCitizenAccess()
   const profile = access.profile
+  // Pastilles des raccourcis : même cache que le centre de notifications (une seule requête).
+  const inbox = useListMyNotificationsQuery(undefined, { skip: !profile, pollingInterval: NOTIFICATIONS_POLLING_MS })
   return (
     <>
       <PageHeader
@@ -95,9 +107,14 @@ export function CitizenHomePage({ spaces, spacesForNonCitizen }: { spaces: React
             <section aria-labelledby="titre-raccourcis">
               <h2 id="titre-raccourcis" className="text-2xl font-semibold tracking-tight">Que souhaitez-vous faire ?</h2>
               <ul className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {SHORTCUTS.map((shortcut) => <li key={shortcut.title}><ShortcutCard shortcut={shortcut} /></li>)}
+                {SHORTCUTS.map((shortcut) => (
+                  <li key={shortcut.title}>
+                    <ShortcutCard shortcut={shortcut} unread={shortcut.notifications ? unreadOfKind(inbox.data, shortcut.notifications) : 0} />
+                  </li>
+                ))}
               </ul>
             </section>
+            <NotificationCenter />
             <ProfileSummary profile={profile} />
             {spaces}
           </div>
