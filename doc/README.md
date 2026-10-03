@@ -22,7 +22,7 @@ Pour comprendre une fonctionnalité, partir de l’application qui la présente 
 
 - [IAM](../api/src/IAM/doc/README.md) : comptes, connexion, passage site → admin, espaces
 - [Administration](../api/src/Administration/doc/README.md) : membres, rôles, permissions ; services et publications (cible)
-- [Citizen](../api/src/Citizen/doc/README.md) : citoyens et demandes (cible, code à créer)
+- [Citizen](../api/src/Citizen/doc/README.md) : citoyens et demandes (inscription et profil livrés ; demandes à venir)
 - [Shared](../api/src/Shared/doc/README.md) : primitives et conventions communes
 
 ## Applications

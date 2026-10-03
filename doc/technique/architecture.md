@@ -16,14 +16,14 @@ Admin React/Vite (agents) ───────┼──► API Symfony ──�
 
 ## API modulaire
 
-L’API est découpée en bounded contexts (BC) de même niveau : `IAM`, `Administration` et `Citizen` (cible), plus le socle `Shared`. Un BC peut être subdivisé en sous-domaines (SD) lorsqu’il grossit. Chaque BC simple ou SD porte `Application`, `Domain`, `Infrastructure`, `Tests` et `doc`.
+L’API est découpée en bounded contexts (BC) de même niveau : `IAM`, `Administration` et `Citizen`, plus le socle `Shared`. Un BC peut être subdivisé en sous-domaines (SD) lorsqu’il grossit. Chaque BC simple ou SD porte `Application`, `Domain`, `Infrastructure`, `Tests` et `doc`.
 
 ```text
 api/src/
 ├── IAM/                        BC identité : comptes, login JWT, codes de portail, espaces
 ├── Administration/             BC organisation municipale : membres, rôles, permissions
 │                               (cible : services municipaux, publications)
-├── Citizen/                    BC relation habitants–ville : citoyens, demandes (doc seule)
+├── Citizen/                    BC relation habitants–ville : citoyens (inscription, profil) ; demandes à venir
 └── Shared/                     kernel, AppController, exceptions, AggregateRoot, ports techniques
 ```
 
@@ -50,6 +50,8 @@ Raccordements livrés, à reproduire :
 |---|---|
 | `Administration` — `CurrentAccountProvider` | `IAM/Infrastructure/Adapter/Administration/IAMCurrentAccountProvider` |
 | `Administration` — `MemberAccountProvisioner` | `IAM/Infrastructure/Adapter/Administration/IAMMemberAccountProvisioner` |
+| `Citizen` — `CitizenAccountProvisioner` | `IAM/Infrastructure/Adapter/Citizen/IAMCitizenAccountProvisioner` |
+| `Citizen` — `CurrentAccountProvider` | `IAM/Infrastructure/Adapter/Citizen/IAMCurrentAccountProvider` |
 | `IAM` — `AccessibleSpacesProvider` | `Administration/Infrastructure/Adapter/IAM/AdminAccessibleSpacesProvider` |
 
 Point d’extension : un BC exposant son propre espace implémente `IAM\Application\Ports\Provider\AccessibleSpacesProvider` dans son infrastructure (tag `iam.accessible_spaces`).
@@ -103,6 +105,7 @@ Les `AGENTS.md` sont répartis par périmètre : racine, `api/`, chaque BC/SD, `
 - [Documentation](../README.md)
 - [Documentation — IAM](../../api/src/IAM/doc/README.md)
 - [Documentation — Administration](../../api/src/Administration/doc/README.md)
+- [Documentation — Citizen](../../api/src/Citizen/doc/README.md)
 - [Documentation — Shared](../../api/src/Shared/doc/README.md)
 - [Contexte produit](../contexte/README.md)
 - [ADR 003](decisions/003-identite-et-habilitations.md)

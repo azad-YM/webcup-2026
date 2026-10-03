@@ -20,7 +20,7 @@ Les lots regroupent les demandes qui partagent un même modèle ou un même écr
 | Lot | Contenu | Demandes | XP | Statut |
 |---|---|---|---|---|
 | L0 | Séparer l’identité (IAM) des membres et rôles (Administration), retirer le gabarit Example, cadrer Citizen — [ADR 003](../technique/decisions/003-identite-et-habilitations.md) | — | — | ✅ |
-| L1 | Comptes et profils : inscription citoyenne, espace personnel, rôles Agent et Administrateur, formulaire de membre | D01, D03, D08, D09 | 1 500 | ⬜ |
+| L1 | Comptes et profils : inscription citoyenne, espace personnel, rôles Agent et Administrateur, formulaire de membre | D01, D03, D08, D09 | 1 500 | 🟡 API Citizen livrée (tâches 1 à 3) |
 | L2 | Demandes citoyennes : envoi, confirmation, signalement, suivi, file des agents, compteur d’attente | D04, D16, F25, D11, F26, F22, D17 | 2 390 | ⬜ |
 | L3 | Services municipaux (avec recherche et filtres), publications, page d’accueil | D05, D06, F28, F32, D07 | 1 550 | ⬜ |
 | L7 | Alertes et diffusion : message général, alerte ciblée par quartier, avis d’annonce importante, recommandations aux personnes vulnérables | D18, F29, F30, F31 | 3 080 | ⬜ |
@@ -44,9 +44,11 @@ Des agents travaillent en même temps dans des worktrees git séparés, chacun s
 
 Décisions : [Citizen — décisions retenues](../../api/src/Citizen/doc/README.md#décisions-retenues).
 
-1. Créer le BC `Citizen` sur le modèle d’`Administration` : autoload, services, routes, mapping, suite PHPUnit, migration, avec l’entité `Citizen`.
-2. Cas d’usage `RegisterCitizen` `{email, password}` : route publique dans le firewall, création du compte via un port de Citizen implémenté dans `IAM/Infrastructure/Adapter/Citizen`, puis création du citoyen dans la même transaction. Un e-mail déjà utilisé est refusé. Retirer `/api/auth/register`.
-3. Cas d’usage `GetMyCitizenProfile` et `UpdateMyCitizenProfile` (champs facultatifs : prénom, nom, téléphone, adresse, quartier, langue).
+1. ✅ Créer le BC `Citizen` sur le modèle d’`Administration` : autoload, services, routes, mapping, suite PHPUnit, migration, avec l’entité `Citizen`.
+2. ✅ Cas d’usage `RegisterCitizen` `{email, password}` : route publique dans le firewall, création du compte via un port de Citizen implémenté dans `IAM/Infrastructure/Adapter/Citizen`, puis création du citoyen dans la même transaction. Un e-mail déjà utilisé est refusé (`409`). `/api/auth/register` retirée.
+3. ✅ Cas d’usage `GetMyCitizenProfile` et `UpdateMyCitizenProfile` (champs facultatifs : prénom, nom, téléphone, adresse, quartier, langue).
+
+   Détail et écarts éventuels : [Citizen — livré](../../api/src/Citizen/doc/README.md#livré).
 4. Site : inscription en deux étapes (compte, puis « Mes informations » que l’on peut passer), connexion automatique, espace personnel `/espace` avec le nom du citoyen, l’invitation à compléter le profil et des raccourcis.
 5. Administration : rôles de référence Agent et Administrateur à l’initialisation, et formulaire « Ajouter un membre » dans l’admin.
 

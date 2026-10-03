@@ -6,7 +6,7 @@
 
 Citizen est le BC de la **relation entre les habitants et la ville de Nova Terra**. Un habitant y devient citoyen, renseigne son profil, s’adresse à la mairie, signale un problème et suit le traitement de ses demandes. Côté administration, c’est la file de travail des agents.
 
-> **État : cible retenue, aucun code livré.** Le suivi est dans le [chantier](../../../../doc/chantier/README.md).
+> **État : inscription et profil citoyen livrés côté API (lot L1, tâches 1 à 3) ; demandes citoyennes et file des agents restent la cible (lot L2).** Ce document sépare le [livré](#livré), la cible retenue ([modèle](#modèle-cible), [parcours](#parcours-cibles)) et les [questions ouvertes](#questions-ouvertes). Le suivi est dans le [chantier](../../../../doc/chantier/README.md).
 
 ## Utilisateurs
 
@@ -32,9 +32,55 @@ Hors périmètre : comptes, mots de passe et connexion ([IAM](../../IAM/doc/READ
   2. informations personnelles (facultatives) : l’étape peut être passée, et le citoyen peut les renseigner plus tard depuis son espace personnel.
 - **E-mail déjà utilisé** : l’inscription est refusée avec une invitation à se connecter.
 
+## Livré
+
+Lot L1, tâches 1 à 3 (API). La page d’inscription et l’espace personnel du [site](../../../../front/apps/site/doc/README.md) sont en cours.
+
+### Cas d’usage et routes
+
+| Cas d’usage | Route | Code |
+|---|---|---|
+| `RegisterCitizen` | `POST /api/citizen/register` (public, POST seulement) | `Application/Command/RegisterCitizen` |
+| `GetMyCitizenProfile` | `GET /api/citizen/me` | `Application/Query/GetMyCitizenProfile` |
+| `UpdateMyCitizenProfile` | `PUT /api/citizen/me` | `Application/Command/UpdateMyCitizenProfile` |
+
+Les routes respectent le [contrat HTTP](#contrat-http--inscription-et-profil-lot-l1) ci-dessous. Précisions de comportement :
+
+- **Inscription** : `RegisterCitizen` demande le compte à IAM via `CitizenAccountProvisioner`, puis crée le citoyen ; les deux écritures et l’événement `CitizenRegistered` (publié sur `async`) partagent la transaction du `command.bus`. Un échec de la sauvegarde finale annule aussi le compte. Le compte porte comme nom la partie locale de l’e-mail. L’e-mail est normalisé en minuscules par IAM ; la comparaison avec un compte existant ignore donc la casse. L’événement ne contient ni e-mail ni mot de passe.
+- **E-mail déjà utilisé** : `409` `{ "path", "message": "An account already exists for this email." }`, sans compte ni citoyen créé. `AccountAlreadyExists` étend `Shared\Domain\Exception\ConflitException` pour échapper à la traduction `\DomainException → 422` d’`AppController`.
+- **Validation** : e-mail requis, valide, ≤ 255 caractères ; mot de passe de 8 à 72 **octets**. Erreur de forme → `422` `{ "path", "message" }`. Un refus résiduel d’IAM (`AccountCreationRejected`) → `422` `{ "error" }`.
+- **Profil** : `PUT` remplace l’ensemble du profil. Un champ absent, `null` ou ne contenant que des espaces est enregistré à `null` ; les valeurs sont enregistrées sans espaces de début et de fin. Les champs d’identité éventuellement présents dans le payload (`id`, `userId`) sont ignorés : le citoyen est toujours celui du compte connecté. Une valeur trop longue ou d’un autre type que chaîne → `422`, sans aucune écriture. La mise à jour ne publie pas d’événement.
+- **Compte non citoyen** (par exemple un agent) : `404` `{ "path", "message" }` sur `GET` et `PUT`. Sans JWT : `401` (réponse du firewall).
+- `preferredLanguage` n’est contrôlé qu’en longueur (≤ 5) : la liste des langues n’est pas encore fermée (voir D14).
+
+### Modèle et persistance
+
+- Agrégat `Domain/Entity/Citizen` (`id`, `userId`, `registeredAt`, champs de profil facultatifs) ; `register()` enregistre `CitizenRegistered` ; `isProfileCompleted()` calcule l’indicateur.
+- Table `citizens` (mapping `Infrastructure/Doctrine/Entity/Citizen.orm.xml`, migration `Version20261003001100`), unicité sur `user_id` : un compte a au plus un profil citoyen. Aucune clé étrangère vers `auth_users` (frontière de module).
+- `DoctrineCitizenRepository` persiste et publie les événements sans `flush()` ; le middleware `doctrine_transaction` le porte.
+
+### Ports et adaptateurs livrés
+
+| Besoin de Citizen | Port (Citizen) | Adaptateur (fournisseur) |
+|---|---|---|
+| Créer le compte d’un nouveau citoyen | `Application/Ports/Provider/CitizenAccountProvisioner` : `create(email, password): string` (userId) ; lève `Application/Exception/AccountAlreadyExists` (409) ou `AccountCreationRejected` (422) | `IAM/Infrastructure/Adapter/Citizen/IAMCitizenAccountProvisioner` (appelle `CreateAccount`, traduit `EmailAlreadyUsed` et la violation d’unicité) |
+| Connaître le compte connecté | `Application/Ports/Provider/CurrentAccountProvider` : `userId(): string` | `IAM/Infrastructure/Adapter/Citizen/IAMCurrentAccountProvider` |
+
+Alias déclarés dans `config/services.yaml` (section « Ports intermodules »).
+
+### Tests
+
+`php bin/phpunit --testsuite Citizen` :
+
+- `Unit/Command/RegisterCitizenTest`, `Unit/Command/UpdateMyCitizenProfileTest`, `Unit/Query/GetMyCitizenProfileTest` : handlers avec `RamCitizenRepository`, stubs de ports, `SequenceIdProvider` et `FixedClock` ;
+- `Application/RegisterCitizenTest` : inscription anonyme puis `POST /api/login_check` et `GET /api/citizen/me`, `409` sans création, `422` sur payload invalide, événement sur `async`, rollback du compte si la sauvegarde finale échoue, événement dans la même base avec le transport Doctrine ;
+- `Application/CitizenProfileTest` : vue `CitizenProfile` exacte, `401`, `404`, mise à jour et `profileCompleted`, `422` sans écriture, payload d’identité ignoré.
+
+Le raccordement IAM est aussi testé côté fournisseur : `IAM/Tests/Suites/Unit/CitizenAccountProvisionerTest`.
+
 ## Modèle cible
 
-**Citoyen** (`Citizen`) :
+**Citoyen** (`Citizen`, livré) :
 
 | Champ | Obligatoire | Usage |
 |---|---|---|
@@ -48,7 +94,7 @@ Hors périmètre : comptes, mots de passe et connexion ([IAM](../../IAM/doc/READ
 
 Le profil est « complété » quand les champs facultatifs utiles sont renseignés ; ce n’est qu’un indicateur pour guider le citoyen (D12), jamais une condition d’accès.
 
-**Demande** (`ServiceRequest`) :
+**Demande** (`ServiceRequest`, cible lot L2) :
 
 | Champ | Rôle | Demandes Webcup |
 |---|---|---|
@@ -104,19 +150,26 @@ Enchaînement côté site : `POST /api/citizen/register` → `POST /api/login_ch
 
 ## Ports prévus
 
+Les ports de l’inscription et du compte connecté sont [livrés](#ports-et-adaptateurs-livrés). Reste à construire :
+
 | Besoin de Citizen | Port (Citizen) | Adaptateur (fournisseur) |
 |---|---|---|
-| Créer le compte d’un nouveau citoyen | `Application/Ports/Provider/CitizenAccountProvisioner` : `create(email, password): string` (userId), lève `Citizen\Application\Exception\AccountAlreadyExists` | `IAM/Infrastructure/Adapter/Citizen/IAMCitizenAccountProvisioner` (appelle `CreateAccount` ; nom du compte = partie locale de l’e-mail) |
-| Connaître le compte connecté | `Application/Ports/Provider/CurrentAccountProvider` : `userId(): string` | `IAM/Infrastructure/Adapter/Citizen/IAMCurrentAccountProvider` |
 | Vérifier qu’un agent peut lire ou traiter les demandes (lot L2) | à définir | `Administration/Infrastructure/Adapter/Citizen/…` |
 
 Pas d’espace IAM « citoyen » : l’espace citoyen est une zone du site, qui reconnaît un citoyen grâce à `GET /api/citizen/me`.
 
 ## Questions ouvertes
 
+- Liste des langues acceptées pour `preferredLanguage` (aujourd’hui seulement limitée à 5 caractères).
+- Inscription « en double clic » : deux requêtes simultanées avec le même e-mail ; la seconde doit échouer sur la contrainte d’unicité d’IAM, que l’adaptateur traduit en `AccountAlreadyExists` (`409`) ; ce cas n’est pas couvert par un test de concurrence.
 - Liste des quartiers de Nova Terra : liste fermée gérée par Administration, ou saisie libre ?
 - Alertes aux personnes vulnérables (F31) : faut-il un champ facultatif « je souhaite recevoir les alertes sanitaires » ? Il faudrait un consentement explicite, sans donnée de santé détaillée.
 - Transitions de statut autorisées et motif obligatoire en cas de rejet.
+
+## Référence
+
+- [Architecture technique](../../../../doc/technique/architecture.md) · [ADR 003 — Identité et habilitations](../../../../doc/technique/decisions/003-identite-et-habilitations.md)
+- [IAM — comptes et sessions](../../IAM/doc/comptes-et-sessions.md)
 
 <!-- backlinks:start -->
 ---
@@ -132,4 +185,7 @@ Pas d’espace IAM « citoyen » : l’espace citoyen est une zone du site, qui 
 - [Chantier](../../../../doc/chantier/README.md)
 - [Site](../../../../front/apps/site/doc/README.md)
 - [Admin](../../../../front/apps/admin/doc/README.md)
+- [IAM — comptes et sessions](../../IAM/doc/comptes-et-sessions.md)
+- [Architecture technique](../../../../doc/technique/architecture.md)
+- [Registre des demandes](../../../../doc/chantier/demandes.md)
 <!-- backlinks:end -->

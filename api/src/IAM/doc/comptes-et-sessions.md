@@ -7,7 +7,8 @@
 ## Comptes
 
 - Table `auth_users` : identifiant, e-mail unique, empreinte du mot de passe, nom.
-- `CreateAccount` (appelé par l’`AddMember` d’[Administration](../../Administration/doc/membres-et-habilitations.md) via l’adaptateur `Adapter/Administration/IAMMemberAccountProvisioner`) normalise l’e-mail en minuscules, exige un mot de passe de 8 à 72 octets, refuse un e-mail existant (`EmailAlreadyUsed`) et ne remplace jamais un mot de passe existant. Il n’attribue aucun rôle.
+- `CreateAccount` (appelé par l’`AddMember` d’[Administration](../../Administration/doc/membres-et-habilitations.md) via l’adaptateur `Adapter/Administration/IAMMemberAccountProvisioner`, et par le `RegisterCitizen` de [Citizen](../../Citizen/doc/README.md#livré) via `Adapter/Citizen/IAMCitizenAccountProvisioner`) normalise l’e-mail en minuscules, exige un mot de passe de 8 à 72 octets, refuse un e-mail existant (`EmailAlreadyUsed`) et ne remplace jamais un mot de passe existant. Il n’attribue aucun rôle.
+- Création publique : uniquement par l’inscription citoyenne `POST /api/citizen/register` de Citizen. L’adaptateur nomme le compte d’après la partie locale de l’e-mail et traduit `EmailAlreadyUsed` (ou une violation d’unicité) en `AccountAlreadyExists` de Citizen (409), les autres refus en `AccountCreationRejected` (422). IAM n’expose plus de route d’inscription (`/api/auth/register` retirée).
 
 ## Login et profil
 
@@ -42,4 +43,5 @@ La déconnexion est locale à chaque application ; la révocation serveur commun
 - [Architecture technique](../../../../doc/technique/architecture.md)
 - [Parcours de connexion du site](../../../../front/apps/site/doc/parcours-connexion.md)
 - [Administration — membres et habilitations](../../Administration/doc/membres-et-habilitations.md)
+- [Citizen](../../Citizen/doc/README.md)
 <!-- backlinks:end -->

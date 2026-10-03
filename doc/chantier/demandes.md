@@ -12,13 +12,13 @@ Statuts : ⬜ à faire · 🟡 en cours · ⚠️ partiel · ✅ livré · ⏸�
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
-| D01 | 1 | 250 | Un habitant crée simplement son compte et retrouve son espace | L1 | Citizen, IAM, site | ⚠️ route historique protégée par le firewall, aucune page |
+| D01 | 1 | 250 | Un habitant crée simplement son compte et retrouve son espace | L1 | Citizen, IAM, site | ⚠️ API livrée ([`POST /api/citizen/register`, profil](../../api/src/Citizen/doc/README.md#livré)) ; page d’inscription et espace du site en cours |
 | D03 | 1 | 250 | Se reconnecter à un espace personnel clairement identifié | L1 | IAM, site | ⚠️ connexion livrée, pas d’espace personnel |
 | D04 | 1 | 250 | Envoyer un message aux services municipaux, avec confirmation | L2 | Citizen, site | ⬜ |
 | D05 | 1 | 250 | Présenter clairement les principaux services municipaux | L3 | Administration, site | ⬜ |
 | D06 | 1 | 250 | Consulter les publications de la ville | L3 | Administration, site | ⬜ |
 | D07 | 2 | 500 | Page d’accueil qui hiérarchise l’essentiel et mène aux services | L3 | site | ⬜ accueil de remplacement |
-| D08 | 2 | 500 | Distinguer citoyens, agents et administrateurs | L1 | Administration, Citizen | ⚠️ rôles et membres livrés, profils citoyens absents |
+| D08 | 2 | 500 | Distinguer citoyens, agents et administrateurs | L1 | Administration, Citizen | ⚠️ rôles et membres livrés, profil citoyen livré côté API (`GET /api/citizen/me`) |
 | D09 | 2 | 500 | Limiter les outils sensibles aux profils autorisés | L1 | Administration | ⚠️ contrôles serveur livrés pour l’admin |
 | D19 | 3 | 750 | Espace agents distinct qui affiche le flux de l’API Nova Terra | L6 | Pilotage, admin | ⚠️ espace distinct livré, flux absent |
 | F22 | 1 | 250 | Les agents voient les demandes reçues, leur état et celles à traiter | L2 | Citizen, admin | ⬜ |

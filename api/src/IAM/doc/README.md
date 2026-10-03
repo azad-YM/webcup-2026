@@ -13,22 +13,30 @@ IAM ne sait pas ce qu’est un agent ou un citoyen. Les profils métier rattach�
 - [Site](../../../../front/apps/site/doc/README.md) : connexion, choix de l’espace, émission du code de portail.
 - [Admin](../../../../front/apps/admin/doc/README.md) : échange du code, validation de la session.
 - [Administration](../../Administration/doc/README.md) : compte connecté et création de compte d’un membre.
-- [Citizen](../../Citizen/doc/README.md) (cible) : création de compte à l’inscription d’un citoyen.
+- [Citizen](../../Citizen/doc/README.md) : création de compte à l’inscription publique d’un citoyen et compte connecté.
 
 ## Livré
 
 | Méthode | Route | Rôle |
 |---|---|---|
 | POST | `/api/login_check` | Login, JWT d’audience `site` |
-| POST | `/api/auth/register` | Inscription historique (dette : protégée par le firewall, hors bus) |
 | GET | `/api/iam/me`, `/api/iam/me/spaces` | Profil et espaces accessibles |
 | POST | `/api/iam/portal-codes`, `/api/iam/portal-sessions` | Passage site → admin (PKCE) |
 
-Adaptateurs fournis : `Infrastructure/Adapter/Administration/IAMCurrentAccountProvider` et `IAMMemberAccountProvisioner`.
+Adaptateurs fournis :
+
+| Consommateur | Adaptateur IAM | Rôle |
+|---|---|---|
+| Administration | `Infrastructure/Adapter/Administration/IAMCurrentAccountProvider` | Compte connecté |
+| Administration | `Infrastructure/Adapter/Administration/IAMMemberAccountProvisioner` | Création du compte d’un membre |
+| Citizen | `Infrastructure/Adapter/Citizen/IAMCitizenAccountProvisioner` | Création du compte à l’inscription (nom = partie locale de l’e-mail) |
+| Citizen | `Infrastructure/Adapter/Citizen/IAMCurrentAccountProvider` | Compte connecté |
+
+L’inscription publique est portée par Citizen (`POST /api/citizen/register`) ; l’ancienne route `POST /api/auth/register` d’IAM (hors bus, protégée par le firewall) a été retirée.
 
 ## Cible retenue
 
-Inscription publique d’un citoyen portée par Citizen, avec un adaptateur IAM de création de compte ; retrait de `/api/auth/register` une fois ce parcours livré.
+Aucune évolution d’IAM prévue pour le lot L1.
 
 ## Questions ouvertes
 

@@ -22,7 +22,7 @@ Le dépôt part d’un socle full-stack DDD / hexagonal : API Symfony découpée
 │   └── src/
 │       ├── IAM/                 comptes, connexion, passage site → admin, espaces
 │       ├── Administration/      membres, rôles, permissions (+ services, publications)
-│       ├── Citizen/             citoyens et demandes (documentation, code à créer)
+│       ├── Citizen/             citoyens (inscription, profil) ; demandes à venir
 │       └── Shared/              primitives et kernel communs aux BC
 ├── doc/                         contexte produit, architecture, décisions, chantier
 ├── docker/                      environnements Docker Compose

@@ -22,7 +22,7 @@ Chaque décision indique : le contexte, les options étudiées, la décision, se
 2. Stratégie d’audit, de notifications et de conservation des données (les alertes aux habitants des demandes D18, F29, F30 et F31 obligent à trancher la partie notifications).
 3. Outbox si le transport Messenger quitte la base applicative.
 
-L’inscription publique est tranchée : elle est portée par [Citizen](../../../api/src/Citizen/doc/README.md#décisions-retenues). La route historique `/api/auth/register` sera retirée quand ce parcours sera livré.
+L’inscription publique est tranchée : elle est portée par [Citizen](../../../api/src/Citizen/doc/README.md#décisions-retenues). La route historique `/api/auth/register` a été retirée lors de la livraison de `POST /api/citizen/register`.
 
 Une décision ouverte ne doit pas être présentée ailleurs comme validée.
 

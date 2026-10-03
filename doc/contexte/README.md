@@ -32,7 +32,7 @@ Administration ──── membres, rôles, permissions ; services, publication
  ▲
  │ port (droits des agents)
  │
-Citizen ─────────── citoyens, demandes, suivi (cible)
+Citizen ─────────── citoyens (inscription, profil livrés), demandes, suivi (cible)
 ```
 
 - [IAM](../../api/src/IAM/doc/README.md) · [Administration](../../api/src/Administration/doc/README.md) · [Citizen](../../api/src/Citizen/doc/README.md)

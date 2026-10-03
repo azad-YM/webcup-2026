@@ -10,7 +10,7 @@ Consignes de travail : [agent backend](AGENTS.md), puis le `AGENTS.md` du BC et 
 src/
 ├── IAM/                       # BC identité : comptes, login JWT, codes PKCE, espaces accessibles
 ├── Administration/            # BC organisation municipale : membres, rôles, permissions (+ services, publications à venir)
-├── Citizen/                   # BC citoyens et demandes : documentation seule, code à créer
+├── Citizen/                   # BC citoyens : inscription publique, profil (demandes à venir)
 └── Shared/                    # kernel, AppController, exceptions, AggregateRoot, ports techniques
 ```
 
@@ -26,11 +26,12 @@ Documentation : [index central](../doc/README.md), [IAM](src/IAM/doc/README.md),
 | Méthode | Route | Module |
 |---|---|---|
 | POST | `/api/login_check` | IAM |
-| POST | `/api/auth/register` | IAM (inscription historique) |
 | GET | `/api/iam/me`, `/api/iam/me/spaces` | IAM |
 | POST | `/api/iam/portal-codes`, `/api/iam/portal-sessions` | IAM |
 | GET | `/api/administration/permissions` | Administration |
 | POST | `/api/administration/roles`, `/api/administration/members` | Administration |
+| POST | `/api/citizen/register` (public) | Citizen |
+| GET, PUT | `/api/citizen/me` | Citizen |
 
 CLI : `php bin/console app:admin:bootstrap` ([procédure](src/Administration/doc/initialisation-admin.md)).
 
@@ -53,18 +54,19 @@ Le socle global est dans `src/Shared/Tests` :
 - `Fixtures/UserFixture.php` : compte de test avec authentification JWT réelle ;
 - `Doubles/Service/SequenceIdProvider.php` : identifiants déterministes.
 
-Namespaces `Tests\IAM\…`, `Tests\Administration\…`, `Tests\Shared\…`, chargés uniquement par `autoload-dev`. Suites PHPUnit par BC (`IAM`, `Administration`, `Shared`) ; groupes `Unit` et `Application`.
+Namespaces `Tests\IAM\…`, `Tests\Administration\…`, `Tests\Citizen\…`, `Tests\Shared\…`, chargés uniquement par `autoload-dev`. Suites PHPUnit par BC (`IAM`, `Administration`, `Citizen`, `Shared`) ; groupes `Unit` et `Application`.
 
 ```bash
 php bin/phpunit --group Unit                       # sans Docker
 php bin/phpunit --testsuite Administration
+php bin/phpunit --testsuite Citizen
 php bin/phpunit --testsuite IAM --group Application
 php bin/phpunit                                     # tout (Docker requis)
 ```
 
 Les tests applicatifs exigent Docker accessible depuis PHP, `pdo_mysql` et OpenSSL. Le premier lancement télécharge `mysql:8.4`. `initialize()` recrée le schéma depuis les mappings avant chaque test ; ces tests ne valident donc pas les migrations. Aucune base configurée dans `.env` n’est utilisée.
 
-Exemples de référence : `Administration/Tests/Suites/Unit/Command/AddMemberTest.php` (unitaire, port de création de compte doublé) et `Administration/Tests/Suites/Application/AddMemberTest.php` (HTTP + Doctrine + événement + adaptateur IAM réel).
+Exemples de référence : `Administration/Tests/Suites/Unit/Command/AddMemberTest.php` (unitaire, port de création de compte doublé) et `Administration/Tests/Suites/Application/AddMemberTest.php` (HTTP + Doctrine + événement + adaptateur IAM réel). Pour une route publique avec création de compte et conflit 409 : `Citizen/Tests/Suites/Application/RegisterCitizenTest.php`.
 
 ## Ajouter un module
 

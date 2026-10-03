@@ -6,11 +6,11 @@ IAM répond uniquement à « qui se connecte ? » : comptes (e-mail, secret hach
 
 Règles :
 
-- Pour servir un autre BC, implémenter **son** port dans `Infrastructure/Adapter/<BC>` (ex. `Adapter/Administration/IAMMemberAccountProvisioner`, qui appelle `CreateAccount`) et déclarer l’alias dans `services.yaml`. Traduire les erreurs d’IAM vers les erreurs contractuelles du consommateur.
+- Pour servir un autre BC, implémenter **son** port dans `Infrastructure/Adapter/<BC>` (ex. `Adapter/Administration/IAMMemberAccountProvisioner` et `Adapter/Citizen/IAMCitizenAccountProvisioner`, qui appellent `CreateAccount`) et déclarer l’alias dans `services.yaml`. Traduire les erreurs d’IAM vers les erreurs contractuelles du consommateur.
 - Un BC qui expose un espace implémente `AccessibleSpacesProvider` dans son infrastructure et l’étiquette `iam.accessible_spaces`.
 - Ne jamais lire les tables ou repositories d’un autre BC.
 - Vérifier toutes les conditions avant sauvegarde : un refus ne crée aucun compte.
 - Préserver : aucun JWT dans une URL ; code de portail ≤ 60 s, à usage unique, lié à la destination, au challenge PKCE et à la session source ; audiences `site` et `admin` uniquement. Ajouter une application = ajouter sa destination (`IssuePortalCodeCommand`, `ExchangePortalCodeCommand`, `PortalAccessPolicy`) et son audience (`JwtAudienceListener`).
-- Dettes connues : `User` implémente les interfaces Symfony ; `POST /api/auth/register` appelle son handler sans bus et reste protégé par le firewall. Ne pas reproduire.
+- Dette connue : `User` implémente les interfaces Symfony. Ne pas reproduire. IAM n’expose aucune route d’inscription : l’inscription publique appartient à Citizen.
 
 Tests : `php bin/phpunit --testsuite IAM`.

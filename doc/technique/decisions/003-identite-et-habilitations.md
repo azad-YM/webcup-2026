@@ -51,5 +51,6 @@ Option 3.
 - [ADR 002](002-frontieres-et-acces.md)
 - [Documentation — IAM](../../../api/src/IAM/doc/README.md)
 - [Documentation — Administration](../../../api/src/Administration/doc/README.md)
+- [Documentation — Citizen](../../../api/src/Citizen/doc/README.md)
 - [Décisions](README.md)
 <!-- backlinks:end -->
