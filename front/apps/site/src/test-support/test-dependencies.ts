@@ -19,7 +19,7 @@ export function createTestContext(overrides: Partial<Dependencies> = {}) {
   const serviceCatalogGateway = new InMemoryServiceCatalogGateway()
   const publicationGateway = new InMemoryPublicationGateway()
   const dependencies: Dependencies = {
-    realtime: { subscribe: () => () => undefined },
+    realtime: { subscribe: () => () => undefined, restart: () => undefined },
     authGateway,
     authSessionGateway,
     accountRegistrationGateway: new CitizenAccountRegistrationAdapter(citizenGateway),

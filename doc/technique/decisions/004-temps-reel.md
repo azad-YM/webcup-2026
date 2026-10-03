@@ -55,7 +55,7 @@ Cas d'usage ─► événement de domaine ─► handler applicatif du BC ─►
 ### Frontend
 
 - Client commun `@boilerplate/shared-utils/realtime` : `openRealtimeStream({ apiBaseUrl, eventTypes, onEvent, getTicket })` et `createRealtimeTicketProvider(apiBaseUrl, getToken)`. Il gère la reprise après refus (ticket expiré : nouveau ticket, réouverture depuis le dernier identifiant reçu).
-- Chaque application définit son port d’abonnement dans `core/application` et l’implémente avec ce client dans son infrastructure ; un seul flux par application et par onglet, partagé par les écrans.
+- Chaque application définit son port d’abonnement dans `core/application` et l’implémente avec ce client dans son infrastructure ; **un seul flux par application et par onglet**, partagé par les écrans et les modules. Site : `SseRealtimeSubscriber` (module `shared`) écoute l’union des types d’événements déclarés par les modules (`REQUEST_EVENTS`, `NOTIFICATION_EVENTS`, `APPOINTMENT_EVENTS` de `citizen`, `CITY_FEED_EVENTS` de `public`), s’ouvre au premier abonné, se ferme au dernier et se rouvre (`restart()`, nouveau ticket) à la connexion et à la déconnexion ; le module `public` le consomme via son port `CityFeedGateway` (adaptateur `RealtimeCityFeedAdapter` du socle). Admin : `SseRealtimeSubscriber` injecté par le kernel, même principe.
 - À réception, l’écran invalide le cache RTK Query concerné. **Filet de sécurité obligatoire** : chaque écran temps réel garde un `pollingInterval` (60 s par exemple).
 
 ### Règles

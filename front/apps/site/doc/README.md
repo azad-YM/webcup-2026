@@ -34,7 +34,8 @@ Frontières entre modules (même règle que le backend) :
 | Créer un compte à l’inscription | `auth` : `AccountRegistrationGateway` | `citizen/core/infrastructure/adapter/auth/CitizenAccountRegistrationAdapter` |
 | Jeton de session pour les appels Citizen | `citizen` : `CitizenSessionProvider` | `auth/core/infrastructure/adapter/citizen/AuthCitizenSessionAdapter` |
 | Étape « Mes informations », espaces IAM dans `/espace` | — | composition dans `src/app/*/page.tsx` (slots React) |
-| Être prévenu des changements (temps réel) | `shared` : `core/application/ports/realtime-subscriber.ts` (`RealtimeSubscriber`) | `shared/core/infrastructure/realtime/SseRealtimeSubscriber` (client `@boilerplate/shared-utils/realtime`, un flux SSE par onglet) |
+| Être prévenu des changements (temps réel) | `shared` : `core/application/ports/realtime-subscriber.ts` (`RealtimeSubscriber`) | `shared/core/infrastructure/realtime/SseRealtimeSubscriber` (client `@boilerplate/shared-utils/realtime`) : **un seul flux SSE par onglet**, union des événements des modules fournie par `StoreProvider`, rouvert (`restart()`) à la connexion et à la déconnexion |
+| Alertes et publications en temps réel | `public` : `CityFeedGateway` | `shared/core/infrastructure/adapter/public/RealtimeCityFeedAdapter` (sur le flux unique) |
 | Jeton de session pour les notifications et le flux temps réel | `public` : `PublicSessionProvider` | `auth/core/infrastructure/adapter/public/AuthPublicSessionAdapter` |
 | Étape « Mes informations », espaces IAM et notifications dans `/espace` | — | composition dans `src/app/*/page.tsx` (slots React) |
 
@@ -66,7 +67,6 @@ Export statique : pas de route dynamique ; les détails passent par des paramèt
 ## Limites et questions ouvertes
 
 - Les adaptateurs locaux (`public/core/infrastructure/for-production/gateway/local`) ne sont plus branchés ; ils restent pour les tests existants, qui n’ont pas été mis à jour ni relancés pour les lots L3, L7 et L9 (décision d’économie). Aucun test n’a été écrit pour ces lots.
-- Le flux temps réel du module `public` est indépendant de celui des demandes (lot L2) : à fusionner en un seul flux par onglet lors de l’intégration.
 - « Mes demandes » est affiché « Bientôt disponible » dans l’espace (lot L2).
 - Langues proposées pour la préférence : français et anglais (D14, lot L5).
 - Réglages d’affichage (contraste renforcé, taille du texte) et audit lecteur d’écran restent à faire (F21, F23, F24).

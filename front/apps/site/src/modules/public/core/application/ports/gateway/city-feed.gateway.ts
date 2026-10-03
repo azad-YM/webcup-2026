@@ -3,7 +3,9 @@
  * Le message dit seulement ce qui a changé : l’écran recharge ses données depuis l’API
  * et garde un rafraîchissement périodique de secours.
  */
-export type CityFeedEventType = "alert.published" | "alert.withdrawn" | "publication.published" | "publication.important"
+export const CITY_FEED_EVENTS = ["alert.published", "alert.withdrawn", "publication.published", "publication.important"] as const
+
+export type CityFeedEventType = (typeof CITY_FEED_EVENTS)[number]
 
 export type CityFeedEvent = { type: CityFeedEventType; id: string | null }
 
