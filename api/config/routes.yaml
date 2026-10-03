@@ -36,3 +36,9 @@ communication:
         path: ../src/Communication/Application/Controller/
         namespace: Communication\Application\Controller
     type: attribute
+
+audit:
+    resource:
+        path: ../src/Audit/Application/Controller/
+        namespace: Audit\Application\Controller
+    type: attribute

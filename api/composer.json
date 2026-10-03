@@ -57,6 +57,7 @@
       "Citizen\\": "src/Citizen/",
       "Pilotage\\": "src/Pilotage/",
       "Communication\\": "src/Communication/",
+      "Audit\\": "src/Audit/",
       "Shared\\": "src/Shared/"
     },
     "exclude-from-classmap": [

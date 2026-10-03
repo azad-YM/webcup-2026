@@ -45,6 +45,11 @@ services:
         exclude:
             - '../src/Pilotage/Tests/'
 
+    Audit\:
+        resource: '../src/Audit/'
+        exclude:
+            - '../src/Audit/Tests/'
+
     Shared\:
         resource: '../src/Shared/'
         exclude:
@@ -97,6 +102,14 @@ services:
     Pilotage\Application\Ports\Gateway\WebcupFeedGateway:
         alias: Pilotage\Infrastructure\Http\WebcupHttpFeedGateway
 
+    Pilotage\Application\Ports\Repository\RequestTrackingRepository:
+        alias: Pilotage\Infrastructure\Doctrine\Repository\DoctrineRequestTrackingRepository
+
+    # --- Audit : journal des actions de l'administration (ADR 006) ---
+
+    Audit\Application\Ports\Repository\AuditEntryRepository:
+        alias: Audit\Infrastructure\Doctrine\Repository\DbalAuditEntryRepository
+
     # --- Ports intermodules : port du consommateur -> adaptateur dans l'infrastructure du fournisseur ---
 
     # Administration consomme IAM (compte connecté, création de compte).
@@ -120,6 +133,20 @@ services:
     # Pilotage consomme Administration (lecture du flux réservée à admin.pilotage.read).
     Pilotage\Application\Ports\Provider\PilotageAccessPolicy:
         alias: Administration\Infrastructure\Adapter\Pilotage\AdminPilotageAccessPolicy
+
+    # Pilotage consomme IAM (auteur d'une mise à jour du suivi des demandes Webcup).
+    Pilotage\Application\Ports\Provider\CurrentAgentProvider:
+        alias: IAM\Infrastructure\Adapter\Pilotage\IAMPilotageCurrentAgent
+
+    # Audit consomme IAM (acteur courant) et Administration (lecture : admin.audit.read, entrées de sécurité : admin.security.read).
+    Audit\Application\Ports\Provider\AuditActorProvider:
+        alias: IAM\Infrastructure\Adapter\Audit\IAMAuditActorProvider
+    Audit\Application\Ports\Provider\AuditAccessPolicy:
+        alias: Administration\Infrastructure\Adapter\Audit\AdminAuditAccessPolicy
+
+    # Port Shared du journal des actions, appelé par les cas d'usage des BC propriétaires ; implémenté par Audit.
+    Shared\Application\Ports\Service\AuditTrail:
+        alias: Audit\Infrastructure\Adapter\Shared\AuditTrailRecorder
 
     # Citizen consomme Administration (file des demandes : admin.request.read / admin.request.write).
     Citizen\Application\Ports\Provider\RequestAccessPolicy:
