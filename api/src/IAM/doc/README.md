@@ -22,6 +22,9 @@ IAM ne sait pas ce qu’est un agent ou un citoyen. Les profils métier rattach�
 | POST | `/api/login_check` | Login, JWT d’audience `site` |
 | GET | `/api/iam/me`, `/api/iam/me/spaces` | Profil et espaces accessibles |
 | POST | `/api/iam/portal-codes`, `/api/iam/portal-sessions` | Passage site → admin (PKCE) |
+| GET | `/api/iam/security/login-events` | Journal des verrouillages de connexion (permission `admin.security.read`, L8) |
+
+Lot L8 (🟡, non vérifié dans un navigateur) : statut du compte (`active`, `suspended`, `deleted`) avec révocation de toutes les sessions par version de session, suppression par anonymisation, message clair pour un compte suspendu, verrouillage progressif par compte, par IP et par couple compte+IP (429), journal des verrouillages. Détails : [comptes et sessions](comptes-et-sessions.md#protection-contre-les-tentatives-de-connexion-f37).
 
 Adaptateurs fournis :
 
@@ -31,6 +34,9 @@ Adaptateurs fournis :
 | Administration | `Infrastructure/Adapter/Administration/IAMMemberAccountProvisioner` | Création du compte d’un membre |
 | Citizen | `Infrastructure/Adapter/Citizen/IAMCitizenAccountProvisioner` | Création du compte à l’inscription (nom = partie locale de l’e-mail) |
 | Citizen | `Infrastructure/Adapter/Citizen/IAMCurrentAccountProvider` | Compte connecté |
+| Citizen | `Infrastructure/Adapter/Citizen/IAMCitizenAccountManager` | Reconfirmation du mot de passe, e-mails par lot, suspension et suppression (anonymisation) du compte |
+
+Port consommé par IAM : `Application/Ports/Provider/SecurityJournalAccessPolicy`, implémenté par Administration (`Adapter/IAM/AdminSecurityJournalAccessPolicy`).
 
 L’inscription publique est portée par Citizen (`POST /api/citizen/register`) ; l’ancienne route `POST /api/auth/register` d’IAM (hors bus, protégée par le firewall) a été retirée.
 
@@ -40,7 +46,7 @@ Aucune évolution d’IAM prévue pour le lot L1.
 
 ## Questions ouvertes
 
-Changement et réinitialisation du mot de passe, révocation commune des sessions, purge des codes expirés, connexion par code envoyé par e-mail.
+Changement et réinitialisation du mot de passe, révocation serveur à la déconnexion volontaire, purge des codes expirés, connexion par code envoyé par e-mail, alerte temps réel des administrateurs lors d’un verrouillage.
 
 ## Référence
 

@@ -6,7 +6,7 @@
 
 L’admin est l’espace de travail des agents et des administrateurs de Nova Terra, distinct du portail des habitants. Les administrateurs y gèrent les rôles et les membres. Les agents y traiteront les demandes citoyennes, publieront les informations de la ville et consulteront le flux de l’API du concours (voir le [chantier](../../../../doc/chantier/README.md)). Elle s’ouvre depuis la carte « Administration » du [site](../../site/doc/README.md), sans nouvelle saisie des identifiants.
 
-Livré : création des rôles, liste et ajout des membres ([membres](membres.md)), flux Nova Terra pour les agents ([pilotage](pilotage.md)).
+Livré : création des rôles, liste et ajout des membres ([membres](membres.md)), flux Nova Terra pour les agents ([pilotage](pilotage.md)), comptes citoyens ([détail](comptes-citoyens.md)) et journal de sécurité des connexions ([détail](securite.md)) — lot L8, 🟡 non vérifié dans un navigateur.
 
 ## Parcours
 
@@ -20,6 +20,8 @@ Livré : création des rôles, liste et ajout des membres ([membres](membres.md)
 |---|---|---|---|
 | Administration | `/admin`, `/admin/role`, `/admin/member` | [Administration](../../../../api/src/Administration/doc/README.md) | Création des rôles ([détail](roles.md)) ; liste et ajout des membres ([détail](membres.md)) |
 | Demandes citoyennes | à créer | [Citizen](../../../../api/src/Citizen/doc/README.md) | Cible (F22, D17) |
+| Comptes citoyens | `/admin/citizens` | [Citizen](../../../../api/src/Citizen/doc/compte-et-securite.md) | Liste, recherche, consultation, suspension ([détail](comptes-citoyens.md)) |
+| Sécurité | `/admin/security` | [IAM](../../../../api/src/IAM/doc/comptes-et-sessions.md) | Journal des verrouillages de connexion ([détail](securite.md)) |
 | Pilotage | `/pilotage` | [Pilotage](../../../../api/src/Pilotage/doc/README.md) | Flux Nova Terra livré ([détail](pilotage.md)) |
 
 ## Organisation cible
@@ -35,7 +37,7 @@ L’admin regroupe toutes les opérations de la mairie. Un module par domaine, c
 
 ## Limites
 
-La déconnexion est locale ; la révocation commune reste à concevoir. Les droits affichés ne remplacent pas les contrôles serveur.
+La déconnexion volontaire est locale ; seuls la suspension et la suppression d’un compte révoquent ses sessions côté serveur. Les droits affichés ne remplacent pas les contrôles serveur.
 
 [Installation et commandes](../README.md)
 

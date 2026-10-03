@@ -40,6 +40,19 @@ Garde : une session est requise (sinon invitation à se connecter, avec retour v
 
 Même garde. Formulaire pré-rempli. `PUT /api/citizen/me` **remplace tout le profil** : le site envoie toujours les six champs, champ vide → `null`. Après l’enregistrement : « Vos informations ont été enregistrées. » (annonce `aria-live`) et lien de retour vers l’espace. Un `422` rattaché à un champ s’affiche sous ce champ ; la saisie est conservée en cas d’erreur.
 
+## 4. Supprimer mon compte (`/espace/profil`, F33)
+
+Lot L8, 🟡 non vérifié dans un navigateur. Sous le formulaire du profil, la section « Supprimer mon compte » explique l’effet (profil et identifiants effacés, sessions fermées, historique des démarches conservé sans identité). « Demander la suppression » ouvre un formulaire : mot de passe actuel **et** case « Je comprends que cette suppression est définitive » obligatoires. `DELETE /api/citizen/me` `{password}` :
+
+| Réponse | Affichage |
+|---|---|
+| `200` | Session locale vidée, redirection vers `/connexion?compte=supprime` (« Votre compte a été supprimé et vos sessions ont été fermées. »). |
+| `403` | « Mot de passe incorrect. La suppression a été refusée. » ; le champ est vidé. |
+| `409` | « Ce compte est aussi un compte d’agent actif. Contactez un administrateur avant de le supprimer. » |
+| `401` | Session expirée : déconnexion. |
+
+Règles (anonymisation, compte agent protégé) : [Citizen — compte et sécurité](../../../../api/src/Citizen/doc/compte-et-securite.md). Code : `citizen/ui/sections/delete-account.tsx`, `citizen/core/application/usecases/delete-my-account.usecase.ts`.
+
 ## Dépendances et limites
 
 - Le parcours de bout en bout dépend de l’API Citizen (lot L1, agent A). Sans elle, `/espace` affiche « ce compte n’est pas un compte citoyen » (la route répond `404`) et l’inscription échoue avec un message ; la connexion IAM et la carte « Administration » continuent de fonctionner.
@@ -59,4 +72,5 @@ Code : modules `auth` (`ui/pages/registration.tsx`, `core/application/usecases/r
 - [Parcours de connexion](parcours-connexion.md)
 - [Chantier](../../../../doc/chantier/README.md)
 - [Registre des demandes](../../../../doc/chantier/demandes.md)
+- [Citizen — compte et sécurité](../../../../api/src/Citizen/doc/compte-et-securite.md)
 <!-- backlinks:end -->

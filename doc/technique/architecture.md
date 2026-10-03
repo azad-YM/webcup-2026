@@ -58,6 +58,9 @@ Raccordements livrés, à reproduire :
 | `Administration` — `MemberAccountProvisioner` | `IAM/Infrastructure/Adapter/Administration/IAMMemberAccountProvisioner` |
 | `Citizen` — `CitizenAccountProvisioner` | `IAM/Infrastructure/Adapter/Citizen/IAMCitizenAccountProvisioner` |
 | `Citizen` — `CurrentAccountProvider` | `IAM/Infrastructure/Adapter/Citizen/IAMCurrentAccountProvider` |
+| `Citizen` — `CitizenAccountManager` (L8) | `IAM/Infrastructure/Adapter/Citizen/IAMCitizenAccountManager` |
+| `Citizen` — `CitizenAccountAccessPolicy` (L8) | `Administration/Infrastructure/Adapter/Citizen/AdminCitizenAccountAccessPolicy` |
+| `IAM` — `SecurityJournalAccessPolicy` (L8) | `Administration/Infrastructure/Adapter/IAM/AdminSecurityJournalAccessPolicy` |
 | `IAM` — `AccessibleSpacesProvider` | `Administration/Infrastructure/Adapter/IAM/AdminAccessibleSpacesProvider` |
 | `Pilotage` — `PilotageAccessPolicy` | `Administration/Infrastructure/Adapter/Pilotage/AdminPilotageAccessPolicy` |
 
@@ -86,13 +89,15 @@ modules/<module>/
 └── ui/                         layouts, pages, sections, modals
 ```
 
-Chaîne : UI → RTK Query → use case (`withUseCase`) → port gateway → adaptateur injecté par le kernel (`modules/shared/core/config`). Entre modules frontend, même règle que le backend : chaque module métier de l’admin (aujourd’hui `admin` et `pilotage`) définit son port de session, implémenté par le module `auth` (`auth/core/infrastructure/adapter/<module>`).
+Chaîne : UI → RTK Query → use case (`withUseCase`) → port gateway → adaptateur injecté par le kernel (`modules/shared/core/config`). Entre modules frontend, même règle que le backend : chaque module métier de l’admin (aujourd’hui `admin`, `pilotage`, `citizen-accounts` et `security`) définit son port de session, implémenté par le module `auth` (`auth/core/infrastructure/adapter/<module>`).
 
 ## Authentification
 
 1. Le site appelle `POST /api/login_check` et reçoit un JWT d’audience `site`.
 2. Il liste les espaces via `GET /api/iam/me/spaces`.
 3. L’admin démarre `/auth/start` (état + vérificateur PKCE), le site appelle `POST /api/iam/portal-codes`, puis l’admin échange le code via `POST /api/iam/portal-sessions` et reçoit un JWT d’audience `admin`.
+
+Chaque JWT porte la version de session du compte : suspendre, réactiver ou supprimer un compte invalide toutes ses sessions (site et admin). Le login est protégé par un verrouillage progressif par compte, par IP et par couple compte+IP (`429`, lot L8).
 
 Détails : [IAM — comptes et sessions](../../api/src/IAM/doc/comptes-et-sessions.md) et [parcours de connexion du site](../../front/apps/site/doc/parcours-connexion.md).
 

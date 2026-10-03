@@ -60,8 +60,8 @@ Statuts : ⬜ à faire · 🟡 en cours · ⚠️ partiel · ✅ livré · ⏸�
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
-| F33 | 1 | 290 | Le citoyen peut supprimer son compte, sans qu’une personne non autorisée puisse le faire | L8 | Citizen, IAM, site | ⬜ |
-| F34 | 2 | 580 | Les agents administrent les comptes citoyens (consulter, suspendre…), sans accès non autorisé | L8 | Citizen, Administration, admin | ⬜ |
+| F33 | 1 | 290 | Le citoyen peut supprimer son compte, sans qu’une personne non autorisée puisse le faire | L8 | Citizen, IAM, site | 🟡 livré ([règles](../../api/src/Citizen/doc/compte-et-securite.md)), non vérifié dans un navigateur |
+| F34 | 2 | 580 | Les agents administrent les comptes citoyens (consulter, suspendre…), sans accès non autorisé | L8 | Citizen, Administration, admin | 🟡 livré ([page](../../front/apps/admin/doc/comptes-citoyens.md)), non vérifié dans un navigateur |
 | F35 | 1 | 290 | Indications contextuelles au bon moment pour les premières actions, sans long guide | L4 | site | ⬜ |
 | F36 | 2 | 580 | Consulter les horaires et informations des transports municipaux, utiles à sa situation | L9 | Administration, site | ⬜ |
 
@@ -69,7 +69,7 @@ Statuts : ⬜ à faire · 🟡 en cours · ⚠️ partiel · ✅ livré · ⏸�
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
-| F37 | 3 | 900 | Protéger les comptes contre les tentatives de connexion inhabituelles, de façon perceptible sans gêner l’usage normal | L8 | IAM, site | ⬜ |
+| F37 | 3 | 900 | Protéger les comptes contre les tentatives de connexion inhabituelles, de façon perceptible sans gêner l’usage normal | L8 | IAM, site, admin | 🟡 livré ([règles](../../api/src/IAM/doc/comptes-et-sessions.md#protection-contre-les-tentatives-de-connexion-f37), [journal](../../front/apps/admin/doc/securite.md)), non vérifié dans un navigateur |
 | F38 | 2 | 600 | Savoir qu’un service est interrompu (maintenance, incident) avant de commencer une démarche, quand revenir ou quoi faire | L9 | Administration, site | ⬜ |
 | F39 | 2 | 600 | Prendre rendez-vous avec un agent : créneau sans ambiguïté, informations pour préparer le rendez-vous | L10 | Citizen, admin, site | ⬜ |
 | F40 | 1 | 300 | Recevoir un rappel avant son rendez-vous | L10 | Citizen, Communication, site | ⬜ |

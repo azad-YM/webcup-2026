@@ -11,6 +11,7 @@ Règles :
 - Ne jamais lire les tables ou repositories d’un autre BC.
 - Vérifier toutes les conditions avant sauvegarde : un refus ne crée aucun compte.
 - Préserver : aucun JWT dans une URL ; code de portail ≤ 60 s, à usage unique, lié à la destination, au challenge PKCE et à la session source ; audiences `site` et `admin` uniquement. Ajouter une application = ajouter sa destination (`IssuePortalCodeCommand`, `ExchangePortalCodeCommand`, `PortalAccessPolicy`) et son audience (`JwtAudienceListener`).
+- Statut du compte et `session_version` (L8) : tout changement de statut doit incrémenter la version pour révoquer les JWT ; le verrouillage des connexions passe par `LoginAttemptLimiter` et alimente le journal `iam_login_security_events` ([détail](doc/comptes-et-sessions.md#protection-contre-les-tentatives-de-connexion-f37)).
 - Dette connue : `User` implémente les interfaces Symfony. Ne pas reproduire. IAM n’expose aucune route d’inscription : l’inscription publique appartient à Citizen.
 
 Tests : `php bin/phpunit --testsuite IAM`.
