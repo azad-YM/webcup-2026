@@ -3,6 +3,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { ArrowLeft, Clock, MapPin, Phone } from "@boilerplate/shared-ui/components/icon"
+import { ContextualTip } from "@boilerplate/shared-ui/components/a11y"
 import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
 import { SelectField, TextField } from "@/modules/shared/ui/components/form-field"
@@ -47,6 +48,9 @@ function ServiceCatalog({ services }: { services: MunicipalService[] }) {
   const filtered = query.trim() !== "" || category !== null
   return (
     <>
+      <ContextualTip hintId="astuce-recherche-services" title="Trouver un service" className="mb-4">
+        Tapez un mot simple, par exemple « papiers », « bus » ou « médecin ». Vous pouvez aussi choisir un thème.
+      </ContextualTip>
       <form role="search" aria-label="Filtrer les services" onSubmit={(event) => event.preventDefault()} className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 md:grid-cols-[2fr_1fr_auto] md:items-end">
         <TextField id="recherche-service" label="Rechercher un service" type="search" value={query} hint="Exemple : naissance, médecin, navette, déchets…" onChange={(event) => update(event.target.value, category)} />
         <SelectField
@@ -151,7 +155,7 @@ export function ServicesPage() {
   const service = data && serviceId ? findService(data, serviceId) : null
   const header = service
     ? <PageHeader trail={[{ label: "Services", href: "/services" }, { label: service.name }]} title={service.name} lead={service.summary} />
-    : <PageHeader trail={[{ label: "Services" }]} title="Services municipaux" lead="Toutes les démarches proposées par la ville de Nova Terra, classées par thème." />
+    : <PageHeader trail={[{ label: "Services" }]} title="Services municipaux" lead="Tout ce que la ville de Nova Terra peut faire pour vous, classé par thème." />
   return (
     <>
       {header}

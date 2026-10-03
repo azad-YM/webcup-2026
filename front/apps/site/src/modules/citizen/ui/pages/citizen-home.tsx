@@ -6,6 +6,7 @@ import { ArrowRight, ClipboardList, Megaphone, MessageSquare, Newspaper, Search,
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
 import { greeting, PREFERRED_LANGUAGES, type CitizenProfile } from "../../core/domain/citizen-profile"
 import { CitizenAccessState, useCitizenAccess } from "../components/citizen-access"
+import { CitizenFirstVisitGuide } from "../sections/first-visit-guide"
 
 type Shortcut = { title: string; text: string; href?: Route; icon: typeof Search; soon?: boolean }
 
@@ -13,7 +14,7 @@ const SHORTCUTS: Shortcut[] = [
   { title: "Contacter la mairie", text: "Posez une question ou adressez un message aux services municipaux.", href: "/espace/demandes/nouvelle?type=contact" as Route, icon: MessageSquare },
   { title: "Signaler un problème", text: "Voirie, éclairage, propreté, inondation… indiquez le lieu, la mairie s’en occupe.", href: "/espace/demandes/nouvelle?type=report" as Route, icon: Megaphone },
   { title: "Mes demandes", text: "Retrouvez vos demandes, leur état et chaque étape de leur traitement.", href: "/espace/demandes", icon: ClipboardList },
-  { title: "Trouver un service", text: "État civil, santé, transports, logement… toutes les démarches de la ville.", href: "/services", icon: Search },
+  { title: "Trouver un service", text: "État civil, santé, transports, logement… tout ce que la ville peut faire pour vous.", href: "/services", icon: Search },
   { title: "Actualités de la ville", text: "Les dernières informations publiées par la mairie.", href: "/actualites", icon: Newspaper },
   { title: "Mon profil", text: "Vos coordonnées, votre quartier et votre langue préférée.", href: "/espace/profil", icon: UserRound }
 ]
@@ -80,6 +81,7 @@ export function CitizenHomePage({ spaces, spacesForNonCitizen }: { spaces: React
           <CitizenAccessState access={access} returnTo="/espace" nonCitizenFallback={spacesForNonCitizen} />
         ) : (
           <div className="space-y-10">
+            <CitizenFirstVisitGuide profile={profile} />
             {!profile.profileCompleted && (
               <section aria-labelledby="titre-completer-profil" className="flex flex-col gap-4 rounded-2xl border border-amber-200 bg-amber-50 p-6 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex gap-4">

@@ -1,4 +1,6 @@
-/* Habillage Nova Terra propre au site (accessibilité de base, F21 / F24). */
+/* Habillage Nova Terra propre au site.
+ * Focus visible, réduction des animations, contraste élevé et taille du texte :
+ * voir `@boilerplate/shared-ui/global.css` (lot L4, commun au site et à l’admin). */
 
 html {
   scroll-padding-top: 5rem;
@@ -10,23 +12,18 @@ body {
   line-height: 1.5;
 }
 
-/* Focus toujours visible au clavier, contrasté sur fond clair comme sombre. */
-:focus-visible {
-  outline: 3px solid #b45309;
-  outline-offset: 3px;
-  border-radius: 0.375rem;
-}
-
 main:focus {
   outline: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+/* En-tête collant libéré quand la place manque (texte 150 %, zoom 200 %, écran bas) :
+ * le contenu n’est jamais masqué sous l’en-tête (F44). */
+html[data-text-size="150"] .site-header {
+  position: static;
+}
+
+@media (max-height: 32rem) {
+  .site-header {
+    position: static;
   }
 }

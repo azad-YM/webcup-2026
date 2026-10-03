@@ -1,8 +1,18 @@
 import { CheckCircle2, Circle } from "@boilerplate/shared-ui/components/icon"
-import { formatDateTime, STATUS_LABELS, STATUS_TONES, type RequestStatus, type RequestStep } from "../../core/domain/service-request"
+import { StatusBadge as SharedStatusBadge, type StatusTone } from "@boilerplate/shared-ui/components/a11y"
+import { formatDateTime, STATUS_LABELS, type RequestStatus, type RequestStep } from "../../core/domain/service-request"
+
+/** Icône + libellé + bordure par état : l’état ne dépend jamais de la seule couleur (F43). */
+const STATUS_BADGE_TONES: Record<RequestStatus, StatusTone> = {
+  submitted: "pending",
+  acknowledged: "info",
+  in_progress: "progress",
+  resolved: "success",
+  rejected: "danger"
+}
 
 export function StatusBadge({ status }: { status: RequestStatus }) {
-  return <span className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${STATUS_TONES[status]}`}>{STATUS_LABELS[status]}</span>
+  return <SharedStatusBadge tone={STATUS_BADGE_TONES[status]} label={STATUS_LABELS[status]} srPrefix="État :" size="md" />
 }
 
 /** Chronologie des étapes déjà réalisées (D11), la plus ancienne d'abord. */
