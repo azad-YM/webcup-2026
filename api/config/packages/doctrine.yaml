@@ -25,6 +25,12 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Administration/Infrastructure/Doctrine/Entity'
                 prefix: 'Administration\Domain\Entity'
                 alias: Administration
+            SharedRealtime:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Shared/Infrastructure/Realtime/Doctrine'
+                prefix: 'Shared\Infrastructure\Realtime'
+                alias: SharedRealtime
             Citizen:
                 type: xml
                 is_bundle: false

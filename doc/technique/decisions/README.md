@@ -11,7 +11,7 @@ Les décisions structurantes sont consignées sous forme d’ADR (*Architecture 
 - [ADR 001 — Utiliser MySQL](001-mysql.md)
 - [ADR 002 — Frontières entre modules et architecture des accès](002-frontieres-et-acces.md)
 - [ADR 003 — Séparer l’identité des profils et habilitations métier](003-identite-et-habilitations.md)
-- [ADR 004 — Temps réel derrière un port, Mercure par défaut, fournisseur interchangeable](004-temps-reel.md)
+- [ADR 004 — Temps réel derrière un port : SSE maison sur la base de données, fournisseur interchangeable](004-temps-reel.md)
 - [ADR 005 — Un BC Communication pour les publications et les alertes](005-bc-communication.md)
 
 ## Format recommandé
