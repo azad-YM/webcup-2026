@@ -1,9 +1,9 @@
-name: boilerplate-dev
+name: novaterra-dev
 
 x-api-environment: &api-environment
   APP_ENV: dev
   APP_SECRET: dev-only-change-me
-  DATABASE_URL: "mysql://boilerplate:boilerplate@db:3306/boilerplate?serverVersion=8.4.0&charset=utf8mb4"
+  DATABASE_URL: "mysql://novaterra:novaterra@db:3306/novaterra?serverVersion=8.4.0&charset=utf8mb4"
   MESSENGER_TRANSPORT_DSN: "doctrine://default?auto_setup=0"
   MAILER_DSN: "null://null"
   CORS_ALLOW_ORIGIN: "^https?://(localhost|127\\.0\\.0\\.1)(:[0-9]+)?$"
@@ -13,7 +13,7 @@ x-api-environment: &api-environment
 
 services:
   admin:
-    container_name: boilerplate-admin
+    container_name: novaterra-admin
     build:
       context: ../
       dockerfile: front/apps/admin/docker/Dockerfile.dev
@@ -34,7 +34,7 @@ services:
       VITE_APP_ENV: dev
     restart: unless-stopped
     networks:
-      - boilerplate
+      - novaterra
     develop:
       watch:
         - action: sync
@@ -48,7 +48,7 @@ services:
             - packages/shared-config/node_modules/
 
   site:
-    container_name: boilerplate-site
+    container_name: novaterra-site
     build:
       context: ../
       dockerfile: front/apps/site/docker/Dockerfile.dev
@@ -69,7 +69,7 @@ services:
       NEXT_PUBLIC_ADMIN_URL: http://localhost:5179
     restart: unless-stopped
     networks:
-      - boilerplate
+      - novaterra
     develop:
       watch:
         - action: sync
@@ -83,7 +83,7 @@ services:
             - packages/shared-config/node_modules/
 
   api:
-    container_name: boilerplate-api
+    container_name: novaterra-api
     restart: unless-stopped
     build:
       context: ../api
@@ -95,7 +95,7 @@ services:
     environment:
       <<: *api-environment
     networks:
-      - boilerplate
+      - novaterra
     develop:
       watch:
         - action: sync
@@ -106,7 +106,7 @@ services:
             - var/
 
   messenger-worker:
-    container_name: boilerplate-messenger-worker
+    container_name: novaterra-messenger-worker
     restart: unless-stopped
     build:
       context: ../api
@@ -116,6 +116,8 @@ services:
       - bin/console
       - messenger:consume
       - async
+      # Redémarre toutes les 5 min (restart: unless-stopped) pour reprendre le code PHP modifié.
+      - --time-limit=300
       - -vv
     volumes:
       - ../api:/var/www/html
@@ -125,27 +127,27 @@ services:
       <<: *api-environment
       SKIP_APP_SETUP: "1"
     networks:
-      - boilerplate
+      - novaterra
 
   db:
     image: mysql:8.4
-    container_name: boilerplate-db
+    container_name: novaterra-db
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: boilerplate
-      MYSQL_USER: boilerplate
-      MYSQL_PASSWORD: boilerplate
+      MYSQL_DATABASE: novaterra
+      MYSQL_USER: novaterra
+      MYSQL_PASSWORD: novaterra
       MYSQL_ROOT_PASSWORD: root
     volumes:
-      - boilerplate_db_data:/var/lib/mysql
+      - novaterra_db_data:/var/lib/mysql
     ports:
       - "3338:3306"
     networks:
-      - boilerplate
+      - novaterra
 
   nginx:
     image: nginx:1.25
-    container_name: boilerplate-api-nginx
+    container_name: novaterra-api-nginx
     restart: unless-stopped
     volumes:
       - ../api:/var/www/html
@@ -155,10 +157,10 @@ services:
     ports:
       - "8083:80"
     networks:
-      - boilerplate
+      - novaterra
 
 volumes:
-  boilerplate_db_data:
+  novaterra_db_data:
 
 networks:
-  boilerplate:
+  novaterra:
