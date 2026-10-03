@@ -1,0 +1,149 @@
+import { useState } from "react"
+import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label, Textarea } from "@boilerplate/shared-ui/components"
+import { getErrorMessage } from "@boilerplate/shared-utils/error.utils"
+import { useListAlertsQuery, useListDistrictsQuery, useSaveAlertMutation } from "../../core/application/rtk-api/content"
+import {
+  AUDIENCE_LABELS,
+  fromLines,
+  fromLocalInput,
+  isAlertActive,
+  newAlert,
+  SEVERITY_LABELS,
+  STATE_LABELS,
+  toLines,
+  toLocalInput,
+  type Alert,
+  type AlertAudience,
+  type AlertSeverity,
+  type ContentState,
+} from "../../core/domain/content"
+import { ListState, selectClass } from "../components/content-states"
+
+function AlertForm({ initial, onDone }: { initial: Alert; onDone: () => void }) {
+  const [draft, setDraft] = useState(initial)
+  const [recommendations, setRecommendations] = useState(fromLines(initial.recommendations))
+  const districts = useListDistrictsQuery()
+  const [save, saving] = useSaveAlertMutation()
+  const [message, setMessage] = useState<string | null>(null)
+  const submit = async (state: ContentState) => {
+    setMessage(null)
+    const result = await save({ ...draft, district: draft.audience === "district" ? draft.district : null, recommendations: toLines(recommendations), state })
+    if ("data" in result && result.data) {
+      setDraft(result.data)
+      setMessage(state === "published" ? "Alerte diffusée : elle apparaît en temps réel chez les habitants concernés pendant sa validité." : state === "withdrawn" ? "Alerte retirée." : "Brouillon enregistré.")
+    }
+  }
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{draft.id ? "Modifier l’alerte" : "Nouvelle alerte"}</CardTitle>
+        <CardDescription>Message urgent affiché en bandeau sur le site pendant sa validité et dans les notifications des citoyens concernés.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={(event) => { event.preventDefault(); void submit(draft.state === "published" ? "published" : "draft") }} className="space-y-4">
+          <fieldset disabled={saving.isLoading} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="alert-title">Titre</Label>
+              <Input id="alert-title" required maxLength={200} value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} placeholder="Ex. Montée des eaux dans le quartier Sud" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="alert-message">Message</Label>
+              <Textarea id="alert-message" required maxLength={5000} rows={4} value={draft.message} onChange={(event) => setDraft({ ...draft, message: event.target.value })} />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="alert-severity">Gravité</Label>
+                <select id="alert-severity" className={selectClass} value={draft.severity} onChange={(event) => setDraft({ ...draft, severity: event.target.value as AlertSeverity })}>
+                  {Object.entries(SEVERITY_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="alert-audience">Audience</Label>
+                <select id="alert-audience" className={selectClass} value={draft.audience} onChange={(event) => setDraft({ ...draft, audience: event.target.value as AlertAudience })}>
+                  {Object.entries(AUDIENCE_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                </select>
+              </div>
+            </div>
+            {draft.audience === "district" && (
+              <div className="space-y-2">
+                <Label htmlFor="alert-district">Quartier</Label>
+                <select id="alert-district" required className={selectClass} value={draft.district ?? ""} onChange={(event) => setDraft({ ...draft, district: event.target.value || null })}>
+                  <option value="">{districts.isError ? "Liste des quartiers indisponible" : "Choisir un quartier"}</option>
+                  {(districts.data ?? []).map((district) => <option key={district} value={district}>{district}</option>)}
+                </select>
+              </div>
+            )}
+            {draft.audience === "health" && (
+              <p className="rounded-md bg-amber-50 p-3 text-sm text-amber-900">Seuls les citoyens qui ont accepté de recevoir les alertes sanitaires dans leur espace verront cette alerte. Aucune donnée médicale n’est utilisée.</p>
+            )}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="alert-start">Début de validité</Label>
+                <Input id="alert-start" type="datetime-local" required value={toLocalInput(draft.startsAt)} onChange={(event) => event.target.value && setDraft({ ...draft, startsAt: fromLocalInput(event.target.value) })} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="alert-end">Fin de validité</Label>
+                <Input id="alert-end" type="datetime-local" required value={toLocalInput(draft.endsAt)} onChange={(event) => event.target.value && setDraft({ ...draft, endsAt: fromLocalInput(event.target.value) })} />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="alert-recommendations">Recommandations (facultatif)</Label>
+              <Textarea id="alert-recommendations" rows={5} aria-describedby="alert-recommendations-help" value={recommendations} onChange={(event) => setRecommendations(event.target.value)} placeholder={"Buvez au moins 1,5 L d’eau par jour.\nRestez au frais aux heures les plus chaudes."} />
+              <p id="alert-recommendations-help" className="text-sm text-muted-foreground">Une recommandation par ligne, rédigée par vos soins pour les personnes concernées (vulnérables, quartier…).</p>
+            </div>
+          </fieldset>
+          {saving.error !== undefined && <p role="alert" className="text-sm text-destructive">{getErrorMessage(saving.error)}</p>}
+          {message && <p role="status" className="text-sm text-green-700">{message}</p>}
+          <div className="flex flex-wrap gap-2">
+            <Button type="button" variant="outline" disabled={saving.isLoading} onClick={() => void submit("draft")}>Enregistrer en brouillon</Button>
+            <Button type="button" disabled={saving.isLoading} onClick={() => void submit("published")}>{draft.state === "published" ? "Mettre à jour" : "Diffuser"}</Button>
+            {draft.state === "published" && <Button type="button" variant="destructive" disabled={saving.isLoading} onClick={() => void submit("withdrawn")}>Retirer l’alerte</Button>}
+            <Button type="button" variant="ghost" onClick={onDone}>Fermer</Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  )
+}
+
+/** Alertes de la ville (D18, F29, F31). */
+export function AlertsPage() {
+  const alerts = useListAlertsQuery(undefined, { pollingInterval: 60_000 })
+  const [editing, setEditing] = useState<Alert | null>(null)
+  const items = alerts.data ?? []
+  return (
+    <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[1fr_1fr]">
+      <section aria-labelledby="titre-alertes" className="space-y-4">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <h1 id="titre-alertes" className="text-2xl font-semibold">Alertes</h1>
+          <Button type="button" onClick={() => setEditing(newAlert())}>Nouvelle alerte</Button>
+        </div>
+        <ListState isLoading={alerts.isLoading} error={alerts.error} isEmpty={items.length === 0} emptyLabel="Aucune alerte." onRetry={() => void alerts.refetch()} retrying={alerts.isFetching}>
+          <ul className="divide-y rounded-lg border bg-white">
+            {items.map((item) => (
+              <li key={item.id} className="flex items-start justify-between gap-3 p-3">
+                <div className="min-w-0">
+                  <p className="font-medium">{item.title}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {item.audience === "district" ? `Quartier ${item.district}` : AUDIENCE_LABELS[item.audience]} · du {new Date(item.startsAt).toLocaleString("fr-FR")} au {new Date(item.endsAt).toLocaleString("fr-FR")}
+                  </p>
+                  <div className="mt-1 flex flex-wrap gap-2">
+                    <Badge variant={item.severity === "critical" ? "destructive" : "secondary"}>{SEVERITY_LABELS[item.severity]}</Badge>
+                    <Badge variant="outline">{STATE_LABELS[item.state]}</Badge>
+                    {isAlertActive(item) && <Badge>En cours</Badge>}
+                  </div>
+                </div>
+                <Button type="button" variant="outline" size="sm" onClick={() => setEditing(item)}>Modifier</Button>
+              </li>
+            ))}
+          </ul>
+        </ListState>
+      </section>
+      <div>
+        {editing
+          ? <AlertForm key={editing.id ?? "nouvelle"} initial={editing} onDone={() => setEditing(null)} />
+          : <p className="rounded-lg border border-dashed p-6 text-sm text-muted-foreground">Choisissez une alerte à modifier ou créez-en une.</p>}
+      </div>
+    </div>
+  )
+}

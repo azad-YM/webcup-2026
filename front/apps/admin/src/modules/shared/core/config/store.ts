@@ -1,4 +1,3 @@
-import { contentApi } from "@/modules/content/core/application/rtk-api/content"
 import {
   combineReducers,
   configureStore,
@@ -9,6 +8,7 @@ import { useDispatch } from "react-redux"
 import { authApi } from "@/modules/auth/core/application/rtk-api/auth"
 import { accessManagementApi } from "@/modules/admin/core/application/rtk-api/access-management"
 import { pilotageApi } from "@/modules/pilotage/core/application/rtk-api/pilotage"
+import { contentApi } from "@/modules/content/core/application/rtk-api/content"
 import type { Dependencies } from "./dependencies"
 import { sessionCleared } from "./session"
 
@@ -19,10 +19,10 @@ export type AppDispatch = AppStore["dispatch"]
 export type AppGetState = AppStore["getState"]
 
 const reducers = combineReducers({
-  [contentApi.reducerPath]: contentApi.reducer,
   [authApi.reducerPath]: authApi.reducer,
   [accessManagementApi.reducerPath]: accessManagementApi.reducer,
   [pilotageApi.reducerPath]: pilotageApi.reducer,
+  [contentApi.reducerPath]: contentApi.reducer,
 })
 
 // A session change (logout, 401, other tab) wipes every cache.
@@ -48,10 +48,10 @@ export const createStore = (config: {
 
       middleware.unshift(listener.middleware)
       middleware.push(
-        contentApi.middleware,
         authApi.middleware,
         accessManagementApi.middleware,
         pilotageApi.middleware,
+        contentApi.middleware,
       )
 
       return middleware

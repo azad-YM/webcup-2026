@@ -1,4 +1,4 @@
-import { ContentHttpGateway } from "@/modules/content/core/infrastructure/for-production/content.http.gateway"
+import { ContentHttpGateway } from "@/modules/content/core/infrastructure/for-production/gateway/http/content.http.gateway"
 import { AuthContentSessionProvider } from "@/modules/auth/core/infrastructure/adapter/content/auth-content-session.provider"
 import { sessionCleared } from "./session"
 import { AuthAccessSessionProvider } from "@/modules/auth/core/infrastructure/adapter/admin/auth-access-session.provider"
@@ -31,9 +31,9 @@ export class App {
     // Each consumer module owns its session port; the auth module provides one adapter per consumer.
     const adminSession = new AuthAccessSessionProvider(authSessionGateway, onSessionInvalidated)
     const pilotageSession = new AuthPilotageSessionProvider(authSessionGateway, onSessionInvalidated)
+    const contentSession = new AuthContentSessionProvider(authSessionGateway, onSessionInvalidated)
 
     return {
-      contentGateway: new ContentHttpGateway(apiBaseUrl, new AuthContentSessionProvider(authSessionGateway, onSessionInvalidated)),
       authSessionGateway,
       authGateway: new AuthHttpGateway(apiBaseUrl, authSessionGateway, onSessionInvalidated),
       portalLoginGateway: new PortalLoginHttpGateway(apiBaseUrl, siteUrl, authSessionGateway),
@@ -42,6 +42,7 @@ export class App {
       memberGateway: new MemberHttpGateway(apiBaseUrl, adminSession),
       webcupFeedGateway: new WebcupFeedHttpGateway(apiBaseUrl, pilotageSession),
       seenRequestsGateway: new SeenRequestsLocalStorageGateway(),
+      contentGateway: new ContentHttpGateway(apiBaseUrl, contentSession),
     }
   }
 }

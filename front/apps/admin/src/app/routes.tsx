@@ -1,4 +1,3 @@
-import { ContentPage } from "@/modules/content/ui/pages/content"
 import { getErrorMessage } from "@boilerplate/shared-utils/error.utils"
 import { createBrowserRouter, Navigate, Outlet } from "react-router"
 import { useGetProfileQuery } from "@/modules/auth/core/application/rtk-api/auth"
@@ -11,6 +10,10 @@ import { AdminDashboardPage } from "@/modules/admin/ui/pages/dashboard"
 import { RolesPage } from "@/modules/admin/ui/pages/roles"
 import { PilotageLayout } from "@/modules/pilotage/ui/layouts/pilotage.layout"
 import { WebcupFeedPage } from "@/modules/pilotage/ui/pages/webcup-feed"
+import { ContentLayout } from "@/modules/content/ui/layouts/content.layout"
+import { PublicationsPage } from "@/modules/content/ui/pages/publications"
+import { AlertsPage } from "@/modules/content/ui/pages/alerts"
+import { ServicesPage } from "@/modules/content/ui/pages/services"
 
 const ProtectedRoutes = () => {
   const profile = useGetProfileQuery()
@@ -43,7 +46,6 @@ export const router = createBrowserRouter([
     element: <ProtectedRoutes />,
     children: [
       { path: "/espaces", element: <SpacesPage /> },
-      { path: "/contenus", element: <ContentPage /> },
       {
         path: "/admin",
         element: <AdminLayout />,
@@ -51,6 +53,15 @@ export const router = createBrowserRouter([
           { index: true, element: <AdminDashboardPage /> },
           { path: "role", element: <RolesPage /> },
           { path: "member", element: <MembersPage /> },
+        ],
+      },
+      {
+        path: "/contenus",
+        element: <ContentLayout />,
+        children: [
+          { index: true, element: <PublicationsPage /> },
+          { path: "alertes", element: <AlertsPage /> },
+          { path: "services", element: <ServicesPage /> },
         ],
       },
       {
