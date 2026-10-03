@@ -157,3 +157,8 @@ services:
             $mercureSecret: '%env(MERCURE_JWT_SECRET)%'
             $pusherKey: '%env(PUSHER_KEY)%'
             $pusherSecret: '%env(PUSHER_SECRET)%'
+
+    Citizen\Application\Ports\Repository\ServiceRequestRepository:
+        alias: Citizen\Infrastructure\Doctrine\Repository\DoctrineServiceRequestRepository
+    Citizen\Application\Ports\Provider\RequestAccessPolicy:
+        alias: Administration\Infrastructure\Adapter\Citizen\AdminRequestAccessPolicy

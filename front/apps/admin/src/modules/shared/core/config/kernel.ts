@@ -12,6 +12,9 @@ import { PortalLoginHttpGateway } from "@/modules/auth/core/infrastructure/for-p
 import type { Dependencies } from "./dependencies"
 import { createStore, type AppStore } from "./store"
 
+import { BrowserRealtimeSubscriber } from "@boilerplate/shared-utils/realtime"
+import { AuthRequestSessionProvider } from "@/modules/auth/core/infrastructure/adapter/requests/auth-request-session.provider"
+import { RequestHttpGateway } from "@/modules/requests/core/infrastructure/for-production/request.http.gateway"
 export class App {
   public dependencies: Dependencies
   public store: AppStore
@@ -30,7 +33,10 @@ export class App {
     const adminSession = new AuthAccessSessionProvider(authSessionGateway, onSessionInvalidated)
     const pilotageSession = new AuthPilotageSessionProvider(authSessionGateway, onSessionInvalidated)
 
+    const requestGateway = new RequestHttpGateway(apiBaseUrl, new AuthRequestSessionProvider(authSessionGateway, onSessionInvalidated))
     return {
+      requestGateway,
+      requestRealtime: new BrowserRealtimeSubscriber({transport:import.meta.env.VITE_REALTIME_TRANSPORT || "none",url:import.meta.env.VITE_REALTIME_URL || "", key:import.meta.env.VITE_PUSHER_KEY,cluster:import.meta.env.VITE_PUSHER_CLUSTER,authorize:(topic,socketId)=>requestGateway.authorize(topic,socketId)}),
       authSessionGateway,
       authGateway: new AuthHttpGateway(apiBaseUrl, authSessionGateway, onSessionInvalidated),
       portalLoginGateway: new PortalLoginHttpGateway(apiBaseUrl, siteUrl, authSessionGateway),

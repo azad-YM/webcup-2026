@@ -24,6 +24,8 @@ import {
   LocalServiceCatalogGateway
 } from "@/modules/public/core/infrastructure/for-production/gateway/local/public-content.local.gateway"
 
+import { BrowserRealtimeSubscriber } from "@boilerplate/shared-utils/realtime"
+import { ServiceRequestHttpGateway } from "@/modules/citizen/core/infrastructure/for-production/gateway/http/service-request.http.gateway"
 type Session = {
   ready: boolean
   hasToken: boolean
@@ -37,7 +39,10 @@ const SessionContext = createContext<Session | null>(null)
 function createDependencies(): Dependencies {
   const authSessionGateway = new LocalStorageAuthSessionGateway()
   const citizenGateway = new CitizenHttpGateway(siteEnv.apiBaseUrl)
+  const serviceRequestGateway = new ServiceRequestHttpGateway(siteEnv.apiBaseUrl)
   return {
+    serviceRequestGateway,
+    requestRealtime: new BrowserRealtimeSubscriber({ transport: process.env.NEXT_PUBLIC_REALTIME_TRANSPORT || "none", url: process.env.NEXT_PUBLIC_REALTIME_URL || "", key: process.env.NEXT_PUBLIC_PUSHER_KEY, cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER, authorize: (topic, socketId) => serviceRequestGateway.authorize(authSessionGateway.getToken() || "", topic, socketId) }),
     authGateway: new AuthHttpGateway(siteEnv.apiBaseUrl),
     authSessionGateway,
     accountRegistrationGateway: new CitizenAccountRegistrationAdapter(citizenGateway),

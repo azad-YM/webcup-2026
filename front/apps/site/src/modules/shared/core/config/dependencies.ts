@@ -6,7 +6,11 @@ import type { CitizenSessionProvider } from "@/modules/citizen/core/application/
 import type { ServiceCatalogGateway } from "@/modules/public/core/application/ports/gateway/service-catalog.gateway"
 import type { PublicationGateway } from "@/modules/public/core/application/ports/gateway/publication.gateway"
 
+import type { ServiceRequestGateway } from "@/modules/citizen/core/application/ports/gateway/service-request.gateway"
+import type { RealtimeSubscriber } from "@/modules/citizen/core/application/ports/provider/realtime-subscriber"
 export type Dependencies = {
+  serviceRequestGateway: ServiceRequestGateway
+  requestRealtime: RealtimeSubscriber
   // auth
   authGateway: AuthGateway
   authSessionGateway: AuthSessionGateway

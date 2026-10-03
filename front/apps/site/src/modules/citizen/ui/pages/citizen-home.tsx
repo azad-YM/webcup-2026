@@ -12,7 +12,7 @@ type Shortcut = { title: string; text: string; href?: Route; icon: typeof Search
 const SHORTCUTS: Shortcut[] = [
   { title: "Trouver un service", text: "État civil, santé, transports, logement… toutes les démarches de la ville.", href: "/services", icon: Search },
   { title: "Actualités de la ville", text: "Les dernières informations publiées par la mairie.", href: "/actualites", icon: Newspaper },
-  { title: "Mes demandes", text: "Envoyer un message à la mairie, signaler un problème et suivre vos demandes.", icon: ClipboardList, soon: true },
+  { title: "Mes demandes", text: "Envoyer un message à la mairie, signaler un problème et suivre vos demandes.", icon: ClipboardList, href: "/espace/demandes" as Route },
   { title: "Mon profil", text: "Vos coordonnées, votre quartier et votre langue préférée.", href: "/espace/profil", icon: UserRound }
 ]
 

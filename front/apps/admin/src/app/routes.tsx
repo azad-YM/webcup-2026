@@ -11,6 +11,8 @@ import { RolesPage } from "@/modules/admin/ui/pages/roles"
 import { PilotageLayout } from "@/modules/pilotage/ui/layouts/pilotage.layout"
 import { WebcupFeedPage } from "@/modules/pilotage/ui/pages/webcup-feed"
 
+import { RequestsPage } from "@/modules/requests/ui/pages/requests"
+
 const ProtectedRoutes = () => {
   const profile = useGetProfileQuery()
 
@@ -42,6 +44,7 @@ export const router = createBrowserRouter([
     element: <ProtectedRoutes />,
     children: [
       { path: "/espaces", element: <SpacesPage /> },
+      { path: "/demandes", element: <RequestsPage /> },
       {
         path: "/admin",
         element: <AdminLayout />,

@@ -20,7 +20,7 @@ final readonly class BootstrapAdminService
     public const AGENT_ROLE_ID = 'municipal-agent';
     public const AGENT_ROLE_NAME = 'Agent municipal';
     /** Reference permissions of the municipal agent; request processing permissions join in lot L2. */
-    public const AGENT_PERMISSIONS = ['admin.pilotage.read'];
+    public const AGENT_PERMISSIONS = ['admin.pilotage.read', 'admin.request.read', 'admin.request.write'];
 
     public function __construct(
         private EntityManagerInterface $manager,

@@ -28,7 +28,7 @@ export class BrowserRealtimeSubscriber {
           for (const event of events) source.addEventListener(event, (message) => {
             if (!stopped) { try { receive({event, payload: JSON.parse((message as MessageEvent).data)}); } catch { /* Ignore malformed delivery; API is authoritative. */ } }
           });
-          source.onerror = () => { source.close(); if (!stopped) retry = setTimeout(() => void connect(), 10000); };
+          source.onerror = () => { clearTimeout(retry); source.close(); if (!stopped) retry = setTimeout(() => void connect(), 10000); };
           // Renew short-lived private grants without keeping a stale authorization indefinitely.
           if (auth?.token) retry = setTimeout(() => { source.close(); void connect(); }, 240000);
         } else if (this.options.transport === "pusher" && this.options.key) {

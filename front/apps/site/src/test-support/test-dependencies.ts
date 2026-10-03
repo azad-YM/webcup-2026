@@ -17,6 +17,8 @@ export function createTestContext(overrides: Partial<Dependencies> = {}) {
   const serviceCatalogGateway = new InMemoryServiceCatalogGateway()
   const publicationGateway = new InMemoryPublicationGateway()
   const dependencies: Dependencies = {
+    serviceRequestGateway: { list: async () => ({items:[], total:0, pendingCount:0, page:1,pageSize:20,canWrite:false,topic:"private.test"}), submit: async () => {throw new Error("Not configured")}, authorize: async () => ({}) },
+    requestRealtime: {subscribe: () => () => {}},
     authGateway,
     authSessionGateway,
     accountRegistrationGateway: new CitizenAccountRegistrationAdapter(citizenGateway),
