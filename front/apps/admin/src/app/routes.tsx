@@ -1,3 +1,4 @@
+import { AuditJournalPage } from "@/modules/audit/ui/pages/audit-journal"
 import { LoginSecurityPage } from "@/modules/security/ui/pages/login-security"
 import { CitizenAccountsPage } from "@/modules/citizen-accounts/ui/pages/citizen-accounts"
 import { getErrorMessage } from "@boilerplate/shared-utils/error.utils"
@@ -59,6 +60,7 @@ export const router = createBrowserRouter([
           { path: "member", element: <MembersPage /> },
           { path: "citizens", element: <CitizenAccountsPage /> },
           { path: "security", element: <LoginSecurityPage /> },
+          { path: "journal", element: <AuditJournalPage /> },
         ],
       },
       {

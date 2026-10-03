@@ -1,4 +1,4 @@
-import { LayoutDashboard, Megaphone, Settings, ShieldAlert, Users } from "@boilerplate/shared-ui/components/icon"
+import { History, LayoutDashboard, Megaphone, Settings, ShieldAlert, Users } from "@boilerplate/shared-ui/components/icon"
 import { Sidebar, SidebarContent, SidebarHeader, SidebarRail } from "@boilerplate/shared-ui/components"
 import { ModuleSwitcher } from "@/modules/shared/ui/components/sidebar/module-switcher"
 import { NavMain } from "@/modules/shared/ui/components/sidebar/nav-main"
@@ -12,6 +12,7 @@ const navigation = [
   },
   { title: "Comptes citoyens", icon: Users, url: "/admin/citizens" },
   { title: "Journal de sécurité", icon: ShieldAlert, url: "/admin/security" },
+  { title: "Journal des actions", icon: History, url: "/admin/journal" },
   {
     title: "Configuration",
     icon: Settings,
