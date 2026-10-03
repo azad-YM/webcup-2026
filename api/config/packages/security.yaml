@@ -24,6 +24,7 @@ security:
     access_control:
         - { path: ^/api/iam/portal-sessions$, roles: PUBLIC_ACCESS, methods: [POST] }
         - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
+        - { path: ^/api/citizen/register$, roles: PUBLIC_ACCESS, methods: [POST] }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:

@@ -13,6 +13,11 @@ services:
         exclude:
             - '../src/Administration/Tests/'
 
+    Citizen\:
+        resource: '../src/Citizen/'
+        exclude:
+            - '../src/Citizen/Tests/'
+
     Shared\:
         resource: '../src/Shared/'
         exclude:
@@ -61,6 +66,13 @@ services:
 
     Administration\Application\Ports\Provider\MemberAccountProvisioner:
         alias: IAM\Infrastructure\Adapter\Administration\IAMMemberAccountProvisioner
+
+    # Citizen consomme IAM (création du compte à l'inscription, compte connecté).
+    Citizen\Application\Ports\Provider\CitizenAccountProvisioner:
+        alias: IAM\Infrastructure\Adapter\Citizen\IAMCitizenAccountProvisioner
+
+    Citizen\Application\Ports\Provider\CurrentAccountProvider:
+        alias: IAM\Infrastructure\Adapter\Citizen\IAMCurrentAccountProvider
 
     # IAM consomme Administration (espace « admin » accessible aux membres actifs).
     Administration\Infrastructure\Adapter\IAM\AdminAccessibleSpacesProvider:

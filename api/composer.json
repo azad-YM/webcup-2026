@@ -54,6 +54,7 @@
     "psr-4": {
       "IAM\\": "src/IAM/",
       "Administration\\": "src/Administration/",
+      "Citizen\\": "src/Citizen/",
       "Shared\\": "src/Shared/"
     },
     "exclude-from-classmap": [
@@ -64,6 +65,7 @@
     "psr-4": {
       "Tests\\IAM\\": "src/IAM/Tests/",
       "Tests\\Administration\\": "src/Administration/Tests/",
+      "Tests\\Citizen\\": "src/Citizen/Tests/",
       "Tests\\Shared\\": "src/Shared/Tests/"
     }
   },
