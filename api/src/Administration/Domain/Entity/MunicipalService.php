@@ -33,6 +33,10 @@ final class MunicipalService
     /** @var array{route: string, timetable: string, information: string}|null */
     private ?array $transport;
     private \DateTimeImmutable $updatedAt;
+    /** F63 : désactivation immédiate d'un service défectueux (indépendante de l'état F38), avec motif. */
+    private bool $disabled = false;
+    private string $disabledReason = '';
+    private ?\DateTimeImmutable $disabledAt = null;
 
     /** @param array<string, mixed> $data */
     private function __construct(public readonly string $id, array $data, \DateTimeImmutable $now)
@@ -95,7 +99,40 @@ final class MunicipalService
             'alternative' => $this->alternative,
             'transport' => $this->transport,
             'updatedAt' => $this->updatedAt->format(DATE_ATOM),
+            ...$this->disablementView(),
         ];
+    }
+
+    public function isDisabled(): bool { return $this->disabled; }
+
+    /** F63 : coupe immédiatement les nouvelles démarches ; le motif est montré aux habitants. */
+    public function disable(string $reason, \DateTimeImmutable $now): void
+    {
+        $reason = trim($reason);
+        if (mb_strlen($reason) < 5 || mb_strlen($reason) > 500) {
+            throw new DomainException('Indiquez le motif de la désactivation (5 à 500 caractères).');
+        }
+        $this->disabled = true;
+        $this->disabledReason = $reason;
+        $this->disabledAt = $now;
+        $this->updatedAt = $now;
+    }
+
+    public function enable(\DateTimeImmutable $now): void
+    {
+        if (!$this->disabled) {
+            throw new DomainException('Ce service est déjà actif.');
+        }
+        $this->disabled = false;
+        $this->disabledReason = '';
+        $this->disabledAt = null;
+        $this->updatedAt = $now;
+    }
+
+    /** @return array{disabled: bool, disabledReason: string, disabledAt: ?string} */
+    private function disablementView(): array
+    {
+        return ['disabled' => $this->disabled, 'disabledReason' => $this->disabledReason, 'disabledAt' => $this->disabledAt?->format(DATE_ATOM)];
     }
 
     /** @param array<string, mixed> $data */
