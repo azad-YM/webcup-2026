@@ -57,7 +57,7 @@ Décisions : [Citizen — décisions retenues](../../api/src/Citizen/doc/README.
 
 ### L7 — Alertes et diffusion (à cadrer)
 
-Décisions : BC propriétaire `Communication` ([ADR 005](../technique/decisions/005-bc-communication.md)) ; diffusion sans rechargement par le port `RealtimePublisher`, Mercure par défaut et fournisseur choisi par `REALTIME_TRANSPORT` ([ADR 004](../technique/decisions/004-temps-reel.md)). Livré : le port, les adaptateurs Mercure, Pusher et « aucun », le hub Mercure de développement ; à faire : abonnement côté front et topics privés ; le BC Communication reste à créer.
+Décisions : BC propriétaire `Communication` ([ADR 005](../technique/decisions/005-bc-communication.md)) ; diffusion sans rechargement par le port `RealtimePublisher` et le transport `database` : buffer `realtime_event` + flux SSE `GET /api/realtime/stream` ([ADR 004](../technique/decisions/004-temps-reel.md)). Livré : socle (publisher, flux unique avec ticket et `Last-Event-ID`, audience Citizen `citizen.{id}`, client `@boilerplate/shared-utils/realtime`, purge). À faire par lot : handlers de projection, `RealtimeAudienceProvider` d’Administration et de Communication, port d’abonnement de chaque application ; le BC Communication reste à créer.
 
 - Une **alerte** est une publication urgente avec un niveau de gravité, une période de validité et une audience : tous les habitants, un quartier, ou les personnes ayant demandé les alertes sanitaires.
 - Elle s’affiche en bandeau sur le site pendant sa validité (D18, F29) et apparaît dans les notifications de l’espace personnel des citoyens concernés (F30).

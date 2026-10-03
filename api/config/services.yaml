@@ -2,8 +2,11 @@ parameters:
     # Valeurs par défaut : le conteneur démarre sans ces variables ; sans clé, la route Pilotage répond 503.
     env(WEBCUP_API_URL): 'https://24h.webcup.fr/wp-json/webcup/v1/requests'
     env(WEBCUP_API_KEY): ''
-    # Temps réel : transport choisi par REALTIME_TRANSPORT (mercure | pusher | none), sans toucher au code.
-    env(REALTIME_TRANSPORT): 'mercure'
+    # Temps réel : transport choisi par REALTIME_TRANSPORT (database | mercure | pusher | none), sans toucher au code.
+    # `database` (défaut) : buffer realtime_event + flux SSE, sans serveur supplémentaire.
+    env(REALTIME_TRANSPORT): 'database'
+    # Durée d'une connexion SSE avant reconnexion automatique (hébergement mutualisé : connexions courtes).
+    env(REALTIME_STREAM_SECONDS): '20'
     # Mercure : URL du hub vue par l'API ; sans secret, la publication est désactivée sans erreur.
     env(MERCURE_URL): ''
     env(MERCURE_JWT_SECRET): ''
@@ -43,6 +46,7 @@ services:
         exclude:
             - '../src/Shared/**/Tests/'
             - '../src/Shared/Infrastructure/Kernel.php'
+            - '../src/Shared/Infrastructure/Realtime/RealtimeEvent.php'
 
     # --- IAM : comptes et sessions ---
 
@@ -136,9 +140,28 @@ services:
     Shared\Infrastructure\Realtime\RealtimePublisherFactory:
         arguments:
             $transports: !service_locator
+                database: '@Shared\Infrastructure\Realtime\DatabaseRealtimePublisher'
                 mercure: '@Shared\Infrastructure\Realtime\MercureRealtimePublisher'
                 pusher: '@Shared\Infrastructure\Realtime\PusherRealtimePublisher'
                 none: '@Shared\Infrastructure\Realtime\NullRealtimePublisher'
+
+    # Flux SSE du transport `database` : topics privés fournis par les BC (RealtimeAudienceProvider).
+    Shared\Infrastructure\Realtime\RealtimeAudience:
+        arguments:
+            $providers: !tagged_iterator shared.realtime_audience
+
+    Shared\Infrastructure\Realtime\RealtimeTicketSigner:
+        arguments:
+            $secret: '%kernel.secret%'
+
+    Shared\Infrastructure\Realtime\Http\RealtimeController:
+        tags: ['controller.service_arguments']
+        arguments:
+            $streamSeconds: '%env(int:REALTIME_STREAM_SECONDS)%'
+
+    # Le flux temps réel (Shared) consomme IAM pour identifier le compte connecté.
+    Shared\Application\Ports\Provider\RealtimeAccountProvider:
+        alias: IAM\Infrastructure\Adapter\Shared\IAMRealtimeAccountProvider
 
     Shared\Application\Ports\Service\RealtimePublisher:
         factory: ['@Shared\Infrastructure\Realtime\RealtimePublisherFactory', 'create']

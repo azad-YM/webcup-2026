@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/12.2/phpunit.xsd" bootstrap="src/Shared/Tests/bootstrap.php" colors="true" cacheDirectory=".phpunit.cache">
-  <php><server name="APP_ENV" value="test" force="true"/></php>
+  <php><server name="APP_ENV" value="test" force="true"/><server name="REALTIME_STREAM_SECONDS" value="0" force="true"/></php>
   <testsuites>
     <testsuite name="IAM">
       <directory>src/IAM/Tests/Suites/Application</directory>
