@@ -55,13 +55,14 @@ export function ModuleSwitcher({
               className="data-[state=open]:bg-sidebar-accent"
             >
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <CurrentIcon className="size-4" />
+                <CurrentIcon className="size-4" aria-hidden="true" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{currentSpace.label}</span>
                 <span className="truncate text-xs">{subtitle}</span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4" />
+              <ChevronsUpDown className="ml-auto size-4" aria-hidden="true" />
+              <span className="sr-only">, changer d’espace</span>
             </SidebarMenuButton>
           </PopoverTrigger>
           <PopoverContent align="start" side="right" className="w-72 p-2">
@@ -79,16 +80,17 @@ export function ModuleSwitcher({
                     key={space.code}
                     type="button"
                     onClick={() => openSpace(space.code)}
+                    aria-current={isCurrent ? "page" : undefined}
                     className="flex w-full items-center gap-3 rounded-md px-2 py-2 text-left text-sm hover:bg-accent"
                   >
                     <span className="flex size-8 items-center justify-center rounded-lg bg-muted">
-                      <SpaceIcon className="size-4" />
+                      <SpaceIcon className="size-4" aria-hidden="true" />
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="block truncate font-medium">{space.name}</span>
                       <span className="block truncate text-xs text-muted-foreground">{space.description}</span>
                     </span>
-                    {isCurrent && <Check className="size-4 text-primary" />}
+                    {isCurrent && <><Check className="size-4 text-primary" aria-hidden="true" /><span className="sr-only">(espace actuel)</span></>}
                   </button>
                 )
               })}

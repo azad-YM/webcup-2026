@@ -31,7 +31,7 @@ export function PortalLoginCallback() {
 }
 
 function PortalLoginStatus({ failed }: { failed: boolean }) {
-  return <main className="grid min-h-screen place-items-center p-6"><div>
+  return <main id="contenu" className="grid min-h-screen place-items-center p-6"><div>
     <p role={failed ? "alert" : "status"}>{failed ? "La connexion n’a pas abouti. Recommencez depuis le site." : "Connexion à l’administration…"}</p>
     {failed && <Link to="/login" className="mt-4 block underline">Revenir à la connexion</Link>}
   </div></main>

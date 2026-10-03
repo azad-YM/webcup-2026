@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { getErrorMessage } from "@boilerplate/shared-utils/error.utils"
 import { RefreshCw } from "@boilerplate/shared-ui/components/icon"
+import { StatusBadge } from "@boilerplate/shared-ui/components/a11y"
 import { Button, Label, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@boilerplate/shared-ui/components"
 import { REQUEST_QUEUE_POLLING_MS, useListRequestQueueQuery } from "../../core/application/rtk-api/requests"
 import { REQUEST_STATUSES, STATUS_LABELS, TYPE_LABELS, type RequestStatus } from "../../core/domain/service-request"
@@ -27,15 +28,13 @@ export function RequestQueuePage() {
           <h1 className="flex flex-wrap items-center gap-3 text-2xl font-semibold">
             Demandes citoyennes
             {data && (
-              <span className={`rounded-full px-3 py-1 text-sm font-medium ${data.pendingCount > 0 ? "bg-amber-100 text-amber-900" : "bg-emerald-100 text-emerald-900"}`}>
-                {data.pendingCount} en attente
-              </span>
+              <StatusBadge tone={data.pendingCount > 0 ? "pending" : "success"} label={`${data.pendingCount} en attente`} size="md" />
             )}
           </h1>
           <p className="mt-1 text-muted-foreground">Messages et signalements envoyés par les habitants. Mise à jour en temps réel.</p>
         </div>
         <Button type="button" variant="outline" disabled={queue.isFetching} onClick={() => void queue.refetch()}>
-          <RefreshCw className={queue.isFetching ? "animate-spin" : undefined} /> Actualiser
+          <RefreshCw aria-hidden="true" className={queue.isFetching ? "animate-spin" : undefined} /> Actualiser
         </Button>
       </div>
 
@@ -84,7 +83,7 @@ export function RequestQueuePage() {
                   <caption className="sr-only">Demandes citoyennes, les plus anciennes d’abord</caption>
                   <TableHeader>
                     <TableRow>
-                      <TableHead scope="col">Référence</TableHead>
+                      <TableHead scope="col">N° de suivi</TableHead>
                       <TableHead scope="col">Objet</TableHead>
                       <TableHead scope="col">Type</TableHead>
                       <TableHead scope="col">Reçue le</TableHead>
@@ -93,7 +92,7 @@ export function RequestQueuePage() {
                   </TableHeader>
                   <TableBody>
                     {data.items.map(item => (
-                      <TableRow key={item.id} className={item.id === selectedId ? "bg-sky-50" : undefined}>
+                      <TableRow key={item.id} className={item.id === selectedId ? "bg-sky-50 outline-2 -outline-offset-2 outline-sky-800" : undefined}>
                         <TableCell className="font-mono text-xs">{item.reference}</TableCell>
                         <TableCell>
                           <button type="button" className="text-left font-medium underline-offset-4 hover:underline" aria-pressed={item.id === selectedId} onClick={() => setSelectedId(item.id)}>

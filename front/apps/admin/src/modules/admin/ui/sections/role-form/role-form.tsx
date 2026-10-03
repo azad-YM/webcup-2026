@@ -21,16 +21,16 @@ export function RoleForm() {
             </div>
             <fieldset className="space-y-4" aria-describedby="role-permissions-description">
               <legend className="mb-2 font-medium">Permissions</legend>
-              <p id="role-permissions-description" className="text-sm text-muted-foreground">Recherchez une permission ou filtrez par contexte. Les sélections sont conservées lorsque vous changez de filtre.</p>
+              <p id="role-permissions-description" className="text-sm text-muted-foreground">Recherchez une permission ou filtrez par domaine. Les sélections sont conservées lorsque vous changez de filtre.</p>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="permission-search">Rechercher une permission</Label>
-                  <Input id="permission-search" type="search" value={form.search} onChange={event => form.setSearch(event.target.value)} placeholder="Nom, ressource, action…" />
+                  <Input id="permission-search" type="search" value={form.search} onChange={event => form.setSearch(event.target.value)} placeholder="Ex. membres, publier, consulter…" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="permission-context">Contexte</Label>
+                  <Label htmlFor="permission-context">Domaine</Label>
                   <select id="permission-context" value={form.context} onChange={event => form.setContext(event.target.value)} className="flex h-9 w-full rounded-lg border border-input bg-background px-3 text-sm focus-visible:outline-2 focus-visible:outline-ring">
-                    <option value="">Tous les contextes</option>
+                    <option value="">Tous les domaines</option>
                     {form.contexts.map(context => <option key={context} value={context}>{context}</option>)}
                   </select>
                 </div>
