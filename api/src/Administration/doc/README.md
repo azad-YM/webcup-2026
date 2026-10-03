@@ -72,7 +72,9 @@ Interface : la page [Membres](../../../../front/apps/admin/doc/membres.md) de l�
 | Administration consomme IAM | `Application/Ports/Provider/CurrentAccountProvider` | `IAM/Infrastructure/Adapter/Administration/IAMCurrentAccountProvider` |
 | Administration consomme IAM | `Application/Ports/Provider/MemberAccountProvisioner` | `IAM/Infrastructure/Adapter/Administration/IAMMemberAccountProvisioner` |
 | IAM consomme Administration | `IAM\…\AccessibleSpacesProvider` | `Infrastructure/Adapter/IAM/AdminAccessibleSpacesProvider` |
-| Pilotage consomme Administration | `Pilotage\Application\Ports\Provider\PilotageAccessPolicy` | `Infrastructure/Adapter/Pilotage/AdminPilotageAccessPolicy` (`admin.pilotage.read`) |
+| Pilotage consomme Administration | `Pilotage\Application\Ports\Provider\PilotageAccessPolicy` | `Infrastructure/Adapter/Pilotage/AdminPilotageAccessPolicy` (`admin.pilotage.read`, `admin.pilotage.write`) |
+| Tableau de bord Pilotage (F50) | `Pilotage\Application\Ports\Provider\Activity\AdministrationActivityProvider` | `Infrastructure/Adapter/Pilotage/AdminPilotageActivity` (membres actifs, services perturbés) |
+| Audit consomme Administration (L12) | `Audit\Application\Ports\Provider\AuditAccessPolicy` | `Infrastructure/Adapter/Audit/AdminAuditAccessPolicy` (`admin.audit.read`, `admin.security.read`) |
 | Citizen consomme Administration (L8) | `Citizen\Application\Ports\Provider\CitizenAccountAccessPolicy` | `Infrastructure/Adapter/Citizen/AdminCitizenAccountAccessPolicy` (`admin.citizen.read`, `admin.citizen.write`) |
 | IAM consomme Administration (L8) | `IAM\Application\Ports\Provider\SecurityJournalAccessPolicy` | `Infrastructure/Adapter/IAM/AdminSecurityJournalAccessPolicy` (`admin.security.read`) |
 | Citizen consomme Administration | `Citizen\Application\Ports\Provider\RequestAccessPolicy` | `Infrastructure/Adapter/Citizen/AdminRequestAccessPolicy` (`admin.request.read` ; traitement : `admin.request.read` + `admin.request.write`) |

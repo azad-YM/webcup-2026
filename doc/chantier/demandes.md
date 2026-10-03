@@ -91,15 +91,15 @@ Statuts : ⬜ à faire · 🟡 en cours · ⚠️ partiel · ✅ livré · ⏸�
 |---|---|---|---|---|---|---|
 | F45 | 3 | 960 | Localiser les services physiques de la ville (carte, adresse, itinéraire) | L11 | Administration, site | ⬜ |
 | F46 | 1 | 320 | Trouver rapidement hôpitaux et services d’urgence | L11 | Administration, site | ⬜ |
-| F47 | 3 | 960 | Justifier les actions réalisées : opérations consultables et traçables dans le temps, faciles à retrouver par les agents | L12 | Administration, admin | ⬜ |
-| F48 | 2 | 640 | Savoir qui a modifié quoi dans l’administration | L12 | Administration, admin | ⬜ |
+| F47 | 3 | 960 | Justifier les actions réalisées : opérations consultables et traçables dans le temps, faciles à retrouver par les agents | L12 | Audit, admin | 🟡 journal des actions (BC Audit, `GET /api/audit/entries`, écran `/admin/journal`, filtres acteur/action/période/recherche) ; non testé, non vérifié dans un navigateur |
+| F48 | 2 | 640 | Savoir qui a modifié quoi dans l’administration | L12 | Audit, admin | 🟡 acteur, date, cible et détail de chaque action de l’administration ([journal](../../front/apps/admin/doc/journal-des-actions.md)) ; non testé |
 
 ## Vague 8 (H+9) — « Inclusion et structuration »
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
 | F49 | 1 | 330 | Être informé quand sa demande change d’état | L2 | Citizen, site | ⬜ |
-| F50 | 3 | 990 | Tableau de bord simplifié de l’activité de la plateforme pour les agents | L13 | Pilotage, admin | ⬜ |
+| F50 | 3 | 990 | Tableau de bord simplifié de l’activité de la plateforme pour les agents | L13 | Pilotage, admin | 🟡 `/pilotage/tableau-de-bord` sur `GET /api/pilotage/activity` (chiffres des BC propriétaires par ports, relecture 60 s) ; non testé, non vérifié dans un navigateur |
 | F51 | 3 | 990 | Comprendre l’usage de ses données et faire remonter ses inquiétudes, avec trace de prise en compte | L14 | Citizen, site, admin | ⬜ |
 | F52 | 2 | 660 | Soutenir une demande déjà déposée par d’autres habitants | L14 | Citizen, site | ⬜ |
 

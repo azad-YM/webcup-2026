@@ -16,7 +16,7 @@ Admin React/Vite (agents) ───────┼──► API Symfony ──�
 
 ## API modulaire
 
-L’API est découpée en bounded contexts (BC) de même niveau : `IAM`, `Administration`, `Citizen`, `Communication` et `Pilotage`, plus le socle `Shared`. Un BC peut être subdivisé en sous-domaines (SD) lorsqu’il grossit. Chaque BC simple ou SD porte `Application`, `Domain`, `Infrastructure`, `Tests` et `doc`.
+L’API est découpée en bounded contexts (BC) de même niveau : `IAM`, `Administration`, `Citizen`, `Communication`, `Pilotage` et `Audit`, plus le socle `Shared`. Un BC peut être subdivisé en sous-domaines (SD) lorsqu’il grossit. Chaque BC simple ou SD porte `Application`, `Domain`, `Infrastructure`, `Tests` et `doc`.
 
 ```text
 api/src/
@@ -27,7 +27,8 @@ api/src/
 ├── Administration/             BC organisation municipale : membres, rôles, permissions,
 │                               services municipaux (état, transports), liste des quartiers
 ├── Citizen/                    BC relation habitants–ville : citoyens (inscription, profil, préférences d’alerte) ; demandes à venir
-├── Pilotage/                   BC pilotage : flux de l’API du concours Webcup (sans persistance)
+├── Pilotage/                   BC pilotage : flux de l’API du concours Webcup, suivi de l’équipe, tableau de bord (F50)
+├── Audit/                      BC journal des actions de l’administration (ADR 006)
 ├── Communication/              BC information aux habitants : publications, alertes, audiences (ADR 005)
 └── Shared/                     kernel, AppController, exceptions, AggregateRoot, ports techniques (dont temps réel)
 ```
@@ -66,6 +67,11 @@ Raccordements livrés, à reproduire :
 | `IAM` — `SecurityJournalAccessPolicy` (L8) | `Administration/Infrastructure/Adapter/IAM/AdminSecurityJournalAccessPolicy` |
 | `IAM` — `AccessibleSpacesProvider` | `Administration/Infrastructure/Adapter/IAM/AdminAccessibleSpacesProvider` |
 | `Pilotage` — `PilotageAccessPolicy` | `Administration/Infrastructure/Adapter/Pilotage/AdminPilotageAccessPolicy` |
+| `Pilotage` — `CurrentAgentProvider` | `IAM/Infrastructure/Adapter/Pilotage/IAMPilotageCurrentAgent` |
+| `Pilotage` — `Activity/*ActivityProvider` (F50) | `Citizen/…/Adapter/Pilotage/CitizenPilotageActivity`, `Communication/…/Adapter/Pilotage/CommunicationPilotageActivity`, `IAM/…/Adapter/Pilotage/IAMPilotageSecurityActivity`, `Administration/…/Adapter/Pilotage/AdminPilotageActivity` |
+| `Audit` — `AuditActorProvider` | `IAM/Infrastructure/Adapter/Audit/IAMAuditActorProvider` |
+| `Audit` — `AuditAccessPolicy` | `Administration/Infrastructure/Adapter/Audit/AdminAuditAccessPolicy` |
+| `Shared` — `AuditTrail` (appelé par les handlers des BC propriétaires) | `Audit/Infrastructure/Adapter/Shared/AuditTrailRecorder` |
 | `Citizen` — `RequestAccessPolicy` | `Administration/Infrastructure/Adapter/Citizen/AdminRequestAccessPolicy` |
 | `Shared` (flux temps réel) — `RealtimeAccountProvider` | `IAM/Infrastructure/Adapter/Shared/IAMRealtimeAccountProvider` |
 | `Shared` (flux temps réel) — `RealtimeAudienceProvider` (tag `shared.realtime_audience`) | `Citizen/Infrastructure/Adapter/Shared/CitizenRealtimeAudience` (`citizen.{citizenId}`), `Administration/Infrastructure/Adapter/Shared/AdminRequestsRealtimeAudience` (`administration.requests`) |
@@ -78,6 +84,8 @@ Temps réel : Citizen projette ses événements de domaine de demande (`PublishS
 | `Shared` — `RealtimeAudienceProvider` (topics des alertes ciblées) | `Citizen/Infrastructure/Adapter/Shared/CitizenAlertRealtimeAudience` |
 
 Pilotage lit aussi l’API externe du concours par son port `WebcupFeedGateway`, implémenté dans sa propre infrastructure (`Infrastructure/Http/WebcupHttpFeedGateway`, cache de 20 s) ; voir [Pilotage](../../api/src/Pilotage/doc/README.md).
+
+Journal des actions : les handlers d’Administration, Communication, Citizen, Pilotage et le limiteur de connexion d’IAM appellent le port Shared `AuditTrail` dans leur transaction ; le BC [Audit](../../api/src/Audit/doc/README.md) stocke et sert le journal ; voir l’[ADR 006](decisions/006-journal-des-actions.md).
 
 Publications et alertes : BC [Communication](../../api/src/Communication/doc/README.md), qui consulte Administration (droit de publier, quartiers) et Citizen (audience) par ses ports et projette ses événements vers le temps réel (`public.alerts`, `public.publications`, `district.{quartier}`, `alerts.health`) ; voir l’[ADR 005](decisions/005-bc-communication.md).
 
@@ -138,6 +146,7 @@ Les `AGENTS.md` sont répartis par périmètre : racine, `api/`, chaque BC/SD, `
 - [Documentation — Citizen](../../api/src/Citizen/doc/README.md)
 - [Documentation — Shared](../../api/src/Shared/doc/README.md)
 - [Documentation — Pilotage](../../api/src/Pilotage/doc/README.md)
+- [Documentation — Audit](../../api/src/Audit/doc/README.md)
 - [Contexte produit](../contexte/README.md)
 - [ADR 003](decisions/003-identite-et-habilitations.md)
 <!-- backlinks:end -->
