@@ -45,7 +45,7 @@ final class PortalLoginTest extends ApplicationTestCase
         self::assertSame('admin', $this->body()['spaces'][0]['code']);
         $this->request('GET', '/api/administration/permissions');
         self::assertResponseStatusCodeSame(200);
-        self::assertCount(4, $this->body());
+        self::assertCount(6, $this->body());
         $this->exchange($code);
         self::assertResponseStatusCodeSame(403);
     }

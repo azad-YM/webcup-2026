@@ -18,7 +18,7 @@ Un 401 invalide la session et vide le store ; un 403 ou une panne réseau conser
 
 ## Limites
 
-Liste, modification et suppression des rôles ne sont pas livrées.
+La liste des rôles (`GET /api/administration/roles`) est livrée côté API et utilisée par le [formulaire des membres](membres.md) ; cette page ne l’affiche pas encore. Modification et suppression des rôles ne sont pas livrées.
 
 <!-- backlinks:start -->
 ---
@@ -28,4 +28,5 @@ Liste, modification et suppression des rôles ne sont pas livrées.
 **Référencé depuis :**
 
 - [Administration — membres et habilitations](../../../../api/src/Administration/doc/membres-et-habilitations.md)
+- [Membres](membres.md)
 <!-- backlinks:end -->

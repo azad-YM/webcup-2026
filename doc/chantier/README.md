@@ -20,13 +20,13 @@ Les lots regroupent les demandes qui partagent un même modèle ou un même écr
 | Lot | Contenu | Demandes | XP | Statut |
 |---|---|---|---|---|
 | L0 | Séparer l’identité (IAM) des membres et rôles (Administration), retirer le gabarit Example, cadrer Citizen — [ADR 003](../technique/decisions/003-identite-et-habilitations.md) | — | — | ✅ |
-| L1 | Comptes et profils : inscription citoyenne, espace personnel, rôles Agent et Administrateur, formulaire de membre | D01, D03, D08, D09 | 1 500 | 🟡 API Citizen et site livrés (tâches 1 à 4) ; admin en cours |
+| L1 | Comptes et profils : inscription citoyenne, espace personnel, rôles Agent et Administrateur, formulaire de membre | D01, D03, D08, D09 | 1 500 | 🟡 tâches 1 à 5 livrées ; parcours à vérifier dans le navigateur |
 | L2 | Demandes citoyennes : envoi, confirmation, signalement, suivi, file des agents, compteur d’attente | D04, D16, F25, D11, F26, F22, D17 | 2 390 | ⬜ |
 | L3 | Services municipaux (avec recherche et filtres), publications, page d’accueil | D05, D06, F28, F32, D07 | 1 550 | ⬜ |
 | L7 | Alertes et diffusion : message général, alerte ciblée par quartier, avis d’annonce importante, recommandations aux personnes vulnérables | D18, F29, F30, F31 | 3 080 | ⬜ |
 | L4 | Accessibilité et repères : lecteur d’écran, contraste, taille du texte, fil d’Ariane, première connexion | F21, F23, F24, D15, D12 | 2 110 | ⬜ |
 | L5 | Multilingue : interface, puis contenus | D14, F27 | 1 080 | ⬜ |
-| L6 | Pilotage : flux de l’API Webcup dans l’espace des agents | D19 | 750 | ⬜ |
+| L6 | Pilotage : flux de l’API Webcup dans l’espace des agents — [Pilotage](../../api/src/Pilotage/doc/README.md), [page](../../front/apps/admin/doc/pilotage.md) | D19 | 750 | 🟡 livré, à vérifier avec la vraie clé |
 
 ## Travail en parallèle
 
@@ -50,7 +50,7 @@ Décisions : [Citizen — décisions retenues](../../api/src/Citizen/doc/README.
 
    Détail et écarts éventuels : [Citizen — livré](../../api/src/Citizen/doc/README.md#livré).
 4. ✅ Site : inscription en deux étapes (compte, puis « Mes informations » que l’on peut passer), connexion automatique, espace personnel `/espace` avec le nom du citoyen, l’invitation à compléter le profil et des raccourcis. Voir le [parcours citoyen](../../front/apps/site/doc/parcours-citoyen.md) ; parcours de bout en bout à vérifier dans le navigateur.
-5. Administration : rôles de référence Agent et Administrateur à l’initialisation, et formulaire « Ajouter un membre » dans l’admin.
+5. ✅ Administration : rôles de référence « Agent municipal » et « Administrateur principal » à l’initialisation, liste des rôles et des membres, formulaire « Ajouter un membre » dans l’admin ([membres](../../front/apps/admin/doc/membres.md)).
 
 ### L7 — Alertes et diffusion (à cadrer)
 
@@ -61,13 +61,13 @@ Décisions : [Citizen — décisions retenues](../../api/src/Citizen/doc/README.
 
 ### Socle produit
 
-- Remplacer l’habillage « Boilerplate » du site et de l’admin par l’identité de Nova Terra. Site : fait (en-tête, navigation, pied de page, fil d’Ariane, base d’accessibilité) ; admin : à faire.
+- Remplacer l’habillage « Boilerplate » par l’identité de Nova Terra. Site : fait (en-tête, navigation, pied de page, fil d’Ariane, base d’accessibilité) ; admin : à faire.
 - Vitrine du site : structure livrée (accueil, services avec recherche et filtre, actualités) sur un adaptateur **local** de démonstration ; brancher l’HTTP d’Administration au lot L3 ([site](../../front/apps/site/doc/README.md#limites-et-questions-ouvertes)).
-- Ajouter `WEBCUP_API_KEY` à `api/.env.example`, sans valeur, et définir la vraie clé dans `api/.env.local` pour le lot L6.
+- ✅ `WEBCUP_API_URL` et `WEBCUP_API_KEY` déclarés dans `api/.env.example` (clé vide). Reste à définir la vraie clé dans `api/.env.local` et à vérifier la page sur la vraie API.
 
 ## Quand une vague arrive
 
-1. Interroger l’API (Insomnia, ou la page Pilotage une fois le lot L6 livré) et relever l’état de `session`.
+1. Consulter la page « Flux Nova Terra » de l’admin (`/pilotage`, les nouvelles demandes y sont surlignées) ou interroger l’API, et relever l’état de `session`.
 2. Ajouter les nouvelles demandes au [registre](demandes.md), avec un résumé du besoin, l’XP et la difficulté.
 3. Rattacher chaque demande à un lot existant ou en créer un. Choisir son BC propriétaire en suivant la [carte des modules](../contexte/README.md#carte-des-modules).
 4. Réordonner les lots selon le rapport XP / effort et selon ce qui débloque d’autres demandes.

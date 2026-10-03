@@ -11,6 +11,7 @@ src/
 ├── IAM/                       # BC identité : comptes, login JWT, codes PKCE, espaces accessibles
 ├── Administration/            # BC organisation municipale : membres, rôles, permissions (+ services, publications à venir)
 ├── Citizen/                   # BC citoyens : inscription publique, profil (demandes à venir)
+├── Pilotage/                  # BC pilotage : flux de l’API du concours Webcup pour les agents
 └── Shared/                    # kernel, AppController, exceptions, AggregateRoot, ports techniques
 ```
 
@@ -19,7 +20,7 @@ src/
 - `Infrastructure` contient les adaptateurs Doctrine, sécurité et intermodules.
 - `Tests/Doubles` contient les implémentations en mémoire, jamais injectées dans les tests HTTP.
 
-Documentation : [index central](../doc/README.md), [IAM](src/IAM/doc/README.md), [Administration](src/Administration/doc/README.md), [Citizen](src/Citizen/doc/README.md), [Shared](src/Shared/doc/README.md).
+Documentation : [index central](../doc/README.md), [IAM](src/IAM/doc/README.md), [Administration](src/Administration/doc/README.md), [Citizen](src/Citizen/doc/README.md), [Pilotage](src/Pilotage/doc/README.md), [Shared](src/Shared/doc/README.md).
 
 ## Endpoints livrés
 
@@ -29,9 +30,10 @@ Documentation : [index central](../doc/README.md), [IAM](src/IAM/doc/README.md),
 | GET | `/api/iam/me`, `/api/iam/me/spaces` | IAM |
 | POST | `/api/iam/portal-codes`, `/api/iam/portal-sessions` | IAM |
 | GET | `/api/administration/permissions` | Administration |
-| POST | `/api/administration/roles`, `/api/administration/members` | Administration |
+| GET, POST | `/api/administration/roles`, `/api/administration/members` | Administration |
 | POST | `/api/citizen/register` (public) | Citizen |
 | GET, PUT | `/api/citizen/me` | Citizen |
+| GET | `/api/pilotage/webcup-feed` | Pilotage |
 
 CLI : `php bin/console app:admin:bootstrap` ([procédure](src/Administration/doc/initialisation-admin.md)).
 
@@ -54,7 +56,7 @@ Le socle global est dans `src/Shared/Tests` :
 - `Fixtures/UserFixture.php` : compte de test avec authentification JWT réelle ;
 - `Doubles/Service/SequenceIdProvider.php` : identifiants déterministes.
 
-Namespaces `Tests\IAM\…`, `Tests\Administration\…`, `Tests\Citizen\…`, `Tests\Shared\…`, chargés uniquement par `autoload-dev`. Suites PHPUnit par BC (`IAM`, `Administration`, `Citizen`, `Shared`) ; groupes `Unit` et `Application`.
+Namespaces `Tests\IAM\…`, `Tests\Administration\…`, `Tests\Citizen\…`, `Tests\Pilotage\…`, `Tests\Shared\…`, chargés uniquement par `autoload-dev`. Suites PHPUnit par BC (`IAM`, `Administration`, `Citizen`, `Pilotage`, `Shared`) ; groupes `Unit` et `Application`.
 
 ```bash
 php bin/phpunit --group Unit                       # sans Docker
@@ -89,6 +91,8 @@ php bin/console doctrine:database:create --if-not-exists
 php bin/console doctrine:migrations:migrate -n
 php bin/console app:admin:bootstrap
 ```
+
+Pour le flux du concours (BC Pilotage), définir `WEBCUP_API_KEY` dans `.env.local` (jamais dans `.env` ni dans le dépôt) ; sans clé, `GET /api/pilotage/webcup-feed` répond 503.
 
 L’hôte Docker de la base est `db`. Pour PHP sur l’hôte, adapter `DATABASE_URL` au port publié. Ne jamais versionner secrets ni clés JWT.
 

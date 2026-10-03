@@ -13,8 +13,10 @@ class InMemoryAdminPermissionRepository implements IPermissionRepository {
         $this->permissions = [
             new Permission('admin', 'role', 'read'),
             new Permission('admin', 'role', 'write'),
+            new Permission('admin', 'member', 'read'),
             new Permission('admin', 'member', 'write'),
             new Permission('admin', 'role-assignment', 'write'),
+            new Permission('admin', 'pilotage', 'read'),
         ];
     }
 

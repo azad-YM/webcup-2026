@@ -16,7 +16,7 @@ Le projet est réalisé pendant les **24H By Webcup 2026**. Les besoins de la vi
 |---|---|---|---|
 | Visiteur | site | Découvre la ville, ses services et ses actualités ; s’inscrit | Administration (contenus), Citizen (inscription) |
 | Citoyen | site | Se connecte, complète son profil, envoie des demandes, suit leur traitement | Citizen |
-| Agent municipal | admin | Traite les demandes, publie des informations | Citizen, Administration |
+| Agent municipal | admin | Traite les demandes, publie des informations, suit le flux du concours | Citizen, Administration, Pilotage |
 | Administrateur | admin | Gère les membres et leurs rôles | Administration |
 
 Un même compte ([IAM](../../api/src/IAM/doc/README.md)) peut porter plusieurs profils : un agent peut aussi être citoyen.
@@ -33,15 +33,19 @@ Administration ──── membres, rôles, permissions ; services, publication
  │ port (droits des agents)
  │
 Citizen ─────────── citoyens (inscription, profil livrés), demandes, suivi (cible)
+
+Pilotage ────────── flux de l’API du concours pour les agents
+   │ port (droit admin.pilotage.read) → Administration
+   └ port (lecture de l’API Webcup, cache 20 s) → API du concours
 ```
 
-- [IAM](../../api/src/IAM/doc/README.md) · [Administration](../../api/src/Administration/doc/README.md) · [Citizen](../../api/src/Citizen/doc/README.md)
+- [IAM](../../api/src/IAM/doc/README.md) · [Administration](../../api/src/Administration/doc/README.md) · [Citizen](../../api/src/Citizen/doc/README.md) · [Pilotage](../../api/src/Pilotage/doc/README.md)
 - Applications : [site](../../front/apps/site/doc/README.md) (portail citoyen) · [admin](../../front/apps/admin/doc/README.md) (espace des agents)
 - Décision de découpage : [ADR 003](../technique/decisions/003-identite-et-habilitations.md)
 
 ## L’API du concours Webcup
 
-C’est le **flux des besoins de la ville**, au fil des 24 heures. Il ne s’agit pas de données de la plateforme : chaque demande décrit une fonctionnalité à interpréter et à construire. La demande D19 exige toutefois que les agents puissent consulter ce flux depuis leur espace (BC `Pilotage`, prévu au [chantier](../chantier/README.md)).
+C’est le **flux des besoins de la ville**, au fil des 24 heures. Il ne s’agit pas de données de la plateforme : chaque demande décrit une fonctionnalité à interpréter et à construire. La demande D19 exige toutefois que les agents puissent consulter ce flux depuis leur espace : c’est le BC [Pilotage](../../api/src/Pilotage/doc/README.md) (route `GET /api/pilotage/webcup-feed`) et la page « Flux Nova Terra » de l’[admin](../../front/apps/admin/doc/pilotage.md).
 
 - **Endpoint** : `GET https://24h.webcup.fr/wp-json/webcup/v1/requests`
 - **Authentification** : en-tête `X-Webcup-Api-Key` (ou `?api_key=`). Clé absente ou invalide → `403`. La clé reste côté serveur (`api/.env.local`), jamais dans le JavaScript du navigateur ni dans le dépôt.

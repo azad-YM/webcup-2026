@@ -10,12 +10,17 @@ use IAM\Domain\Entity\User;
 use Administration\Application\Ports\Repository\IPermissionRepository;
 use Shared\Application\Ports\Service\IIdProvider;
 use Administration\Domain\Entity\Role;
+use Administration\Domain\VO\Permission;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /** Explicit cross-module exception for CLI provisioning only, outside application workflows. */
 final readonly class BootstrapAdminService
 {
     public const ROLE_ID = 'principal-administrator';
+    public const AGENT_ROLE_ID = 'municipal-agent';
+    public const AGENT_ROLE_NAME = 'Agent municipal';
+    /** Reference permissions of the municipal agent; request processing permissions join in lot L2. */
+    public const AGENT_PERMISSIONS = ['admin.pilotage.read'];
 
     public function __construct(
         private EntityManagerInterface $manager,
@@ -49,8 +54,10 @@ final readonly class BootstrapAdminService
             }
             $role = $this->manager->find(Role::class, self::ROLE_ID)
                 ?? new Role(self::ROLE_ID, $name, []);
-            $role->update($name, $this->permissions->findAllPermissions());
+            $catalog = $this->permissions->findAllPermissions();
+            $role->update($name, $catalog);
             $this->manager->persist($role);
+            $this->ensureAgentRole($catalog);
             if ($member === null) {
                 $member = new Member($this->ids->getId(), $user->getId(), $name, [$role->id]);
                 $this->manager->persist($member);
@@ -58,5 +65,21 @@ final readonly class BootstrapAdminService
 
             return ['userId' => $user->getId(), 'memberId' => $member->id, 'permissions' => count($role->permissions)];
         });
+    }
+
+    /**
+     * Reference role assigned by administrators to agents; resynchronized to its reference permissions on each run.
+     *
+     * @param Permission[] $catalog
+     */
+    private function ensureAgentRole(array $catalog): void
+    {
+        $permissions = array_values(array_filter($catalog, static fn (Permission $permission): bool => in_array($permission->key(), self::AGENT_PERMISSIONS, true)));
+        if (count($permissions) !== count(self::AGENT_PERMISSIONS)) {
+            throw new \LogicException('The municipal agent permissions must exist in the administration catalog.');
+        }
+        $role = $this->manager->find(Role::class, self::AGENT_ROLE_ID) ?? new Role(self::AGENT_ROLE_ID, self::AGENT_ROLE_NAME, []);
+        $role->update(self::AGENT_ROLE_NAME, $permissions);
+        $this->manager->persist($role);
     }
 }

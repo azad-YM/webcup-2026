@@ -18,9 +18,9 @@ Statuts : ⬜ à faire · 🟡 en cours · ⚠️ partiel · ✅ livré · ⏸�
 | D05 | 1 | 250 | Présenter clairement les principaux services municipaux | L3 | Administration, site | ⚠️ catalogue et fiches de service sur le site, contenu local de démonstration (API au lot L3) |
 | D06 | 1 | 250 | Consulter les publications de la ville | L3 | Administration, site | ⚠️ liste et lecture des actualités sur le site, contenu local de démonstration (API au lot L3) |
 | D07 | 2 | 500 | Page d’accueil qui hiérarchise l’essentiel et mène aux services | L3 | site | ⚠️ accueil structuré (présentation, « Que souhaitez-vous faire ? », recherche, services, actualités, appel à créer un compte) ; contenu local tant que L3 n’est pas livré |
-| D08 | 2 | 500 | Distinguer citoyens, agents et administrateurs | L1 | Administration, Citizen | ⚠️ rôles et membres livrés, profil citoyen livré (API + espace du site) ; rôle Agent et écran des membres en cours |
-| D09 | 2 | 500 | Limiter les outils sensibles aux profils autorisés | L1 | Administration | ⚠️ contrôles serveur livrés pour l’admin |
-| D19 | 3 | 750 | Espace agents distinct qui affiche le flux de l’API Nova Terra | L6 | Pilotage, admin | ⚠️ espace distinct livré, flux absent |
+| D08 | 2 | 500 | Distinguer citoyens, agents et administrateurs | L1 | Administration, Citizen | 🟡 les trois profils existent : citoyen (API Citizen + espace du site), « Agent municipal » et « Administrateur principal » (rôles, liste et ajout des membres dans l’admin) ; à vérifier dans le navigateur |
+| D09 | 2 | 500 | Limiter les outils sensibles aux profils autorisés | L1 | Administration | ✅ chaque outil de l’admin (rôles, membres, flux Nova Terra) exige sa permission côté serveur, testé ; refus 403 expliqué dans l’interface. À étendre aux outils des lots suivants |
+| D19 | 3 | 750 | Espace agents distinct qui affiche le flux de l’API Nova Terra | L6 | Pilotage, admin | 🟡 page « Flux Nova Terra » (`/pilotage`) sur la route `GET /api/pilotage/webcup-feed`, testée avec l’API du concours simulée ; ✅ dès qu’elle est vérifiée avec la vraie clé dans `api/.env.local` |
 | F22 | 1 | 250 | Les agents voient les demandes reçues, leur état et celles à traiter | L2 | Citizen, admin | ⬜ |
 
 ## Vague 1 (H+2) — « Premiers habitants »

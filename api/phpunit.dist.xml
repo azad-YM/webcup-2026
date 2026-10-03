@@ -14,6 +14,10 @@
       <directory>src/Citizen/Tests/Suites/Application</directory>
       <directory>src/Citizen/Tests/Suites/Unit</directory>
     </testsuite>
+    <testsuite name="Pilotage">
+      <directory>src/Pilotage/Tests/Suites/Application</directory>
+      <directory>src/Pilotage/Tests/Suites/Unit</directory>
+    </testsuite>
     <testsuite name="Shared">
       <directory>src/Shared/Tests/Suites/Application</directory>
       <directory>src/Shared/Tests/Suites/Unit</directory>
@@ -23,6 +27,7 @@
     <directory>src/IAM/Tests</directory>
     <directory>src/Administration/Tests</directory>
     <directory>src/Citizen/Tests</directory>
+    <directory>src/Pilotage/Tests</directory>
     <directory>src/Shared/Tests</directory>
   </exclude></source>
 </phpunit>

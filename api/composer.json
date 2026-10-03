@@ -55,6 +55,7 @@
       "IAM\\": "src/IAM/",
       "Administration\\": "src/Administration/",
       "Citizen\\": "src/Citizen/",
+      "Pilotage\\": "src/Pilotage/",
       "Shared\\": "src/Shared/"
     },
     "exclude-from-classmap": [
@@ -66,6 +67,7 @@
       "Tests\\IAM\\": "src/IAM/Tests/",
       "Tests\\Administration\\": "src/Administration/Tests/",
       "Tests\\Citizen\\": "src/Citizen/Tests/",
+      "Tests\\Pilotage\\": "src/Pilotage/Tests/",
       "Tests\\Shared\\": "src/Shared/Tests/"
     }
   },

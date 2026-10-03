@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-#[AsCommand(name: 'app:admin:bootstrap', description: 'Initialize the principal administrator.')]
+#[AsCommand(name: 'app:admin:bootstrap', description: 'Initialize the principal administrator and the reference administration roles.')]
 final class BootstrapAdminCommand extends Command
 {
     public function __construct(private readonly BootstrapAdminService $bootstrap) { parent::__construct(); }
@@ -26,7 +26,7 @@ final class BootstrapAdminCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $result = $this->bootstrap->initialize((string) $input->getOption('email'), (string) $input->getOption('password'));
-        (new SymfonyStyle($input, $output))->success(sprintf('Principal administrator ready: %s (%d permissions). Existing passwords are preserved.', $input->getOption('email'), $result['permissions']));
+        (new SymfonyStyle($input, $output))->success(sprintf('Principal administrator ready: %s (%d permissions). Reference role "municipal-agent" ready. Existing passwords are preserved.', $input->getOption('email'), $result['permissions']));
         return Command::SUCCESS;
     }
 }

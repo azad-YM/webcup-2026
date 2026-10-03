@@ -5,9 +5,11 @@ import { PortalLoginStart, PortalLoginCallback } from "@/modules/auth/ui/pages/p
 import { SiteLoginRedirect } from "@/modules/auth/ui/pages/site-login-redirect"
 import { SpacesPage } from "@/modules/auth/ui/pages/spaces"
 import { AdminLayout } from "@/modules/admin/ui/layouts/admin.layout"
-import { AdminComingSoonPage } from "@/modules/admin/ui/pages/coming-soon"
+import { MembersPage } from "@/modules/admin/ui/pages/members"
 import { AdminDashboardPage } from "@/modules/admin/ui/pages/dashboard"
 import { RolesPage } from "@/modules/admin/ui/pages/roles"
+import { PilotageLayout } from "@/modules/pilotage/ui/layouts/pilotage.layout"
+import { WebcupFeedPage } from "@/modules/pilotage/ui/pages/webcup-feed"
 
 const ProtectedRoutes = () => {
   const profile = useGetProfileQuery()
@@ -46,7 +48,14 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <AdminDashboardPage /> },
           { path: "role", element: <RolesPage /> },
-          { path: "member", element: <AdminComingSoonPage /> },
+          { path: "member", element: <MembersPage /> },
+        ],
+      },
+      {
+        path: "/pilotage",
+        element: <PilotageLayout />,
+        children: [
+          { index: true, element: <WebcupFeedPage /> },
         ],
       },
     ],

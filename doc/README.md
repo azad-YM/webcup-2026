@@ -23,12 +23,13 @@ Pour comprendre une fonctionnalité, partir de l’application qui la présente 
 - [IAM](../api/src/IAM/doc/README.md) : comptes, connexion, passage site → admin, espaces
 - [Administration](../api/src/Administration/doc/README.md) : membres, rôles, permissions ; services et publications (cible)
 - [Citizen](../api/src/Citizen/doc/README.md) : citoyens et demandes (inscription et profil livrés ; demandes à venir)
+- [Pilotage](../api/src/Pilotage/doc/README.md) : flux de l’API du concours Webcup pour les agents
 - [Shared](../api/src/Shared/doc/README.md) : primitives et conventions communes
 
 ## Applications
 
 - [site](../front/apps/site/doc/README.md) : portail des habitants (connexion livrée, espace citoyen à construire)
-- [admin](../front/apps/admin/doc/README.md) : espace de travail des agents et des administrateurs
+- [admin](../front/apps/admin/doc/README.md) : espace de travail des agents et des administrateurs (membres, rôles, flux Nova Terra)
 
 ## Maintenance
 

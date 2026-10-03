@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { BookKey, Check, ChevronsUpDown } from "@boilerplate/shared-ui/components/icon"
+import { Activity, BookKey, Check, ChevronsUpDown } from "@boilerplate/shared-ui/components/icon"
 import { useNavigate } from "react-router"
 import {
   Popover,
@@ -22,6 +22,7 @@ const SPACE_META: Record<SpaceCode, {
   icon: typeof BookKey
 }> = {
   admin: { label: "Administration", route: "/admin", icon: BookKey },
+  pilotage: { label: "Pilotage", route: "/pilotage", icon: Activity },
 }
 
 export function ModuleSwitcher({
