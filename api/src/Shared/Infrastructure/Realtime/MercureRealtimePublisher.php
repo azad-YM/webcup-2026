@@ -45,7 +45,7 @@ final readonly class MercureRealtimePublisher implements RealtimePublisher
         try {
             $status = $this->httpClient->request('POST', $this->hubUrl, [
                 'headers' => ['Authorization' => 'Bearer ' . $this->publisherToken()],
-                'body' => ['topic' => $topic, 'type' => $event, 'data' => $data] + (str_starts_with($topic, 'private.') ? ['private' => 'on'] : []),
+                'body' => ['topic' => $topic, 'type' => $event, 'data' => $data],
                 'timeout' => self::TIMEOUT,
                 'max_duration' => self::MAX_DURATION,
             ])->getStatusCode();

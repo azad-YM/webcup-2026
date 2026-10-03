@@ -9,7 +9,7 @@ Shared est le socle technique commun aux BC, pas un domaine métier destiné à 
 
 Il ne centralise ni leurs entités ni leurs règles, et ne sert pas de raccourci pour appeler leurs repositories. Les parcours transverses présents ici sont des scénarios de composition et de recette.
 
-**État actuel :** kernel, `AppController`, `ExceptionListener`, exceptions de domaine, `AggregateRoot`, ports `IClock` / `IIdProvider`, port temps réel `RealtimePublisher` et ses adaptateurs Mercure, Pusher et « aucun », choisis par `REALTIME_TRANSPORT` via `RealtimePublisherFactory` ([ADR 004](../../../../doc/technique/decisions/004-temps-reel.md) ; double `RecordingRealtimePublisher` pour les tests des consommateurs) et support de tests Symfony/Testcontainers. Le modèle `Role`, autrefois placé ici, appartient désormais à [Administration](../../Administration/doc/README.md).
+**État actuel :** kernel, `AppController`, `ExceptionListener`, exceptions de domaine, `AggregateRoot`, ports `IClock` / `IIdProvider`, port temps réel `RealtimePublisher`, choisi par `REALTIME_TRANSPORT` via `RealtimePublisherFactory` : transport `database` par défaut (table `realtime_event`, flux SSE `GET /api/realtime/stream`, tickets `POST /api/realtime/tickets`, ports `RealtimeAudienceProvider` et `RealtimeAccountProvider`, commandes `app:realtime:purge` et `app:realtime:publish`), adaptateurs Mercure et Pusher optionnels ([ADR 004](../../../../doc/technique/decisions/004-temps-reel.md) ; double `RecordingRealtimePublisher` pour les tests des consommateurs) et support de tests Symfony/Testcontainers. Le modèle `Role`, autrefois placé ici, appartient désormais à [Administration](../../Administration/doc/README.md).
 
 ## Support et conventions
 

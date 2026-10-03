@@ -25,6 +25,8 @@ security:
         - { path: ^/api/iam/portal-sessions$, roles: PUBLIC_ACCESS, methods: [POST] }
         - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
         - { path: ^/api/citizen/register$, roles: PUBLIC_ACCESS, methods: [POST] }
+        # Flux SSE : public pour les topics `public.*`, privé via un ticket vérifié par le contrôleur.
+        - { path: ^/api/realtime/stream$, roles: PUBLIC_ACCESS, methods: [GET] }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:

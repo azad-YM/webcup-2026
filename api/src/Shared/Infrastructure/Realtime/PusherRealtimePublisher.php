@@ -53,7 +53,7 @@ final readonly class PusherRealtimePublisher implements RealtimePublisher
 
             return;
         }
-        $body = json_encode(['name' => $event, 'channels' => [str_starts_with($topic, 'private.') ? 'private-' . substr($topic, 8) : $topic], 'data' => $data], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
+        $body = json_encode(['name' => $event, 'channels' => [$topic], 'data' => $data], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
         $path = sprintf('/apps/%s/events', $this->appId);
 
         try {
