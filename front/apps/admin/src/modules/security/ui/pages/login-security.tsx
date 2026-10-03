@@ -20,7 +20,7 @@ export function LoginSecurityPage() {
       <p className="mt-2 text-muted-foreground">Chaque ligne correspond à un verrouillage temporaire déclenché par des échecs de connexion répétés. Le verrouillage s’allonge à chaque récidive (jusqu’à 1 h) ; les connexions normales ne sont pas affectées.</p>
     </div>
     <form role="search" onSubmit={submit} className="flex flex-wrap items-end gap-3">
-      <label className="block min-w-64 flex-1">Filtrer par e-mail ou adresse IP<input type="search" value={search} onChange={(event) => setSearch(event.target.value)} className="mt-2 block w-full rounded-md border px-3 py-2" /></label>
+      <label className="block min-w-0 flex-1 basis-64">Filtrer par e-mail ou adresse IP<input type="search" value={search} onChange={(event) => setSearch(event.target.value)} className="mt-2 block w-full rounded-md border px-3 py-2" /></label>
       <Button type="submit" disabled={query.isFetching}>Filtrer</Button>
       <Button type="button" variant="outline" disabled={query.isFetching} onClick={() => void query.refetch()}>Actualiser</Button>
     </form>

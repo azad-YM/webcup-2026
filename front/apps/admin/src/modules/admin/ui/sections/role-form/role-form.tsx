@@ -17,7 +17,7 @@ export function RoleForm() {
           <fieldset disabled={form.creation.isLoading} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="role-name">Nom du rôle</Label>
-              <Input id="role-name" name="name" required value={form.name} onChange={event => form.setName(event.target.value)} placeholder="Ex. Gestionnaire des accès" />
+              <Input id="role-name" name="name" required aria-invalid={form.creationError ? true : undefined} aria-describedby={form.creationError ? "role-form-error" : undefined} value={form.name} onChange={event => form.setName(event.target.value)} placeholder="Ex. Gestionnaire des accès" />
             </div>
             <fieldset className="space-y-4" aria-describedby="role-permissions-description">
               <legend className="mb-2 font-medium">Permissions</legend>
@@ -68,8 +68,8 @@ export function RoleForm() {
               )}
             </fieldset>
           </fieldset>
-          {form.creationError && <p role="alert" className="text-sm text-destructive">{form.creationError}</p>}
-          {form.success && <p role="status" className="text-sm text-green-700">{form.success}</p>}
+          {form.creationError && <p id="role-form-error" role="alert" className="text-sm font-medium text-destructive"><span className="sr-only">Erreur : </span>{form.creationError}</p>}
+          {form.success && <p role="status" className="text-sm font-medium text-green-800">✓ {form.success}</p>}
           <div className="flex flex-wrap gap-3">
             <Button type="submit" disabled={!form.canSubmit}>{form.creation.isLoading ? "Création…" : "Créer le rôle"}</Button>
             <Button type="button" variant="outline" disabled={form.catalog.isFetching || form.creation.isLoading} onClick={() => void form.catalog.refetch()}>Actualiser les permissions</Button>
