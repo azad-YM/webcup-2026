@@ -1,7 +1,7 @@
 import { ListSpacesSection } from "@/modules/auth/ui/sections/spaces/list-spaces"
 import { useLogoutMutation } from "@/modules/auth/core/application/rtk-api/auth"
 import { Button } from "@boilerplate/shared-ui/components"
-import { useNavigate } from "react-router"
+import { Link, useNavigate } from "react-router"
 
 export const SpacesPage = () => {
   const navigate = useNavigate()
@@ -33,6 +33,7 @@ export const SpacesPage = () => {
         </header>
 
         <ListSpacesSection />
+        <Link to="/contenus" className="rounded-xl border bg-white p-6 font-semibold">Services, transports, publications et alertes →</Link>
       </div>
     </main>
   )

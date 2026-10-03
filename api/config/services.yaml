@@ -33,6 +33,10 @@ services:
         exclude:
             - '../src/Citizen/Tests/'
 
+    Communication\:
+        resource: '../src/Communication/'
+        exclude: ['../src/Communication/Tests/']
+
     Pilotage\:
         resource: '../src/Pilotage/'
         exclude:
@@ -157,3 +161,8 @@ services:
             $mercureSecret: '%env(MERCURE_JWT_SECRET)%'
             $pusherKey: '%env(PUSHER_KEY)%'
             $pusherSecret: '%env(PUSHER_SECRET)%'
+
+    Communication\Application\Ports\Provider\CommunicationAccessPolicy:
+        alias: Administration\Infrastructure\Adapter\Communication\AdminCommunicationAccessPolicy
+    Communication\Application\Ports\Provider\AudienceProvider:
+        alias: Citizen\Infrastructure\Adapter\Communication\CitizenAudienceProvider

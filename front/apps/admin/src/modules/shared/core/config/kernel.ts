@@ -1,3 +1,5 @@
+import { ContentHttpGateway } from "@/modules/content/core/infrastructure/for-production/content.http.gateway"
+import { AuthContentSessionProvider } from "@/modules/auth/core/infrastructure/adapter/content/auth-content-session.provider"
 import { sessionCleared } from "./session"
 import { AuthAccessSessionProvider } from "@/modules/auth/core/infrastructure/adapter/admin/auth-access-session.provider"
 import { PermissionHttpGateway } from "@/modules/admin/core/infrastructure/for-production/gateway/http/permission.http.gateway"
@@ -31,6 +33,7 @@ export class App {
     const pilotageSession = new AuthPilotageSessionProvider(authSessionGateway, onSessionInvalidated)
 
     return {
+      contentGateway: new ContentHttpGateway(apiBaseUrl, new AuthContentSessionProvider(authSessionGateway, onSessionInvalidated)),
       authSessionGateway,
       authGateway: new AuthHttpGateway(apiBaseUrl, authSessionGateway, onSessionInvalidated),
       portalLoginGateway: new PortalLoginHttpGateway(apiBaseUrl, siteUrl, authSessionGateway),

@@ -25,6 +25,9 @@ export type MunicipalService = {
   /** Mis en avant sur l’accueil (service prioritaire ou très demandé). */
   featured: boolean
   keywords: string[]
+  status?: "operational" | "maintenance" | "interrupted"
+  statusMessage?: string
+  transport?: { route: string; timetable: string; information: string } | null
 }
 
 export type ServiceFilter = { query?: string; category?: ServiceCategory | null }

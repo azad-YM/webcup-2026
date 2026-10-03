@@ -84,6 +84,8 @@ function ServiceDetail({ service }: { service: MunicipalService }) {
       <div>
         <Icon className="size-10 text-teal-700" aria-hidden="true" />
         <p className="mt-4 text-lg leading-8 text-slate-800">{service.description}</p>
+        {service.status && service.status !== "operational" && <div role="status" className="mt-4 rounded-xl border border-amber-300 bg-amber-50 p-4"><strong>{service.status === "maintenance" ? "Service en maintenance" : "Service interrompu"}</strong><p>{service.statusMessage}</p></div>}
+        {service.transport && <section className="mt-6 rounded-xl border p-5"><h2 className="text-xl font-semibold">Horaires et informations transport</h2><dl className="mt-3 space-y-3"><div><dt className="font-semibold">Trajet</dt><dd>{service.transport.route}</dd></div><div><dt className="font-semibold">Horaires</dt><dd className="whitespace-pre-line">{service.transport.timetable}</dd></div><div><dt className="font-semibold">Informations pratiques</dt><dd>{service.transport.information}</dd></div></dl></section>}
         <h2 className="mt-8 text-xl font-semibold">Ce que vous pouvez faire</h2>
         <ul className="mt-4 list-disc space-y-2 pl-6 text-slate-800">
           {service.actions.map((action) => <li key={action}>{action}</li>)}
@@ -110,7 +112,7 @@ function ServiceDetail({ service }: { service: MunicipalService }) {
 
 export function ServicesPage() {
   const serviceId = useSearchParams().get("service")
-  const { data, error, isFetching, refetch } = useListServicesQuery()
+  const { data, error, isFetching, refetch } = useListServicesQuery(undefined, { pollingInterval: 60_000 })
   const service = data && serviceId ? findService(data, serviceId) : null
   const header = service
     ? <PageHeader trail={[{ label: "Services", href: "/services" }, { label: service.name }]} title={service.name} lead={service.summary} />

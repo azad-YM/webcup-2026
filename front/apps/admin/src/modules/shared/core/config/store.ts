@@ -1,3 +1,4 @@
+import { contentApi } from "@/modules/content/core/application/rtk-api/content"
 import {
   combineReducers,
   configureStore,
@@ -18,6 +19,7 @@ export type AppDispatch = AppStore["dispatch"]
 export type AppGetState = AppStore["getState"]
 
 const reducers = combineReducers({
+  [contentApi.reducerPath]: contentApi.reducer,
   [authApi.reducerPath]: authApi.reducer,
   [accessManagementApi.reducerPath]: accessManagementApi.reducer,
   [pilotageApi.reducerPath]: pilotageApi.reducer,
@@ -46,6 +48,7 @@ export const createStore = (config: {
 
       middleware.unshift(listener.middleware)
       middleware.push(
+        contentApi.middleware,
         authApi.middleware,
         accessManagementApi.middleware,
         pilotageApi.middleware,

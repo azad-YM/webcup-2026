@@ -22,6 +22,8 @@ security:
             jwt: ~
 
     access_control:
+        - { path: ^/api/administration/services$, roles: PUBLIC_ACCESS, methods: [GET] }
+        - { path: ^/api/communication/(publications|alerts)$, roles: PUBLIC_ACCESS, methods: [GET] }
         - { path: ^/api/iam/portal-sessions$, roles: PUBLIC_ACCESS, methods: [POST] }
         - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
         - { path: ^/api/citizen/register$, roles: PUBLIC_ACCESS, methods: [POST] }

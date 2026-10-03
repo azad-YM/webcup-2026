@@ -1,3 +1,4 @@
+import { ContentPage } from "@/modules/content/ui/pages/content"
 import { getErrorMessage } from "@boilerplate/shared-utils/error.utils"
 import { createBrowserRouter, Navigate, Outlet } from "react-router"
 import { useGetProfileQuery } from "@/modules/auth/core/application/rtk-api/auth"
@@ -42,6 +43,7 @@ export const router = createBrowserRouter([
     element: <ProtectedRoutes />,
     children: [
       { path: "/espaces", element: <SpacesPage /> },
+      { path: "/contenus", element: <ContentPage /> },
       {
         path: "/admin",
         element: <AdminLayout />,

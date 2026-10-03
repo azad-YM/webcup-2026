@@ -1,4 +1,6 @@
 "use client"
+import { AlertsHttpGateway } from "@/modules/public/core/infrastructure/for-production/gateway/http/alerts.http.gateway"
+import { AuthPublicSessionAdapter } from "@/modules/auth/core/infrastructure/adapter/public/auth-public-session.adapter"
 import {
   createContext,
   useCallback,
@@ -19,10 +21,7 @@ import {
 import { AuthCitizenSessionAdapter } from "@/modules/auth/core/infrastructure/adapter/citizen/auth-citizen-session.adapter"
 import { CitizenHttpGateway } from "@/modules/citizen/core/infrastructure/for-production/gateway/http/citizen.http.gateway"
 import { CitizenAccountRegistrationAdapter } from "@/modules/citizen/core/infrastructure/adapter/auth/citizen-account-registration.adapter"
-import {
-  LocalPublicationGateway,
-  LocalServiceCatalogGateway
-} from "@/modules/public/core/infrastructure/for-production/gateway/local/public-content.local.gateway"
+import { HttpPublicContentGateway } from "@/modules/public/core/infrastructure/for-production/gateway/http/public-content.http.gateway"
 
 type Session = {
   ready: boolean
@@ -38,14 +37,15 @@ function createDependencies(): Dependencies {
   const authSessionGateway = new LocalStorageAuthSessionGateway()
   const citizenGateway = new CitizenHttpGateway(siteEnv.apiBaseUrl)
   return {
+    alertsGateway: new AlertsHttpGateway(siteEnv.apiBaseUrl, new AuthPublicSessionAdapter(authSessionGateway), { transport: process.env.NEXT_PUBLIC_REALTIME_TRANSPORT ?? "mercure", url: process.env.NEXT_PUBLIC_REALTIME_URL ?? "", key: process.env.NEXT_PUBLIC_PUSHER_KEY, cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER }),
     authGateway: new AuthHttpGateway(siteEnv.apiBaseUrl),
     authSessionGateway,
     accountRegistrationGateway: new CitizenAccountRegistrationAdapter(citizenGateway),
     citizenGateway,
     citizenSessionProvider: new AuthCitizenSessionAdapter(authSessionGateway),
-    // Contenu de démonstration local : à remplacer par l’HTTP d’Administration au lot L3.
-    serviceCatalogGateway: new LocalServiceCatalogGateway(),
-    publicationGateway: new LocalPublicationGateway()
+    // Les contenus publiés proviennent des BC propriétaires.
+    serviceCatalogGateway: new HttpPublicContentGateway(siteEnv.apiBaseUrl),
+    publicationGateway: new HttpPublicContentGateway(siteEnv.apiBaseUrl)
   }
 }
 

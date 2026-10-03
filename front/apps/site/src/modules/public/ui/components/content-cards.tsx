@@ -47,6 +47,7 @@ export function ServiceCard({ service, headingLevel = 3 }: { service: MunicipalS
         </Link>
       </Heading>
       <p className="mt-2 flex-1 text-slate-700">{service.summary}</p>
+        {service.status && service.status !== "operational" && <p className="mt-2 font-semibold text-amber-800">{service.status === "maintenance" ? "En maintenance" : "Service interrompu"}</p>}
       <span className="mt-4 inline-flex items-center gap-2 font-medium text-teal-800" aria-hidden="true">
         Voir le service <ArrowRight className="size-4 transition group-hover:translate-x-1" />
       </span>

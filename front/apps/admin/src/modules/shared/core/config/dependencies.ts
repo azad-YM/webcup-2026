@@ -1,3 +1,4 @@
+import type { ContentGateway } from "@/modules/content/core/application/ports/gateway/content.gateway"
 import type { PortalLoginGateway } from "@/modules/auth/core/application/ports/gateway/portal-login.gateway"
 import type { AuthGateway } from "@/modules/auth/core/application/ports/gateway/auth.gateway"
 import type { AuthSessionGateway } from "@/modules/auth/core/application/ports/gateway/auth-session.gateway"
@@ -8,6 +9,7 @@ import type { WebcupFeedGateway } from "@/modules/pilotage/core/application/port
 import type { SeenRequestsGateway } from "@/modules/pilotage/core/application/ports/gateway/seen-requests.gateway"
 
 export type Dependencies = {
+  contentGateway: ContentGateway
   portalLoginGateway: PortalLoginGateway
   authGateway: AuthGateway
   authSessionGateway: AuthSessionGateway
