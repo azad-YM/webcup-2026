@@ -7,6 +7,7 @@ import type { ServiceCatalogGateway } from "@/modules/public/core/application/po
 import type { PublicationGateway } from "@/modules/public/core/application/ports/gateway/publication.gateway"
 import type { ServiceRequestGateway } from "@/modules/citizen/core/application/ports/gateway/service-request.gateway"
 import type { NotificationGateway } from "@/modules/citizen/core/application/ports/gateway/notification.gateway"
+import type { AppointmentGateway } from "@/modules/citizen/core/application/ports/gateway/appointment.gateway"
 import type { RealtimeSubscriber } from "../application/ports/realtime-subscriber"
 import type { AlertsGateway } from "@/modules/public/core/application/ports/gateway/alerts.gateway"
 import type { CityFeedGateway } from "@/modules/public/core/application/ports/gateway/city-feed.gateway"
@@ -23,6 +24,7 @@ export type Dependencies = {
   citizenSessionProvider: CitizenSessionProvider
   serviceRequestGateway: ServiceRequestGateway
   notificationGateway: NotificationGateway
+  appointmentGateway: AppointmentGateway
   // public : services (Administration), publications et alertes (Communication), flux temps réel
   serviceCatalogGateway: ServiceCatalogGateway
   publicationGateway: PublicationGateway

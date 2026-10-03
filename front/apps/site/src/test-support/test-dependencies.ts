@@ -31,6 +31,12 @@ export function createTestContext(overrides: Partial<Dependencies> = {}) {
       submit: async () => { throw new Error("Not configured") }
     },
     notificationGateway: { list: async () => ({ items: [], unreadCount: 0 }), markRead: async () => undefined },
+    appointmentGateway: {
+      offer: async () => ({ services: [], slots: [], timezone: "Indian/Reunion", timezoneLabel: "heure de La Réunion (UTC+4)" }),
+      listMine: async () => [],
+      book: async () => { throw new Error("Not configured") },
+      change: async () => { throw new Error("Not configured") }
+    },
     serviceCatalogGateway,
     publicationGateway,
     alertsGateway: new InMemoryAlertsGateway(),

@@ -1,5 +1,5 @@
 import { Outlet } from "react-router"
-import { Inbox } from "@boilerplate/shared-ui/components/icon"
+import { CalendarClock, Inbox } from "@boilerplate/shared-ui/components/icon"
 import { Sidebar, SidebarContent, SidebarHeader, SidebarInset, SidebarProvider, SidebarRail, SidebarTrigger } from "@boilerplate/shared-ui/components"
 import { ModuleSwitcher } from "@/modules/shared/ui/components/sidebar/module-switcher"
 import { NavMain } from "@/modules/shared/ui/components/sidebar/nav-main"
@@ -7,6 +7,7 @@ import { NavUser } from "@/modules/shared/ui/components/sidebar/nav-user"
 
 const navigation = [
   { title: "File des demandes", icon: Inbox, url: "/demandes" },
+  { title: "Rendez-vous", icon: CalendarClock, url: "/demandes/rendez-vous" },
 ]
 
 export function RequestsLayout() {

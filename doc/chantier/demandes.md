@@ -71,8 +71,8 @@ Statuts : ⬜ à faire · 🟡 en cours · ⚠️ partiel · ✅ livré · ⏸�
 |---|---|---|---|---|---|---|
 | F37 | 3 | 900 | Protéger les comptes contre les tentatives de connexion inhabituelles, de façon perceptible sans gêner l’usage normal | L8 | IAM, site, admin | 🟡 livré ([règles](../../api/src/IAM/doc/comptes-et-sessions.md#protection-contre-les-tentatives-de-connexion-f37), [journal](../../front/apps/admin/doc/securite.md)), non vérifié dans un navigateur |
 | F38 | 2 | 600 | Savoir qu’un service est interrompu (maintenance, incident) avant de commencer une démarche, quand revenir ou quoi faire | L9 | Administration, site | 🟡 état du service (disponible, maintenance, incident), message, retour prévu et alternative sur la carte et la fiche ; non vérifié dans un navigateur |
-| F39 | 2 | 600 | Prendre rendez-vous avec un agent : créneau sans ambiguïté, informations pour préparer le rendez-vous | L10 | Citizen, admin, site | ⬜ |
-| F40 | 1 | 300 | Recevoir un rappel avant son rendez-vous | L10 | Citizen, Communication, site | ⬜ |
+| F39 | 2 | 600 | Prendre rendez-vous avec un agent : créneau sans ambiguïté, informations pour préparer le rendez-vous | L10 | Citizen, admin, site | 🟡 |
+| F40 | 1 | 300 | Recevoir un rappel avant son rendez-vous | L10 | Citizen, Communication, site | 🟡 |
 
 ## Vague 6 (H+7) — « Inclusion et structuration »
 

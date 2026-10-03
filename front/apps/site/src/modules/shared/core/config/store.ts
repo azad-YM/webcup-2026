@@ -4,6 +4,7 @@ import { authApi } from "@/modules/auth/core/application/rtk-api/auth"
 import { citizenApi } from "@/modules/citizen/core/application/rtk-api/citizen"
 import { serviceRequestsApi } from "@/modules/citizen/core/application/rtk-api/service-requests"
 import { notificationsApi } from "@/modules/citizen/core/application/rtk-api/notifications"
+import { appointmentsApi } from "@/modules/citizen/core/application/rtk-api/appointments"
 import { publicApi } from "@/modules/public/core/application/rtk-api/public"
 import type { Dependencies } from "./dependencies"
 
@@ -15,7 +16,8 @@ export const createStore = (dependencies: Dependencies) =>
       [citizenApi.reducerPath]: citizenApi.reducer,
       [serviceRequestsApi.reducerPath]: serviceRequestsApi.reducer,
       [publicApi.reducerPath]: publicApi.reducer,
-      [notificationsApi.reducerPath]: notificationsApi.reducer
+      [notificationsApi.reducerPath]: notificationsApi.reducer,
+      [appointmentsApi.reducerPath]: appointmentsApi.reducer
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({ thunk: { extraArgument: dependencies } }).concat(
@@ -24,7 +26,8 @@ export const createStore = (dependencies: Dependencies) =>
         citizenApi.middleware,
         serviceRequestsApi.middleware,
         publicApi.middleware,
-        notificationsApi.middleware
+        notificationsApi.middleware,
+        appointmentsApi.middleware
       ),
     devTools: false
   })
@@ -39,4 +42,5 @@ export const resetAccountCaches = (store: AppStore) => {
   store.dispatch(citizenApi.util.resetApiState())
   store.dispatch(serviceRequestsApi.util.resetApiState())
   store.dispatch(notificationsApi.util.resetApiState())
+  store.dispatch(appointmentsApi.util.resetApiState())
 }

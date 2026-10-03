@@ -29,6 +29,10 @@ Tant que la file est affichée, l’admin écoute `request.submitted` et `reques
 
 Module `requests` : `core/domain/service-request.ts`, `core/application/{rtk-api/requests.ts, usecases/request-queue.usecase.ts, ports/gateway/request-queue.gateway.ts, ports/provider/request-session.provider.ts, errors/requests.error.ts}`, `core/infrastructure/for-production/gateway/http/request-queue.http.gateway.ts`, `ui/{layouts/requests.layout.tsx, pages/request-queue.tsx, sections/request-detail.tsx}`. Session fournie par `auth/core/infrastructure/adapter/requests/AuthRequestSessionProvider`. Composition : `shared/core/config/{kernel,dependencies,store}.ts`, route `/demandes` dans `app/routes.tsx`.
 
+## Guichet des rendez-vous (L10)
+
+`/demandes/rendez-vous` (entrée « Rendez-vous » du module) : choix du jour (aujourd’hui par défaut, dans le fuseau de la ville), tableau des créneaux (heure, service, lieu, citoyen et référence `RDV-…` s’il est réservé, sinon « Libre »), badge « N réservé(s) ». Avec `admin.request.write` : formulaire « Ouvrir des créneaux » (service du catalogue, premier créneau, durée, nombre, lieu, pièces à apporter) et bouton « Retirer » sur un créneau libre (`409` si un habitant vient de le réserver). Temps réel : `appointment.changed` sur `administration.requests` ; polling de 60 s. API : [Citizen — rendez-vous](../../../../api/src/Citizen/doc/rendez-vous.md). Code : `requests/core/{domain/agent-desk.ts, application/ports/gateway/agent-desk.gateway.ts, application/rtk-api/agent-desk.ts, infrastructure/for-production/gateway/http/agent-desk.http.gateway.ts}`, `requests/ui/pages/appointments.tsx`.
+
 ## Limites
 
 - Aucun test automatisé ; parcours non vérifié dans un navigateur.
@@ -47,4 +51,5 @@ Module `requests` : `core/domain/service-request.ts`, `core/application/{rtk-api
 - [Site — parcours citoyen](../../site/doc/parcours-citoyen.md)
 - [Chantier](../../../../doc/chantier/README.md)
 - [Registre des demandes](../../../../doc/chantier/demandes.md)
+- [Citizen — rendez-vous](../../../../api/src/Citizen/doc/rendez-vous.md)
 <!-- backlinks:end -->
