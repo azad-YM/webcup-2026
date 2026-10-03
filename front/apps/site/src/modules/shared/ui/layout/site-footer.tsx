@@ -20,6 +20,7 @@ export function SiteFooter() {
             ))}
             <li><Link href="/espace" className="hover:text-white hover:underline">Mon espace citoyen</Link></li>
             <li><Link href="/aide/glossaire" className="hover:text-white hover:underline">Glossaire : les mots du site expliqués</Link></li>
+            <li><Link href="/vos-donnees" className="hover:text-white hover:underline">Vos données</Link></li>
           </ul>
         </nav>
         <div>

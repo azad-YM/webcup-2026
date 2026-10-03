@@ -7,6 +7,7 @@ import type { MemberGateway } from "@/modules/admin/core/application/ports/gatew
 import type { WebcupFeedGateway } from "@/modules/pilotage/core/application/ports/gateway/webcup-feed.gateway"
 import type { SeenRequestsGateway } from "@/modules/pilotage/core/application/ports/gateway/seen-requests.gateway"
 import type { RequestQueueGateway } from "@/modules/requests/core/application/ports/gateway/request-queue.gateway"
+import type { AgentDeskGateway } from "@/modules/requests/core/application/ports/gateway/agent-desk.gateway"
 import type { RealtimeSubscriber } from "@/modules/shared/core/ports/realtime-subscriber"
 
 import type { CitizenAccountsGateway } from "@/modules/citizen-accounts/core/application/ports/gateway/citizen-accounts.gateway"
@@ -27,6 +28,7 @@ export type Dependencies = {
   webcupFeedGateway: WebcupFeedGateway
   seenRequestsGateway: SeenRequestsGateway
   requestQueueGateway: RequestQueueGateway
+  agentDeskGateway: AgentDeskGateway
   /** One SSE stream per tab, shared by the screens (ADR 004). */
   realtime: RealtimeSubscriber
   contentGateway: ContentGateway

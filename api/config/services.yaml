@@ -243,3 +243,6 @@ services:
     # Citizen consomme Administration (liste fermée des quartiers du profil).
     Citizen\Application\Ports\Provider\DistrictDirectory:
         alias: Administration\Infrastructure\Adapter\Citizen\AdminCitizenDistrictDirectory
+    # Citizen consomme Administration (catalogue des services pour les rendez-vous, L10).
+    Citizen\Application\Ports\Provider\MunicipalServiceDirectory:
+        alias: Administration\Infrastructure\Adapter\Citizen\AdminCitizenServiceDirectory

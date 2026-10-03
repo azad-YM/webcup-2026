@@ -21,10 +21,16 @@ import { CitizenHttpGateway } from "@/modules/citizen/core/infrastructure/for-pr
 import { CitizenAccountRegistrationAdapter } from "@/modules/citizen/core/infrastructure/adapter/auth/citizen-account-registration.adapter"
 import { ServiceRequestHttpGateway } from "@/modules/citizen/core/infrastructure/for-production/gateway/http/service-request.http.gateway"
 import { REQUEST_EVENTS } from "@/modules/citizen/core/application/rtk-api/service-requests"
+import { NotificationHttpGateway } from "@/modules/citizen/core/infrastructure/for-production/gateway/http/notification.http.gateway"
+import { NOTIFICATION_EVENTS } from "@/modules/citizen/core/application/rtk-api/notifications"
+import { AppointmentHttpGateway } from "@/modules/citizen/core/infrastructure/for-production/gateway/http/appointment.http.gateway"
+import { APPOINTMENT_EVENTS } from "@/modules/citizen/core/application/rtk-api/appointments"
+import { ParticipationHttpGateway } from "@/modules/citizen/core/infrastructure/for-production/gateway/http/participation.http.gateway"
 import { SseRealtimeSubscriber } from "../core/infrastructure/realtime/sse-realtime.subscriber"
 import { HttpPublicContentGateway } from "@/modules/public/core/infrastructure/for-production/gateway/http/public-content.http.gateway"
 import { AlertsHttpGateway } from "@/modules/public/core/infrastructure/for-production/gateway/http/alerts.http.gateway"
-import { SseCityFeedGateway } from "@/modules/public/core/infrastructure/for-production/gateway/realtime/city-feed.sse.gateway"
+import { CITY_FEED_EVENTS } from "@/modules/public/core/application/ports/gateway/city-feed.gateway"
+import { RealtimeCityFeedAdapter } from "../core/infrastructure/adapter/public/realtime-city-feed.adapter"
 import { AuthPublicSessionAdapter } from "@/modules/auth/core/infrastructure/adapter/public/auth-public-session.adapter"
 
 type Session = {
@@ -42,20 +48,30 @@ function createDependencies(): Dependencies {
   const citizenGateway = new CitizenHttpGateway(siteEnv.apiBaseUrl)
   const publicSession = new AuthPublicSessionAdapter(authSessionGateway)
   const publicContent = new HttpPublicContentGateway(siteEnv.apiBaseUrl)
+  // Un seul flux SSE par onglet (ADR 004) : il écoute l'union des événements des modules et sert
+  // `citizen` (demandes, notifications) comme `public` (alertes, publications, via `CityFeedGateway`).
+  const realtime = new SseRealtimeSubscriber(siteEnv.apiBaseUrl, () => authSessionGateway.getToken(), [
+    ...REQUEST_EVENTS,
+    ...NOTIFICATION_EVENTS,
+    ...APPOINTMENT_EVENTS,
+    ...CITY_FEED_EVENTS
+  ])
   return {
-    // Un seul flux SSE par onglet ; la liste réunit les événements écoutés par les écrans du site.
-    realtime: new SseRealtimeSubscriber(siteEnv.apiBaseUrl, () => authSessionGateway.getToken(), [...REQUEST_EVENTS]),
+    realtime,
     authGateway: new AuthHttpGateway(siteEnv.apiBaseUrl),
     authSessionGateway,
     accountRegistrationGateway: new CitizenAccountRegistrationAdapter(citizenGateway),
     citizenGateway,
     citizenSessionProvider: new AuthCitizenSessionAdapter(authSessionGateway),
     serviceRequestGateway: new ServiceRequestHttpGateway(siteEnv.apiBaseUrl),
+    notificationGateway: new NotificationHttpGateway(siteEnv.apiBaseUrl),
+    appointmentGateway: new AppointmentHttpGateway(siteEnv.apiBaseUrl),
+    participationGateway: new ParticipationHttpGateway(siteEnv.apiBaseUrl),
     // Contenus publiés par les BC propriétaires (Administration, Communication) et flux temps réel.
     serviceCatalogGateway: publicContent,
     publicationGateway: publicContent,
     alertsGateway: new AlertsHttpGateway(siteEnv.apiBaseUrl, publicSession),
-    cityFeedGateway: new SseCityFeedGateway(siteEnv.apiBaseUrl, publicSession)
+    cityFeedGateway: new RealtimeCityFeedAdapter(realtime)
   }
 }
 
@@ -64,7 +80,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     const dependencies = createDependencies()
     return {
       authSessionGateway: dependencies.authSessionGateway,
-      cityFeedGateway: dependencies.cityFeedGateway,
+      realtime: dependencies.realtime,
       store: createStore(dependencies)
     }
   })
@@ -92,19 +108,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     } finally {
       setSession({ ready: true, hasToken: false, storageError: false })
       resetAccountCaches(runtime.store)
-      runtime.cityFeedGateway.restart()
+      runtime.realtime.restart()
     }
   }, [runtime])
-  // Connexion ou déconnexion : le flux temps réel rouvre avec (ou sans) les topics privés du citoyen.
+  // Connexion ou déconnexion : l'unique flux temps réel rouvre avec (ou sans) les topics privés du citoyen.
   useEffect(() => {
-    if (session.ready) runtime.cityFeedGateway.restart()
+    if (session.ready) runtime.realtime.restart()
   }, [session.ready, session.hasToken, runtime])
   useEffect(() => {
     refresh()
     const onStorage = (event: StorageEvent) => {
       if (event.key === SESSION_KEY || event.key === null) {
         resetAccountCaches(runtime.store)
-        runtime.cityFeedGateway.restart()
+        runtime.realtime.restart()
         refresh()
       }
     }

@@ -71,8 +71,8 @@ Statuts : ⬜ à faire · 🟡 en cours · ⚠️ partiel · ✅ livré · ⏸�
 |---|---|---|---|---|---|---|
 | F37 | 3 | 900 | Protéger les comptes contre les tentatives de connexion inhabituelles, de façon perceptible sans gêner l’usage normal | L8 | IAM, site, admin | 🟡 livré ([règles](../../api/src/IAM/doc/comptes-et-sessions.md#protection-contre-les-tentatives-de-connexion-f37), [journal](../../front/apps/admin/doc/securite.md)), non vérifié dans un navigateur |
 | F38 | 2 | 600 | Savoir qu’un service est interrompu (maintenance, incident) avant de commencer une démarche, quand revenir ou quoi faire | L9 | Administration, site | 🟡 état du service (disponible, maintenance, incident), message, retour prévu et alternative sur la carte et la fiche ; non vérifié dans un navigateur |
-| F39 | 2 | 600 | Prendre rendez-vous avec un agent : créneau sans ambiguïté, informations pour préparer le rendez-vous | L10 | Citizen, admin, site | ⬜ |
-| F40 | 1 | 300 | Recevoir un rappel avant son rendez-vous | L10 | Citizen, Communication, site | ⬜ |
+| F39 | 2 | 600 | Prendre rendez-vous avec un agent : créneau sans ambiguïté, informations pour préparer le rendez-vous | L10 | Citizen, admin, site | 🟡 |
+| F40 | 1 | 300 | Recevoir un rappel avant son rendez-vous | L10 | Citizen, Communication, site | 🟡 |
 
 ## Vague 6 (H+7) — « Inclusion et structuration »
 
@@ -98,10 +98,10 @@ Statuts : ⬜ à faire · 🟡 en cours · ⚠️ partiel · ✅ livré · ⏸�
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
-| F49 | 1 | 330 | Être informé quand sa demande change d’état | L2 | Citizen, site | ⬜ |
+| F49 | 1 | 330 | Être informé quand sa demande change d’état | L2 | Citizen, site | 🟡 |
 | F50 | 3 | 990 | Tableau de bord simplifié de l’activité de la plateforme pour les agents | L13 | Pilotage, admin | 🟡 `/pilotage/tableau-de-bord` sur `GET /api/pilotage/activity` (chiffres des BC propriétaires par ports, relecture 60 s) ; non testé, non vérifié dans un navigateur |
-| F51 | 3 | 990 | Comprendre l’usage de ses données et faire remonter ses inquiétudes, avec trace de prise en compte | L14 | Citizen, site, admin | ⬜ |
-| F52 | 2 | 660 | Soutenir une demande déjà déposée par d’autres habitants | L14 | Citizen, site | ⬜ |
+| F51 | 3 | 990 | Comprendre l’usage de ses données et faire remonter ses inquiétudes, avec trace de prise en compte | L14 | Citizen, site, admin | 🟡 |
+| F52 | 2 | 660 | Soutenir une demande déjà déposée par d’autres habitants | L14 | Citizen, site | 🟡 |
 
 ## Vagues suivantes
 

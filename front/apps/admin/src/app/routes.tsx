@@ -16,6 +16,8 @@ import { WebcupFeedPage } from "@/modules/pilotage/ui/pages/webcup-feed"
 import { ActivityDashboardPage } from "@/modules/pilotage/ui/pages/activity-dashboard"
 import { RequestsLayout } from "@/modules/requests/ui/layouts/requests.layout"
 import { RequestQueuePage } from "@/modules/requests/ui/pages/request-queue"
+import { AppointmentsPage } from "@/modules/requests/ui/pages/appointments"
+import { ConcernsPage } from "@/modules/requests/ui/pages/concerns"
 import { ContentLayout } from "@/modules/content/ui/layouts/content.layout"
 import { PublicationsPage } from "@/modules/content/ui/pages/publications"
 import { AlertsPage } from "@/modules/content/ui/pages/alerts"
@@ -87,6 +89,8 @@ export const router = createBrowserRouter([
         element: <RequestsLayout />,
         children: [
           { index: true, element: <RequestQueuePage /> },
+          { path: "rendez-vous", element: <AppointmentsPage /> },
+          { path: "inquietudes", element: <ConcernsPage /> },
         ],
       },
     ],

@@ -8,6 +8,7 @@ const PUBLIC_PAGES: { path: string; priority: number }[] = [
   { path: "/services/", priority: 0.8 },
   { path: "/actualites/", priority: 0.8 },
   { path: "/aide/glossaire/", priority: 0.4 },
+  { path: "/vos-donnees/", priority: 0.4 },
   { path: "/inscription/", priority: 0.5 },
   { path: "/connexion/", priority: 0.3 },
 ]

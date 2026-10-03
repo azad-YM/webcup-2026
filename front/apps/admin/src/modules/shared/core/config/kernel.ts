@@ -21,6 +21,8 @@ import { PortalLoginHttpGateway } from "@/modules/auth/core/infrastructure/for-p
 import { AuthRequestSessionProvider } from "@/modules/auth/core/infrastructure/adapter/requests/auth-request-session.provider"
 import { RequestQueueHttpGateway } from "@/modules/requests/core/infrastructure/for-production/gateway/http/request-queue.http.gateway"
 import { REQUEST_EVENTS } from "@/modules/requests/core/application/rtk-api/requests"
+import { AgentDeskHttpGateway } from "@/modules/requests/core/infrastructure/for-production/gateway/http/agent-desk.http.gateway"
+import { DESK_EVENTS } from "@/modules/requests/core/application/rtk-api/agent-desk"
 import { SseRealtimeSubscriber } from "../infrastructure/sse-realtime.subscriber"
 import type { Dependencies } from "./dependencies"
 import { createStore, type AppStore } from "./store"
@@ -58,8 +60,9 @@ export class App {
       activityDashboardGateway: new ActivityDashboardHttpGateway(apiBaseUrl, pilotageSession),
       seenRequestsGateway: new SeenRequestsLocalStorageGateway(),
       requestQueueGateway: new RequestQueueHttpGateway(apiBaseUrl, requestSession),
+      agentDeskGateway: new AgentDeskHttpGateway(apiBaseUrl, requestSession),
       // One stream per tab; the list gathers the events listened to by the admin screens.
-      realtime: new SseRealtimeSubscriber(apiBaseUrl, () => authSessionGateway.getToken(), [...REQUEST_EVENTS]),
+      realtime: new SseRealtimeSubscriber(apiBaseUrl, () => authSessionGateway.getToken(), [...REQUEST_EVENTS, ...DESK_EVENTS]),
       contentGateway: new ContentHttpGateway(apiBaseUrl, contentSession),
       auditJournalGateway: new AuditJournalHttpGateway(apiBaseUrl, new AuthAuditSessionProvider(authSessionGateway, onSessionInvalidated)),
     }

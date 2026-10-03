@@ -19,7 +19,7 @@ export function createTestContext(overrides: Partial<Dependencies> = {}) {
   const serviceCatalogGateway = new InMemoryServiceCatalogGateway()
   const publicationGateway = new InMemoryPublicationGateway()
   const dependencies: Dependencies = {
-    realtime: { subscribe: () => () => undefined },
+    realtime: { subscribe: () => () => undefined, restart: () => undefined },
     authGateway,
     authSessionGateway,
     accountRegistrationGateway: new CitizenAccountRegistrationAdapter(citizenGateway),
@@ -29,6 +29,19 @@ export function createTestContext(overrides: Partial<Dependencies> = {}) {
       listMine: async () => [],
       getMine: async () => { throw new Error("Not configured") },
       submit: async () => { throw new Error("Not configured") }
+    },
+    notificationGateway: { list: async () => ({ items: [], unreadCount: 0 }), markRead: async () => undefined },
+    appointmentGateway: {
+      offer: async () => ({ services: [], slots: [], timezone: "Indian/Reunion", timezoneLabel: "heure de La Réunion (UTC+4)" }),
+      listMine: async () => [],
+      book: async () => { throw new Error("Not configured") },
+      change: async () => { throw new Error("Not configured") }
+    },
+    participationGateway: {
+      listPublicRequests: async () => [],
+      support: async () => { throw new Error("Not configured") },
+      listConcerns: async () => [],
+      raiseConcern: async () => { throw new Error("Not configured") }
     },
     serviceCatalogGateway,
     publicationGateway,

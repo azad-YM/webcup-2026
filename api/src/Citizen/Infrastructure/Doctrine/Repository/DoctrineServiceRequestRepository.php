@@ -48,6 +48,16 @@ final readonly class DoctrineServiceRequestRepository implements ServiceRequestR
         return $this->manager->getRepository(ServiceRequest::class)->count($this->criteria($status));
     }
 
+    public function findPublic(int $limit): array
+    {
+        return array_values($this->manager->createQueryBuilder()
+            ->select('r')->from(ServiceRequest::class, 'r')
+            ->where('r.isPublic = true')->andWhere('r.status NOT IN (:closed)')
+            ->setParameter('closed', [ServiceRequest::RESOLVED, ServiceRequest::REJECTED])
+            ->orderBy('r.createdAt', 'DESC')->setMaxResults($limit)
+            ->getQuery()->getResult());
+    }
+
     /** @return array<string, string> */
     private function criteria(?string $status): array
     {

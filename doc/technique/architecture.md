@@ -81,6 +81,7 @@ Temps réel : Citizen projette ses événements de domaine de demande (`PublishS
 | `Communication` — `DistrictDirectory` | `Administration/Infrastructure/Adapter/Communication/AdminCommunicationDistrictDirectory` |
 | `Communication` — `AudienceProvider` | `Citizen/Infrastructure/Adapter/Communication/CitizenAudienceProvider` |
 | `Citizen` — `DistrictDirectory` | `Administration/Infrastructure/Adapter/Citizen/AdminCitizenDistrictDirectory` |
+| `Citizen` — `MunicipalServiceDirectory` (rendez-vous, L10) | `Administration/Infrastructure/Adapter/Citizen/AdminCitizenServiceDirectory` |
 | `Shared` — `RealtimeAudienceProvider` (topics des alertes ciblées) | `Citizen/Infrastructure/Adapter/Shared/CitizenAlertRealtimeAudience` |
 
 Pilotage lit aussi l’API externe du concours par son port `WebcupFeedGateway`, implémenté dans sa propre infrastructure (`Infrastructure/Http/WebcupHttpFeedGateway`, cache de 20 s) ; voir [Pilotage](../../api/src/Pilotage/doc/README.md).

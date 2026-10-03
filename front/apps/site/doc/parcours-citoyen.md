@@ -56,6 +56,28 @@ Règles et contrat : [Citizen — demandes](../../../../api/src/Citizen/doc/READ
 
 Code : module `citizen` (`ui/pages/service-requests.tsx`, `ui/pages/new-service-request.tsx`, `ui/components/request-status.tsx`, `core/application/rtk-api/service-requests.ts`, `core/application/usecases/service-request.usecase.ts`, `core/infrastructure/for-production/gateway/http/service-request.http.gateway.ts`) et `shared` (`core/application/ports/realtime-subscriber.ts`, `core/infrastructure/realtime/sse-realtime.subscriber.ts`). **Aucun test automatisé ; non vérifié dans un navigateur.**
 
+## Notifications de l’espace (F49)
+
+- `/espace` affiche « Mes notifications » (`citizen/ui/sections/notification-center.tsx`) : message clair (« Votre demande NT-2026-0042 est passée à « Prise en charge ». »), date, badge « Non lue », lien « Voir le détail », bouton « Tout marquer comme lu ». Une notification arrivée pendant que la page est ouverte est annoncée dans un bandeau « Nouveau : … » (`role="status"`).
+- Pastille du nombre de notifications de demandes non lues sur le raccourci « Mes demandes ». Ouvrir le détail d’une demande marque ses notifications comme lues.
+- Données : port `NotificationGateway` → `NotificationHttpGateway` (`GET /api/citizen/notifications`, `POST /api/citizen/notifications/read`), RTK `notificationsApi` ; contrat dans [Citizen — notifications](../../../../api/src/Citizen/doc/notifications.md).
+- Temps réel : `notification.created` et `request.status_changed` sur l’unique flux de l’onglet invalident le cache ; polling de secours de 60 s.
+
+## Rendez-vous (`/espace/rendez-vous`, F39, F40)
+
+- Raccourci « Mes rendez-vous » de `/espace` (pastille des rappels non lus). Page `citizen/ui/pages/appointments.tsx` : rendez-vous à venir, puis « Rendez-vous passés ou annulés » repliés ; `?id=` met en avant le rendez-vous d’un rappel.
+- « Prendre un rendez-vous » : 1. service (seuls ceux qui ont des créneaux libres, avec le prochain créneau) ; 2. créneau, groupé par jour, horaires affichés en « heure de La Réunion (UTC+4) » ; 3. récapitulatif à confirmer : service, date et heure avec le fuseau, durée et heure de fin, lieu, pièces à apporter. Après confirmation : encadré « Rendez-vous RDV-… confirmé » (focus, `role="status"`).
+- « Déplacer » (même service, nouveau créneau, confirmation) et « Annuler » (confirmation explicite). Créneau pris entre-temps : message clair et nouveau choix.
+- Rappels la veille et 2 h avant dans « Mes notifications » (temps réel). Données : port `AppointmentGateway` → `AppointmentHttpGateway`, RTK `appointmentsApi`, événement `appointment.changed` ; contrat dans [Citizen — rendez-vous](../../../../api/src/Citizen/doc/rendez-vous.md).
+
+## Participer (`/espace/participation`, F51, F52)
+
+- Raccourci « Participer » de `/espace` (pastille des réponses non lues). Page `citizen/ui/pages/participation.tsx`.
+- **Soutenir une demande d’habitants** (F52) : signalements publics (objet, lieu, état, date ; ni auteur ni message), compteur « N habitants soutiennent cette demande », bouton « Je soutiens », trace « Vous soutenez cette demande » et « Retirer mon soutien » ; « C’est votre signalement » pour les siens. Le formulaire de signalement propose la case facultative « Rendre ce signalement visible des autres habitants » ; le détail d’une de mes demandes publiques affiche son nombre de soutiens.
+- **Faire remonter une inquiétude** (F51) : thème, objet, message ; accusé de réception immédiat avec la référence `INQ-…` (focus) ; « Suivi de mes inquiétudes » avec chaque étape (reçue, prise en compte, réponse de la mairie) ; notification à chaque action d’un agent.
+- **Vos données** (`/vos-donnees`, public, lien dans le pied de page et la page Participer) : quelles données, pourquoi, combien de temps, qui y accède, vos droits (`public/ui/pages/your-data.tsx`).
+- Données : port `ParticipationGateway` → `ParticipationHttpGateway`, RTK `participationApi` ; contrat dans [Citizen — participation](../../../../api/src/Citizen/doc/participation.md).
+
 ## 5. Supprimer mon compte (`/espace/profil`, F33)
 
 Lot L8, 🟡 non vérifié dans un navigateur. Sous le formulaire du profil, la section « Supprimer mon compte » explique l’effet (profil et identifiants effacés, sessions fermées, historique des démarches conservé sans identité). « Demander la suppression » ouvre un formulaire : mot de passe actuel **et** case « Je comprends que cette suppression est définitive » obligatoires. `DELETE /api/citizen/me` `{password}` :
@@ -96,4 +118,7 @@ Code : modules `auth` (`ui/pages/registration.tsx`, `core/application/usecases/r
 - [Citizen](../../../../api/src/Citizen/doc/README.md)
 - [Admin — demandes citoyennes](../../admin/doc/demandes.md)
 - [Vitrine et alertes](vitrine-et-alertes.md)
+- [Citizen — notifications](../../../../api/src/Citizen/doc/notifications.md)
+- [Citizen — rendez-vous](../../../../api/src/Citizen/doc/rendez-vous.md)
+- [Citizen — participation](../../../../api/src/Citizen/doc/participation.md)
 <!-- backlinks:end -->

@@ -22,7 +22,7 @@ Ce que voit un habitant de Nova Terra, connecté ou non : les services de la vil
 
 ## Temps réel
 
-- Port `public/core/application/ports/gateway/city-feed.gateway.ts` (`CityFeedGateway`), implémenté par `SseCityFeedGateway` avec le client commun `@boilerplate/shared-utils/realtime` ([ADR 004](../../../../doc/technique/decisions/004-temps-reel.md)). Un seul flux `GET /api/realtime/stream` pour tout le module, ouvert au premier abonné.
+- Port `public/core/application/ports/gateway/city-feed.gateway.ts` (`CityFeedGateway`, liste `CITY_FEED_EVENTS`), implémenté par le socle : `shared/core/infrastructure/adapter/public/RealtimeCityFeedAdapter` s’abonne à l’**unique flux de l’onglet** (`SseRealtimeSubscriber`, client commun `@boilerplate/shared-utils/realtime`, [ADR 004](../../../../doc/technique/decisions/004-temps-reel.md)). Le même `GET /api/realtime/stream` sert aussi les demandes et les notifications de l’espace citoyen : aucun second `EventSource`.
 - Sans session : topics publics `public.alerts` et `public.publications`. Avec une session : ticket `POST /api/realtime/tickets` ; le serveur ajoute les topics privés (quartier, alertes sanitaires). Le flux est rouvert à la connexion et à la déconnexion.
 - À réception de `alert.published` ou `alert.withdrawn`, RTK Query invalide le bandeau et les notifications ; `publication.*` invalide les actualités, `publication.important` les notifications.
 - Filet de sécurité : `pollingInterval` de 60 s sur le bandeau, les notifications, les services et les actualités.

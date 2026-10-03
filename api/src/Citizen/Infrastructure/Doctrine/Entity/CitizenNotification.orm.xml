@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping">
+    <entity name="Citizen\Domain\Entity\CitizenNotification" table="citizen_notifications">
+        <indexes>
+            <index name="IDX_CITIZEN_NOTIFICATION_LIST" columns="citizen_id,created_at"/>
+        </indexes>
+        <unique-constraints>
+            <unique-constraint name="UNIQ_CITIZEN_NOTIFICATION_SOURCE" columns="citizen_id,source_key"/>
+        </unique-constraints>
+        <id name="id" type="string" length="36"/>
+        <field name="citizenId" column="citizen_id" type="string" length="36"/>
+        <field name="kind" type="string" length="40"/>
+        <field name="sourceKey" column="source_key" type="string" length="120"/>
+        <field name="title" type="string" length="160"/>
+        <field name="message" type="string" length="1000"/>
+        <field name="link" type="string" length="255" nullable="true"/>
+        <field name="createdAt" column="created_at" type="datetime_immutable"/>
+        <field name="readAt" column="read_at" type="datetime_immutable" nullable="true"/>
+    </entity>
+</doctrine-mapping>

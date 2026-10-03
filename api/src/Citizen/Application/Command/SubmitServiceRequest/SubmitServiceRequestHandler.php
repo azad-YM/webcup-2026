@@ -42,6 +42,7 @@ final readonly class SubmitServiceRequestHandler
             $cmd->location,
             $cmd->serviceId,
             $now,
+            $cmd->isPublic,
         );
         $this->requests->save($request);
 

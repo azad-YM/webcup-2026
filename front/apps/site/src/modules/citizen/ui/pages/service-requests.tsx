@@ -12,6 +12,20 @@ import { CitizenAccessState, useCitizenAccess } from "../components/citizen-acce
 import { RequestTimeline, StatusBadge } from "../components/request-status"
 import { REQUESTS_POLLING_MS, useGetMyRequestQuery, useListMyRequestsQuery } from "../../core/application/rtk-api/service-requests"
 import { formatDateTime, REQUEST_TYPE_LABELS, type ServiceRequest } from "../../core/domain/service-request"
+import { useListMyNotificationsQuery, useMarkNotificationsReadMutation } from "../../core/application/rtk-api/notifications"
+
+/** Ouvrir le détail d'une demande marque comme lues ses notifications (F49). */
+function useReadRequestNotifications(reference: string, loaded: boolean) {
+  const inbox = useListMyNotificationsQuery(undefined, { skip: !loaded })
+  const [markRead] = useMarkNotificationsReadMutation()
+  const ids = (inbox.data?.items ?? [])
+    .filter((item) => !item.readAt && item.link === `/espace/demandes?ref=${encodeURIComponent(reference)}`)
+    .map((item) => item.id)
+  const key = ids.join(",")
+  useEffect(() => {
+    if (key) void markRead(key.split(","))
+  }, [key, markRead])
+}
 
 const requestHref = (reference: string) => `/espace/demandes?ref=${encodeURIComponent(reference)}` as Route
 
@@ -112,6 +126,7 @@ function RequestDetail({ reference }: { reference: string }) {
   useLogoutOnUnauthorized(query.error)
   const failure = toQueryError(query.error)
   const request = query.data
+  useReadRequestNotifications(reference, Boolean(request))
   return (
     <div className="space-y-6">
       <Link href="/espace/demandes" className="inline-flex items-center gap-2 font-medium text-teal-800 underline underline-offset-4">
@@ -131,6 +146,11 @@ function RequestDetail({ reference }: { reference: string }) {
             <div className="mt-3"><StatusBadge status={request.status} /></div>
             {request.location && (
               <p className="mt-5 flex items-start gap-2 text-slate-800"><MapPin className="mt-0.5 size-5 shrink-0 text-teal-700" aria-hidden="true" /><span><span className="font-medium">Lieu : </span>{request.location}</span></p>
+            )}
+            {request.isPublic && (
+              <p className="mt-4 rounded-xl bg-teal-50 p-3 text-slate-900">
+                Signalement visible des autres habitants · <span className="font-semibold">{request.supportCount ?? 0} soutien{(request.supportCount ?? 0) > 1 ? "s" : ""}</span>
+              </p>
             )}
             <h3 className="mt-6 font-semibold text-slate-950">Votre message</h3>
             <p className="mt-2 whitespace-pre-wrap text-slate-800">{request.description}</p>
