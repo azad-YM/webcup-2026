@@ -4,8 +4,12 @@
     <id name="id" type="string" length="36"/>
     <field name="email" type="string" unique="true"/>
     <field name="password" type="string"/>
-    <field name="status" type="string" length="16"/>
-    <field name="sessionVersion" column="session_version" type="integer"/>
+    <field name="status" type="string" length="16">
+        <options><option name="default">active</option></options>
+    </field>
+    <field name="sessionVersion" column="session_version" type="integer">
+        <options><option name="default">0</option></options>
+    </field>
     <field name="name" type="string" nullable="true"/>
   </entity>
 </doctrine-mapping>
