@@ -5,6 +5,7 @@ import {
   type Action,
 } from "@reduxjs/toolkit"
 import { useDispatch } from "react-redux"
+import { citizenAccountsApi } from "@/modules/citizen-accounts/core/application/rtk-api/citizen-accounts"
 import { authApi } from "@/modules/auth/core/application/rtk-api/auth"
 import { accessManagementApi } from "@/modules/admin/core/application/rtk-api/access-management"
 import { pilotageApi } from "@/modules/pilotage/core/application/rtk-api/pilotage"
@@ -18,6 +19,7 @@ export type AppDispatch = AppStore["dispatch"]
 export type AppGetState = AppStore["getState"]
 
 const reducers = combineReducers({
+  [citizenAccountsApi.reducerPath]: citizenAccountsApi.reducer,
   [authApi.reducerPath]: authApi.reducer,
   [accessManagementApi.reducerPath]: accessManagementApi.reducer,
   [pilotageApi.reducerPath]: pilotageApi.reducer,
@@ -46,6 +48,7 @@ export const createStore = (config: {
 
       middleware.unshift(listener.middleware)
       middleware.push(
+        citizenAccountsApi.middleware,
         authApi.middleware,
         accessManagementApi.middleware,
         pilotageApi.middleware,

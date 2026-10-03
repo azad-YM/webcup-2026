@@ -17,6 +17,7 @@ class PasswordAuthenticator extends AbstractAuthenticator
     public function __construct(
         private LoginWithCredentialsHandler $commandHandler,
         private JWTTokenManagerInterface $jwtManager,
+        private \IAM\Application\Ports\Service\LoginAttemptLimiter $limiter,
     ) {}
 
     public function supports(Request $request): ?bool
@@ -27,8 +28,10 @@ class PasswordAuthenticator extends AbstractAuthenticator
     public function authenticate(Request $request): SelfValidatingPassport
     {
         $data = json_decode($request->getContent(), true);
-        $email = $data['email'] ?? null;
-        $password = $data['password'] ?? null;
+        $email = is_array($data) && is_string($data['email'] ?? null) ? $data['email'] : null;
+        $password = is_array($data) && is_string($data['password'] ?? null) ? $data['password'] : null;
+        $retryAfter = $this->limiter->consume($email ?? '', $request->getClientIp() ?? 'unknown');
+        if ($retryAfter > 0) throw new LoginThrottledException($retryAfter);
 
         $user = ($this->commandHandler)($email, $password);
         return new SelfValidatingPassport(
@@ -49,6 +52,7 @@ class PasswordAuthenticator extends AbstractAuthenticator
         Request $request,
         AuthenticationException $exception,
     ): JsonResponse {
-        return new JsonResponse(['error' => $exception->getMessage()], 401);
+        if ($exception instanceof LoginThrottledException) return new JsonResponse(['error' => 'Trop de tentatives de connexion. Réessayez dans quelques minutes.', 'retryAfter' => $exception->retryAfter], 429, ['Retry-After' => (string) $exception->retryAfter]);
+        return new JsonResponse(['error' => 'Identifiants invalides.'], 401);
     }
 }

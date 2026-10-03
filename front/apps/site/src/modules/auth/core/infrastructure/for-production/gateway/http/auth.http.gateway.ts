@@ -9,6 +9,7 @@ export class AuthHttpGateway extends ApiClient implements AuthGateway {
       if (error instanceof ApiHttpError) {
         throw new AuthError(error.status, error.status === 401
           ? "Adresse e-mail, mot de passe incorrect ou session expirée."
+          : error.status === 429 ? "Trop de tentatives de connexion. Patientez 15 minutes avant de réessayer."
           : error.status === 403 ? "Vous n’avez pas accès à cet espace." : "Le service est indisponible. Réessayez.")
       }
       throw new AuthError("NETWORK_ERROR", "Impossible de joindre le service. Réessayez.")

@@ -20,9 +20,9 @@ final class LoginWithCredentialsHandler
             throw new BadCredentialsException('Invalid credentials');
         }
 
-        $user = $this->repository->findByEmail($email);
+        $user = $this->repository->findByEmail(strtolower(trim($email)));
 
-        if ($user === null || !$this->passwordHasher->isPasswordValid($user, $password)) {
+        if ($user === null || !$user->isActive() || !$this->passwordHasher->isPasswordValid($user, $password)) {
             throw new BadCredentialsException('Invalid credentials');
         }
 

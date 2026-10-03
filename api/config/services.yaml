@@ -147,3 +147,15 @@ services:
     Shared\Application\Listener\ExceptionListener:
         tags:
             - { name: kernel.event_listener, event: kernel.exception, method: __invoke }
+
+    Citizen\Application\Ports\Provider\CitizenAccountManager:
+        alias: IAM\Infrastructure\Adapter\Citizen\IAMCitizenAccountManager
+    Citizen\Application\Ports\Provider\CitizenAccountAccessPolicy:
+        alias: Administration\Infrastructure\Adapter\Citizen\AdminCitizenAccountAccessPolicy
+    IAM\Application\Ports\Service\AccountSessionRevoker:
+        alias: IAM\Infrastructure\Security\DoctrineAccountSessionRevoker
+    IAM\Application\Ports\Service\LoginAttemptLimiter:
+        alias: IAM\Infrastructure\Security\DoctrineLoginAttemptLimiter
+    Citizen\Application\Command\DeleteMyCitizenAccount\DeleteMyCitizenAccountHandler:
+        arguments:
+            $dataErasers: !tagged_iterator citizen.account_data_eraser

@@ -3,11 +3,14 @@ import { withUseCase, type QueryError } from "@/modules/shared/core/lib/use-case
 import type { CitizenProfile, CitizenProfileDraft } from "../../domain/citizen-profile"
 import { activateMyCitizenAccount, getMyProfile, updateMyProfile } from "../usecases/my-profile.usecase"
 
+import { deleteMyAccount } from "../usecases/delete-my-account.usecase"
+
 export const citizenApi = createApi({
   reducerPath: "citizenApi",
   baseQuery: fakeBaseQuery<QueryError>(),
   tagTypes: ["MyProfile"],
   endpoints: (build) => ({
+    deleteMyAccount: build.mutation<{ deleted: boolean }, string>({ queryFn: withUseCase(deleteMyAccount) }),
     getMyProfile: build.query<CitizenProfile, void>({
       queryFn: withUseCase(getMyProfile),
       providesTags: ["MyProfile"]
@@ -32,4 +35,4 @@ export const citizenApi = createApi({
   })
 })
 
-export const { useGetMyProfileQuery, useUpdateMyProfileMutation, useActivateMyCitizenAccountMutation } = citizenApi
+export const { useDeleteMyAccountMutation, useGetMyProfileQuery, useUpdateMyProfileMutation, useActivateMyCitizenAccountMutation } = citizenApi

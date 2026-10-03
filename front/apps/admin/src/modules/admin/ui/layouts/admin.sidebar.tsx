@@ -5,6 +5,7 @@ import { NavMain } from "@/modules/shared/ui/components/sidebar/nav-main"
 import { adminEntities } from "@/modules/admin/ui/data/entities"
 
 const navigation = [
+  { title: "Comptes citoyens", icon: Settings, url: "/admin/citizens" },
   {
     title: "Tableau de bord",
     icon: LayoutDashboard,

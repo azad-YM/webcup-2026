@@ -7,7 +7,10 @@ import type { MemberGateway } from "@/modules/admin/core/application/ports/gatew
 import type { WebcupFeedGateway } from "@/modules/pilotage/core/application/ports/gateway/webcup-feed.gateway"
 import type { SeenRequestsGateway } from "@/modules/pilotage/core/application/ports/gateway/seen-requests.gateway"
 
+import type { CitizenAccountsGateway } from "@/modules/citizen-accounts/core/application/ports/gateway/citizen-accounts.gateway"
+
 export type Dependencies = {
+  citizenAccountsGateway: CitizenAccountsGateway
   portalLoginGateway: PortalLoginGateway
   authGateway: AuthGateway
   authSessionGateway: AuthSessionGateway
