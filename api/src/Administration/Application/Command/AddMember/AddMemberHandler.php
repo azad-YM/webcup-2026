@@ -10,6 +10,7 @@ use Administration\Application\Service\MemberRoleAssignmentPolicy;
 use Administration\Domain\Entity\Member;
 use Administration\Application\Ports\Repository\IRoleRepository;
 use Shared\Application\Ports\Service\IIdProvider;
+use Shared\Application\Ports\Service\AuditTrail;
 use Shared\Domain\Exception\NotFoundException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -22,6 +23,7 @@ final readonly class AddMemberHandler
         private MemberAccountProvisioner $accounts,
         private MemberRoleAssignmentPolicy $authorization,
         private IIdProvider $ids,
+        private ?AuditTrail $audit = null,
     ) {}
 
     public function __invoke(#[\SensitiveParameter] AddMemberCommand $cmd): array
@@ -45,6 +47,7 @@ final readonly class AddMemberHandler
         $userId = $this->accounts->create($cmd->email, trim($cmd->name), $cmd->password);
         $member = Member::create($this->ids->getId(), $userId, trim($cmd->name), array_values($cmd->roleIds));
         $this->members->save($member);
+        $this->audit?->record('administration.member.added', 'member', $member->id, sprintf('Membre « %s » ajouté avec le(s) rôle(s) %s.', trim($cmd->name), implode(', ', $cmd->roleIds)), ['userId' => $userId, 'roleIds' => array_values($cmd->roleIds)]);
 
         return ['id' => $member->id, 'userId' => $userId];
     }

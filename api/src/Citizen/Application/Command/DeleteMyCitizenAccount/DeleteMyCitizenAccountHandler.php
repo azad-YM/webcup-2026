@@ -8,6 +8,7 @@ use Citizen\Application\Ports\Provider\CitizenAccountManager;
 use Citizen\Application\Ports\Provider\CitizenAccountAccessPolicy;
 use Citizen\Application\Ports\Provider\CurrentAccountProvider;
 use Citizen\Application\Ports\Repository\CitizenRepository;
+use Shared\Application\Ports\Service\AuditTrail;
 use Shared\Domain\Exception\AccessDeniedException;
 use Shared\Domain\Exception\ConflitException;
 use Shared\Domain\Exception\NotFoundException;
@@ -16,7 +17,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler(bus: 'command.bus')]
 final readonly class DeleteMyCitizenAccountHandler
 {
-    public function __construct(private CitizenRepository $citizens, private CurrentAccountProvider $identity, private CitizenAccountManager $accounts, private CitizenAccountAccessPolicy $access, private iterable $dataErasers = []) {}
+    public function __construct(private CitizenRepository $citizens, private CurrentAccountProvider $identity, private CitizenAccountManager $accounts, private CitizenAccountAccessPolicy $access, private iterable $dataErasers = [], private ?AuditTrail $audit = null) {}
     public function __invoke(DeleteMyCitizenAccountCommand $cmd): array
     {
         $userId = $this->identity->userId();
@@ -29,6 +30,7 @@ final readonly class DeleteMyCitizenAccountHandler
         foreach ($this->dataErasers as $eraser) $eraser->erase($citizen->id);
         $citizen->deleteAccount();
         $this->citizens->save($citizen);
+        $this->audit?->record('citizen.account.deleted', 'citizen-account', $citizen->id, 'Compte citoyen supprimé par son titulaire.', ['userId' => $userId]);
         return ['deleted' => true];
     }
 }

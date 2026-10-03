@@ -8,6 +8,7 @@ use Citizen\Application\Ports\Provider\RequestAccessPolicy;
 use Citizen\Application\Ports\Repository\ServiceRequestRepository;
 use Citizen\Application\ViewModel\ServiceRequestView;
 use Shared\Application\Ports\Service\IClock;
+use Shared\Application\Ports\Service\AuditTrail;
 use Shared\Domain\Exception\AccessDeniedException;
 use Shared\Domain\Exception\ConflitException;
 use Shared\Domain\Exception\NotFoundException;
@@ -20,6 +21,7 @@ final readonly class ChangeRequestStatusHandler
         private RequestAccessPolicy $access,
         private ServiceRequestRepository $requests,
         private IClock $clock,
+        private ?AuditTrail $audit = null,
     ) {}
 
     public function __invoke(ChangeRequestStatusCommand $cmd): ServiceRequestView
@@ -34,6 +36,13 @@ final readonly class ChangeRequestStatusHandler
         }
         $request->changeStatus($cmd->status, $cmd->comment, $this->clock->now());
         $this->requests->save($request);
+        $this->audit?->record(
+            'citizen.request.status_changed',
+            'service-request',
+            $cmd->requestId,
+            sprintf('Demande %s : %s → %s.', $request->reference, $cmd->expectedStatus, $cmd->status),
+            ['reference' => $request->reference, 'from' => $cmd->expectedStatus, 'to' => $cmd->status],
+        );
 
         return ServiceRequestView::fromRequest($request);
     }

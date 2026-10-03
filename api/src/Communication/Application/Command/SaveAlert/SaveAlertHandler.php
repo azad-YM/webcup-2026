@@ -10,6 +10,7 @@ use Communication\Application\Ports\Repository\AlertRepository;
 use Communication\Domain\Entity\Alert;
 use Shared\Application\Ports\Service\IClock;
 use Shared\Application\Ports\Service\IIdProvider;
+use Shared\Application\Ports\Service\AuditTrail;
 use Shared\Domain\Exception\AccessDeniedException;
 use Shared\Domain\Exception\DomainException;
 use Shared\Domain\Exception\NotFoundException;
@@ -24,6 +25,7 @@ final readonly class SaveAlertHandler
         private DistrictDirectory $districts,
         private IClock $clock,
         private IIdProvider $ids,
+        private ?AuditTrail $audit = null,
     ) {}
 
     /** @return array<string, mixed> */
@@ -47,17 +49,33 @@ final readonly class SaveAlertHandler
         ];
         $now = $this->clock->now();
         if ($cmd->id === null || $cmd->id === '') {
+            $previousState = null;
             $alert = Alert::draft($this->ids->getId(), $content, $now);
             $alert->moveTo($cmd->state, $now);
         } else {
             $alert = $this->alerts->find($cmd->id) ?? throw new NotFoundException('Alerte introuvable.');
+            $previousState = $alert->managementView()['state'] ?? null;
             [$previousAudience, $previousDistrict] = [$alert->audience(), $alert->district()];
             $alert->revise($content, $now);
             $alert->moveTo($cmd->state, $now, $previousAudience, $previousDistrict);
         }
         $this->alerts->save($alert);
+        $view = $alert->managementView();
+        $labels = ['draft' => 'brouillon', 'published' => 'publiée', 'withdrawn' => 'retirée'];
+        $this->audit?->record(
+            match (true) {
+                $cmd->state === 'published' && $previousState !== 'published' => 'communication.alert.published',
+                $cmd->state === 'withdrawn' && $previousState !== 'withdrawn' => 'communication.alert.withdrawn',
+                $previousState === null => 'communication.alert.created',
+                default => 'communication.alert.updated',
+            },
+            'alert',
+            $alert->id,
+            sprintf('Alerte « %s » (%s) : %s.', $cmd->title, $cmd->severity, $labels[$cmd->state] ?? $cmd->state),
+            ['previousState' => $previousState, 'state' => $cmd->state, 'severity' => $cmd->severity, 'audience' => $cmd->audience, 'district' => $cmd->district],
+        );
 
-        return $alert->managementView();
+        return $view;
     }
 
     private static function date(string $value, string $label): \DateTimeImmutable

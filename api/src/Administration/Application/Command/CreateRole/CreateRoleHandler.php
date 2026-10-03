@@ -8,6 +8,7 @@ use Administration\Application\Ports\Repository\IPermissionRepository;
 use Administration\Domain\Entity\Role;
 use Administration\Domain\VO\Permission;
 use Shared\Application\Ports\Service\IIdProvider;
+use Shared\Application\Ports\Service\AuditTrail;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler(bus: 'command.bus')]
@@ -18,6 +19,7 @@ class CreateRoleHandler
         private readonly IIdProvider $idProvider,
         private readonly IPermissionRepository $permissionRepository,
         private readonly RoleCreationPolicy $authorization,
+        private readonly ?AuditTrail $audit = null,
     ) {}
 
     public function __invoke(CreateRoleCommand $cmd): void
@@ -44,6 +46,9 @@ class CreateRoleHandler
             }
         }
 
-        $this->repository->save(Role::create($this->idProvider->getId(), $name, $permissions));
+        $role = Role::create($this->idProvider->getId(), $name, $permissions);
+        $this->repository->save($role);
+        $keys = array_map(static fn (Permission $permission): string => $permission->key(), $permissions);
+        $this->audit?->record('administration.role.created', 'role', $role->id, sprintf('Rôle « %s » créé (%d permission(s)).', $name, count($keys)), ['name' => $name, 'permissions' => $keys]);
     }
 }
