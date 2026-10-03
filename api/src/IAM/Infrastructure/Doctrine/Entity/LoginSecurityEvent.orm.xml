@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping">
+  <entity name="IAM\Domain\Entity\LoginSecurityEvent" table="iam_login_security_events">
+    <id name="id" type="string" length="36"/>
+    <field name="occurredAt" column="occurred_at" type="datetime_immutable"/>
+    <field name="scope" type="string" length="16"/>
+    <field name="email" type="string" length="180" nullable="true"/>
+    <field name="ip" type="string" length="45"/>
+    <field name="failures" type="integer"/>
+    <field name="lockedSeconds" column="locked_seconds" type="integer"/>
+    <indexes><index name="IDX_LOGIN_SECURITY_OCCURRED" columns="occurred_at"/></indexes>
+  </entity>
+</doctrine-mapping>

@@ -21,7 +21,7 @@ final readonly class JwtPortalTokenIssuer implements PortalTokenIssuer
     public function issue(string $userId, string $email, string $destination, int $expiresAt): string
     {
         $user = $this->users->findByEmail($email);
-        if ($user === null || $user->getId() !== $userId) throw new AccessDeniedException('Account unavailable.');
+        if ($user === null || !$user->isActive() || $user->getId() !== $userId) throw new AccessDeniedException('Account unavailable.');
         return $this->jwt->createFromPayload($user, ['aud' => $destination, 'exp' => $expiresAt]);
     }
 }

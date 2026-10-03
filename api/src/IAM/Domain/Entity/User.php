@@ -8,6 +8,30 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
 
+    private string $status = 'active';
+    private int $sessionVersion = 0;
+
+    public function status(): string { return $this->status; }
+    public function sessionVersion(): int { return $this->sessionVersion; }
+    public function isActive(): bool { return $this->status === 'active'; }
+
+    public function setSuspended(bool $suspended): void
+    {
+        if ($this->status === 'deleted') throw new \DomainException('A deleted account cannot be restored.');
+        $status = $suspended ? 'suspended' : 'active';
+        if ($this->status !== $status) { $this->status = $status; ++$this->sessionVersion; }
+    }
+
+    public function deleteAccount(): void
+    {
+        if ($this->status === 'deleted') return;
+        $this->status = 'deleted';
+        ++$this->sessionVersion;
+        $this->email = $this->id.'@deleted.invalid';
+        $this->name = null;
+        $this->password = '!deleted';
+    }
+
     public function __construct(
         private string $id, 
         private string $email, 

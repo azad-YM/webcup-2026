@@ -11,10 +11,11 @@ Règles :
 - Le profil personnel est optionnel et modifiable plus tard ; aucune règle ne doit l’exiger pour utiliser la plateforme, sauf si une demande Webcup le justifie explicitement.
 - Les droits des agents passent par un port de Citizen implémenté dans `Administration/Infrastructure/Adapter/Citizen`. Ne jamais lire les tables d’IAM ou d’Administration.
 - Une demande ne référence un service que par son identifiant.
+- Compte et sécurité (L8) : suppression par anonymisation, suspension et liste des comptes pour les agents, règle du compte agent protégé — voir [compte et sécurité](doc/compte-et-securite.md). Les données citoyennes ajoutées plus tard s’effacent via un `AccountDataEraser` (tag `citizen.account_data_eraser`).
 - Un citoyen ne voit que ses propres données ; l’identité vient toujours du compte connecté, jamais du payload.
 - Le contrat HTTP de la doc est consommé par le site : toute évolution est faite dans la doc d’abord.
 - Une erreur contractuelle qui doit produire `409` étend `Shared\Domain\Exception\ConflitException` (une `\DomainException` est traduite en `422` par `AppController`).
 
-Câblage déclaré : autoload et autoload-dev (`Citizen\`, `Tests\Citizen\`), services (exclut `Tests`), alias des ports vers `IAM/Infrastructure/Adapter/Citizen`, routes, mapping Doctrine, règle `PUBLIC_ACCESS` de `POST /api/citizen/register` dans `security.yaml`, suite PHPUnit `Citizen`, migration `Version20261003001100`.
+Câblage déclaré : autoload et autoload-dev (`Citizen\`, `Tests\Citizen\`), services (exclut `Tests`), alias des ports vers `IAM/Infrastructure/Adapter/Citizen`, routes, mapping Doctrine, règle `PUBLIC_ACCESS` de `POST /api/citizen/register` dans `security.yaml`, suite PHPUnit `Citizen`, migrations `Version20261003001100` et `Version20261003008000` (statut, L8).
 
 Tests : `php bin/phpunit --testsuite Citizen`.

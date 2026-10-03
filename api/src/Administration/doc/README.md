@@ -40,6 +40,8 @@ Interface : la page [Membres](../../../../front/apps/admin/doc/membres.md) de l�
 | Administration consomme IAM | `Application/Ports/Provider/MemberAccountProvisioner` | `IAM/Infrastructure/Adapter/Administration/IAMMemberAccountProvisioner` |
 | IAM consomme Administration | `IAM\…\AccessibleSpacesProvider` | `Infrastructure/Adapter/IAM/AdminAccessibleSpacesProvider` |
 | Pilotage consomme Administration | `Pilotage\Application\Ports\Provider\PilotageAccessPolicy` | `Infrastructure/Adapter/Pilotage/AdminPilotageAccessPolicy` (`admin.pilotage.read`) |
+| Citizen consomme Administration (L8) | `Citizen\Application\Ports\Provider\CitizenAccountAccessPolicy` | `Infrastructure/Adapter/Citizen/AdminCitizenAccountAccessPolicy` (`admin.citizen.read`, `admin.citizen.write`) |
+| IAM consomme Administration (L8) | `IAM\Application\Ports\Provider\SecurityJournalAccessPolicy` | `Infrastructure/Adapter/IAM/AdminSecurityJournalAccessPolicy` (`admin.security.read`) |
 
 Les erreurs contractuelles `AccountAlreadyExists` et `AccountCreationRejected` appartiennent à Administration ; l’adaptateur IAM y traduit ses propres erreurs.
 

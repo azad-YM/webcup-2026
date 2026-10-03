@@ -1,3 +1,5 @@
+import { LoginSecurityPage } from "@/modules/security/ui/pages/login-security"
+import { CitizenAccountsPage } from "@/modules/citizen-accounts/ui/pages/citizen-accounts"
 import { getErrorMessage } from "@boilerplate/shared-utils/error.utils"
 import { createBrowserRouter, Navigate, Outlet } from "react-router"
 import { useGetProfileQuery } from "@/modules/auth/core/application/rtk-api/auth"
@@ -49,6 +51,8 @@ export const router = createBrowserRouter([
           { index: true, element: <AdminDashboardPage /> },
           { path: "role", element: <RolesPage /> },
           { path: "member", element: <MembersPage /> },
+          { path: "citizens", element: <CitizenAccountsPage /> },
+          { path: "security", element: <LoginSecurityPage /> },
         ],
       },
       {

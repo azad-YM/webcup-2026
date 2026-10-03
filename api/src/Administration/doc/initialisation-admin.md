@@ -24,7 +24,7 @@ Valeurs par défaut : `admin@example.com` / `password`, modifiables par `--email
 
 ## Effets et exception architecturale
 
-Dans une transaction Doctrine : le rôle `principal-administrator` (« Administrateur principal ») reçoit toutes les permissions du catalogue d’Administration ; le rôle de référence `municipal-agent` (« Agent municipal ») reçoit les permissions agent (`admin.pilotage.read` pour l’instant, voir les [rôles de référence](membres-et-habilitations.md#rôles-de-référence)) ; le compte IAM (`User`) est créé s’il n’existe pas ; un membre actif le rattache au rôle d’administrateur principal.
+Dans une transaction Doctrine : le rôle `principal-administrator` (« Administrateur principal ») reçoit toutes les permissions du catalogue d’Administration ; le rôle de référence `municipal-agent` (« Agent municipal ») reçoit les permissions agent (`admin.pilotage.read`, `admin.citizen.read`, `admin.citizen.write`, voir les [rôles de référence](membres-et-habilitations.md#rôles-de-référence)) ; le compte IAM (`User`) est créé s’il n’existe pas ; un membre actif le rattache au rôle d’administrateur principal.
 
 C’est l’unique exception de composition directe entre modules : le service d’Administration lit et persiste l’entité IAM `User` sans passer par un port, et ne publie pas `MemberCreated`. Le rôle agent n’utilise que des entités d’Administration : il n’étend pas cette exception. Les agents eux-mêmes sont ajoutés par le parcours ordinaire `POST /api/administration/members`. Les [règles ordinaires des membres](membres-et-habilitations.md) s’appliquent à tout autre parcours.
 

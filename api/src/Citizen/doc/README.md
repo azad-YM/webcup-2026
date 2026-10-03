@@ -45,6 +45,8 @@ Lot L1 (API), consommé par l’inscription et l’espace personnel du [site](..
 | `GetMyCitizenProfile` | `GET /api/citizen/me` | `Application/Query/GetMyCitizenProfile` |
 | `UpdateMyCitizenProfile` | `PUT /api/citizen/me` | `Application/Command/UpdateMyCitizenProfile` |
 | `ActivateMyCitizenAccount` | `POST /api/citizen/me/activate` | `Application/Command/ActivateMyCitizenAccount` |
+| `DeleteMyCitizenAccount` (L8) | `DELETE /api/citizen/me` | voir [compte et sécurité](compte-et-securite.md) |
+| `ListCitizenAccounts`, `SetCitizenSuspension` (L8, agents) | `GET /api/citizen/accounts`, `PUT /api/citizen/accounts/suspension` | voir [compte et sécurité](compte-et-securite.md) |
 
 Les routes respectent le [contrat HTTP](#contrat-http--inscription-et-profil-lot-l1) ci-dessous. Précisions de comportement :
 
@@ -172,6 +174,7 @@ Pas d’espace IAM « citoyen » : l’espace citoyen est une zone du site, qui 
 
 ## Référence
 
+- [Compte et sécurité — suppression, suspension, liste des comptes (L8)](compte-et-securite.md)
 - [Architecture technique](../../../../doc/technique/architecture.md) · [ADR 003 — Identité et habilitations](../../../../doc/technique/decisions/003-identite-et-habilitations.md)
 - [IAM — comptes et sessions](../../IAM/doc/comptes-et-sessions.md)
 

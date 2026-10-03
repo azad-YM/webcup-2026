@@ -27,7 +27,7 @@ Les lots regroupent les demandes qui partagent un même modèle ou un même écr
 | L4 | Accessibilité et repères : lecteur d’écran, contraste, taille du texte, fil d’Ariane, première connexion, indications contextuelles | F21, F23, F24, D15, D12, F35 | 2 400 | ⬜ |
 | L5 | Multilingue : interface, puis contenus | D14, F27 | 1 080 | ⬜ |
 | L6 | Pilotage : flux de l’API Webcup dans l’espace des agents — [Pilotage](../../api/src/Pilotage/doc/README.md), [page](../../front/apps/admin/doc/pilotage.md) | D19 | 750 | 🟡 livré, à vérifier avec la vraie clé |
-| L8 | Compte et sécurité : suppression de son compte, administration des comptes citoyens par les agents, protection contre les tentatives de connexion | F33, F34, F37 | 1 770 | ⬜ |
+| L8 | Compte et sécurité : suppression de son compte, administration des comptes citoyens par les agents, protection contre les tentatives de connexion — [Citizen](../../api/src/Citizen/doc/compte-et-securite.md), [IAM](../../api/src/IAM/doc/comptes-et-sessions.md#protection-contre-les-tentatives-de-connexion-f37), pages [comptes citoyens](../../front/apps/admin/doc/comptes-citoyens.md) et [sécurité](../../front/apps/admin/doc/securite.md) | F33, F34, F37 | 1 770 | 🟡 livré, non testé, à vérifier dans un navigateur |
 | L9 | Services pratiques : transports (horaires et infos), service interrompu ou en maintenance | F36, F38 | 1 180 | ⬜ |
 | L10 | Rendez-vous avec un agent et rappel | F39, F40 | 900 | ⬜ |
 

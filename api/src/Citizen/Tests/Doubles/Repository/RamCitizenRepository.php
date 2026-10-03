@@ -15,6 +15,8 @@ final class RamCitizenRepository implements CitizenRepository
     public array $events = [];
     public int $saves = 0;
 
+    public function findById(string $id): ?Citizen { foreach ($this->citizens as $citizen) if ($citizen->id === $id) return $citizen; return null; }
+    public function findAccounts(): array { return array_values(array_filter($this->citizens, fn(Citizen $c) => $c->status() !== 'deleted')); }
     public function save(Citizen $citizen): void
     {
         $this->citizens[$citizen->userId] = $citizen;

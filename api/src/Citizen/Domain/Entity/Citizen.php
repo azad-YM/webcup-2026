@@ -15,6 +15,20 @@ class Citizen
 {
     use AggregateRoot;
 
+    private string $status = 'active';
+
+    public function status(): string { return $this->status; }
+    public function setSuspended(bool $suspended): void
+    {
+        if ($this->status === 'deleted') throw new \DomainException('A deleted citizen cannot be restored.');
+        $this->status = $suspended ? 'suspended' : 'active';
+    }
+    public function deleteAccount(): void
+    {
+        $this->status = 'deleted';
+        $this->updateProfile(null, null, null, null, null, null);
+    }
+
     private ?string $firstName = null;
     private ?string $lastName = null;
     private ?string $phone = null;

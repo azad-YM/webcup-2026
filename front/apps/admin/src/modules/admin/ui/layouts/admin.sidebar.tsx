@@ -1,4 +1,4 @@
-import { LayoutDashboard, Settings } from "@boilerplate/shared-ui/components/icon"
+import { LayoutDashboard, Settings, ShieldAlert, Users } from "@boilerplate/shared-ui/components/icon"
 import { Sidebar, SidebarContent, SidebarHeader, SidebarRail } from "@boilerplate/shared-ui/components"
 import { ModuleSwitcher } from "@/modules/shared/ui/components/sidebar/module-switcher"
 import { NavMain } from "@/modules/shared/ui/components/sidebar/nav-main"
@@ -10,6 +10,8 @@ const navigation = [
     icon: LayoutDashboard,
     url: "/admin",
   },
+  { title: "Comptes citoyens", icon: Users, url: "/admin/citizens" },
+  { title: "Journal de sécurité", icon: ShieldAlert, url: "/admin/security" },
   {
     title: "Configuration",
     icon: Settings,

@@ -16,7 +16,7 @@ import {
 const NETWORK_MESSAGE = "Impossible de joindre le service. Vérifiez votre connexion puis réessayez."
 const UNAVAILABLE_MESSAGE = "Le service est momentanément indisponible. Réessayez dans quelques instants."
 
-type Operation = "register" | "profile"
+type Operation = "register" | "profile" | "delete"
 
 /** Retrouve le champ visé par une erreur 422 (`{ path, message }`). */
 function fieldFromPath(path: string | undefined): string | undefined {
@@ -48,7 +48,10 @@ export class CitizenHttpGateway extends ApiClient implements CitizenGateway {
         return new AppError(401, "Votre session a expiré. Veuillez vous reconnecter.")
       case 404:
         return new AppError(404, "Ce compte n’est pas un compte citoyen.", { code: CitizenErrorCode.notCitizen })
+      case 403:
+        return new AppError(403, "Mot de passe incorrect. La suppression a été refusée.")
       case 409:
+        if (operation === "delete") return new AppError(409, "Ce compte est aussi un compte d’agent actif. Contactez un administrateur avant de le supprimer.")
         return new AppError(409, "Un compte existe déjà avec cet e-mail.", { code: CitizenErrorCode.emailAlreadyUsed })
       case 422:
         if (operation === "register") {
@@ -66,6 +69,10 @@ export class CitizenHttpGateway extends ApiClient implements CitizenGateway {
       default:
         return new AppError(error.status, UNAVAILABLE_MESSAGE)
     }
+  }
+
+  deleteMyAccount(token: string, password: string): Promise<{ deleted: boolean }> {
+    return this.execute("delete", () => this.delete<{ deleted: boolean }>("/citizen/me", ApiClient.authHeaders(token), { password }))
   }
 
   register(payload: CitizenRegistration): Promise<{ citizenId: string }> {

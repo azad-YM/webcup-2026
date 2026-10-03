@@ -47,6 +47,11 @@ export class InMemoryCitizenGateway implements CitizenGateway {
     return { email, citizen }
   }
 
+  async deleteMyAccount(): Promise<{ deleted: boolean }> {
+    this.consumeFailure()
+    return { deleted: true }
+  }
+
   async register(payload: CitizenRegistration) {
     this.consumeFailure()
     this.registrations.push(payload)

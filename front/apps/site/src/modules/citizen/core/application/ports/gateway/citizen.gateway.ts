@@ -15,6 +15,7 @@ export const CitizenErrorCode = {
  * `NETWORK_ERROR`, message français affichable, `details.field` pour un 422.
  */
 export interface CitizenGateway {
+  deleteMyAccount(token: string, password: string): Promise<{ deleted: boolean }>
   register(payload: CitizenRegistration): Promise<{ citizenId: string }>
   getMyProfile(token: string): Promise<CitizenProfile>
   updateMyProfile(token: string, update: CitizenProfileUpdate): Promise<CitizenProfile>

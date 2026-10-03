@@ -14,6 +14,8 @@ L’accueil `/` est public. L’en-tête propose « Connexion » et « Créer un
 
 `/connexion` appelle le cas d’usage de connexion ; IAM vérifie les identifiants et retourne le JWT, sauvegardé via `AuthSessionGateway`, puis redirection vers `/espace` ou vers la page demandée (`?retour=/espace/profil`, liste fermée de destinations). Erreur compréhensible en cas d’identifiants incorrects ; soumissions répétées bloquées ; nouvelle tentative possible après une panne, saisie conservée.
 
+Protection des connexions (F37, lot L8, 🟡 non vérifié dans un navigateur) : après plusieurs échecs, IAM répond `429` avec `retryAfter` ; le site affiche « Trop de tentatives de connexion. Par sécurité, la connexion est bloquée temporairement : réessayez dans X minutes. » (X calculé depuis `retryAfter`). Un compte suspendu par un agent reçoit, après un mot de passe correct, le message de l’API « Votre compte est suspendu par la mairie… » (`403`, `code: account_suspended`). `/connexion?compte=supprime` affiche la confirmation de suppression du compte. Règles : [IAM — protection des connexions](../../../../api/src/IAM/doc/comptes-et-sessions.md#protection-contre-les-tentatives-de-connexion-f37).
+
 `/login` reste disponible : l’admin y renvoie encore ses utilisateurs non connectés. La page redirige vers `/connexion` en conservant les paramètres.
 
 ## 3. Choisir un espace

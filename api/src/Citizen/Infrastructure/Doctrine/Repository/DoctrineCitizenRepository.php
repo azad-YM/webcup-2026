@@ -14,6 +14,9 @@ final readonly class DoctrineCitizenRepository implements CitizenRepository
 {
     public function __construct(private EntityManagerInterface $manager, private MessageBusInterface $eventBus) {}
 
+    public function findById(string $id): ?Citizen { return $this->manager->find(Citizen::class, $id); }
+    public function findAccounts(): array { return $this->manager->getRepository(Citizen::class)->findBy(['status' => ['active', 'suspended']], ['registeredAt' => 'DESC']); }
+
     public function save(Citizen $citizen): void
     {
         $this->manager->persist($citizen);
