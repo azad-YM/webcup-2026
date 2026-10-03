@@ -1,15 +1,17 @@
-import { useState } from "react"
+import { useState, type FormEvent } from "react"
 import { Button } from "@boilerplate/shared-ui/components"
 import { getErrorMessage } from "@boilerplate/shared-utils/error.utils"
 import { useListQuery, useSuspendMutation } from "../../core/application/rtk-api/citizen-accounts"
 import type { CitizenAccount } from "../../core/domain/citizen-account"
 
 export function CitizenAccountsPage() {
-  const query = useListQuery()
   const [search, setSearch] = useState("")
+  const [appliedSearch, setAppliedSearch] = useState("")
+  const query = useListQuery(appliedSearch)
   const [target, setTarget] = useState<CitizenAccount | null>(null)
   const [suspend, mutation] = useSuspendMutation()
-  const items = query.data?.items.filter(({ email, profile }) => `${email ?? ""} ${profile.firstName ?? ""} ${profile.lastName ?? ""}`.toLocaleLowerCase().includes(search.toLocaleLowerCase())) ?? []
+  const items = query.data?.items ?? []
+  function applySearch(event: FormEvent) { event.preventDefault(); setAppliedSearch(search.trim()) }
   async function confirm() {
     if (!target || mutation.isLoading) return
     try { await suspend({ citizenId: target.profile.id, suspended: target.status === "active" }).unwrap(); setTarget(null) } catch { /* visible error below */ }
@@ -19,7 +21,12 @@ export function CitizenAccountsPage() {
     {query.isLoading && <p role="status">Chargement des comptes…</p>}
     {query.isError && <div role="alert"><p>{getErrorMessage(query.error)}</p><Button onClick={() => void query.refetch()} className="mt-3">Réessayer</Button></div>}
     {query.data && !query.isError && <>
-      <label className="block">Rechercher un nom ou un e-mail<input type="search" value={search} onChange={(event) => setSearch(event.target.value)} className="mt-2 block w-full rounded-md border px-3 py-2" /></label>
+      <form role="search" onSubmit={applySearch} className="flex flex-wrap items-end gap-3">
+        <label className="block min-w-64 flex-1">Rechercher (nom, e-mail, téléphone, quartier)<input type="search" value={search} onChange={(event) => setSearch(event.target.value)} className="mt-2 block w-full rounded-md border px-3 py-2" /></label>
+        <Button type="submit" disabled={query.isFetching}>{query.isFetching ? "Recherche…" : "Rechercher"}</Button>
+        {appliedSearch && <Button type="button" variant="outline" onClick={() => { setSearch(""); setAppliedSearch("") }}>Effacer</Button>}
+      </form>
+      <p role="status" className="text-sm text-muted-foreground">{query.data.total} compte{query.data.total > 1 ? "s" : ""}{appliedSearch ? ` pour « ${appliedSearch} »` : ""}{query.data.total > items.length ? ` — ${items.length} premiers affichés, affinez la recherche` : ""}. Les mots de passe ne sont jamais affichés.</p>
       {!query.data.canManage && <p>Vous disposez d’un accès en consultation.</p>}
       {items.length === 0 ? <p role="status">Aucun compte citoyen ne correspond.</p> : <ul className="space-y-4">{items.map((account) => <li key={account.profile.id} className="rounded-xl border p-4">
         <h2 className="font-semibold">{[account.profile.firstName, account.profile.lastName].filter(Boolean).join(" ") || "Profil non renseigné"}</h2>

@@ -12,7 +12,12 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 final readonly class IAMCitizenAccountManager implements CitizenAccountManager
 {
     public function __construct(private IUserRepository $users, private ChangeAccountStatusHandler $changeStatus, private UserPasswordHasherInterface $hasher) {}
-    public function email(string $userId): ?string { return $this->users->findById($userId)?->getUserIdentifier(); }
+    public function emails(array $userIds): array
+    {
+        $emails = [];
+        foreach ($this->users->findByIds($userIds) as $user) $emails[$user->getId()] = $user->getUserIdentifier();
+        return $emails;
+    }
     public function verifyPassword(string $userId, string $password): bool
     {
         $user = $this->users->findById($userId);

@@ -1,3 +1,4 @@
+import { LoginSecurityPage } from "@/modules/security/ui/pages/login-security"
 import { CitizenAccountsPage } from "@/modules/citizen-accounts/ui/pages/citizen-accounts"
 import { getErrorMessage } from "@boilerplate/shared-utils/error.utils"
 import { createBrowserRouter, Navigate, Outlet } from "react-router"
@@ -51,6 +52,7 @@ export const router = createBrowserRouter([
           { path: "role", element: <RolesPage /> },
           { path: "member", element: <MembersPage /> },
           { path: "citizens", element: <CitizenAccountsPage /> },
+          { path: "security", element: <LoginSecurityPage /> },
         ],
       },
       {

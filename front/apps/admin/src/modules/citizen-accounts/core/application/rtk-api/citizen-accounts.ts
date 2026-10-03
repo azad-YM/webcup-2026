@@ -5,7 +5,7 @@ import type { CitizenAccounts } from "../../domain/citizen-account"
 export const citizenAccountsApi = createApi({
   reducerPath: "citizenAccountsApi", baseQuery: fakeBaseQuery(), tagTypes: ["Accounts"],
   endpoints: (build) => ({
-    list: build.query<CitizenAccounts, void>({ queryFn: withUseCase(listCitizenAccounts), providesTags: ["Accounts"] }),
+    list: build.query<CitizenAccounts, string>({ queryFn: withUseCase(listCitizenAccounts), providesTags: ["Accounts"] }),
     suspend: build.mutation<{ id: string; status: string }, { citizenId: string; suspended: boolean }>({ queryFn: withUseCase(setCitizenSuspension), invalidatesTags: ["Accounts"] }),
   }),
 })

@@ -4,4 +4,4 @@ export type CitizenAccount = {
   status: "active" | "suspended"
   canSuspend: boolean
 }
-export type CitizenAccounts = { items: CitizenAccount[]; canManage: boolean }
+export type CitizenAccounts = { items: CitizenAccount[]; total: number; canManage: boolean }

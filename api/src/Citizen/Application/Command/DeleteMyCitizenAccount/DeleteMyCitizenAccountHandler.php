@@ -21,8 +21,10 @@ final readonly class DeleteMyCitizenAccountHandler
     {
         $userId = $this->identity->userId();
         $citizen = $this->citizens->findByUserId($userId) ?? throw new NotFoundException('Citizen not found.');
-        if ($this->access->isProtectedAccount($userId)) throw new ConflitException('An active administration membership protects this shared account.');
         if (!$this->accounts->verifyPassword($userId, $cmd->password)) throw new AccessDeniedException('Invalid password.');
+        // Rule: an account that is also an active administration member is never deleted from the site,
+        // so the agent never loses their access silently (see doc/README.md, « Suppression du compte »).
+        if ($this->access->isProtectedAccount($userId)) throw new ConflitException('An active administration membership protects this shared account.');
         $this->accounts->delete($userId);
         foreach ($this->dataErasers as $eraser) $eraser->erase($citizen->id);
         $citizen->deleteAccount();

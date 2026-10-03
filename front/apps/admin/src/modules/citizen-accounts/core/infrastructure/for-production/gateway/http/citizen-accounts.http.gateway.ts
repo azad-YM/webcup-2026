@@ -16,7 +16,10 @@ export class CitizenAccountsHttpGateway extends ApiClient implements CitizenAcco
       throw new Error("Impossible de joindre le service. Vérifiez votre connexion puis réessayez.")
     }
   }
-  list(): Promise<CitizenAccounts> { return this.execute(() => this.getAuth<CitizenAccounts>("/citizen/accounts")) }
+  list(search: string): Promise<CitizenAccounts> {
+    const query = search ? `?${new URLSearchParams({ q: search }).toString()}` : ""
+    return this.execute(() => this.getAuth<CitizenAccounts>(`/citizen/accounts${query}`))
+  }
   setSuspension(input: { citizenId: string; suspended: boolean }): Promise<{ id: string; status: string }> {
     return this.execute(() => this.putAuth<{ id: string; status: string }>("/citizen/accounts/suspension", input))
   }

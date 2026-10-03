@@ -14,7 +14,9 @@ import { LoadingState } from "@/modules/shared/ui/components/states"
 export function LoginPage() {
   const router = useRouter()
   const session = useSession()
-  const returnPath = safeReturnPath(useSearchParams().get("retour"))
+  const params = useSearchParams()
+  const returnPath = safeReturnPath(params.get("retour"))
+  const accountDeleted = params.get("compte") === "supprime"
   const [login, { isLoading, error }] = useLoginWithCredentialsMutation()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -46,6 +48,7 @@ export function LoginPage() {
           <LoadingState label="Vérification de votre session…" />
         ) : (
           <section aria-labelledby="titre-formulaire-connexion" className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+            {accountDeleted && <div className="mb-6"><FormAnnouncement tone="success">Votre compte a été supprimé et vos sessions ont été fermées.</FormAnnouncement></div>}
             <h2 id="titre-formulaire-connexion" className="text-xl font-semibold">Vos identifiants</h2>
             <form onSubmit={submit} className="mt-6 space-y-5" noValidate>
               <TextField id="email" label="Adresse e-mail" type="email" autoComplete="username" required value={email} onChange={(event) => setEmail(event.target.value)} />

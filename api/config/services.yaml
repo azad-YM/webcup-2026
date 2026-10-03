@@ -179,6 +179,10 @@ services:
         alias: IAM\Infrastructure\Security\DoctrineAccountSessionRevoker
     IAM\Application\Ports\Service\LoginAttemptLimiter:
         alias: IAM\Infrastructure\Security\DoctrineLoginAttemptLimiter
+    IAM\Application\Ports\Repository\LoginSecurityEventRepository:
+        alias: IAM\Infrastructure\Doctrine\Repository\DoctrineLoginSecurityEventRepository
+    IAM\Application\Ports\Provider\SecurityJournalAccessPolicy:
+        alias: Administration\Infrastructure\Adapter\IAM\AdminSecurityJournalAccessPolicy
     Citizen\Application\Command\DeleteMyCitizenAccount\DeleteMyCitizenAccountHandler:
         arguments:
             $dataErasers: !tagged_iterator citizen.account_data_eraser
