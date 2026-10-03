@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                   http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <!-- Append-only journal: rows are written by DbalAuditEntryRepository; the mapping declares the schema. -->
+    <entity name="Audit\Domain\Entity\AuditEntry" table="audit_entries">
+        <indexes>
+            <index name="IDX_AUDIT_OCCURRED" columns="occurred_at"/>
+            <index name="IDX_AUDIT_ACTION" columns="action,occurred_at"/>
+            <index name="IDX_AUDIT_ACTOR" columns="actor_id,occurred_at"/>
+        </indexes>
+        <id name="id" type="string" column="id" length="36" />
+        <field name="occurredAt" type="datetime_immutable" column="occurred_at" />
+        <field name="actorId" type="string" column="actor_id" length="36" nullable="true" />
+        <field name="actorLabel" type="string" column="actor_label" length="180" />
+        <field name="action" type="string" column="action" length="80" />
+        <field name="category" type="string" column="category" length="40" />
+        <field name="targetType" type="string" column="target_type" length="40" />
+        <field name="targetId" type="string" column="target_id" length="120" nullable="true" />
+        <field name="summary" type="string" column="summary" length="255" />
+        <field name="details" type="json" column="details" />
+    </entity>
+</doctrine-mapping>
