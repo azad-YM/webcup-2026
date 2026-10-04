@@ -2,12 +2,11 @@
 import Link from "next/link"
 import type { Route } from "next"
 import type { ReactNode } from "react"
-import { ArrowRight, CalendarClock, ClipboardList, HandHeart, Megaphone, MessageSquare, Newspaper, Search, Sparkles, UserRound } from "@boilerplate/shared-ui/components/icon"
+import { ArrowRight, CalendarClock, ClipboardList, HandHeart, Megaphone, MessageSquare, Newspaper, Search } from "@boilerplate/shared-ui/components/icon"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
-import { greeting, PREFERRED_LANGUAGES, type CitizenProfile } from "../../core/domain/citizen-profile"
+import { greeting } from "../../core/domain/citizen-profile"
 import { CitizenAccessState, useCitizenAccess } from "../components/citizen-access"
 import { CitizenFirstVisitGuide } from "../sections/first-visit-guide"
-import { NotificationCenter } from "../sections/notification-center"
 import { NOTIFICATIONS_POLLING_MS, useListMyNotificationsQuery } from "../../core/application/rtk-api/notifications"
 import { unreadOfKind, type NotificationKind } from "../../core/domain/notification"
 
@@ -21,7 +20,6 @@ const SHORTCUTS: Shortcut[] = [
   { title: "Participer", text: "Soutenez les signalements de vos voisins, faites remonter une inquiétude et suivez la réponse.", href: "/espace/participation" as Route, icon: HandHeart, notifications: "concern.updated" },
   { title: "Trouver un service", text: "État civil, santé, transports, logement… tout ce que la ville peut faire pour vous.", href: "/services", icon: Search },
   { title: "Actualités de la ville", text: "Les dernières informations publiées par la mairie.", href: "/actualites", icon: Newspaper },
-  { title: "Mon profil", text: "Vos coordonnées, votre quartier et votre langue préférée.", href: "/espace/profil", icon: UserRound }
 ]
 
 function ShortcutCard({ shortcut, unread = 0 }: { shortcut: Shortcut; unread?: number }) {
@@ -50,35 +48,8 @@ function ShortcutCard({ shortcut, unread = 0 }: { shortcut: Shortcut; unread?: n
     : <div className={`${frame} bg-slate-50`}>{body}</div>
 }
 
-function ProfileSummary({ profile }: { profile: CitizenProfile }) {
-  const language = PREFERRED_LANGUAGES.find((item) => item.code === profile.preferredLanguage)?.label ?? profile.preferredLanguage
-  const rows: [string, string | null][] = [
-    ["Nom", [profile.firstName, profile.lastName].filter(Boolean).join(" ") || null],
-    ["Quartier", profile.district],
-    ["Téléphone", profile.phone],
-    ["Langue préférée", language]
-  ]
-  return (
-    <section aria-labelledby="titre-mes-informations" className="rounded-2xl border border-slate-200 bg-white p-6">
-      <h2 id="titre-mes-informations" className="text-lg font-semibold">Mes informations</h2>
-      <dl className="mt-4 grid gap-3 sm:grid-cols-2">
-        {rows.map(([label, value]) => (
-          <div key={label}>
-            <dt className="text-sm text-slate-600">{label}</dt>
-            <dd className="font-medium text-slate-900">{value ?? <span className="font-normal text-slate-600">Non renseigné</span>}</dd>
-          </div>
-        ))}
-      </dl>
-      <Link href="/espace/profil" className="mt-5 inline-flex font-medium text-teal-800 underline underline-offset-4">Modifier mes informations</Link>
-    </section>
-  )
-}
-
-/**
- * Accueil de l’espace citoyen (D03), avec l’invitation à compléter le profil (base D12).
- * `spaces` : liste des espaces IAM fournie par la composition (carte « Administration »).
- */
-export function CitizenHomePage({ spaces, spacesForNonCitizen }: { spaces: ReactNode; spacesForNonCitizen: ReactNode }) {
+/** Accueil citoyen ; les espaces IAM des comptes non citoyens sont fournis par composition. */
+export function CitizenHomePage({ spacesForNonCitizen }: { spacesForNonCitizen: ReactNode }) {
   const access = useCitizenAccess()
   const profile = access.profile
   // Pastilles des raccourcis : même cache que le centre de notifications (une seule requête).
@@ -96,18 +67,6 @@ export function CitizenHomePage({ spaces, spacesForNonCitizen }: { spaces: React
         ) : (
           <div className="space-y-10">
             <CitizenFirstVisitGuide profile={profile} />
-            {!profile.profileCompleted && (
-              <section aria-labelledby="titre-completer-profil" className="flex flex-col gap-4 rounded-2xl border border-amber-200 bg-amber-50 p-6 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex gap-4">
-                  <Sparkles className="mt-1 size-6 shrink-0 text-amber-800" aria-hidden="true" />
-                  <div>
-                    <h2 id="titre-completer-profil" className="text-lg font-semibold text-slate-950">Complétez votre profil</h2>
-                    <p className="mt-1 text-slate-800">Indiquez votre nom et votre quartier : les services pourront vous répondre plus facilement et vous serez informé de ce qui concerne votre quartier.</p>
-                  </div>
-                </div>
-                <Link href="/espace/profil" className="shrink-0 rounded-xl bg-slate-950 px-5 py-3 text-center font-medium text-white hover:bg-slate-800">Compléter mon profil</Link>
-              </section>
-            )}
             <section aria-labelledby="titre-raccourcis">
               <h2 id="titre-raccourcis" className="text-2xl font-semibold tracking-tight">Que souhaitez-vous faire ?</h2>
               <ul className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -118,9 +77,6 @@ export function CitizenHomePage({ spaces, spacesForNonCitizen }: { spaces: React
                 ))}
               </ul>
             </section>
-            <NotificationCenter />
-            <ProfileSummary profile={profile} />
-            {spaces}
           </div>
         )}
       </PageBody>

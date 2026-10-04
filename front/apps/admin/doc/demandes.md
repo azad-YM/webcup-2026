@@ -10,16 +10,16 @@ Les agents voient les messages et signalements envoyés par les habitants depuis
 
 ## Accès
 
-Point d’entrée `/demandes`, par la carte « Demandes citoyennes » de `/espaces` et par le sélecteur de modules. La lecture exige `admin.request.read`, le traitement `admin.request.read` + `admin.request.write` (rôle de référence « Agent municipal », voir [Administration](../../../../api/src/Administration/doc/membres-et-habilitations.md)). Sans permission, la page affiche le refus (`403`) expliqué ; sans droit de traitement (`canProcess` à faux), le détail est en lecture seule.
+Point d’entrée `/demandes`, par la carte « Demandes citoyennes » de `/espaces` et par la première barre des modules. La lecture exige `admin.request.read`, le traitement `admin.request.read` + `admin.request.write` (rôle de référence « Agent municipal », voir [Administration](../../../../api/src/Administration/doc/membres-et-habilitations.md)). Sans permission, la page affiche le refus (`403`) expliqué ; sans droit de traitement (`canProcess` à faux), le détail est en lecture seule.
 
 ## Parcours livré
 
-1. La page charge la file (`GET /api/citizen/agent/requests`) filtrée par défaut sur « En attente » (`submitted`), les plus anciennes d’abord, 20 par page. Le titre porte le badge **« N en attente »** (`pendingCount`, indépendant du filtre), annoncé aux lecteurs d’écran.
+1. La page charge la file (`GET /api/citizen/agent/requests`) sur « Tous les états » par défaut (sans filtre de statut), les plus anciennes d’abord, 20 par page. Le titre porte le badge **« N en attente »** (`pendingCount`, indépendant du filtre), annoncé aux lecteurs d’écran.
 2. Filtre « État » : tous les états ou l’un des cinq statuts ; pagination si plus de 20 demandes.
-3. Tableau : référence, objet (bouton qui ouvre le détail), type, date de réception, état.
+3. Liste de cartes : référence, objet, type, date de réception et état. Toute la carte est cliquable, avec une action explicite « Voir la demande ». La carte active indique « Demande ouverte » ; le focus rejoint le panneau de détail, également sur petit écran.
 4. Détail : référence, type, objet, état, lieu, service éventuel, message du citoyen, chronologie des étapes avec commentaires.
 5. Traitement : choix de l’étape suivante parmi `allowedTransitions` (« Prendre en charge », « Démarrer le traitement », « Marquer comme résolue », « Rejeter »), commentaire visible par le citoyen, **motif obligatoire pour un rejet** (vérifié avant l’envoi et par l’API). `POST /api/citizen/agent/requests/status` avec `expectedStatus` : si un autre agent a changé la demande entre-temps (`409`), message et file rechargée. Une demande résolue ou rejetée est close.
-6. États : chargement, file vide (« Aucune demande en attente de prise en charge »), erreur avec « Réessayer », refus `403`. Un `401` ferme la session.
+6. États : skeletons au chargement initial, au changement de filtre ou de page et lors du rafraîchissement d’une file vide ; une liste déjà chargée reste visible pendant son actualisation. Les données du filtre précédent ne sont pas affichées sous le nouveau filtre. File vide (« Aucune demande en attente de prise en charge »), erreur avec « Réessayer », refus `403`. Un `401` ferme la session.
 
 ## Temps réel
 
@@ -27,7 +27,7 @@ Tant que la file est affichée, l’admin écoute `request.submitted` et `reques
 
 ## Code
 
-Module `requests` : `core/domain/service-request.ts`, `core/application/{rtk-api/requests.ts, usecases/request-queue.usecase.ts, ports/gateway/request-queue.gateway.ts, ports/provider/request-session.provider.ts, errors/requests.error.ts}`, `core/infrastructure/for-production/gateway/http/request-queue.http.gateway.ts`, `ui/{layouts/requests.layout.tsx, pages/request-queue.tsx, sections/request-detail.tsx}`. Session fournie par `auth/core/infrastructure/adapter/requests/AuthRequestSessionProvider`. Composition : `shared/core/config/{kernel,dependencies,store}.ts`, route `/demandes` dans `app/routes.tsx`.
+Module `requests` : `core/domain/service-request.ts`, `core/application/{rtk-api/requests.ts, usecases/request-queue.usecase.ts, ports/gateway/request-queue.gateway.ts, ports/provider/request-session.provider.ts, errors/requests.error.ts}`, `core/infrastructure/for-production/gateway/http/request-queue.http.gateway.ts`, `ui/{pages/request-queue.tsx, sections/request-detail.tsx}`. Session fournie par `auth/core/infrastructure/adapter/requests/AuthRequestSessionProvider`. Composition : `shared/core/config/{kernel,dependencies,store}.ts`, route `/demandes` dans `app/routes.tsx`.
 
 ## Guichet des rendez-vous (L10)
 

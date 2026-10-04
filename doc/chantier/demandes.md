@@ -8,6 +8,18 @@ Une ligne par `request_code`, dans l’ordre d’arrivée. Le texte complet de c
 
 Statuts : ⬜ à faire · 🟡 en cours · ⚠️ partiel · ✅ livré · ⏸️ écarté. Un statut ✅ suppose la fonctionnalité utilisable de bout en bout (API, interface, tests) et documentée chez son propriétaire.
 
+## Revue du 2026-10-03
+
+Les 71 demandes ont été rapprochées du code et des documents des propriétaires. Les fonctionnalités implémentées mais non validées restent 🟡 ; les couvertures incomplètes restent ⚠️. Cette revue ne remplace pas une recette navigateur ni un audit d’accessibilité, de sécurité ou de performance.
+
+Le Pilotage local contient déjà 15 statuts `done` saisis par « Administrateur principal » : D01, D03, D04, D05, D06, D07, D08, D09, D12, D15, D16, D17, D18, D19, D20. Ils sont conservés lors de la synchronisation ; les réserves de validation du présent registre restent applicables. Les autres suivis sont complétés depuis ce registre (🟡/⚠️ → `in_progress`, ✅ → `done`, ⬜ → `todo`).
+
+### Validation navigateur confirmée par l’utilisateur
+
+Après cette revue, l’utilisateur confirme les parcours navigateur et demande leur passage en « fait » dans le Pilotage local. 31 suivis supplémentaires sont validés : D11, D13, F21, F22, F23, F24, F25, F26, F28, F29, F30, F31, F32, F33, F34, F35, F36, F37, F38, F39, F41, F42, F43, F44, F47, F48, F49, F50, F51, F52, F64. F48 appartient au même parcours de journal que F47. Les notes antérieures sont conservées comme historique. Les réserves navigateur ci-dessous sont donc levées pour ces demandes ; les mentions d’absence de tests automatisés restent une dette technique, pas un blocage du statut demandé.
+
+Les 15 suivis déjà faits sont conservés. F40 reste en cours (cron et réception des rappels à vérifier), F63 et F72 restent partiels. Les 22 demandes à construire restent à faire. Aucun nouveau test navigateur ou automatisé n’a été exécuté par l’agent : la validation provient de l’utilisateur.
+
 ## Demandes initiales (H+0)
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
@@ -71,8 +83,8 @@ Statuts : ⬜ à faire · 🟡 en cours · ⚠️ partiel · ✅ livré · ⏸�
 |---|---|---|---|---|---|---|
 | F37 | 3 | 900 | Protéger les comptes contre les tentatives de connexion inhabituelles, de façon perceptible sans gêner l’usage normal | L8 | IAM, site, admin | 🟡 livré ([règles](../../api/src/IAM/doc/comptes-et-sessions.md#protection-contre-les-tentatives-de-connexion-f37), [journal](../../front/apps/admin/doc/securite.md)), non vérifié dans un navigateur |
 | F38 | 2 | 600 | Savoir qu’un service est interrompu (maintenance, incident) avant de commencer une démarche, quand revenir ou quoi faire | L9 | Administration, site | 🟡 état du service (disponible, maintenance, incident), message, retour prévu et alternative sur la carte et la fiche ; non vérifié dans un navigateur |
-| F39 | 2 | 600 | Prendre rendez-vous avec un agent : créneau sans ambiguïté, informations pour préparer le rendez-vous | L10 | Citizen, admin, site | 🟡 |
-| F40 | 1 | 300 | Recevoir un rappel avant son rendez-vous | L10 | Citizen, Communication, site | 🟡 |
+| F39 | 2 | 600 | Prendre rendez-vous avec un agent : créneau sans ambiguïté, informations pour préparer le rendez-vous | L10 | Citizen, admin, site | 🟡 créneaux ouverts par les agents, réservation, déplacement et annulation dans `/espace/rendez-vous` ; confirmation avec lieu, consignes et fuseau ; ni testé ni vérifié dans le navigateur |
+| F40 | 1 | 300 | Recevoir un rappel avant son rendez-vous | L10 | Citizen, Communication, site | 🟡 rappels persistés et temps réel (veille et 2 h avant), commande `app:appointments:remind` ; planification du cron et réception à vérifier ; non testé |
 
 ## Vague 6 (H+7) — « Inclusion et structuration »
 
@@ -128,8 +140,8 @@ Statuts : ⬜ à faire · 🟡 en cours · ⚠️ partiel · ✅ livré · ⏸�
 |---|---|---|---|---|---|---|
 | F61 | 3 | 1 080 | Rester rapide sur des appareils peu puissants | L17 | site, admin | ⬜ |
 | F62 | 2 | 720 | Version plus simple et plus rapide de certaines pages | L17 | site | ⬜ |
-| F63 | 3 | 1 080 | Les administrateurs désactivent rapidement un service défectueux | L18 | Administration, Citizen, admin | ⬜ |
-| F64 | 1 | 360 | Voir l’état actuel d’un service avant de commencer une démarche | L18 | Administration, site | ⬜ |
+| F63 | 3 | 1 080 | Les administrateurs désactivent rapidement un service défectueux | L18 | Administration, Citizen, admin | ⚠️ état maintenance/incident modifiable dans l’admin ; désactivation effective des démarches et réservations non implémentée |
+| F64 | 1 | 360 | Voir l’état actuel d’un service avant de commencer une démarche | L18 | Administration, site | 🟡 état, message, retour prévu et alternative déjà visibles sur les cartes et fiches des services (L9/F38) ; non vérifié dans le navigateur |
 
 ## Vague 12 (H+13) — « Participation et nouveaux usages »
 
@@ -147,7 +159,7 @@ Statuts : ⬜ à faire · 🟡 en cours · ⚠️ partiel · ✅ livré · ⏸�
 | F69 | 4 | 1 520 | Protéger les données sensibles contre l’exploitation d’une faille, de façon perceptible sans compliquer l’usage | L20 | tous les BC, IAM | ⬜ |
 | F70 | 3 | 1 140 | Réserver strictement certaines données administratives aux agents autorisés | L20 | Administration, admin | ⬜ |
 | F71 | 3 | 1 140 | Accueillir des habitants sans adresse e-mail et ne parlant pas tous la même langue | L21 | IAM, Citizen, site, admin | ⬜ |
-| F72 | 1 | 380 | Nouvel arrivant : savoir par où commencer sans refaire l’inscription | L21 | site, Citizen | ⬜ |
+| F72 | 1 | 380 | Nouvel arrivant : savoir par où commencer sans refaire l’inscription | L21 | site, Citizen | ⚠️ guide « Par où commencer ? » et raccourcis déjà présents dans `/espace` (L4/D12), sans refaire l’inscription ; guide masquable, réouverture non proposée ; parcours nouvel arrivant à vérifier |
 
 ## Vagues suivantes
 

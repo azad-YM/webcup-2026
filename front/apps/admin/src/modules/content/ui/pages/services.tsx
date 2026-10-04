@@ -271,7 +271,7 @@ export function ServicesPage() {
           <Button type="button" onClick={() => setEditing({ service: newService(), isNew: true })}>Nouveau service</Button>
         </div>
         <ListState isLoading={services.isLoading} error={services.error} isEmpty={items.length === 0} emptyLabel="Aucun service." onRetry={() => void services.refetch()} retrying={services.isFetching}>
-          <ul className="divide-y rounded-lg border bg-white">
+          <ul className="nt-content-list space-y-3">
             {items.map((item) => (
               <li key={item.id} className="flex items-start justify-between gap-3 p-3">
                 <div className="min-w-0">

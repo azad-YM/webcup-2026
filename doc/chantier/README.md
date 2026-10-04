@@ -13,6 +13,20 @@ Suivi des travaux de la plateforme pendant les 24H By Webcup : ce qui est livré
 
 Relevé du 2026-10-03 : vagues 9 (H+10) à 13 (H+14) diffusées, 71 demandes visibles pour 43 770 XP.
 
+## Revue du suivi — 2026-10-03
+
+Les 71 demandes du [registre](demandes.md#revue-du-2026-10-03) sont couvertes par la synchronisation Pilotage `Version20261003110400`. Les suivis manuels sont conservés ; les suivis absents ou issus de l’ancien préremplissage sont actualisés avec une note par demande. Le code présent ne vaut pas validation de bout en bout. Application locale effectuée et contrôlée : **71 suivis**, dont **15 faits** (statuts manuels conservés), **34 en cours** et **22 à faire** ; 56 suivis ajoutés. Syntaxe PHP, simulation de migration, correspondance des 71 codes et liens locaux vérifiés. Aucun nouveau parcours navigateur validé.
+
+### Validation utilisateur des parcours navigateur
+
+À la demande de l’utilisateur, 31 demandes supplémentaires passent en « fait » dans le Pilotage local (voir le [détail de la validation](demandes.md#validation-navigateur-confirmée-par-lutilisateur)). Bilan : **46 faits, 3 en cours (F40, F63, F72), 22 à faire**. Cette validation manuelle lève les réserves de recette navigateur des lots concernés ; les mentions de tests automatisés manquants restent une dette technique. Les tableaux ci-dessous décrivent l’état technique relevé avant cette confirmation.
+
+Notes du Pilotage local simplifiées le 2026-10-04 à la demande de l’utilisateur : une phrase courte par demande et un lien vers l’écran pour les 49 fonctionnalités existantes (site `localhost:5178`, admin `localhost:5179`). Les 22 demandes non commencées indiquent « Fonctionnalité à réaliser », sans lien vers un écran inexistant. Les statuts sont inchangés ; les réserves et validations restent dans ce chantier.
+
+## Ajustements admin — 2026-10-04
+
+Livré : [file des demandes](../../front/apps/admin/doc/demandes.md) ouverte sur tous les états, skeletons pendant le chargement des listes du module Demandes et [champs admin harmonisés](../../front/apps/admin/doc/navigation.md). Validation : 44 tests admin, lint et build réussis (avertissement de bundle supérieur à 500 kB). Les menus du profil du site et de l’admin affichent aussi un skeleton limité à la ligne des espaces en cours de vérification. Recette visuelle encore à réaliser.
+
 ## Lots
 
 Les lots regroupent les demandes qui partagent un même modèle ou un même écran. L’ordre de travail retenu est L1, L2, L3, L7, L4, L5, L6. L7 vient après L3 parce que les alertes s’appuient sur les publications et sur le quartier du citoyen ; L6 est court (environ 1 h) et peut être intercalé dès qu’un créneau se libère.
@@ -37,10 +51,10 @@ Les lots regroupent les demandes qui partagent un même modèle ou un même écr
 | L15 | Connexion renforcée : connexion sans mot de passe, vérification supplémentaire, alerte de connexion depuis un nouvel appareil | D02, F53, F54 | 2 720 | ⬜ |
 | L16 | Mes données : export clair des informations personnelles, récapitulatif téléchargeable des demandes | F55, F56 | 1 700 | ⬜ |
 | L17 | Sobriété et performance : diagnostic environnemental, chargement sobre, connexion lente, médias légers, appareils peu puissants, version allégée | F57, F58, F59, F60, F61, F62 | 4 600 | ⬜ |
-| L18 | Services hors service : désactivation rapide par les administrateurs, état visible avant la démarche (prolonge L9) | F63, F64 | 1 440 | ⬜ |
+| L18 | Services hors service : désactivation rapide par les administrateurs, état visible avant la démarche (prolonge L9) | F63, F64 | 1 440 | ⚠️ état visible et modifiable déjà livré (L9) ; blocage des démarches et réservations à construire |
 | L19 | Participation : projets en cours, consultations et avis, boîte à idées | F65, F66, F67, F68 | 2 960 | ⬜ |
 | L20 | Protection des données : durcissement contre les failles, données administratives réservées aux agents habilités | F69, F70 | 2 660 | ⬜ |
-| L21 | Nouveaux arrivants : accès sans e-mail et en plusieurs langues (avec L5), orientation « par où commencer » | F71, F72 | 1 520 | ⬜ |
+| L21 | Nouveaux arrivants : accès sans e-mail et en plusieurs langues (avec L5), orientation « par où commencer » | F71, F72 | 1 520 | ⚠️ guide et raccourcis déjà présents (L4) ; accès sans e-mail, multilingue et réouverture du guide à construire |
 
 ## Travail en parallèle
 
@@ -66,6 +80,12 @@ Décisions : [Citizen — décisions retenues](../../api/src/Citizen/doc/README.
 4. ✅ Site : inscription en deux étapes (compte, puis « Mes informations » que l’on peut passer), connexion automatique, espace personnel `/espace` avec le nom du citoyen, l’invitation à compléter le profil et des raccourcis. Voir le [parcours citoyen](../../front/apps/site/doc/parcours-citoyen.md) ; parcours de bout en bout à vérifier dans le navigateur.
 5. ✅ Administration : rôles de référence « Agent municipal » et « Administrateur principal » à l’initialisation, liste des rôles et des membres, formulaire « Ajouter un membre » dans l’admin ([membres](../../front/apps/admin/doc/membres.md)).
 
+Correctif profil citoyen : rechargement à l’ouverture du formulaire et conservation des champs non modifiés lors de l’enregistrement ; scénario automatisé de modification d’un seul champ ajouté. Vérification navigateur encore à réaliser.
+
+Réorganisation de l’espace citoyen : bienvenue, guide de première visite, actions et notifications de la ville ; notifications personnelles filtrables dans la cloche, profil / espaces IAM / déconnexion dans le popover de l’avatar. Design existant réutilisé. Voir le [parcours citoyen](../../front/apps/site/doc/parcours-citoyen.md). Vérifications : 57 tests du site réussis, lint valide, build et export statique réussis dans une copie temporaire isolée (cache `.next` du répertoire de travail en erreur). Liens documentaires locaux vérifiés ; recette navigateur à réaliser.
+
+Refonte de l’habillage admin : rail Administration / Demandes citoyennes / Pilotage, rubriques dans une seconde barre, menu des espaces Administration / Citoyen et palette alignée sur le site. Listes allégées sans quadrillage, demandes en cartes avec action « Voir la demande », boutons secondaires sans contour décoratif. Routes et workflows conservés. Voir [navigation admin](../../front/apps/admin/doc/navigation.md). Validation automatisée et recette visuelle suivies dans cette page.
+
 ### L2 — Demandes citoyennes
 
 1. ✅ API Citizen : `ServiceRequest` (référence `NT-2026-0042`, type `contact` \| `report`, statuts et étapes, motif obligatoire au rejet), envoi, « mes demandes », file des agents et changement de statut ; port `RequestAccessPolicy` implémenté par Administration (`admin.request.read`, `admin.request.write`, ajoutées au rôle « Agent municipal ») ; migration `Version20261003002000`.
@@ -74,12 +94,9 @@ Décisions : [Citizen — décisions retenues](../../api/src/Citizen/doc/README.
 4. ✅ Admin : module « Demandes citoyennes » (`/demandes`) : file filtrable, badge « N en attente », traitement avec commentaire, abonnement temps réel.
 5. ⬜ Vérifier le parcours dans le navigateur (migration appliquée, worker actif, CLI d’initialisation relancée pour les nouvelles permissions) ; écrire les tests unitaires et applicatifs.
 
-### L7 — Alertes et diffusion (à cadrer)
-
-Décisions : BC propriétaire `Communication` ([ADR 005](../technique/decisions/005-bc-communication.md)) ; diffusion sans rechargement par le port `RealtimePublisher` et le transport `database` : buffer `realtime_event` + flux SSE `GET /api/realtime/stream` ([ADR 004](../technique/decisions/004-temps-reel.md)). Livré : socle (publisher, flux unique avec ticket et `Last-Event-ID`, audience Citizen `citizen.{id}`, client `@boilerplate/shared-utils/realtime`, purge) ; au lot L2 : projection des demandes, audience `administration.requests` d’Administration, port d’abonnement du site et de l’admin (un flux SSE par onglet). À faire : handlers de projection et `RealtimeAudienceProvider` de Communication ; le BC Communication reste à créer.
 ### L3, L7, L9 — Contenus, alertes et services pratiques (livrés, à vérifier)
 
-Décisions : BC propriétaire `Communication` ([ADR 005](../technique/decisions/005-bc-communication.md)) ; diffusion sans rechargement par le port `RealtimePublisher` et le transport `database` : buffer `realtime_event` + flux SSE `GET /api/realtime/stream` ([ADR 004](../technique/decisions/004-temps-reel.md)). Livré : socle (publisher, flux unique avec ticket et `Last-Event-ID`, audience Citizen `citizen.{id}`, client `@boilerplate/shared-utils/realtime`, purge) ; BC [Communication](../../api/src/Communication/doc/README.md) (publications, alertes, projection temps réel `alert.published`, `alert.withdrawn`, `publication.important`) ; topics privés `district.{quartier}` et `alerts.health` accordés par Citizen ; port d’abonnement du module `public` du site. Reste : `RealtimeAudienceProvider` d’Administration (L2), fusion des flux du site (module `public` et demandes) en un seul flux par onglet lors de l’intégration.
+Décisions : BC propriétaire `Communication` ([ADR 005](../technique/decisions/005-bc-communication.md)) ; diffusion sans rechargement par le port `RealtimePublisher` et le transport `database` : buffer `realtime_event` + flux SSE `GET /api/realtime/stream` ([ADR 004](../technique/decisions/004-temps-reel.md)). Livré : socle (publisher, flux unique avec ticket et `Last-Event-ID`, audience Citizen `citizen.{id}`, client `@boilerplate/shared-utils/realtime`, purge) ; BC [Communication](../../api/src/Communication/doc/README.md) (publications, alertes, projection temps réel `alert.published`, `alert.withdrawn`, `publication.important`) ; topics privés `district.{quartier}` et `alerts.health` accordés par Citizen ; port d’abonnement du module `public` du site. Audience `administration.requests` fournie par Administration ; les modules du site partagent le flux SSE unique composé dans `StoreProvider`. Recette temps réel encore à réaliser.
 
 - Une **alerte** est une publication urgente avec un niveau de gravité, une période de validité et une audience : tous les habitants, un quartier, ou les personnes ayant demandé les alertes sanitaires.
 - Elle s’affiche en bandeau sur le site pendant sa validité (D18, F29) et apparaît dans les notifications de l’espace personnel des citoyens concernés (F30).

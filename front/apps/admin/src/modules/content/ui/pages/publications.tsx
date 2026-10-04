@@ -88,7 +88,7 @@ export function PublicationsPage() {
           </div>
         </div>
         <ListState isLoading={publications.isLoading} error={publications.error} isEmpty={items.length === 0} emptyLabel="Aucune publication." onRetry={() => void publications.refetch()} retrying={publications.isFetching}>
-          <ul className="divide-y rounded-lg border bg-white">
+          <ul className="nt-content-list space-y-3">
             {items.map((item) => (
               <li key={item.id} className="flex items-start justify-between gap-3 p-3">
                 <div className="min-w-0">

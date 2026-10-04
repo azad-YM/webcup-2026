@@ -75,6 +75,7 @@ Un suivi par `requestCode` (table `pilotage_request_tracking`) : `status` (`todo
 - Lecture : fusionné dans `GET /api/pilotage/webcup-feed` → `requests[].tracking` (`null` si jamais suivi, à lire comme `todo`) et `canEditTracking` (le compte détient `admin.pilotage.write`).
 - `PUT /api/pilotage/tracking/{requestCode}` avec `{status, links, note}` : crée ou remplace le suivi ; `admin.pilotage.write` requis (403 sinon ; rôle « Administrateur principal », pas l’agent municipal) ; payload invalide → 422. Réponse : le suivi. Chaque mise à jour est journalisée (`pilotage.tracking.updated`, [Audit](../../Audit/doc/README.md)).
 - Pré-remplissage : la migration `Version20261003009000` insère le statut de chaque code depuis le [registre du chantier](../../../../doc/chantier/demandes.md) (🟡/⚠️ → `in_progress`, ✅ → `done`, ⬜ → `todo`). La base de développement créée par `doctrine:schema:update` n’a pas ce pré-remplissage.
+- Synchronisation du 2026-10-03 : `Version20261003110400` couvre les 71 codes du registre, avec statut et note explicative. Elle complète les suivis absents et actualise uniquement les lignes du préremplissage initial restées intactes ; tout suivi manuel (statut, note, liens, auteur) est conservé. Les fonctionnalités non vérifiées restent `in_progress`. Le snapshot est figé dans la migration, sans lecture du Markdown à l’exécution.
 
 ### Tableau de bord de l’activité (F50)
 

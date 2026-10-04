@@ -1,3 +1,4 @@
+import { BackofficeLayout } from "./backoffice-layout"
 import { AuditJournalPage } from "@/modules/audit/ui/pages/audit-journal"
 import { LoginSecurityPage } from "@/modules/security/ui/pages/login-security"
 import { CitizenAccountsPage } from "@/modules/citizen-accounts/ui/pages/citizen-accounts"
@@ -7,18 +8,14 @@ import { useGetProfileQuery } from "@/modules/auth/core/application/rtk-api/auth
 import { PortalLoginStart, PortalLoginCallback } from "@/modules/auth/ui/pages/portal-login"
 import { SiteLoginRedirect } from "@/modules/auth/ui/pages/site-login-redirect"
 import { SpacesPage } from "@/modules/auth/ui/pages/spaces"
-import { AdminLayout } from "@/modules/admin/ui/layouts/admin.layout"
 import { MembersPage } from "@/modules/admin/ui/pages/members"
 import { AdminDashboardPage } from "@/modules/admin/ui/pages/dashboard"
 import { RolesPage } from "@/modules/admin/ui/pages/roles"
-import { PilotageLayout } from "@/modules/pilotage/ui/layouts/pilotage.layout"
 import { WebcupFeedPage } from "@/modules/pilotage/ui/pages/webcup-feed"
 import { ActivityDashboardPage } from "@/modules/pilotage/ui/pages/activity-dashboard"
-import { RequestsLayout } from "@/modules/requests/ui/layouts/requests.layout"
 import { RequestQueuePage } from "@/modules/requests/ui/pages/request-queue"
 import { AppointmentsPage } from "@/modules/requests/ui/pages/appointments"
 import { ConcernsPage } from "@/modules/requests/ui/pages/concerns"
-import { ContentLayout } from "@/modules/content/ui/layouts/content.layout"
 import { PublicationsPage } from "@/modules/content/ui/pages/publications"
 import { AlertsPage } from "@/modules/content/ui/pages/alerts"
 import { ServicesPage } from "@/modules/content/ui/pages/services"
@@ -43,7 +40,7 @@ const ProtectedRoutes = () => {
     return <main id="contenu" className="grid min-h-screen place-items-center"><p role="status">Vérification de votre accès…</p></main>
   }
 
-  return <Outlet />
+  return <BackofficeLayout />
 }
 
 export const router = createBrowserRouter([
@@ -57,7 +54,7 @@ export const router = createBrowserRouter([
       { path: "/espaces", element: <SpacesPage /> },
       {
         path: "/admin",
-        element: <AdminLayout />,
+        element: <Outlet />,
         children: [
           { index: true, element: <AdminDashboardPage /> },
           { path: "role", element: <RolesPage /> },
@@ -69,7 +66,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/contenus",
-        element: <ContentLayout />,
+        element: <Outlet />,
         children: [
           { index: true, element: <PublicationsPage /> },
           { path: "alertes", element: <AlertsPage /> },
@@ -78,7 +75,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/pilotage",
-        element: <PilotageLayout />,
+        element: <Outlet />,
         children: [
           { index: true, element: <WebcupFeedPage /> },
           { path: "tableau-de-bord", element: <ActivityDashboardPage /> },
@@ -86,7 +83,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/demandes",
-        element: <RequestsLayout />,
+        element: <Outlet />,
         children: [
           { index: true, element: <RequestQueuePage /> },
           { path: "rendez-vous", element: <AppointmentsPage /> },

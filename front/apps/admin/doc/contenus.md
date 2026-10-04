@@ -6,7 +6,7 @@
 
 Module `content` de l’admin : les agents y rédigent ce que la ville adresse aux habitants et tiennent à jour le catalogue des services. Lots L3, L7 et L9 ; **non vérifié dans un navigateur**, aucun test écrit.
 
-Accès : entrée « Contenus de la ville » de la barre latérale d’Administration. Les opérations sont autorisées par l’API : `admin.communication.write` (publications, alertes) et `admin.service.write` (services), données au rôle « Agent municipal ». Sans permission, la page affiche un refus explicite (`403`) ; un `401` ferme la session.
+Accès : groupe « Contenus de la ville » de la deuxième barre latérale d’Administration (Publications, Alertes, Services et transports). Les opérations sont autorisées par l’API : `admin.communication.write` (publications, alertes) et `admin.service.write` (services), données au rôle « Agent municipal ». Sans permission, la page affiche un refus explicite (`403`) ; un `401` ferme la session.
 
 ## Parcours
 
@@ -20,7 +20,7 @@ Les erreurs de règle métier (`400`) affichent le message français de l’API 
 
 ## Code
 
-`src/modules/content` : domaine (`core/domain/content.ts`), port `ContentGateway`, adaptateur `ContentHttpGateway` (`core/infrastructure/for-production/gateway/http`), session fournie par `auth/core/infrastructure/adapter/content/AuthContentSessionProvider`, pages `ui/pages/{publications,alerts,services}.tsx` sous `ui/layouts/content.layout.tsx`.
+`src/modules/content` : domaine (`core/domain/content.ts`), port `ContentGateway`, adaptateur `ContentHttpGateway` (`core/infrastructure/for-production/gateway/http`), session fournie par `auth/core/infrastructure/adapter/content/AuthContentSessionProvider`, pages `ui/pages/{publications,alerts,services}.tsx` dans l’enveloppe commune `app/backoffice-layout.tsx`.
 
 ## Limites
 
