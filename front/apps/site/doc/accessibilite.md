@@ -26,6 +26,8 @@ Tous les habitants, y compris les personnes qui naviguent au clavier, avec un le
 | Astuces au bon moment | `/services` (recherche) et `/espace/demandes/nouvelle` (bien décrire sa demande) : `ContextualTip`, refermable, vue une fois. | F35 |
 | Langage clair | « démarches » → « demandes » ou « services », « référence » → « numéro de suivi », « session expirée » → « déconnecté pour votre sécurité », catégorie « Papiers et citoyenneté », messages d’erreur techniques traduits (`getErrorMessage`). Glossaire `/aide/glossaire` (lien en pied de page, dans le guide et sur la confirmation de demande). | D13 |
 
+Le panneau « Affichage » du site porte aussi le **mode léger** (L17, F62) : voir [sobriété et performance](sobriete.md#mode-léger-f62). La fenêtre du panneau est chargée à la première ouverture.
+
 ## Vérifier à la main
 
 1. **Clavier** : depuis la barre d’adresse, `Tab` → « Aller au contenu » apparaît ; parcourir en-tête, fil d’Ariane, formulaire ; le contour de focus est toujours visible. Ouvrir « Affichage » avec Entrée, `Tab` reste dans la fenêtre, `Échap` la ferme et rend le focus au bouton.
@@ -51,4 +53,5 @@ Tous les habitants, y compris les personnes qui naviguent au clavier, avec un le
 - [Site](README.md)
 - [Admin — accessibilité](../../admin/doc/accessibilite.md)
 - [Chantier](../../../../doc/chantier/README.md)
+- [Sobriété et performance](sobriete.md)
 <!-- backlinks:end -->

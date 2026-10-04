@@ -103,6 +103,7 @@ Câblage : autoload `Communication\` (et `Tests\Communication\` réservé), serv
 - Notifications par e-mail en plus de l’application.
 - Recommandations par audience (aujourd’hui une seule liste par alerte).
 - Expiration automatique signalée en temps réel (aujourd’hui : rafraîchissement de secours).
+- Images des publications (F60, L17) : aucun téléversement aujourd’hui (texte seulement). S’il est ajouté, limiter poids et dimensions côté API et produire des variantes WebP/AVIF — voir [sobriété du site](../../../../front/apps/site/doc/sobriete.md#images-et-médias-f60).
 
 <!-- backlinks:start -->
 ---
@@ -121,4 +122,5 @@ Câblage : autoload `Communication\` (et `Tests\Communication\` réservé), serv
 - [Site](../../../../front/apps/site/doc/README.md)
 - [Admin — contenus](../../../../front/apps/admin/doc/contenus.md)
 - [Site — vitrine et alertes](../../../../front/apps/site/doc/vitrine-et-alertes.md)
+- [Site — sobriété et performance](../../../../front/apps/site/doc/sobriete.md)
 <!-- backlinks:end -->
