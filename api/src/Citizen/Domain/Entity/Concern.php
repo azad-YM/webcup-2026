@@ -54,7 +54,8 @@ class Concern
         if ($subject === '' || mb_strlen($subject) > self::SUBJECT_MAX || $message === '' || mb_strlen($message) > self::MESSAGE_MAX) {
             throw new \DomainException('A subject (at most 160 characters) and a message (at most 5000) are required.');
         }
-        $reference = 'INQ-' . strtoupper(substr(str_replace('-', '', $id), 0, 8));
+        // The tail of a UUID v7 is random; its head is a timestamp shared by concerns sent in the same instant.
+        $reference = 'INQ-' . strtoupper(substr(str_replace('-', '', $id), -8));
         $concern = new self($id, $reference, $citizenId, $topic, $subject, $message, $at);
         $concern->trail[] = ['status' => self::RECEIVED, 'at' => $at->format(\DateTimeInterface::ATOM), 'comment' => null];
 
