@@ -1,5 +1,6 @@
 import { ApiClient, ApiHttpError } from "@boilerplate/shared-utils/api-client"
 import { AppError } from "@/modules/shared/core/lib/use-cases.decorator"
+import { apiExplanation } from "./citizen-api"
 import type { ServiceRequestGateway } from "../../../../application/ports/gateway/service-request.gateway"
 import type { RequestDraft, ServiceRequest } from "../../../../domain/service-request"
 
@@ -16,6 +17,8 @@ export class ServiceRequestHttpGateway extends ApiClient implements ServiceReque
       return await request()
     } catch (error) {
       if (!(error instanceof ApiHttpError)) throw new AppError("NETWORK_ERROR", NETWORK_MESSAGE)
+      const explained = apiExplanation(error)
+      if (explained) throw new AppError(error.status, explained)
       switch (error.status) {
         case 401:
           throw new AppError(401, "Votre session a expiré. Veuillez vous reconnecter.")
@@ -23,9 +26,6 @@ export class ServiceRequestHttpGateway extends ApiClient implements ServiceReque
           throw new AppError(404, "Cette demande est introuvable dans votre espace.")
         case 422:
           throw new AppError(422, "Certaines informations ne sont pas acceptées. Vérifiez l’objet, la description et le lieu.")
-        case 409:
-          // F63 : service désactivé par la mairie — le message de l'API dit quoi faire à la place.
-          throw new AppError(409, error.payload?.message ?? error.payload?.error ?? "Ce service n’accepte pas de nouvelle demande pour le moment.")
         default:
           throw new AppError(error.status, UNAVAILABLE_MESSAGE)
       }

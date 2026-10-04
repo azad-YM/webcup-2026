@@ -6,6 +6,16 @@ const UNAVAILABLE_MESSAGE = "Le service est momentanément indisponible. Réessa
 
 type Messages = Partial<Record<number, string>>
 
+/** Message rédigé par l'API, en français, pour un refus qu'elle explique elle-même (F63, F69). */
+export function apiExplanation(error: ApiHttpError): string | null {
+  const payload = error.payload as { code?: string; message?: string; error?: string } | undefined
+  // 409 `service_disabled` : service désactivé par la mairie ; 429 : trop de tentatives, avec le délai d'attente.
+  if ((error.status === 409 && payload?.code === "service_disabled") || error.status === 429) {
+    return payload?.message ?? payload?.error ?? "Trop de tentatives en peu de temps. Patientez quelques minutes avant de réessayer."
+  }
+  return null
+}
+
 /**
  * Traduction commune des erreurs HTTP de Citizen en `AppError` affichables (notifications, rendez-vous,
  * participation). Le message de l'API (`error` d'une règle métier) est repris pour un 409/422 sans message dédié.
@@ -16,6 +26,8 @@ export async function callCitizenApi<T>(request: () => Promise<T>, messages: Mes
   } catch (error) {
     if (!(error instanceof ApiHttpError)) throw new AppError("NETWORK_ERROR", NETWORK_MESSAGE)
     if (error.status === 401) throw new AppError(401, "Votre session a expiré. Veuillez vous reconnecter.")
+    const explained = apiExplanation(error)
+    if (explained) throw new AppError(error.status, explained)
     const message = messages[error.status]
     if (message) throw new AppError(error.status, message)
     if (error.status === 404) throw new AppError(404, "Élément introuvable dans votre espace.")
