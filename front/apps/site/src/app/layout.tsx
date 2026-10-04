@@ -1,6 +1,7 @@
 import { NotificationBell } from "@/modules/citizen/ui/sections/notification-bell"
 import { SpacesList } from "@/modules/auth/ui/components/spaces-list"
 import { AlertBanner } from "@/modules/public/ui/sections/alerts"
+import { AssistantLauncher } from "@/modules/assistance/ui/components/assistant-launcher"
 import { StoreProvider } from "@/modules/shared/ui/store-provider"
 import type { Metadata } from "next"
 import "@boilerplate/shared-ui/global.css"
@@ -50,6 +51,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             {children}
           </main>
           <SiteFooter />
+          {/* F91, F92 : assistant d'orientation, chargé à la première ouverture. */}
+          <AssistantLauncher />
         </StoreProvider>
         </I18nProvider>
         </SiteAccessibilityProvider>
