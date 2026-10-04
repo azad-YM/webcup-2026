@@ -15,7 +15,7 @@ Prérequis : schéma migré et administrateur créé (`app:admin:bootstrap`, voi
 ```sh
 php bin/console app:demo:seed                     # demande confirmation
 php bin/console app:demo:seed -n                  # sans question (scripts)
-php bin/console app:demo:seed --admin-email=admin@ville.example --email-domain=example.com
+php bin/console app:demo:seed --admin-email=admin@example.com --email-domain=example.com   # valeurs par défaut
 ```
 
 La commande refuse de s’exécuter si l’administrateur n’existe pas et ne fait rien si `citoyen01@<domaine>` existe déjà (pas de doublon). En cas d’erreur, **rien n’est enregistré** (transaction englobante).

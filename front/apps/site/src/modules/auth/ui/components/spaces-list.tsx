@@ -2,7 +2,6 @@
 import { useEffect, useId } from "react"
 import { polling } from "@/modules/shared/ui/sobriety/polling"
 import Link from "next/link"
-import { Skeleton } from "@boilerplate/shared-ui/components/shadcn/skeleton"
 import {
   ArrowRight,
   Building2
@@ -58,23 +57,8 @@ export function SpacesList({ variant = "full" }: { variant?: "full" | "compact" 
         {" pour afficher les espaces accessibles à votre compte."}
       </p>
     )
-  if (variant === "menu" && (isFetching || (!data && !error)))
-    return (
-      <section aria-labelledby={headingId} className="my-2 border-y border-slate-200 py-3">
-        <h2 id={headingId} className="px-3 text-sm font-semibold text-slate-600">Changer d’espace</h2>
-        <Link href="/espace" className="mt-2 block rounded-lg bg-teal-50 px-3 py-2 font-medium text-teal-900">Espace citoyen <span className="text-xs">(site actuel)</span></Link>
-        <div role="status" aria-live="polite" className="mt-1 px-3 py-2">
-          <span className="sr-only">Chargement des espaces…</span>
-          <div aria-hidden="true" className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Skeleton className="size-4 bg-slate-100" />
-              <Skeleton className="h-4 w-28 bg-slate-100" />
-            </div>
-            <Skeleton className="h-3 w-40 max-w-full bg-slate-100" />
-          </div>
-        </div>
-      </section>
-    )
+  // Menu de l’avatar : rien pendant le chargement, la rubrique n’apparaît que si un espace est accessible (pas de clignotement pour un citoyen).
+  if (variant === "menu" && !data && !error) return null
   if (error)
     return (
       <div className="mt-6">

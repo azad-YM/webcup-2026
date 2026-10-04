@@ -23,7 +23,7 @@ export function AccountMenu() {
       <section className="my-2 border-y border-slate-200 py-3" aria-label="Espaces disponibles">
         <h2 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Mes espaces</h2>
         <div className="flex items-center gap-3 rounded-xl bg-teal-50 px-3 py-3 text-teal-900"><Building2 className="size-5" aria-hidden="true" /><span className="flex-1 text-sm font-medium">Administration<span className="block text-xs font-normal">Espace actuel</span></span><Check className="size-4" aria-hidden="true" /></div>
-        {citizen.isFetching ? <div role="status" aria-live="polite" className="mt-1 px-3 py-3">
+        {citizen.data === undefined && !citizen.isError ? <div role="status" aria-live="polite" className="mt-1 px-3 py-3">
           <span className="sr-only">Chargement des autres espaces…</span>
           <div aria-hidden="true" className="flex items-center gap-3">
             <Skeleton className="size-5 shrink-0 rounded-md bg-slate-100" />

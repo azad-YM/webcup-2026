@@ -22,7 +22,7 @@ Le code arrive sur le serveur par GitHub ; `.env` et `.env.local` de l’API son
 2. **API (serveur, après récupération du code)** :
 
 ```sh
-bash api/bin/deploy.sh --bootstrap-admin admin@<domaine> --seed-demo   # premier déploiement
+bash api/bin/deploy.sh --bootstrap-admin admin@example.com --seed-demo   # premier déploiement (même compte que le jeu de démo)
 bash api/bin/deploy.sh                                                 # mises à jour suivantes
 ```
 
