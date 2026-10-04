@@ -6,7 +6,9 @@ export type NavItem = { label: string; href: Route }
 export const MAIN_NAVIGATION: NavItem[] = [
   { label: "Accueil", href: "/" },
   { label: "Services", href: "/services" },
-  { label: "Actualités", href: "/actualites" }
+  { label: "Actualités", href: "/actualites" },
+  { label: "Projets", href: "/projets" },
+  { label: "Participer", href: "/participer" }
 ]
 
 /** Retire la barre oblique finale ajoutée par l’export statique (`trailingSlash`). */
