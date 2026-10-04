@@ -5,22 +5,22 @@ import { adminEntities } from "../data/entities"
 export function AdminDashboardPage() {
   return (
     <div className="mx-auto w-full max-w-7xl space-y-6">
-      <section className="bg-brand-gradient overflow-hidden rounded-3xl p-7 text-white shadow-xl sm:p-10">
-        <div className="mb-5 inline-flex rounded-2xl bg-white/10 p-3">
+      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
+        <div className="mb-5 inline-flex rounded-xl bg-teal-50 p-3 text-teal-700">
           <BookKey className="size-6" />
         </div>
-        <p className="text-sm font-medium uppercase tracking-[0.2em] text-slate-300">Administration</p>
+        <p className="text-sm font-medium uppercase tracking-[0.2em] text-slate-600">Administration</p>
         <h1 className="mt-2 max-w-3xl text-3xl font-semibold tracking-tight sm:text-4xl">
           Administrer l’application
         </h1>
-        <p className="mt-4 max-w-2xl leading-7 text-slate-300">
+        <p className="mt-4 max-w-2xl leading-7 text-slate-600">
           Retrouvez les rôles, les membres et le catalogue des permissions dans une navigation commune.
         </p>
       </section>
 
       <Link
         to="/pilotage/tableau-de-bord"
-        className="group flex items-center justify-between gap-4 rounded-2xl bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+        className="group flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-teal-600 hover:shadow-md"
       >
         <span>
           <span className="block text-lg font-semibold">Tableau de bord de l’activité</span>
@@ -34,10 +34,10 @@ export function AdminDashboardPage() {
           <Link
             key={entity.code}
             to={`/admin/${entity.code}`}
-            className="group rounded-2xl bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+            className="group rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-teal-600 hover:shadow-md"
           >
             <div className="flex items-start justify-between gap-4">
-              <span className="flex size-11 items-center justify-center rounded-xl bg-slate-100 text-slate-800">
+              <span className="flex size-11 items-center justify-center rounded-xl bg-teal-50 text-teal-800">
                 <entity.icon className="size-5" />
               </span>
               <ArrowUpRight className="size-5 text-slate-400 transition group-hover:text-slate-900" />

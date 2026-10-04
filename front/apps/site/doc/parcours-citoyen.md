@@ -31,7 +31,7 @@ Garde : une session est requise (sinon invitation à se connecter, avec retour v
 
 | Résultat | Comportement |
 |---|---|
-| `200` | « Bonjour <prénom> » (ou « Bonjour »), invitation « Complétez votre profil » si `profileCompleted` est faux, raccourcis (« Contacter la mairie », « Signaler un problème », « Mes demandes », services, actualités, profil), résumé « Mes informations », et carte « Administration » si le compte a cet espace IAM. |
+| `200` | « Bonjour <prénom> » (ou « Bonjour »), guide de première visite sous le message de bienvenue (avec complétion du profil), puis « Que souhaitez-vous faire ? » et les notifications de la ville. Le profil, les espaces IAM autorisés et la déconnexion sont regroupés dans le popover de l’avatar de l’en-tête. |
 | `404` | « Ce compte n’est pas encore un compte citoyen », bouton **« Activer mon compte citoyen »** (`POST /api/citizen/me/activate`, puis rechargement du profil) et liste des espaces IAM (carte « Administration » pour un membre, sinon « aucun espace »). |
 | `401` | Session fermée, caches vidés, invitation à se reconnecter. |
 | Panne réseau ou `5xx` | Message et « Réessayer », sans déconnexion. |
@@ -39,6 +39,8 @@ Garde : une session est requise (sinon invitation à se connecter, avec retour v
 ## 3. Mon profil (`/espace/profil`)
 
 Même garde. Formulaire pré-rempli. `PUT /api/citizen/me` **remplace tout le profil** : le site envoie toujours les six champs, champ vide → `null`. Après l’enregistrement : « Vos informations ont été enregistrées. » (annonce `aria-live`) et lien de retour vers l’espace. Un `422` rattaché à un champ s’affiche sous ce champ ; la saisie est conservée en cas d’erreur.
+
+À l’ouverture du profil ou de l’étape « Mes informations », le site recharge le profil depuis l’API avant d’afficher le formulaire, même si une version est déjà en cache. Les champs non modifiés suivent le profil reçu ; seules les modifications explicites du citoyen le remplacent, y compris l’effacement volontaire d’un champ.
 
 ## 4. Demandes citoyennes (lot L2)
 
@@ -58,7 +60,7 @@ Code : module `citizen` (`ui/pages/service-requests.tsx`, `ui/pages/new-service-
 
 ## Notifications de l’espace (F49)
 
-- `/espace` affiche « Mes notifications » (`citizen/ui/sections/notification-center.tsx`) : message clair (« Votre demande NT-2026-0042 est passée à « Prise en charge ». »), date, badge « Non lue », lien « Voir le détail », bouton « Tout marquer comme lu ». Une notification arrivée pendant que la page est ouverte est annoncée dans un bandeau « Nouveau : … » (`role="status"`).
+- La cloche de l’en-tête, disponible sur toutes les pages pour un citoyen connecté, affiche le nombre de notifications personnelles non lues et ouvre « Mes notifications » (`citizen/ui/sections/notification-center.tsx`) : message clair (« Votre demande NT-2026-0042 est passée à « Prise en charge ». »), date, badge « Non lue », lien « Voir le détail », bouton « Tout marquer comme lu ». Les filtres « Toutes », « Non lues » et « Lues » permettent de retrouver les messages ; les états « Lue » et « Non lue » sont explicites. Une notification arrivée pendant que le panneau est ouvert est annoncée dans un bandeau « Nouveau : … » (`role="status"`).
 - Pastille du nombre de notifications de demandes non lues sur le raccourci « Mes demandes ». Ouvrir le détail d’une demande marque ses notifications comme lues.
 - Données : port `NotificationGateway` → `NotificationHttpGateway` (`GET /api/citizen/notifications`, `POST /api/citizen/notifications/read`), RTK `notificationsApi` ; contrat dans [Citizen — notifications](../../../../api/src/Citizen/doc/notifications.md).
 - Temps réel : `notification.created` et `request.status_changed` sur l’unique flux de l’onglet invalident le cache ; polling de secours de 60 s.

@@ -26,7 +26,7 @@ export function MemberList() {
         ) : (
           <>
             <p role="status" className="text-sm text-muted-foreground">{list.length} membre(s){members.isFetching ? " · actualisation…" : ""}</p>
-            <div className="overflow-x-auto rounded-lg border">
+            <div className="nt-data-table overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>

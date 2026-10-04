@@ -6,7 +6,7 @@ import { ProfileForm } from "../sections/profile-form/profile-form"
 import { CitizenAccessState, useCitizenAccess } from "../components/citizen-access"
 
 export function CitizenProfilePage() {
-  const access = useCitizenAccess()
+  const access = useCitizenAccess({ refreshProfile: true })
   return (
     <>
       <PageHeader

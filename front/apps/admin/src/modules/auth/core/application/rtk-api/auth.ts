@@ -1,3 +1,4 @@
+import { hasCitizenWorkspace } from "../usecases/citizen-workspace.usecase"
 import { startPortalLogin, completePortalLogin } from "../usecases/portal-login.usecase"
 import { createApi } from "@reduxjs/toolkit/query/react"
 import { fakeBaseQuery } from "@reduxjs/toolkit/query"
@@ -15,6 +16,7 @@ export const authApi = createApi({
   baseQuery: fakeBaseQuery(),
   tagTypes: ["Profile"],
   endpoints: (build) => ({
+    hasCitizenWorkspace: build.query<boolean, void>({ queryFn: withUseCase(hasCitizenWorkspace) }),
     startPortalLogin: build.mutation<string, void>({ queryFn: withUseCase(startPortalLogin) }),
     completePortalLogin: build.mutation<void, { code: string; state: string }>({ queryFn: withUseCase(completePortalLogin) }),
     getProfile: build.query<AuthProfile | null, void>({
@@ -32,6 +34,7 @@ export const authApi = createApi({
 })
 
 export const {
+  useHasCitizenWorkspaceQuery,
   useStartPortalLoginMutation,
   useCompletePortalLoginMutation,
   useGetProfileQuery,

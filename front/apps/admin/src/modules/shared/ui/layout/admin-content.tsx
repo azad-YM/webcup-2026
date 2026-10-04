@@ -1,15 +1,13 @@
 import { useEffect, useRef, type ReactNode } from "react"
 import { Link, Outlet, useLocation } from "react-router"
-import { SidebarInset, SidebarTrigger } from "@boilerplate/shared-ui/components"
 import { BreadcrumbTrail, DisplayPreferencesButton } from "@boilerplate/shared-ui/components/a11y"
-import { NavUser } from "@/modules/shared/ui/components/sidebar/nav-user"
 import { breadcrumbFor } from "./breadcrumbs"
 
 export const MAIN_CONTENT_ID = "contenu"
 
 /**
  * Zone principale commune aux espaces de l’admin (L4) : barre d’en-tête
- * (menu, fil d’Ariane D15, bouton « Affichage », compte), `main#contenu`
+ * (menu, fil d’Ariane D15, bouton « Affichage »), `main#contenu`
  * cible du lien d’évitement, titre du document et focus déplacé sur le
  * titre de la page après chaque navigation (annoncé par les lecteurs d’écran).
  */
@@ -38,10 +36,9 @@ export function AdminContent({ headerExtra }: { headerExtra?: ReactNode }) {
   }, [pathname])
 
   return (
-    <SidebarInset>
-      <header className="flex min-h-16 shrink-0 flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b px-4 py-2">
+    <div className="flex min-w-0 flex-1 flex-col">
+      <header className="flex min-h-16 shrink-0 flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-slate-200 bg-white px-4 py-3 sm:px-6">
         <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <SidebarTrigger className="-ml-1 text-foreground" />
           {headerExtra}
           <BreadcrumbTrail
             items={trail}
@@ -51,12 +48,11 @@ export function AdminContent({ headerExtra }: { headerExtra?: ReactNode }) {
         </div>
         <div className="flex items-center gap-2">
           <DisplayPreferencesButton className="text-foreground" />
-          <NavUser />
         </div>
       </header>
-      <main id={MAIN_CONTENT_ID} ref={mainRef} tabIndex={-1} className="min-w-0 flex-1 bg-slate-50 p-4 outline-none sm:p-6">
+      <main id={MAIN_CONTENT_ID} ref={mainRef} tabIndex={-1} className="min-w-0 flex-1 bg-slate-50 p-4 outline-none sm:p-6 lg:p-8">
         <Outlet />
       </main>
-    </SidebarInset>
+    </div>
   )
 }

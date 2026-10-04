@@ -1,6 +1,7 @@
 "use client"
-import { useEffect } from "react"
+import { useEffect, useId } from "react"
 import Link from "next/link"
+import { Skeleton } from "@boilerplate/shared-ui/components"
 import {
   ArrowRight,
   Building2
@@ -28,7 +29,8 @@ const portals = [
  * - `full` : tous les états, y compris « aucun espace disponible ».
  * - `compact` : n’affiche rien tant qu’il n’y a pas d’espace (cas courant d’un citoyen).
  */
-export function SpacesList({ variant = "full" }: { variant?: "full" | "compact" }) {
+export function SpacesList({ variant = "full" }: { variant?: "full" | "compact" | "menu" }) {
+  const headingId = useId()
   const { ready, hasToken, logout } = useSession()
   const { data, error, refetch, isFetching } = useListSpacesQuery(undefined, {
     skip: !ready || !hasToken,
@@ -36,7 +38,7 @@ export function SpacesList({ variant = "full" }: { variant?: "full" | "compact" 
     pollingInterval: 60_000
   })
   const unauthorized = error && "status" in error && error.status === 401
-  const compact = variant === "compact"
+  const compact = variant !== "full"
   useEffect(() => {
     if (unauthorized) logout()
   }, [unauthorized, logout])
@@ -54,6 +56,23 @@ export function SpacesList({ variant = "full" }: { variant?: "full" | "compact" 
         </Link>
         {" pour afficher les espaces accessibles à votre compte."}
       </p>
+    )
+  if (variant === "menu" && (isFetching || (!data && !error)))
+    return (
+      <section aria-labelledby={headingId} className="my-2 border-y border-slate-200 py-3">
+        <h2 id={headingId} className="px-3 text-sm font-semibold text-slate-600">Changer d’espace</h2>
+        <Link href="/espace" className="mt-2 block rounded-lg bg-teal-50 px-3 py-2 font-medium text-teal-900">Espace citoyen <span className="text-xs">(site actuel)</span></Link>
+        <div role="status" aria-live="polite" className="mt-1 px-3 py-2">
+          <span className="sr-only">Chargement des espaces…</span>
+          <div aria-hidden="true" className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Skeleton className="size-4 bg-slate-100" />
+              <Skeleton className="h-4 w-28 bg-slate-100" />
+            </div>
+            <Skeleton className="h-3 w-40 max-w-full bg-slate-100" />
+          </div>
+        </div>
+      </section>
     )
   if (error)
     return (
@@ -86,9 +105,23 @@ export function SpacesList({ variant = "full" }: { variant?: "full" | "compact" 
         Aucun espace de travail disponible pour votre compte.
       </p>
     )
+  if (variant === "menu") return (
+    <section aria-labelledby={headingId} className="my-2 border-y border-slate-200 py-3">
+      <h2 id={headingId} className="px-3 text-sm font-semibold text-slate-600">Changer d’espace</h2>
+      <Link href="/espace" className="mt-2 block rounded-lg bg-teal-50 px-3 py-2 font-medium text-teal-900">Espace citoyen <span className="text-xs">(site actuel)</span></Link>
+      {availablePortals.map((portal) => {
+        const space = data.find((item) => item.code === portal.code)
+        return <a key={portal.code} href={`${portal.href}/auth/start`} target="_blank" rel="noopener noreferrer" className="mt-1 block rounded-lg px-3 py-2 text-slate-800 hover:bg-slate-100">
+          <span className="flex items-center gap-2 font-medium"><Building2 className="size-4" aria-hidden="true" />{space?.name ?? portal.title}<ArrowRight className="ml-auto size-4" aria-hidden="true" /></span>
+          <span className="mt-1 block text-sm text-slate-600">{space?.roles.join(" · ")}</span>
+          <span className="sr-only"> (nouvel onglet)</span>
+        </a>
+      })}
+    </section>
+  )
   return (
-    <section aria-labelledby="titre-espaces" className={compact ? "" : "mt-6"}>
-      <h2 id="titre-espaces" className="text-2xl font-semibold tracking-tight">Vos espaces de travail</h2>
+    <section aria-labelledby={headingId} className={compact ? "" : "mt-6"}>
+      <h2 id={headingId} className="text-2xl font-semibold tracking-tight">Vos espaces de travail</h2>
       <div className="mt-5 grid gap-5 lg:grid-cols-3">
         {availablePortals.map((portal) => {
           const space = data.find((item) => item.code === portal.code)
