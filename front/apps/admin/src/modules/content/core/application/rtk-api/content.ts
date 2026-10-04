@@ -1,6 +1,6 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { withUseCase } from "@/modules/shared/core/config/use-cases"
-import type { Alert, MunicipalService, Publication } from "../../domain/content"
+import type { Alert, MunicipalService, Publication, ServiceAvailabilityChange } from "../../domain/content"
 import {
   listAlerts,
   listDistricts,
@@ -9,6 +9,7 @@ import {
   saveAlert,
   savePublication,
   saveService,
+  setServiceAvailability,
 } from "../usecases/content.usecase"
 
 export const contentApi = createApi({
@@ -18,6 +19,7 @@ export const contentApi = createApi({
   endpoints: (build) => ({
     listServices: build.query<MunicipalService[], void>({ queryFn: withUseCase(listServices), providesTags: ["Services"] }),
     saveService: build.mutation<MunicipalService, MunicipalService>({ queryFn: withUseCase(saveService), invalidatesTags: ["Services"] }),
+    setServiceAvailability: build.mutation<MunicipalService, ServiceAvailabilityChange>({ queryFn: withUseCase(setServiceAvailability), invalidatesTags: ["Services"] }),
     listDistricts: build.query<string[], void>({ queryFn: withUseCase(listDistricts), keepUnusedDataFor: 3600 }),
     listPublications: build.query<Publication[], void>({ queryFn: withUseCase(listPublications), providesTags: ["Publications"] }),
     savePublication: build.mutation<Publication, Publication>({ queryFn: withUseCase(savePublication), invalidatesTags: ["Publications"] }),
@@ -29,6 +31,7 @@ export const contentApi = createApi({
 export const {
   useListServicesQuery,
   useSaveServiceMutation,
+  useSetServiceAvailabilityMutation,
   useListDistrictsQuery,
   useListPublicationsQuery,
   useSavePublicationMutation,

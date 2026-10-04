@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Citizen\Application\Command\ChangeMyAppointment;
 
+use Citizen\Application\Exception\MunicipalServiceUnavailable;
 use Citizen\Application\Ports\Provider\CurrentAccountProvider;
+use Citizen\Application\Ports\Provider\MunicipalServiceDirectory;
 use Citizen\Application\Ports\Repository\AppointmentRepository;
 use Citizen\Application\Ports\Repository\CitizenRepository;
 use Citizen\Application\ViewModel\AppointmentViews;
@@ -21,6 +23,7 @@ final readonly class ChangeMyAppointmentHandler
         private CurrentAccountProvider $identity,
         private AppointmentRepository $appointments,
         private IClock $clock,
+        private ?MunicipalServiceDirectory $services = null,
     ) {}
 
     /** @return array<string, mixed> */
@@ -39,6 +42,10 @@ final readonly class ChangeMyAppointmentHandler
             $appointment->cancel($now);
         } else {
             $next = $this->appointments->findSlot($slotId) ?? throw new NotFoundException('Slot not found.');
+            // F63 : déplacer vers un service désactivé est refusé ; annuler reste toujours possible.
+            if (($service = $this->services?->find($next->serviceId)) !== null && $service->disabled) {
+                throw MunicipalServiceUnavailable::for($service);
+            }
             $appointment->reschedule($next, $now);
             $next->book($appointment->id, $now);
             $this->appointments->saveSlot($next);

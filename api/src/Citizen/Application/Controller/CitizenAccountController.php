@@ -22,7 +22,7 @@ final class CitizenAccountController extends AppController
     {
         $search = $request->query->get('q');
         $status = $request->query->get('status');
-        return $this->dispatchQuery(new ListCitizenAccountsQuery(is_string($search) ? mb_substr($search, 0, 180) : null, is_string($status) ? $status : null));
+        return $this->dispatchQuery(new ListCitizenAccountsQuery(is_string($search) ? mb_substr($search, 0, 180) : null, is_string($status) ? $status : null, $request->query->getBoolean('reveal')));
     }
 
     #[Route('/api/citizen/accounts/suspension', name: 'citizen_account_suspension', methods: ['PUT'], format: 'json')]

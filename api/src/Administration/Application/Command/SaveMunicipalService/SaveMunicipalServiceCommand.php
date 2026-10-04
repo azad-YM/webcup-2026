@@ -17,18 +17,18 @@ final readonly class SaveMunicipalServiceCommand
      */
     public function __construct(
         #[Assert\NotBlank] #[Assert\Length(max: 80)] public string $id,
-        #[Assert\NotBlank] public string $name,
-        #[Assert\NotBlank] public string $category,
-        #[Assert\NotBlank] public string $summary,
-        #[Assert\NotBlank] public string $description,
-        public array $actions = [],
-        public array $contact = [],
+        #[Assert\NotBlank] #[Assert\Length(max: 200)] public string $name,
+        #[Assert\NotBlank] #[Assert\Length(max: 40)] public string $category,
+        #[Assert\NotBlank] #[Assert\Length(max: 1000)] public string $summary,
+        #[Assert\NotBlank] #[Assert\Length(max: 10000)] public string $description,
+        #[Assert\Count(max: 50)] public array $actions = [],
+        #[Assert\Count(max: 3)] public array $contact = [],
         public bool $featured = false,
-        public array $keywords = [],
+        #[Assert\Count(max: 50)] public array $keywords = [],
         #[Assert\Choice(['available', 'maintenance', 'incident'])] public string $status = 'available',
-        public string $statusMessage = '',
-        public ?string $returnAt = null,
-        public string $alternative = '',
+        #[Assert\Length(max: 2000)] public string $statusMessage = '',
+        #[Assert\Length(max: 40)] public ?string $returnAt = null,
+        #[Assert\Length(max: 2000)] public string $alternative = '',
         public ?array $transport = null,
     ) {}
 }

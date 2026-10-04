@@ -18,6 +18,10 @@ Accès : groupe « Contenus de la ville » de la deuxième barre latérale d’A
 
 Les erreurs de règle métier (`400`) affichent le message français de l’API ; un payload incomplet (`422`) affiche un message générique. Chaque liste distingue chargement, erreur avec « Réessayer » et liste vide.
 
+### Désactiver un service en urgence (L18/F63 — non testé, non vérifié dans un navigateur)
+
+Dans « Services et transports », chaque service porte un bouton « Désactiver le service » (permission `admin.service.disable`). Un petit formulaire demande le **motif, obligatoire** (5 à 500 caractères, affiché aux habitants) et rappelle l’effet immédiat : plus aucune nouvelle demande ni réservation, l’existant est conservé. Un service désactivé affiche le badge « Désactivé », son motif, sa date, et un bouton « Réactiver le service ». Backend : `POST /api/administration/services/availability` ([Administration](../../../../api/src/Administration/doc/README.md)) ; journal des actions et mise à jour du site en temps réel.
+
 ## Code
 
 `src/modules/content` : domaine (`core/domain/content.ts`), port `ContentGateway`, adaptateur `ContentHttpGateway` (`core/infrastructure/for-production/gateway/http`), session fournie par `auth/core/infrastructure/adapter/content/AuthContentSessionProvider`, pages `ui/pages/{publications,alerts,services}.tsx` dans l’enveloppe commune `app/backoffice-layout.tsx`.

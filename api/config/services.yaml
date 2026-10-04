@@ -60,6 +60,8 @@ services:
             - '../src/Shared/**/Tests/'
             - '../src/Shared/Infrastructure/Kernel.php'
             - '../src/Shared/Infrastructure/Realtime/RealtimeEvent.php'
+            - '../src/Shared/Infrastructure/RateLimit/RateLimitCounter.php'
+            - '../src/Shared/Infrastructure/Doctrine/EncryptedStringType.php'
 
     # --- IAM : comptes et sessions ---
 
@@ -165,6 +167,10 @@ services:
     # Citizen consomme Administration (file des demandes : admin.request.read / admin.request.write).
     Citizen\Application\Ports\Provider\RequestAccessPolicy:
         alias: Administration\Infrastructure\Adapter\Citizen\AdminRequestAccessPolicy
+
+    # F70 : données personnelles sensibles des habitants (admin.sensitive-data.read).
+    Citizen\Application\Ports\Provider\SensitiveDataAccessPolicy:
+        alias: Administration\Infrastructure\Adapter\Citizen\AdminSensitiveDataAccessPolicy
 
     # --- Socle ---
 

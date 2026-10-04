@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router"
 import { Menu, PanelLeftClose, PanelLeftOpen } from "@boilerplate/shared-ui/components/icon"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@boilerplate/shared-ui/components"
 import { AccountMenu } from "@/modules/auth/ui/components/account-menu"
+import { SessionExpiryNotice } from "@/modules/auth/ui/components/session-expiry-notice"
 import { useListSpacesQuery } from "@/modules/auth/core/application/rtk-api/auth"
 import { ModuleSwitcher } from "@/modules/shared/ui/components/sidebar/module-switcher"
 import { NavMain } from "@/modules/shared/ui/components/sidebar/nav-main"
@@ -32,6 +33,7 @@ export function BackofficeLayout() {
   return <div className="flex min-h-svh bg-slate-50 text-slate-950">
     <div className="sticky top-0 hidden h-svh shrink-0 lg:flex">{rail}<div id="navigation-desktop" hidden={!expanded} className="w-64 border-r border-slate-200 [&>div]:h-full">{secondary}</div></div>
     <AdminContent headerExtra={<>
+      <SessionExpiryNotice />
       <button type="button" aria-label={expanded ? "Replier les rubriques" : "Afficher les rubriques"} aria-expanded={expanded} aria-controls="navigation-desktop" onClick={() => setExpanded(!expanded)} className="hidden rounded-lg p-2 text-slate-700 hover:bg-slate-100 lg:inline-flex">{expanded ? <PanelLeftClose className="size-5" /> : <PanelLeftOpen className="size-5" />}</button>
       <Sheet open={openOn === pathname} onOpenChange={(open) => setOpenOn(open ? pathname : null)}>
         <SheetTrigger asChild><button type="button" className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm lg:hidden"><Menu className="size-4" aria-hidden="true" /> Menu</button></SheetTrigger>

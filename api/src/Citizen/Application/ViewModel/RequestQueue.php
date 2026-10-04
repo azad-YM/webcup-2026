@@ -15,5 +15,7 @@ final readonly class RequestQueue
         public int $page,
         public int $pageSize,
         public bool $canProcess,
+        /** @var array{revealed: bool, canReveal: bool} F70 */
+        public array $sensitive = ['revealed' => false, 'canReveal' => false],
     ) {}
 }

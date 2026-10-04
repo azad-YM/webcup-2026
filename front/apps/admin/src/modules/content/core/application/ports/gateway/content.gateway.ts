@@ -1,13 +1,15 @@
-import type { Alert, MunicipalService, Publication } from "../../../domain/content"
+import type { Alert, MunicipalService, Publication, ServiceAvailabilityChange } from "../../../domain/content"
 
 /**
  * Gestion des contenus par les agents. Erreurs : `ContentError`.
- * - Administration : `GET|PUT /administration/services`, `GET /administration/districts` (permission `admin.service.write` pour écrire) ;
+ * - Administration : `GET|PUT /administration/services`, `GET /administration/districts` (permission `admin.service.write` pour écrire),
+ *   `POST /administration/services/availability` (permission `admin.service.disable`, F63) ;
  * - Communication : `GET|PUT /communication/manage/publications`, `GET|PUT /communication/manage/alerts` (permission `admin.communication.write`).
  */
 export interface ContentGateway {
   listServices(): Promise<MunicipalService[]>
   saveService(service: MunicipalService): Promise<MunicipalService>
+  setServiceAvailability(change: ServiceAvailabilityChange): Promise<MunicipalService>
   listDistricts(): Promise<string[]>
   listPublications(): Promise<Publication[]>
   savePublication(publication: Publication): Promise<Publication>

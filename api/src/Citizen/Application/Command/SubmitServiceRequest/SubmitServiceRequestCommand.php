@@ -23,6 +23,7 @@ final readonly class SubmitServiceRequestCommand
         #[Assert\Length(max: ServiceRequest::LOCATION_MAX)]
         public ?string $location = null,
         #[Assert\Length(max: ServiceRequest::SERVICE_ID_MAX)]
+        #[Assert\Regex(pattern: '/^[a-z0-9][a-z0-9-]*$/', message: 'Identifiant de service invalide.')]
         public ?string $serviceId = null,
         /** F52 : rendre le signalement visible des autres habitants (sujet, lieu, état ; jamais l'auteur). */
         public bool $isPublic = false,

@@ -62,6 +62,11 @@ export function YourDataPage() {
               </table>
             </div>
           </section>
+          <section aria-labelledby="titre-securite" className="rounded-2xl border border-teal-200 bg-teal-50 p-6">
+            <h2 id="titre-securite" className="text-2xl font-semibold tracking-tight">Comment vos données sont protégées</h2>
+            <p className="mt-2 text-slate-800">Coordonnées chiffrées, accès des agents limité et journalisé, tentatives répétées freinées : tout est expliqué simplement.</p>
+            <Link href={"/vos-donnees/securite" as Route} className="mt-4 inline-flex rounded-xl bg-teal-700 px-5 py-3 font-medium text-white hover:bg-teal-800">Sécurité de vos données</Link>
+          </section>
           <section aria-labelledby="titre-droits" className="rounded-2xl border border-slate-200 bg-white p-6">
             <h2 id="titre-droits" className="text-2xl font-semibold tracking-tight">Vos droits</h2>
             <ul className="mt-4 list-disc space-y-2 pl-6 text-slate-800">

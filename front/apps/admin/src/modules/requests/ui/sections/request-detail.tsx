@@ -12,6 +12,7 @@ import {
   type RequestStatus,
   type ServiceRequest,
 } from "../../core/domain/service-request"
+import { MaskedValue } from "@/modules/shared/ui/components/custom/sensitive-data"
 import { RequestStatusBadge } from "./request-status-badge"
 
 const dateTime = new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeStyle: "short" })
@@ -25,8 +26,8 @@ export function RequestDetail({ request, canProcess }: { request: ServiceRequest
         <h2 id="request-detail-title" className="mt-1 text-lg font-semibold">{request.subject}</h2>
         <div className="mt-2"><RequestStatusBadge status={request.status} /></div>
       </div>
-      {request.location && (
-        <p className="flex items-start gap-2 text-sm"><MapPin className="mt-0.5 size-4 shrink-0" aria-hidden="true" /><span><span className="font-medium">Lieu : </span>{request.location}</span></p>
+      {(request.location || request.maskedFields?.includes("location")) && (
+        <p className="flex items-start gap-2 text-sm"><MapPin className="mt-0.5 size-4 shrink-0" aria-hidden="true" /><span><span className="font-medium">Lieu : </span><MaskedValue field="location" masked={request.maskedFields} value={request.location} /></span></p>
       )}
       {request.serviceId && <p className="text-sm"><span className="font-medium">Service : </span>{request.serviceId}</p>}
       <div>

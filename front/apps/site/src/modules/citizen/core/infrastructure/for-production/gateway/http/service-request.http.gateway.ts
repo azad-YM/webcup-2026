@@ -1,5 +1,6 @@
 import { ApiClient, ApiHttpError } from "@boilerplate/shared-utils/api-client"
 import { AppError } from "@/modules/shared/core/lib/use-cases.decorator"
+import { apiExplanation } from "./citizen-api"
 import type { ServiceRequestGateway } from "../../../../application/ports/gateway/service-request.gateway"
 import type { RequestDraft, ServiceRequest } from "../../../../domain/service-request"
 
@@ -16,6 +17,8 @@ export class ServiceRequestHttpGateway extends ApiClient implements ServiceReque
       return await request()
     } catch (error) {
       if (!(error instanceof ApiHttpError)) throw new AppError("NETWORK_ERROR", NETWORK_MESSAGE)
+      const explained = apiExplanation(error)
+      if (explained) throw new AppError(error.status, explained)
       switch (error.status) {
         case 401:
           throw new AppError(401, "Votre session a expiré. Veuillez vous reconnecter.")

@@ -15,6 +15,12 @@ Les administrateurs voient les tentatives de connexion suspectes (F37, lot L8). 
 
 Pas de mise à jour en temps réel : la page s’actualise à la demande. Règles de verrouillage : [IAM — protection des connexions](../../../../api/src/IAM/doc/comptes-et-sessions.md#protection-contre-les-tentatives-de-connexion-f37).
 
+## Session et contenu (L20/F69 — non testé, non vérifié dans un navigateur)
+
+- Cinq minutes avant l’expiration du jeton, l’en-tête affiche « Session : N min restantes » (`auth/ui/components/session-expiry-notice.tsx`, lecture de `exp` dans le jeton) avec « Rester connecté » (`/auth/start`).
+- Le build injecte une politique de sécurité du contenu (`vite.config.ts`, plugin `nova-terra-csp`) : scripts de l’application seulement, appels et flux SSE vers l’origine de `VITE_API_BASE_URL` seulement.
+- Décision : [ADR 007](../../../../doc/technique/decisions/007-protection-des-donnees.md).
+
 <!-- backlinks:start -->
 ---
 
@@ -24,4 +30,5 @@ Pas de mise à jour en temps réel : la page s’actualise à la demande. Règle
 
 - [admin](README.md)
 - [IAM — comptes et sessions](../../../../api/src/IAM/doc/comptes-et-sessions.md)
+- [ADR 007](../../../../doc/technique/decisions/007-protection-des-donnees.md)
 <!-- backlinks:end -->

@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react"
 import { getErrorMessage } from "@boilerplate/shared-utils/error.utils"
 import { RefreshCw, Trash2 } from "@boilerplate/shared-ui/components/icon"
 import { Button, Input, Label, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Textarea } from "@boilerplate/shared-ui/components"
+import { MaskedValue, SensitiveDataBar } from "@/modules/shared/ui/components/custom/sensitive-data"
 import { DESK_POLLING_MS, useAppointmentDayQuery, useOpenSlotsMutation, useRemoveSlotMutation } from "../../core/application/rtk-api/agent-desk"
 import { cityToday, localTime, type AppointmentDay } from "../../core/domain/agent-desk"
 import { RequestQueueSkeleton } from "../sections/request-queue-skeleton"
@@ -67,7 +68,9 @@ function OpenSlotsForm({ day }: { day: AppointmentDay }) {
 /** Guichet des rendez-vous (F39) : rendez-vous du jour, ouverture et retrait de créneaux. */
 export function AppointmentsPage() {
   const [date, setDate] = useState(cityToday)
-  const query = useAppointmentDayQuery(date, { pollingInterval: DESK_POLLING_MS })
+  const [reveal, setReveal] = useState(false)
+  // F70 : chaque affichage des téléphones est journalisé ; pas de rafraîchissement périodique dans ce mode.
+  const query = useAppointmentDayQuery({ date, reveal }, { pollingInterval: reveal ? 0 : DESK_POLLING_MS })
   const [removeSlot, removing] = useRemoveSlotMutation()
   const day = query.currentData
   return (
@@ -88,6 +91,7 @@ export function AppointmentsPage() {
         <Label htmlFor="desk-date">Jour</Label>
         <Input id="desk-date" type="date" value={date} onChange={(event) => event.target.value && setDate(event.target.value)} />
       </div>
+      <SensitiveDataBar meta={day?.sensitive} revealed={reveal} onChange={setReveal} busy={query.isFetching} />
       {query.isFetching && (!day || day.items.length === 0) ? (
         <RequestQueueSkeleton label="Chargement des rendez-vous…" />
       ) : query.error && !day ? (
@@ -122,7 +126,9 @@ export function AppointmentsPage() {
                         {slot.appointment ? (
                           <span>
                             <span className="font-medium">{slot.appointment.citizenName}</span> · {slot.appointment.reference}
-                            {slot.appointment.citizenPhone && <> · {slot.appointment.citizenPhone}</>}
+                            {slot.appointment.maskedFields?.includes("citizenPhone")
+                              ? <> · <span className="sr-only">Téléphone : </span><MaskedValue field="citizenPhone" masked={slot.appointment.maskedFields} value={null} /></>
+                              : slot.appointment.citizenPhone && <> · {slot.appointment.citizenPhone}</>}
                           </span>
                         ) : (
                           <span className="text-muted-foreground">Libre</span>

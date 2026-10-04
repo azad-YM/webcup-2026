@@ -38,6 +38,9 @@ export type MunicipalService = {
   alternative: string
   /** Horaires et informations des transports municipaux (F36), pour un service de mobilité. */
   transport: TransportInformation | null
+  /** F63 : désactivé en urgence par la mairie — aucune nouvelle demande ni réservation ; `disabledReason` l’explique. */
+  disabled?: boolean
+  disabledReason?: string
 }
 
 export const SERVICE_STATUS_LABELS: Record<ServiceStatus, string> = {
@@ -47,6 +50,12 @@ export const SERVICE_STATUS_LABELS: Record<ServiceStatus, string> = {
 }
 
 export const isDisrupted = (service: Pick<MunicipalService, "status">) => service.status !== "available"
+
+/** F64 : état affiché avant toute démarche — désactivé (bloquant), perturbé (démarche possible, avec réserve) ou disponible. */
+export type ServiceAvailability = "disabled" | "disrupted" | "available"
+
+export const serviceAvailability = (service: Pick<MunicipalService, "status" | "disabled">): ServiceAvailability =>
+  service.disabled ? "disabled" : isDisrupted(service) ? "disrupted" : "available"
 
 export type ServiceFilter = { query?: string; category?: ServiceCategory | null }
 

@@ -10,6 +10,7 @@ import { withUseCase } from "@/modules/shared/core/config/use-cases"
 import { getProfile } from "../usecases/get-profile.usecase"
 import { listSpaces } from "../usecases/list-spaces.usecase"
 import { logout } from "../usecases/logout.usecase"
+import { getSessionExpiry } from "../usecases/session-expiry.usecase"
 
 export const authApi = createApi({
   reducerPath: "authApi",
@@ -26,6 +27,7 @@ export const authApi = createApi({
     listSpaces: build.query<AuthSpace[], void>({
       queryFn: withUseCase(listSpaces),
     }),
+    getSessionExpiry: build.query<number | null, void>({ queryFn: withUseCase(getSessionExpiry) }),
     logout: build.mutation<void, void>({
       queryFn: withUseCase(logout),
       invalidatesTags: ["Profile"],
@@ -40,4 +42,5 @@ export const {
   useGetProfileQuery,
   useListSpacesQuery,
   useLogoutMutation,
+  useGetSessionExpiryQuery,
 } = authApi

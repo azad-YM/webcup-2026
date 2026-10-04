@@ -2,11 +2,12 @@ import type { Permission } from "../../../core/domain/permission"
 
 const actions: Record<string, string> = {
   read: "Lire", write: "Créer / modifier", delete: "Supprimer",
-  approve: "Approuver", reject: "Refuser", execute: "Exécuter",
+  approve: "Approuver", reject: "Refuser", execute: "Exécuter", disable: "Désactiver en urgence",
 }
 const resources: Record<string, string> = {
   role: "Rôles", member: "Membres", "role-assignment": "Attribution des rôles",
   pilotage: "Flux Nova Terra (pilotage)", request: "Demandes citoyennes (lire = file, modifier = traiter)",
+  service: "Services municipaux", "sensitive-data": "Données personnelles sensibles des habitants",
 }
 
 export const permissionLabel = (permission: Permission): string =>

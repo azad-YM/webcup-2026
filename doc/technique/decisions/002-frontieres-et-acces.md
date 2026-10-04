@@ -45,4 +45,5 @@ Interdits : SQL sur les tables d’un autre module, association ORM entre agrég
 - [Architecture technique](../architecture.md)
 - [Documentation — IAM](../../../api/src/IAM/doc/README.md)
 - [ADR 003](003-identite-et-habilitations.md)
+- [ADR 007](007-protection-des-donnees.md)
 <!-- backlinks:end -->

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Administration\Application\Controller;
 
 use Administration\Application\Command\SaveMunicipalService\SaveMunicipalServiceCommand;
+use Administration\Application\Command\SetMunicipalServiceAvailability\SetMunicipalServiceAvailabilityCommand;
 use Administration\Application\Query\GetMunicipalService\GetMunicipalServiceQuery;
 use Administration\Application\Query\ListDistricts\ListDistrictsQuery;
 use Administration\Application\Query\ListMunicipalServices\ListMunicipalServicesQuery;
@@ -35,6 +36,13 @@ final class MunicipalServiceController extends AppController
 
     #[Route('/api/administration/services', methods: ['PUT'], format: 'json')]
     public function save(#[MapRequestPayload] SaveMunicipalServiceCommand $cmd): JsonResponse
+    {
+        return $this->dispatch($cmd);
+    }
+
+    /** F63 : désactivation immédiate (motif obligatoire) ou réactivation d'un service, `admin.service.disable`. */
+    #[Route('/api/administration/services/availability', methods: ['POST'], format: 'json')]
+    public function availability(#[MapRequestPayload] SetMunicipalServiceAvailabilityCommand $cmd): JsonResponse
     {
         return $this->dispatch($cmd);
     }

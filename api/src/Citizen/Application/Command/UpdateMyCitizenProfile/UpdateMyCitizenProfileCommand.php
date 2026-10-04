@@ -18,6 +18,8 @@ final readonly class UpdateMyCitizenProfileCommand
         #[Assert\Length(max: 100)]
         public ?string $lastName = null,
         #[Assert\Length(max: 30)]
+        // F69 : format strict (chiffres, espaces, +, points, tirets, parenthèses) — champ chiffré au repos.
+        #[Assert\Regex(pattern: '/^\+?[0-9 .()\-]{6,30}$/', message: 'Numéro de téléphone invalide : chiffres, espaces et + seulement.')]
         public ?string $phone = null,
         #[Assert\Length(max: 255)]
         public ?string $address = null,

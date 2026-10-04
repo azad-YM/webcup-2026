@@ -12,7 +12,10 @@ use Citizen\Application\Ports\Provider\MunicipalServiceDirectory;
 use Citizen\Application\Ports\Provider\MunicipalServiceSummary;
 use Shared\Domain\Exception\NotFoundException;
 
-/** Citizen (appointments) reads the name and reception place of a municipal service from the Administration catalogue. */
+/**
+ * Citizen (rendez-vous, demandes) lit dans le catalogue d'Administration le nom, l'accueil et l'état d'un service :
+ * désactivation d'urgence (F63) et état de fonctionnement (F38/F64).
+ */
 final readonly class AdminCitizenServiceDirectory implements MunicipalServiceDirectory
 {
     public function __construct(private GetMunicipalServiceHandler $services, private ListMunicipalServicesHandler $catalogue) {}
@@ -43,6 +46,13 @@ final readonly class AdminCitizenServiceDirectory implements MunicipalServiceDir
             (string) $view['name'],
             (string) ($contact['place'] ?? ''),
             (string) ($contact['hours'] ?? ''),
+            (bool) ($view['disabled'] ?? false),
+            (string) ($view['disabledReason'] ?? ''),
+            (string) ($view['status'] ?? 'available'),
+            (string) ($view['statusMessage'] ?? ''),
+            (string) ($view['alternative'] ?? ''),
+            is_string($view['returnAt'] ?? null) ? $view['returnAt'] : null,
+            is_string($contact['phone'] ?? null) ? $contact['phone'] : null,
         );
     }
 }

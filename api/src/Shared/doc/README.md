@@ -18,6 +18,17 @@ Il ne centralise ni leurs entités ni leurs règles, et ne sert pas de raccourci
 - [Environnements et exploitation](environnements.md)
 - [Format des cas d’usage](rediger-un-cas-usage.md)
 
+## Protection des données (L20/F69 — non testé)
+
+Primitives techniques communes, décrites par l’[ADR 007](../../../../doc/technique/decisions/007-protection-des-donnees.md) ; Shared ne connaît aucun BC.
+
+| Élément | Rôle | Consommateurs |
+|---|---|---|
+| `Infrastructure/Http/SecurityHeadersListener` | En-têtes de sécurité de toutes les réponses (`nosniff`, `no-referrer`, `DENY`, `Permissions-Policy`, CSP de l’API, `no-store` si authentifié, HSTS en prod HTTPS) | Toute l’API |
+| `Infrastructure/RateLimit/RateLimitListener` + `DatabaseRateLimiter` | Limitation par IP et par nom de route, table `rate_limit_counter` (migration `Version20261003120200`), `429` en français avec `Retry-After` | Routes listées dans `config/packages/security_hardening.yaml` (IAM, Citizen) ; désactivé en test |
+| `Infrastructure/Doctrine/EncryptedStringType` (`encrypted_string`) | Chiffrement au repos libsodium ; clé `DATA_ENCRYPTION_KEY`, sinon dérivée d’`APP_SECRET`, fournie au démarrage par `Kernel::boot()` | Citizen (téléphone, adresse) |
+| `Application/Listener/ExceptionListener` | Hors debug, `500` sans détail technique | Toute l’API |
+
 ## Architecture commune
 
 [Architecture](../../../../doc/technique/architecture.md) · [Frontières et accès inter-BC](../../../../doc/technique/decisions/002-frontieres-et-acces.md)
@@ -33,4 +44,5 @@ Il ne centralise ni leurs entités ni leurs règles, et ne sert pas de raccourci
 - [ADR 004](../../../../doc/technique/decisions/004-temps-reel.md)
 - [Administration](../../Administration/doc/README.md)
 - [Administration — membres et habilitations](../../Administration/doc/membres-et-habilitations.md)
+- [ADR 007](../../../../doc/technique/decisions/007-protection-des-donnees.md)
 <!-- backlinks:end -->

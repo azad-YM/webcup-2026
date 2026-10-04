@@ -27,7 +27,20 @@ final readonly class ServiceRequestView
         public string $updatedAt,
         public bool $isPublic,
         public int $supportCount,
+        /** @var list<string> F70 : champs retirés par l'API pour un agent non habilité */
+        public array $maskedFields = [],
     ) {}
+
+    /** F70 : le lieu d'une demande de contact peut être l'adresse personnelle de l'habitant. */
+    public function withMaskedLocation(): self
+    {
+        if ($this->location === null || $this->location === '') {
+            return $this;
+        }
+
+        return new self($this->id, $this->reference, $this->type, $this->serviceId, $this->subject, $this->description, null, $this->status,
+            $this->steps, $this->allowedTransitions, $this->createdAt, $this->updatedAt, $this->isPublic, $this->supportCount, ['location']);
+    }
 
     public static function fromRequest(ServiceRequest $request, int $supportCount = 0): self
     {

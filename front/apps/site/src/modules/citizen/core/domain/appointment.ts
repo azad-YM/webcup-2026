@@ -16,11 +16,29 @@ export type AppointmentSlot = {
   booked: boolean
 }
 
-export type AppointmentServiceOffer = { serviceId: string; serviceName: string; openSlots: number; nextWhen: string }
+/**
+ * F63/F64 : état du service lu par Citizen dans le catalogue d'Administration. `disabled` : désactivé par la mairie,
+ * aucune réservation possible (créneaux non proposés, 409 sinon) ; `disrupted` : maintenance ou incident, réservation possible.
+ */
+export type ServiceAvailability = {
+  state: "available" | "disrupted" | "disabled"
+  disabled: boolean
+  status: "available" | "maintenance" | "incident"
+  message: string
+  alternative: string
+  returnAt: string | null
+  place: string
+  hours: string
+  phone: string | null
+}
+
+export type AppointmentServiceOffer = { serviceId: string; serviceName: string; openSlots: number; nextWhen: string; availability?: ServiceAvailability | null }
 
 export type AppointmentOffer = {
   services: AppointmentServiceOffer[]
   slots: AppointmentSlot[]
+  /** État du service choisi (`?serviceId=`), même sans créneau ouvert. */
+  selectedAvailability?: ServiceAvailability | null
   timezone: string
   timezoneLabel: string
 }
