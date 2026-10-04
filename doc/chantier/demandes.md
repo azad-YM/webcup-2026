@@ -20,6 +20,12 @@ Après cette revue, l’utilisateur confirme les parcours navigateur et demande 
 
 Les 15 suivis déjà faits sont conservés. F40 reste en cours (cron et réception des rappels à vérifier), F63 et F72 restent partiels. Les 22 demandes à construire restent à faire. Aucun nouveau test navigateur ou automatisé n’a été exécuté par l’agent : la validation provient de l’utilisateur.
 
+### Seconde validation utilisateur — 2026-10-04
+
+À la demande de l’utilisateur, les demandes livrées dont la seule réserve était la vérification dans le navigateur passent en « fait » dans le snapshot Pilotage (43 suivis) : D02, D10, F45, F46, F53, F54, F55, F56, F57, F58, F59, F60, F61, F62, F63, F65, F66, F67, F68, F69, F70, F71, F72, F73, F74, F75, F76, F77, F78, F79, F80, F81, F82, F83, F84, F85, F86, F87, F88, F89, F90, F91, F92. F73, F74, F76 et F88 (lot L26) sont inclus après leur intégration. Les mentions « non testé » des tableaux restent une dette technique.
+
+Restent en cours : F40 (planification du cron et réception des rappels), D14 et F27 (traduction partielle : publications et alertes non traduites). Bilan : **89 faits, 3 en cours** sur les 92 premières demandes ; les 8 demandes des vagues 19 et 20 (F93 à F100) sont à faire.
+
 ## Demandes initiales (H+0)
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
@@ -206,6 +212,24 @@ Les 15 suivis déjà faits sont conservés. F40 reste en cours (cron et récepti
 | F90 (IA) | 1 | 430 | Demander une explication plus simple d’un passage, uniquement au besoin — bouton « Expliquer simplement » (fiches services, actualités), repli : version en clair et mots difficiles (lexique + glossaire) ; non testé, non vérifié dans un navigateur | L22 | Assistance, site | 🟡 |
 | F91 (IA) | 4 | 1 720 | Assistance automatisée qui oriente les habitants vers une réponse ou un service pertinent — assistant `/aide/assistant` et bouton flottant, 1 à 3 actions, services validés contre le catalogue, urgences 15/17/18/112 par règles, repli local sans clé, limite par IP ; non testé, non vérifié dans un navigateur | L22 | Assistance, site | 🟡 |
 | F92 (IA) | 2 | 860 | Décrire son besoin simplement et être orienté vers le bon service ou la bonne démarche — description libre, questions de précision, demande préremplie `/espace/demandes/nouvelle?service=…` (voir F91) ; non testé, non vérifié dans un navigateur | L22 | Assistance, site | 🟡 |
+
+## Vague 19 (H+20) — relevée le 2026-10-04
+
+| Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
+|---|---|---|---|---|---|---|
+| F93 | 4 | 1 760 | Panne de réseau : fonctions essentielles et informations nécessaires compréhensibles et récupérables | L27 | API, site | ⬜ (prolonge F59, F77) |
+| F94 | 2 | 880 | Pendant un incident, consulter au moins les informations essentielles, consignes et coordonnées utiles | L27 | site | ⬜ (prolonge F59, F62) |
+| F95 | 3 | 1 320 | Réduire les ressources chargées et les requêtes inutiles relevées par les mesures | L27 | site, admin | ⬜ (prolonge F57, F58) |
+| F96 | 2 | 880 | Sur mobile et connexion limitée, accéder vite à l’essentiel avec une présentation adaptée | L27 | site | ⬜ (prolonge F61, F62) |
+
+## Vague 20 (H+21) — relevée le 2026-10-04
+
+| Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
+|---|---|---|---|---|---|---|
+| F97 (IA) | 3 | 1 350 | Lignes de transport interrompues : trouver rapidement une solution de remplacement | L27 | Administration, Assistance, site | ⬜ (prolonge F36, F38) |
+| F98 | 3 | 1 350 | Savoir quels services sont les plus utilisés, sous une forme claire et exploitable | L27 | Pilotage, admin | ⬜ (prolonge F50) |
+| F99 | 3 | 1 350 | Services proposés par des partenaires extérieurs : disponibilité et prochaine action visibles | L27 | Administration, site | ⬜ (prolonge F74) |
+| F100 | 2 | 900 | Les agents consultent facilement les derniers événements de sécurité | L27 | Audit, IAM, admin | ⬜ (prolonge F37, F85) |
 
 ## Vagues suivantes
 

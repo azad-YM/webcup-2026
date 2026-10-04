@@ -79,7 +79,7 @@ Un suivi par `requestCode` (table `pilotage_request_tracking`) : `status` (`todo
 
 ### Synchroniser le suivi en production
 
-Les changements effectués dans la base locale ne sont pas transférés par un déploiement. La commande `app:pilotage:sync-tracking` applique le snapshot versionné `Application/Service/TrackingSnapshot.php` du 2026-10-04 : 71 demandes, 46 faites, 3 en cours, 22 à faire, notes courtes et 49 liens. Elle ne lit ni la base locale, ni le Markdown, ni l’API Webcup.
+Les changements effectués dans la base locale ne sont pas transférés par un déploiement. La commande `app:pilotage:sync-tracking` applique le snapshot versionné `Application/Service/TrackingSnapshot.php` du 2026-10-04 : 100 demandes (vagues 0 à 20, lots L15 à L26 inclus), 89 faites, 3 en cours (F40, D14, F27), 8 à faire (F93 à F100), notes courtes et 91 liens. Elle ne lit ni la base locale, ni le Markdown, ni l’API Webcup.
 
 Depuis `api/` sur le serveur, après déploiement du code et des migrations, remplacer les deux URL d’exemple par les adresses publiques réelles :
 

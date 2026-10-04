@@ -36,14 +36,14 @@ final class SyncTrackingTest extends TestCase
     public function testPreviewWritesNothingAndApplyIsIdempotent(): void
     {
         $preview = ($this->handler)(new SyncTrackingCommand('https://city.example', 'https://admin.example'));
-        self::assertCount(71, $preview);
+        self::assertCount(100, $preview);
         self::assertSame([], $this->repository->all());
         $command = new SyncTrackingCommand('https://city.example/', 'https://admin.example/', true);
-        self::assertCount(71, ($this->handler)($command));
+        self::assertCount(100, ($this->handler)($command));
         $counts = array_count_values(array_map(fn ($row) => $row->status(), $this->repository->all()));
-        self::assertSame(46, $counts['done']);
+        self::assertSame(89, $counts['done']);
         self::assertSame(3, $counts['in_progress']);
-        self::assertSame(22, $counts['todo']);
+        self::assertSame(8, $counts['todo']);
         self::assertSame('https://city.example/inscription', $this->repository->find('D01')->view()['links'][0]['url']);
         self::assertSame('https://admin.example/pilotage', $this->repository->find('D19')->view()['links'][0]['url']);
         self::assertSame([], ($this->handler)($command));
@@ -51,13 +51,13 @@ final class SyncTrackingTest extends TestCase
 
     public function testPreservesMoreAdvancedAndUnknownRequests(): void
     {
-        foreach (['F40', 'F71', 'F99'] as $code) {
+        foreach (['F40', 'F93', 'X99'] as $code) {
             $row = RequestTracking::start($code);
             $row->update('done', [], 'Validation production', new \DateTimeImmutable(), 'agent', 'Agent');
             $this->repository->save($row);
         }
         ($this->handler)(new SyncTrackingCommand('https://city.example', 'https://admin.example', true));
-        foreach (['F40', 'F71', 'F99'] as $code) {
+        foreach (['F40', 'F93', 'X99'] as $code) {
             self::assertSame('Validation production', $this->repository->find($code)->view()['note']);
         }
     }

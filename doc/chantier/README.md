@@ -11,7 +11,7 @@ Suivi des travaux de la plateforme pendant les 24H By Webcup : ce qui est livré
 
 ## État du flux
 
-Relevé du 2026-10-04 : vagues 14 (H+15) à 18 (H+19) diffusées, 92 demandes visibles pour 64 790 XP. Les demandes marquées « IA » utilisent le port Shared `LanguageModel` (API Claude, repli local sans clé).
+Relevé du 2026-10-04 (H+21, 1 286 min) : vagues 19 (H+20) et 20 (H+21) diffusées, 100 demandes visibles pour 74 580 XP ; vague 21 attendue. L’API ne renvoie que la valeur des demandes (`xp_available` = `xp_total` pour toutes) : elle n’indique pas les points obtenus par l’équipe. Les demandes marquées « IA » utilisent le port Shared `LanguageModel` (API Claude, repli local sans clé).
 
 ## Revue du suivi — 2026-10-03
 
@@ -28,6 +28,8 @@ Notes du Pilotage local simplifiées le 2026-10-04 à la demande de l’utilisat
 Livré : [file des demandes](../../front/apps/admin/doc/demandes.md) ouverte sur tous les états, skeletons pendant le chargement des listes du module Demandes et [champs admin harmonisés](../../front/apps/admin/doc/navigation.md). Validation : 44 tests admin, lint et build réussis (avertissement de bundle supérieur à 500 kB). Les menus du profil du site et de l’admin affichent aussi un skeleton limité à la ligne des espaces en cours de vérification. Recette visuelle encore à réaliser.
 
 Synchronisation déployable : commande [Pilotage — synchroniser en production](../../api/src/Pilotage/doc/README.md#synchroniser-le-suivi-en-production), avec prévisualisation, `--apply` et URL du site/admin configurables. Le snapshot inclut les statuts validés et les notes courtes ; aucune exécution en production réalisée par l’agent.
+
+Snapshot actualisé le 2026-10-04 sur le [registre](demandes.md), après intégration de L26 et relevé des vagues 19 et 20 : **100 demandes, 89 faites, 3 en cours, 8 à faire (L27)**. À la demande de l’utilisateur, les demandes dont la seule réserve est la validation navigateur passent en « fait » ([détail](demandes.md#seconde-validation-utilisateur--2026-10-04)). Restent en cours F40 (planification du cron et réception des rappels), D14 et F27 (traduction partielle : publications et alertes non traduites). Codes, XP et difficultés vérifiés identiques à l’API du concours ; aucun test exécuté.
 
 ## Lots
 
@@ -62,6 +64,7 @@ Les lots regroupent les demandes qui partagent un même modèle ou un même écr
 | L24 | Montée en charge et sauvegarde : mode dégradé en surcharge, stabilité sous forte affluence, sauvegarde vérifiée — [ADR 012](../technique/decisions/012-montee-en-charge-integrite-anti-abus.md), [exploitation](../technique/montee-en-charge.md), [admin](../../front/apps/admin/doc/securite.md) | F77, F78, F87 | 4 060 | 🟡 mode allégé (env, `app:platform:degraded`, détection auto, `503` + `Retry-After`, bandeau du site, état dans l’admin), cache public `ETag`/`304`, index, plafond et gigue SSE, `scripts/load/charge.sh`, `app:backup:run`/`app:backup:verify` avec restauration d’essai et écran « Sauvegardes » ; non testé, non vérifié dans un navigateur |
 | L25 | Anti-abus et intégrité : robots, envois multiples, activité inhabituelle (IA) — [ADR 012](../technique/decisions/012-montee-en-charge-integrite-anti-abus.md), [Audit](../../api/src/Audit/doc/README.md), [Shared](../../api/src/Shared/doc/README.md), [admin](../../front/apps/admin/doc/securite.md) | F81, F82, F85 | 3 730 | 🟡 jeton HMAC, champ piège et question en cas de doute ; `Idempotency-Key` rejouée ; détecteur `app:security:scan` (ports IAM, Citizen, Shared), réaction (verrouillage, code exigé, avertissement), écran « Activité inhabituelle », alerte en direct, résumé IA avec repli ; non testé, non vérifié dans un navigateur |
 | L26 | Message officiel, partenaires, avis sur un service, export de suivi — [Pilotage](../../api/src/Pilotage/doc/README.md), [Communication](../../api/src/Communication/doc/README.md), [Participation](../../api/src/Participation/doc/README.md), [Administration](../../api/src/Administration/doc/README.md) | F73, F74, F76, F88 | 2 790 | 🟡 écran « Exports » (CSV/JSON, colonnes, aperçu, journal), message officiel en tête du site + archive, avis sur les services (note, réponse des agents, moyenne publique), associations partenaires (`/partenaires`, carte, horaires) ; non testé, non vérifié dans un navigateur |
+| L27 | Résilience et sobriété (panne réseau, mode incident, allègement, mobile) puis nouveaux usages (transports de remplacement, services les plus utilisés, services des partenaires, événements de sécurité) — prolonge L9, L17, L24, L26, L13, L25 | F93, F94, F95, F96, F97, F98, F99, F100 | 9 790 | ⬜ |
 
 ## Travail en parallèle
 

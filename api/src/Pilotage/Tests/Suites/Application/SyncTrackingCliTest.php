@@ -25,7 +25,7 @@ final class SyncTrackingCliTest extends ApplicationTestCase
         self::assertSame(0, $manager->getRepository(RequestTracking::class)->count([]));
         self::assertSame(0, $tester->execute($options + ['--apply' => true]));
         $manager->clear();
-        self::assertSame(71, $manager->getRepository(RequestTracking::class)->count([]));
+        self::assertSame(100, $manager->getRepository(RequestTracking::class)->count([]));
         self::assertSame('done', $manager->find(RequestTracking::class, 'D01')->status());
         self::assertSame(0, $tester->execute($options + ['--apply' => true]));
         self::assertStringContainsString('0 changement(s)', $tester->getDisplay());
