@@ -45,4 +45,5 @@ Une nouvelle exécution resynchronise le nom et les permissions des deux rôles 
 - [Consignes Administration](../AGENTS.md)
 - [Membres et habilitations](membres-et-habilitations.md)
 - [Administration](README.md)
+- [Jeu de démonstration](../../Demo/doc/README.md)
 <!-- backlinks:end -->

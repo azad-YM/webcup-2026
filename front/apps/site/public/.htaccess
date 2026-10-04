@@ -1,0 +1,17 @@
+# Hébergement Apache / cPanel (doc/technique/deploiement-cpanel.md) : site statique exporté par Next (out/).
+Options -MultiViews -Indexes
+DirectoryIndex index.html
+
+ErrorDocument 404 /404.html
+# Panne complète de l'API ou surcharge : page statique (doc/technique/montee-en-charge.md).
+ErrorDocument 503 /surcharge.html
+
+<IfModule mod_headers.c>
+    # Fichiers versionnés par Next : cache long ; pages HTML et service worker : toujours revalidés.
+    <If "%{REQUEST_URI} =~ m#^/_next/static/#">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </If>
+    <FilesMatch "\.(html|txt|xml)$|^sw\.js$">
+        Header set Cache-Control "no-cache"
+    </FilesMatch>
+</IfModule>

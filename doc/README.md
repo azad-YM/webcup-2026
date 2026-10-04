@@ -29,6 +29,7 @@ Pour comprendre une fonctionnalité, partir de l’application qui la présente 
 - [Pilotage](../api/src/Pilotage/doc/README.md) : flux de l’API du concours Webcup pour les agents, suivi de l’équipe, tableau de bord de l’activité (F50)
 - [Audit](../api/src/Audit/doc/README.md) : journal des actions de l’administration ([ADR 006](technique/decisions/006-journal-des-actions.md))
 - [Shared](../api/src/Shared/doc/README.md) : primitives et conventions communes
+- [Demo](../api/src/Demo/doc/README.md) : jeu de démonstration chargé par `app:demo:seed` (composition d’exploitation, pas un BC)
 
 ## Applications
 

@@ -59,6 +59,10 @@ services:
         resource: '../src/Assistance/'
         exclude: ['../src/Assistance/Tests/']
 
+    # Composition d'exploitation : jeu de démonstration joué par les cas d'usage (src/Demo/AGENTS.md).
+    Demo\:
+        resource: '../src/Demo/'
+
     Audit\:
         resource: '../src/Audit/'
         exclude:

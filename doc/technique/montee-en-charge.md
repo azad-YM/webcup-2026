@@ -8,8 +8,9 @@ Réglages d’exploitation des lots L24 et L25 ([ADR 012](decisions/012-montee-e
 
 ## Tâches planifiées (cron cPanel)
 
+Le worker Messenger tourne en continu dans cPanel › Workers (voir le [déploiement cPanel](deploiement-cpanel.md)), qui donne aussi la liste complète des tâches cron. Sans Workers, ajouter `* * * * * php bin/console messenger:consume async --time-limit=55 --memory-limit=128M`.
+
 ```cron
-* * * * *    php bin/console messenger:consume async --time-limit=55 --memory-limit=128M
 */5 * * * *  php bin/console app:security:scan
 15 * * * *   php bin/console app:realtime:purge --older-than=3600
 30 2 * * *   php bin/console app:backup:run --verify
@@ -86,4 +87,5 @@ scripts/load/charge.sh http://localhost:8083/api 2000 50
 - [Shared](../../api/src/Shared/doc/README.md)
 - [Admin — sécurité](../../front/apps/admin/doc/securite.md)
 - [Chantier](../chantier/README.md)
+- [Déploiement cPanel](deploiement-cpanel.md)
 <!-- backlinks:end -->

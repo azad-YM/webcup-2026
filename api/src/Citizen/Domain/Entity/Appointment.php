@@ -49,7 +49,7 @@ class Appointment
     /** Le créneau doit être réservé par l'appelant (`$slot->book()`) dans la même transaction. */
     public static function book(string $id, string $citizenId, AppointmentSlot $slot, \DateTimeImmutable $now): self
     {
-        $reference = 'RDV-' . strtoupper(substr(str_replace('-', '', $id), 0, 8));
+        $reference = 'RDV-' . strtoupper(substr(str_replace('-', '', $id), -8)); // fin aléatoire de l'UUID v7 (le début est l'horodatage)
         $appointment = new self($id, $reference, $citizenId, $slot, $now);
         $appointment->record(new AppointmentChanged($id, $citizenId, self::CONFIRMED));
 

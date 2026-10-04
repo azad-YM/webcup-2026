@@ -1,0 +1,21 @@
+# Hébergement Apache / cPanel (doc/technique/deploiement-cpanel.md) : front controller Symfony.
+DirectoryIndex index.php
+Options -MultiViews -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Sans cette ligne, Apache (CGI / PHP-FPM) supprime l'en-tête Authorization : le JWT n'arriverait jamais à l'API.
+    RewriteCond %{HTTP:Authorization} .+
+    RewriteRule ^ - [E=HTTP_AUTHORIZATION:%0]
+
+    # Fichiers réels servis tels quels, tout le reste passe par index.php.
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+    RewriteRule ^ %{ENV:BASE}/index.php [L]
+</IfModule>
+
+<IfModule mod_headers.c>
+    # Flux temps réel (SSE) : pas de mise en tampon par un proxy.
+    Header always set X-Accel-Buffering "no" "expr=%{REQUEST_URI} =~ m#^/api/realtime/stream#"
+</IfModule>

@@ -60,6 +60,7 @@
       "Audit\\": "src/Audit/",
       "Participation\\": "src/Participation/",
       "Assistance\\": "src/Assistance/",
+      "Demo\\": "src/Demo/",
       "Shared\\": "src/Shared/"
     },
     "exclude-from-classmap": [

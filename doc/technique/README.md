@@ -10,6 +10,7 @@
 
 ## Exploitation
 
+- [Déploiement cPanel](deploiement-cpanel.md) : domaines, API, worker Messenger, tâches cron, fronts statiques, données de démonstration.
 - [Montée en charge et sauvegardes](montee-en-charge.md) : cron, variables, mode allégé, test de charge, procédure de restauration ([ADR 012](decisions/012-montee-en-charge-integrite-anti-abus.md)).
 
 <!-- backlinks:start -->

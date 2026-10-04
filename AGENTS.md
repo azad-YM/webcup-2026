@@ -27,9 +27,17 @@ l’initialisation technique, dans une transaction, sans handler ni bus applicat
 Elle ne s’étend pas aux workflows HTTP ni aux autres services. Voir la
 [procédure d’initialisation](api/src/Administration/doc/initialisation-admin.md).
 
+### Exception de composition : jeu de démonstration
+
+Le module `api/src/Demo` (CLI `app:demo:seed`) importe les **commandes et queries applicatives**
+de plusieurs BC et les envoie sur `command.bus` / `query.bus`, au nom des comptes concernés.
+Il n’importe ni handler, ni repository, ni entité, ni adaptateur, et n’exécute aucun SQL sur les
+tables des modules. Aucun code de production n’en dépend. Voir le [jeu de démonstration](api/src/Demo/doc/README.md).
+
 ## Périmètres
 
-- Backend : `api/AGENTS.md`, puis `api/src/<BC>/AGENTS.md` (`IAM`, `Administration`, `Citizen`, `Communication`, `Participation`, `Assistance`, `Pilotage`, `Audit`, `Shared`).
+- Backend : `api/AGENTS.md`, puis `api/src/<BC>/AGENTS.md` (`IAM`, `Administration`, `Citizen`, `Communication`, `Participation`, `Assistance`, `Pilotage`, `Audit`, `Shared`), et `api/src/Demo/AGENTS.md` pour le jeu de démonstration.
+- Hébergement : [déploiement cPanel](doc/technique/deploiement-cpanel.md).
 - Frontend : `front/AGENTS.md`, puis `front/apps/<application>/AGENTS.md` (`site`, `admin`).
 - Packages frontend partagés : `front/packages/AGENTS.md`.
 
