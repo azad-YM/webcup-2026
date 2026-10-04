@@ -27,4 +27,8 @@ final class CitizenAccountController extends AppController
 
     #[Route('/api/citizen/accounts/suspension', name: 'citizen_account_suspension', methods: ['PUT'], format: 'json')]
     public function suspend(#[MapRequestPayload] SetCitizenSuspensionCommand $cmd): JsonResponse { return $this->dispatch($cmd); }
+
+    /** F71: account created at the city reception (admin.citizen.write). */
+    #[Route('/api/citizen/accounts/welcome', name: 'citizen_account_welcome', methods: ['POST'], format: 'json')]
+    public function welcome(#[MapRequestPayload] \Citizen\Application\Command\WelcomeNewResident\WelcomeNewResidentCommand $cmd): JsonResponse { return $this->dispatch($cmd); }
 }

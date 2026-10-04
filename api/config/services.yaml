@@ -122,6 +122,9 @@ services:
     # Citizen consomme IAM (création du compte à l'inscription, compte connecté).
     Citizen\Application\Ports\Provider\CitizenAccountProvisioner:
         alias: IAM\Infrastructure\Adapter\Citizen\IAMCitizenAccountProvisioner
+    # F71 : compte d'habitant créé à l'accueil (identifiant d'habitant, code provisoire).
+    Citizen\Application\Ports\Provider\ResidentAccountProvisioner:
+        alias: IAM\Infrastructure\Adapter\Citizen\IAMResidentAccountProvisioner
 
     Citizen\Application\Ports\Provider\CurrentAccountProvider:
         alias: IAM\Infrastructure\Adapter\Citizen\IAMCurrentAccountProvider
