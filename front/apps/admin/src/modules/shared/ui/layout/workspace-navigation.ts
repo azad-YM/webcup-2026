@@ -1,4 +1,4 @@
-import { Activity, BookKey, Building2, CalendarClock, History, Inbox, LayoutDashboard, MessageCircleWarning, Newspaper, ShieldAlert, Siren, Users } from "@boilerplate/shared-ui/components/icon"
+import { Activity, BookKey, HandHeart, Building2, CalendarClock, History, Inbox, LayoutDashboard, MessageCircleWarning, Newspaper, ShieldAlert, Siren, Users } from "@boilerplate/shared-ui/components/icon"
 import type { NavGroup } from "../components/sidebar/nav-main"
 
 export type ModuleCode = "admin" | "requests" | "pilotage"
@@ -38,6 +38,7 @@ export const MODULE_NAVIGATION: Record<ModuleCode, NavGroup[]> = {
     { title: "File des demandes", url: "/demandes", icon: Inbox, description: "Messages et signalements" },
     { title: "Rendez-vous", url: "/demandes/rendez-vous", icon: CalendarClock, description: "Créneaux et réservations" },
     { title: "Inquiétudes", url: "/demandes/inquietudes", icon: MessageCircleWarning, description: "Écouter et répondre aux habitants" },
+    { title: "Accueil des nouveaux arrivants", url: "/demandes/accueil", icon: HandHeart, description: "Créer un compte au guichet, même sans e-mail" },
   ] }],
   pilotage: [{ title: "Activité de la ville", items: [
     { title: "Flux Nova Terra", url: "/pilotage", icon: Activity, description: "Demandes de la ville et suivi de l’équipe" },

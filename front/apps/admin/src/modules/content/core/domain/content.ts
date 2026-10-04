@@ -36,7 +36,29 @@ export type MunicipalService = {
   alternative: string
   transport: { route: string; timetable: string; information: string } | null
   updatedAt?: string
+  /** F45 : adresse et coordonnées du lieu d’accueil (carte du site). */
+  location?: ServiceLocation | null
+  /** F46 : service d’urgence (page « Urgences » du site). */
+  emergency?: EmergencyKind | null
+  /** F27 : traductions du nom, du résumé et de la description (le français fait foi). */
+  translations?: Partial<Record<TranslationLanguage, ServiceTranslation>> | Record<string, never>
 }
+
+export type ServiceLocation = { address: string; district: string | null; lat: number; lng: number }
+export type EmergencyKind = "hospital" | "emergency" | "fire" | "police" | "pharmacy"
+export const EMERGENCY_LABELS: Record<EmergencyKind, string> = {
+  hospital: "Hôpital",
+  emergency: "Urgences",
+  fire: "Pompiers",
+  police: "Police",
+  pharmacy: "Pharmacie de garde",
+}
+export type TranslationLanguage = "en" | "ar"
+export const TRANSLATION_LANGUAGES: Record<TranslationLanguage, { label: string; dir: "ltr" | "rtl" }> = {
+  en: { label: "Anglais", dir: "ltr" },
+  ar: { label: "Arabe", dir: "rtl" },
+}
+export type ServiceTranslation = { name: string; summary: string; description: string }
 
 export type ContentState = "draft" | "published" | "withdrawn"
 

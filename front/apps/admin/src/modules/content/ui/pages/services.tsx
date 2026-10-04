@@ -16,6 +16,8 @@ import {
   type ServiceStatus,
 } from "../../core/domain/content"
 import { ListState, selectClass } from "../components/content-states"
+import { ServicePlaceFields } from "../sections/service-place-fields"
+import { ServiceTranslationFields } from "../sections/service-translation-fields"
 
 const SLUG = /^[a-z0-9][a-z0-9-]{0,79}$/
 
@@ -35,6 +37,9 @@ function ServiceForm({ initial, isNew, onDone }: { initial: MunicipalService; is
       keywords: keywords.split(/[,\n]/).map((keyword) => keyword.trim()).filter(Boolean),
       contact: { ...draft.contact, phone: draft.contact.phone?.trim() || null },
       transport: draft.category === "mobilite" ? draft.transport : null,
+      location: draft.location ?? null,
+      emergency: draft.emergency ?? null,
+      translations: draft.translations ?? {},
     })
     if ("data" in result && result.data) {
       setDraft(result.data)
@@ -135,6 +140,9 @@ function ServiceForm({ initial, isNew, onDone }: { initial: MunicipalService; is
             )}
           </fieldset>
 
+          <ServicePlaceFields draft={draft} disabled={saving.isLoading} onChange={setDraft} />
+          <ServiceTranslationFields draft={draft} disabled={saving.isLoading} onChange={setDraft} />
+
           {draft.category === "mobilite" && (
             <fieldset disabled={saving.isLoading} className="space-y-4">
               <legend className="font-semibold">Horaires des transports</legend>
@@ -196,6 +204,8 @@ export function ServicesPage() {
                     <StatusBadge tone={item.status === "available" ? "success" : item.status === "maintenance" ? "warning" : "danger"} label={SERVICE_STATUS_LABELS[item.status]} srPrefix="État :" />
                     {item.featured && <Badge variant="outline">Mis en avant</Badge>}
                     {item.transport && <Badge variant="outline">Horaires</Badge>}
+                    {item.emergency && <Badge variant="outline">Urgence</Badge>}
+                    {item.location && <Badge variant="outline">Sur la carte</Badge>}
                   </div>
                 </div>
                 <Button type="button" variant="outline" size="sm" onClick={() => setEditing({ service: item, isNew: false })}>Modifier</Button>

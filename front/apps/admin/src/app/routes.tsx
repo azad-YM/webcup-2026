@@ -2,6 +2,7 @@ import { BackofficeLayout } from "./backoffice-layout"
 import { AuditJournalPage } from "@/modules/audit/ui/pages/audit-journal"
 import { LoginSecurityPage } from "@/modules/security/ui/pages/login-security"
 import { CitizenAccountsPage } from "@/modules/citizen-accounts/ui/pages/citizen-accounts"
+import { NewcomerReceptionPage } from "@/modules/citizen-accounts/ui/pages/newcomer-reception"
 import { getErrorMessage } from "@boilerplate/shared-utils/error.utils"
 import { createBrowserRouter, Navigate, Outlet } from "react-router"
 import { useGetProfileQuery } from "@/modules/auth/core/application/rtk-api/auth"
@@ -88,6 +89,7 @@ export const router = createBrowserRouter([
           { index: true, element: <RequestQueuePage /> },
           { path: "rendez-vous", element: <AppointmentsPage /> },
           { path: "inquietudes", element: <ConcernsPage /> },
+          { path: "accueil", element: <NewcomerReceptionPage /> },
         ],
       },
     ],
