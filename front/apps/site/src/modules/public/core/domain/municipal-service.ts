@@ -47,6 +47,8 @@ export type MunicipalService = {
   /** F63 : désactivé en urgence par la mairie — aucune nouvelle demande ni réservation ; `disabledReason` l’explique. */
   disabled?: boolean
   disabledReason?: string
+  /** F89 : version en langage clair, relue et validée par un agent (vide si absente). */
+  plainLanguage?: string
 }
 
 export type ServiceLocation = { address: string; district: string | null; lat: number; lng: number }

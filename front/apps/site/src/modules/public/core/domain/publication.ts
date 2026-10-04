@@ -12,6 +12,8 @@ export type Publication = {
   important: boolean
   /** Date ISO 8601. */
   publishedAt: string
+  /** F89 : version en langage clair, relue et validée par un agent (vide si absente). */
+  plainLanguage?: string
 }
 
 export const sortByMostRecent = (publications: Publication[]) =>
