@@ -4,7 +4,8 @@ x-api-environment: &api-environment
   APP_ENV: dev
   APP_SECRET: dev-only-change-me
   DATABASE_URL: "mysql://novaterra:novaterra@db:3306/novaterra?serverVersion=8.4.0&charset=utf8mb4"
-  MESSENGER_TRANSPORT_DSN: "doctrine://default?auto_setup=0"
+  # redeliver_timeout : un message pris par un worker qui plante (cache dev reconstruit en cours de route) est relivré après 2 min au lieu d'1 h.
+  MESSENGER_TRANSPORT_DSN: "doctrine://default?auto_setup=0&redeliver_timeout=120"
   # Mailpit (http://localhost:8025) reçoit les e-mails de développement (liens de connexion, codes, alertes).
   MAILER_DSN: "smtp://mailpit:1025"
   SITE_URL: http://localhost:5178
