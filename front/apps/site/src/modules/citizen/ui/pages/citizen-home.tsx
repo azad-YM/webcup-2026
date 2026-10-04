@@ -13,7 +13,7 @@ import { NOTIFICATIONS_POLLING_MS, useListMyNotificationsQuery } from "../../cor
 import { unreadOfKind, type NotificationKind } from "../../core/domain/notification"
 
 type Messages = typeof CITIZEN_HOME_MESSAGES.fr
-type ShortcutKey = "contact" | "report" | "requests" | "appointments" | "participate" | "newcomer" | "services" | "news"
+type ShortcutKey = "contact" | "report" | "requests" | "appointments" | "participate" | "contributions" | "newcomer" | "services" | "news"
 type Shortcut = { key: ShortcutKey; href?: Route; icon: typeof Search; soon?: boolean; notifications?: NotificationKind }
 
 const SHORTCUTS: Shortcut[] = [

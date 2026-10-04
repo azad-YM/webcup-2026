@@ -30,7 +30,7 @@ type Access = ReturnType<typeof useCitizenAccess>
 /** Affiche l’état de la garde tant que le profil n’est pas disponible. */
 export function CitizenAccessState({ access, returnTo, nonCitizenFallback }: {
   access: Access
-  returnTo: "/espace" | "/espace/profil" | "/espace/demandes" | "/espace/demandes/nouvelle" | "/espace/rendez-vous" | "/espace/participation"
+  returnTo: "/espace" | "/espace/profil" | "/espace/demandes" | "/espace/demandes/nouvelle" | "/espace/rendez-vous" | "/espace/participation" | "/espace/mes-donnees" | "/espace/demandes/recapitulatif"
   nonCitizenFallback?: ReactNode
 }) {
   const { ready, hasToken, query, error } = access

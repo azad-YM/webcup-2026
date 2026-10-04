@@ -13,7 +13,8 @@ import { AUTH_MESSAGES } from "../i18n/auth-messages"
  * F71 : « Je n’ai pas d’adresse e-mail » — connexion par identifiant d’habitant et code.
  * Avec un code provisoire, l’habitant est conduit à choisir son code personnel.
  */
-export function ResidentLogin({ returnPath }: { returnPath: string }) {
+/** La destination après connexion (`?retour=`) est appliquée par la page de connexion. */
+export function ResidentLogin() {
   const t = useMessages(AUTH_MESSAGES)
   const router = useRouter()
   const session = useSession()
@@ -29,8 +30,9 @@ export function ResidentLogin({ returnPath }: { returnPath: string }) {
     try {
       const result = await login({ residentId, code }).unwrap()
       setCode("")
+      // La page de connexion redirige vers `?retour=` dès que la session existe : on y passe la page du nouveau code.
+      if (result.passwordChangeRequired) router.replace("/connexion?retour=/espace/nouveau-code" as Route)
       session.refresh()
-      router.replace((result.passwordChangeRequired ? "/espace/nouveau-code" : returnPath) as Route)
     } catch {
       /* L’erreur est affichée dans le formulaire. */
     } finally {

@@ -21,7 +21,9 @@ class CitizenNotification
     public const KIND_CONCERN_UPDATED = 'concern.updated';
     /** Idea of the citizen followed by the agents (F68, BC Participation, via CitizenParticipationNotifier). */
     public const KIND_IDEA_UPDATED = 'idea.updated';
-    public const KINDS = [self::KIND_REQUEST_STATUS, self::KIND_APPOINTMENT_REMINDER, self::KIND_CONCERN_UPDATED, self::KIND_IDEA_UPDATED];
+    /** F54 : connexion au compte depuis un nouvel appareil (fait signalé par IAM). */
+    public const KIND_SECURITY_NEW_DEVICE = 'security.new_device';
+    public const KINDS = [self::KIND_REQUEST_STATUS, self::KIND_APPOINTMENT_REMINDER, self::KIND_CONCERN_UPDATED, self::KIND_IDEA_UPDATED, self::KIND_SECURITY_NEW_DEVICE];
 
     private ?\DateTimeImmutable $readAt = null;
 

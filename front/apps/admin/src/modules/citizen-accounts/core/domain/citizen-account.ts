@@ -8,7 +8,6 @@ export type CitizenAccount = {
 }
 export type CitizenAccounts = { items: CitizenAccount[]; total: number; canManage: boolean; sensitive?: { revealed: boolean; canReveal: boolean } }
 export type CitizenAccountsQuery = { search: string; reveal: boolean }
-export type CitizenAccounts = { items: CitizenAccount[]; total: number; canManage: boolean }
 
 /** F71 : langues de la fiche d’accueil et de l’interface du site. */
 export type ResidentLanguage = "fr" | "en" | "ar"

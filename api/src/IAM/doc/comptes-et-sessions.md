@@ -35,7 +35,7 @@ Usage normal inchangé : un utilisateur qui se trompe moins de 5 fois puis réus
 
 ## Login et profil
 
-- `POST /api/login_check` `{email, password}` → `{token}` (audience `site`) ; identifiants invalides → 401 `Identifiants invalides.` ; compte suspendu (mot de passe correct uniquement) → 403 `{code: "account_suspended", error}` ; verrouillage → 429 (voir ci-dessus). Un compte supprimé répond comme un compte inexistant.
+- `POST /api/login_check` `{email, password, deviceId?}` → `{token}` (audience `site`), ou seconde étape par code e-mail si la vérification supplémentaire est active ([connexion renforcée](connexion-renforcee.md)) ; identifiants invalides → 401 `Identifiants invalides.` ; compte suspendu (mot de passe correct uniquement) → 403 `{code: "account_suspended", error}` ; verrouillage → 429 (voir ci-dessus). Un compte supprimé répond comme un compte inexistant.
 - `GET /api/iam/me` → `{email, name, spaces}`.
 - `GET /api/iam/me/spaces` → liste de `{code, name, description, roles}` ; `[]` sans accès.
 
@@ -69,4 +69,5 @@ La déconnexion volontaire reste locale à chaque application (le jeton n’est 
 - [Citizen](../../Citizen/doc/README.md)
 - [Citizen — compte et sécurité](../../Citizen/doc/compte-et-securite.md)
 - [Admin — journal de sécurité](../../../../front/apps/admin/doc/securite.md)
+- [Connexion renforcée](connexion-renforcee.md)
 <!-- backlinks:end -->

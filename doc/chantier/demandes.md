@@ -119,11 +119,11 @@ Les 15 suivis déjà faits sont conservés. F40 reste en cours (cron et récepti
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
-| D02 | 3 | 1 020 | Se connecter sans mot de passe classique, avec un haut niveau de sécurité et un parcours compréhensible | L15 | IAM, site | ⬜ |
-| F53 | 3 | 1 020 | Vérification supplémentaire pour sécuriser les comptes citoyens | L15 | IAM, site | ⬜ |
-| F54 | 2 | 680 | Être prévenu d’une connexion à son compte depuis un nouvel appareil | L15 | IAM, Citizen, site | ⬜ |
-| F55 | 3 | 1 020 | Récupérer les informations personnelles que la ville possède sur soi, sous une forme claire et exploitable | L16 | Citizen, site | ⬜ |
-| F56 | 2 | 680 | Télécharger un récapitulatif lisible de ses demandes | L16 | Citizen, site | ⬜ |
+| D02 | 3 | 1 020 | Se connecter sans mot de passe classique, avec un haut niveau de sécurité et un parcours compréhensible | L15 | IAM, site | 🟡 lien e-mail à usage unique lié au navigateur ([IAM](../../api/src/IAM/doc/connexion-renforcee.md)) — non testé, non vérifié dans un navigateur |
+| F53 | 3 | 1 020 | Vérification supplémentaire pour sécuriser les comptes citoyens | L15 | IAM, site | 🟡 code à 6 chiffres par e-mail, appareil de confiance 30 jours ([IAM](../../api/src/IAM/doc/connexion-renforcee.md)) — non testé, non vérifié dans un navigateur |
+| F54 | 2 | 680 | Être prévenu d’une connexion à son compte depuis un nouvel appareil | L15 | IAM, Citizen, site | 🟡 appareils reconnus, e-mail + notification, « Ce n’était pas moi » ([IAM](../../api/src/IAM/doc/connexion-renforcee.md)) — non testé, non vérifié dans un navigateur |
+| F55 | 3 | 1 020 | Récupérer les informations personnelles que la ville possède sur soi, sous une forme claire et exploitable | L16 | Citizen, site | 🟡 « Mes données » : rubriques expliquées + JSON, confirmation d’identité ([Citizen](../../api/src/Citizen/doc/mes-donnees.md)) — non testé, non vérifié dans un navigateur |
+| F56 | 2 | 680 | Télécharger un récapitulatif lisible de ses demandes | L16 | Citizen, site | 🟡 récapitulatif imprimable + CSV ([Citizen](../../api/src/Citizen/doc/mes-donnees.md)) — non testé, non vérifié dans un navigateur |
 
 ## Vague 10 (H+11) — « Confiance et maîtrise des données »
 

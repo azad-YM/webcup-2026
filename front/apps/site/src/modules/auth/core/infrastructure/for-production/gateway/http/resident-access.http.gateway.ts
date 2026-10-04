@@ -9,8 +9,7 @@ export class ResidentAccessHttpGateway extends ApiClient implements ResidentAcce
       if (error instanceof ApiHttpError) {
         throw new AuthError(error.status,
           error.status === 401 ? "Votre session a expiré. Reconnectez-vous avec votre identifiant d’habitant et votre code."
-            : error.status === 422 || error.status === 400 ? (typeof error.payload?.error === "string" ? error.payload.error : "Le nouveau code doit contenir au moins 8 caractères.")
-              : "Le service est indisponible. Réessayez.")
+            : "Le service est indisponible. Réessayez.")
       }
       throw new AuthError("NETWORK_ERROR", "Impossible de joindre le service. Réessayez.")
     }
@@ -19,9 +18,5 @@ export class ResidentAccessHttpGateway extends ApiClient implements ResidentAcce
   async accountStatus(token: string): Promise<AccountAccessStatus> {
     const profile = await this.execute(() => this.get<{ residentId?: string | null; passwordChangeRequired?: boolean }>("/iam/me", ApiClient.authHeaders(token)))
     return { residentId: profile.residentId ?? null, passwordChangeRequired: profile.passwordChangeRequired === true }
-  }
-
-  async changePassword(token: string, payload: { currentPassword: string; newPassword: string }): Promise<void> {
-    await this.execute(() => this.post<unknown>("/iam/me/password", payload, ApiClient.authHeaders(token)))
   }
 }

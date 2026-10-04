@@ -3,7 +3,7 @@ import { useEffect } from "react"
 import Link from "next/link"
 import type { Route } from "next"
 import { useSearchParams } from "next/navigation"
-import { ArrowLeft, ArrowRight, MapPin, Megaphone, MessageSquare } from "@boilerplate/shared-ui/components/icon"
+import { ArrowLeft, ArrowRight, FileText, MapPin, Megaphone, MessageSquare } from "@boilerplate/shared-ui/components/icon"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
 import { useSession } from "@/modules/shared/ui/store-provider"
 import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
@@ -81,6 +81,13 @@ function RequestHistory() {
   return (
     <div className="space-y-8">
       <NewRequestLinks />
+      {requests.length > 0 && (
+        <p>
+          <Link href={"/espace/demandes/recapitulatif" as Route} className="inline-flex items-center gap-2 font-medium text-teal-800 underline underline-offset-4">
+            <FileText className="size-4" aria-hidden="true" /> Récapitulatif imprimable et téléchargeable (CSV)
+          </Link>
+        </p>
+      )}
       <section aria-labelledby="titre-historique">
         <h2 id="titre-historique" className="text-2xl font-semibold tracking-tight">Historique</h2>
         <div className="mt-5">

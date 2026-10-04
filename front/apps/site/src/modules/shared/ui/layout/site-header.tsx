@@ -2,7 +2,7 @@
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useState, type ReactNode } from "react"
-import { LogOut, Menu, Siren, UserRound, X } from "@boilerplate/shared-ui/components/icon"
+import { FileDown, LogOut, Menu, ShieldCheck, Siren, UserRound, X } from "@boilerplate/shared-ui/components/icon"
 import { Popover, PopoverTrigger, PopoverContent } from "@boilerplate/shared-ui/components"
 import { useSession } from "../store-provider"
 import { isCurrentSection, MAIN_NAVIGATION } from "../navigation"
@@ -48,6 +48,8 @@ function SessionActions({ notifications, spaces }: { notifications: ReactNode; s
         </PopoverTrigger>
         <PopoverContent align="end" aria-label={t.account} className="max-h-[70dvh] w-80 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-3 text-slate-950" onClick={(event) => { if ((event.target as HTMLElement).closest("a")) setOpen(false) }}>
           <Link href="/espace/profil" className="flex items-center gap-2 rounded-lg px-3 py-2 font-medium text-slate-800 hover:bg-slate-100"><UserRound className="size-4" aria-hidden="true" /> {t.myProfile}</Link>
+          <Link href="/espace/securite" className="flex items-center gap-2 rounded-lg px-3 py-2 font-medium text-slate-800 hover:bg-slate-100"><ShieldCheck className="size-4" aria-hidden="true" /> Sécurité du compte</Link>
+          <Link href="/espace/mes-donnees" className="flex items-center gap-2 rounded-lg px-3 py-2 font-medium text-slate-800 hover:bg-slate-100"><FileDown className="size-4" aria-hidden="true" /> Mes données</Link>
           {spaces}
           <button type="button" onClick={() => { setOpen(false); logout(); router.push("/") }} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 font-medium text-slate-800 hover:bg-slate-100">
             <LogOut className="size-4" aria-hidden="true" /> {t.logout}

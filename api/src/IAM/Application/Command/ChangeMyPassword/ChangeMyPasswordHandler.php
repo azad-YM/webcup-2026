@@ -5,38 +5,39 @@ declare(strict_types=1);
 namespace IAM\Application\Command\ChangeMyPassword;
 
 use IAM\Application\Ports\Repository\IUserRepository;
-use IAM\Application\Ports\Service\IAuthenticatedUserProvider;
-use Shared\Domain\Exception\DomainException;
-use Shared\Domain\Exception\NotFoundException;
+use IAM\Application\Ports\Service\AccountSessionRevoker;
+use IAM\Application\Ports\Service\SiteSessionTokens;
+use IAM\Application\Service\CurrentAccount;
+use IAM\Application\Service\Outcome;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-/**
- * F71: replaces the secret of the connected account after checking the current one, and lifts the
- * first-login obligation of a resident account. The current session stays valid.
- */
+/** F54 : changer son mot de passe (après « Ce n'était pas moi ») ; les autres sessions sont fermées. */
 #[AsMessageHandler(bus: 'command.bus')]
 final readonly class ChangeMyPasswordHandler
 {
     public function __construct(
-        private IAuthenticatedUserProvider $identity,
+        private CurrentAccount $account,
         private IUserRepository $users,
         private UserPasswordHasherInterface $hasher,
+        private AccountSessionRevoker $revoker,
+        private SiteSessionTokens $sessions,
     ) {}
 
-    /** @return array{passwordChangeRequired: false} */
-    public function __invoke(#[\SensitiveParameter] ChangeMyPasswordCommand $cmd): array
+    /** @return array<string, mixed> */
+    public function __invoke(ChangeMyPasswordCommand $cmd): array
     {
-        $user = $this->users->findById($this->identity->getUser()->getId()) ?? throw new NotFoundException('Account not found.');
+        $user = $this->account->user();
         if (!$this->hasher->isPasswordValid($user, $cmd->currentPassword)) {
-            throw new DomainException('Le code actuel est incorrect.');
+            return Outcome::failure(403, 'invalid_password', 'Mot de passe actuel incorrect.');
         }
-        if ($cmd->newPassword === $cmd->currentPassword) {
-            throw new DomainException('Choisissez un nouveau code différent du code provisoire.');
+        if (strlen($cmd->newPassword) < 8 || strlen($cmd->newPassword) > 72) {
+            throw new \DomainException('Le nouveau mot de passe doit contenir de 8 à 72 octets.');
         }
-        $user->changePassword($this->hasher->hashPassword($user, $cmd->newPassword));
+        $user->changePasswordHash($this->hasher->hashPassword($user, $cmd->newPassword));
+        $this->revoker->revokePortalCodes($user->getId());
         $this->users->save($user);
 
-        return ['passwordChangeRequired' => false];
+        return ['token' => $this->sessions->issue($user, $this->sessions->currentDeviceId()), 'changed' => true];
     }
 }

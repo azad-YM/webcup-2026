@@ -19,4 +19,6 @@ interface RequestSupportRepository
 
     /** @param list<string> $requestIds @return list<string> demandes soutenues par ce citoyen */
     public function supportedBy(string $citizenId, array $requestIds): array;
+    /** F55 : soutiens donnés par ce citoyen, les plus récents d'abord. @return list<RequestSupport> */
+    public function findByCitizen(string $citizenId): array;
 }

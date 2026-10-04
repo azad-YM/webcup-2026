@@ -22,8 +22,18 @@ export function createTestContext(overrides: Partial<Dependencies> = {}) {
     realtime: { subscribe: () => () => undefined, restart: () => undefined },
     authGateway,
     authSessionGateway,
+    deviceIdentityGateway: { deviceId: () => "test-device-identifier", saveLoginLinkSecret: () => undefined, loginLinkSecret: () => null, clearLoginLinkSecret: () => undefined },
+    accountSecurityGateway: {
+      getSecurity: async () => { throw new Error("Not configured") },
+      sendReconfirmationCode: async () => { throw new Error("Not configured") },
+      setEmailVerification: async () => { throw new Error("Not configured") },
+      reportDevice: async () => { throw new Error("Not configured") },
+      changePassword: async () => { throw new Error("Not configured") }
+    },
+    personalDataGateway: { export: async () => { throw new Error("Not configured") } },
+    identityCodeProvider: { sendCode: async () => { throw new Error("Not configured") } },
     accountRegistrationGateway: new CitizenAccountRegistrationAdapter(citizenGateway),
-    residentAccessGateway: { accountStatus: async () => ({ residentId: null, passwordChangeRequired: false }), changePassword: async () => undefined },
+    residentAccessGateway: { accountStatus: async () => ({ residentId: null, passwordChangeRequired: false }) },
     citizenGateway,
     citizenSessionProvider: new AuthCitizenSessionAdapter(overrides.authSessionGateway ?? authSessionGateway),
     serviceRequestGateway: {
