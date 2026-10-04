@@ -45,6 +45,8 @@ export const ACTION_LABELS: Record<string, string> = {
   "citizen.account.deleted": "Compte citoyen supprimé",
   "iam.login.blocked": "Connexion bloquée",
   "pilotage.tracking.updated": "Suivi Webcup modifié",
+  "audit.anomaly.protected": "Compte protégé automatiquement",
+  "audit.anomaly.status_changed": "Suivi d’une anomalie",
 }
 
 export const CATEGORY_LABELS: Record<string, string> = {
@@ -53,6 +55,7 @@ export const CATEGORY_LABELS: Record<string, string> = {
   citizen: "Citoyens",
   iam: "Sécurité",
   pilotage: "Pilotage",
+  audit: "Activité inhabituelle",
 }
 
 export const actionLabel = (action: string): string => ACTION_LABELS[action] ?? action

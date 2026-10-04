@@ -57,8 +57,8 @@ Les lots regroupent les demandes qui partagent un même modèle ou un même écr
 | L21 | Nouveaux arrivants : accès sans e-mail et en plusieurs langues (avec L5), orientation « par où commencer » | F71, F72 | 1 520 | 🟡 comptes créés à l’accueil ([ADR 010](../technique/decisions/010-comptes-crees-a-l-accueil.md)), fiche imprimable en 3 langues, connexion par identifiant, `/bienvenue` — [site](../../front/apps/site/doc/urgences-carte-langues.md) ; non testé, non vérifié dans un navigateur |
 | L22 | Assistance et orientation (IA) : recherche tolérante, assistant d’orientation, explication simple à la demande, version en langage clair | D10, F89, F90, F91, F92 | 5 160 | ⬜ |
 | L23 | Demandes à grande échelle : priorités, demandes similaires (IA), urgence médicale, réponse des agents, filtres citoyens, accusé de réception | F75, F79, F80, F83, F84, F86 | 5 280 | ⬜ |
-| L24 | Montée en charge et sauvegarde : mode dégradé en surcharge, stabilité sous forte affluence, sauvegarde vérifiée | F77, F78, F87 | 4 060 | ⬜ |
-| L25 | Anti-abus et intégrité : robots, envois multiples, activité inhabituelle (IA) | F81, F82, F85 | 3 730 | ⬜ |
+| L24 | Montée en charge et sauvegarde : mode dégradé en surcharge, stabilité sous forte affluence, sauvegarde vérifiée — [ADR 012](../technique/decisions/012-montee-en-charge-integrite-anti-abus.md), [exploitation](../technique/montee-en-charge.md), [admin](../../front/apps/admin/doc/securite.md) | F77, F78, F87 | 4 060 | 🟡 mode allégé (env, `app:platform:degraded`, détection auto, `503` + `Retry-After`, bandeau du site, état dans l’admin), cache public `ETag`/`304`, index, plafond et gigue SSE, `scripts/load/charge.sh`, `app:backup:run`/`app:backup:verify` avec restauration d’essai et écran « Sauvegardes » ; non testé, non vérifié dans un navigateur |
+| L25 | Anti-abus et intégrité : robots, envois multiples, activité inhabituelle (IA) — [ADR 012](../technique/decisions/012-montee-en-charge-integrite-anti-abus.md), [Audit](../../api/src/Audit/doc/README.md), [Shared](../../api/src/Shared/doc/README.md), [admin](../../front/apps/admin/doc/securite.md) | F81, F82, F85 | 3 730 | 🟡 jeton HMAC, champ piège et question en cas de doute ; `Idempotency-Key` rejouée ; détecteur `app:security:scan` (ports IAM, Citizen, Shared), réaction (verrouillage, code exigé, avertissement), écran « Activité inhabituelle », alerte en direct, résumé IA avec repli ; non testé, non vérifié dans un navigateur |
 | L26 | Message officiel, partenaires, avis sur un service, export de suivi | F73, F74, F76, F88 | 2 790 | ⬜ |
 
 ## Travail en parallèle
@@ -147,4 +147,5 @@ Décisions : BC propriétaire `Communication` ([ADR 005](../technique/decisions/
 - [Site — vitrine et alertes](../../front/apps/site/doc/vitrine-et-alertes.md)
 - [Site — accessibilité](../../front/apps/site/doc/accessibilite.md)
 - [Admin — accessibilité](../../front/apps/admin/doc/accessibilite.md)
+- [ADR 012](../technique/decisions/012-montee-en-charge-integrite-anti-abus.md)
 <!-- backlinks:end -->

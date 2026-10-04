@@ -21,6 +21,24 @@ Pas de mise à jour en temps réel : la page s’actualise à la demande. Règle
 - Le build injecte une politique de sécurité du contenu (`vite.config.ts`, plugin `nova-terra-csp`) : scripts de l’application seulement, appels et flux SSE vers l’origine de `VITE_API_BASE_URL` seulement.
 - Décision : [ADR 007](../../../../doc/technique/decisions/007-protection-des-donnees.md).
 
+## Activité inhabituelle (F85, non testé)
+
+Route `/admin/activite-inhabituelle`, espace Administration, groupe « Suivi et sécurité » (`admin.security.read`). Cas d’usage : [Audit — activité inhabituelle](../../../../api/src/Audit/doc/README.md#activité-inhabituelle-et-informations-incohérentes-f85-lot-l25--non-testé).
+
+- État de la plateforme (normal / mode allégé, ce qui reste servi, commande pour lever) ;
+- compteurs : graves à traiter, nouvelles, envois de robots refusés et rafales freinées sur 24 h ;
+- résumé des dernières 24 h (« Rédigé par l’assistant (IA) » ou « Résumé automatique par règles ») ;
+- filtres statut et gravité, bouton « Analyser maintenant », cartes d’anomalie (gravité et statut en `StatusBadge`, explication, protection appliquée, éléments liés, « Marquer comme vue / traitée », « Rouvrir ») ;
+- en-tête de l’admin : alerte en direct « Alerte de sécurité grave » (événement `security.anomaly_detected`), lien vers l’écran ; actualisation toutes les 2 minutes en filet de sécurité.
+
+## Sauvegardes (F87, non testé)
+
+Route `/admin/sauvegardes`, même groupe, permission `admin.backup.read` (administrateur principal ; migration `Version20261004120400`). Dernière sauvegarde, dernière vérification (verdict OK / À surveiller / Échec en clair), détail table par table, historique. Lecture seule : les sauvegardes se lancent par cron ou en ligne de commande ([procédure](../../../../doc/technique/montee-en-charge.md#sauvegarde-et-restauration-f87)).
+
+## Envois multiples (F82)
+
+Formulaires « Ajouter un membre », « Créer un rôle » et diffusion d’une alerte : `useProtectedSubmit` (clé d’idempotence). La fiche d’accueil (F71) n’est pas rejouée (code provisoire jamais conservé) : seul le bouton bloqué protège du double envoi.
+
 <!-- backlinks:start -->
 ---
 
@@ -31,4 +49,5 @@ Pas de mise à jour en temps réel : la page s’actualise à la demande. Règle
 - [admin](README.md)
 - [IAM — comptes et sessions](../../../../api/src/IAM/doc/comptes-et-sessions.md)
 - [ADR 007](../../../../doc/technique/decisions/007-protection-des-donnees.md)
+- [ADR 012](../../../../doc/technique/decisions/012-montee-en-charge-integrite-anti-abus.md)
 <!-- backlinks:end -->

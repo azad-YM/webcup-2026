@@ -73,9 +73,17 @@ Le site n’affiche aucune image matricielle : emblème et pictogrammes en SVG e
 - Rien n’a été testé ni vérifié dans un navigateur : service worker (mise à jour, portée, CSP), restauration des brouillons dans les champs contrôlés par React, proposition du mode léger.
 - Le brouillon est oublié si le formulaire est vidé ou quitté après l’envoi ; un formulaire qui reste rempli après un succès garde son brouillon jusqu’à 7 jours.
 - Listes longues : « Mes demandes » et les listes publiques ne sont pas encore paginées côté API ; à reprendre si les volumes grandissent.
-- Le mode dégradé serveur n’a pas encore de signal dédié de l’API (en-tête exposé) : seul le `503` ou l’événement navigateur le déclenchent.
+- Le mode dégradé serveur est raccordé (L24) : en-tête `X-Platform-Mode` et `GET /api/platform/status`, en plus du `503` vu par le service worker.
 
 [Retour au site](README.md)
+
+## Raccordement au mode allégé du serveur (F77, L24 — non testé)
+
+Le contrat est livré ([ADR 012](../../../../doc/technique/decisions/012-montee-en-charge-integrite-anti-abus.md)) : `ApiClient` émet `nova-terra:mode-degrade` dès qu’une réponse porte `X-Platform-Mode: degraded`, et `ConnectionStatus` surveille `GET /api/platform/status` (toutes les 3 min, espacé en cas d’échec) via `@boilerplate/shared-utils/platform-status`. Le bandeau commence par « Service en mode allégé » et rappelle ce qui reste disponible. Page statique pour l’hébergeur : `public/surcharge.html`. Le flux SSE se rouvre de façon espacée et aléatoire après un refus (`503` du plafond de connexions).
+
+## Formulaires protégés (F81, F82 — non testé)
+
+Inscription, lien de connexion, demande, inquiétude, idée et participation à une consultation utilisent `useProtectedSubmit` et `FormProtection` (`@boilerplate/shared-ui/components/a11y`) : bouton bloqué et « Envoi en cours… », champ piège invisible, jeton de formulaire, question en langage clair seulement en cas de doute, mention « Ce formulaire est protégé contre les envois automatiques », et « Votre demande a déjà été envoyée (référence …) » si l’API rejoue un envoi identique (double clic, retour arrière). Cas d’usage serveur : [Shared](../../../../api/src/Shared/doc/README.md#montée-en-charge-sauvegardes-et-anti-abus-l24-l25--non-testé).
 
 <!-- backlinks:start -->
 ---
@@ -89,4 +97,5 @@ Le site n’affiche aucune image matricielle : emblème et pictogrammes en SVG e
 - [Admin](../../admin/doc/README.md)
 - [Communication](../../../../api/src/Communication/doc/README.md)
 - [Chantier](../../../../doc/chantier/README.md)
+- [ADR 012](../../../../doc/technique/decisions/012-montee-en-charge-integrite-anti-abus.md)
 <!-- backlinks:end -->

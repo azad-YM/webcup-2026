@@ -8,6 +8,10 @@
 - [Décisions générales](decisions/README.md)
 - [Conventions et infrastructure partagées](../../api/src/Shared/doc/README.md)
 
+## Exploitation
+
+- [Montée en charge et sauvegardes](montee-en-charge.md) : cron, variables, mode allégé, test de charge, procédure de restauration ([ADR 012](decisions/012-montee-en-charge-integrite-anti-abus.md)).
+
 <!-- backlinks:start -->
 ---
 

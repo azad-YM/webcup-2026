@@ -76,6 +76,13 @@ Migration `Version20261003121000` : colonne `auth_users.email_verification` (dé
 - Le résumé d’appareil vient du `User-Agent`, qu’un attaquant peut imiter ; l’alerte repose sur l’identifiant aléatoire, pas sur ce résumé.
 - Pas de codes de secours, pas de clés d’accès (passkeys).
 
+## Protection après une activité suspecte (F85, lot L25 — non testé)
+
+IAM implémente deux ports d’[Audit](../../Audit/doc/README.md#activité-inhabituelle-et-informations-incohérentes-f85-lot-l25--non-testé) ([ADR 012](../../../../doc/technique/decisions/012-montee-en-charge-integrite-anti-abus.md)) :
+
+- `Infrastructure/Adapter/Audit/IAMAccountSignals` : verrouillages regroupés (`iam_login_security_events`), comptes ayant beaucoup d’appareils nouveaux (`iam_known_devices`), comptes suspendus encore connectés (`iam_sign_ins`), comptes encore actifs parmi une liste ; libellés masqués (`j•••@domaine`, IP tronquée).
+- `Infrastructure/Adapter/Audit/IAMAccountProtector` : verrouille le compte (`LoginAttemptLimiter::lockAccount`, F37), pose `auth_users.code_required_until` (migration `Version20261004120200`) : `SignInFlow` exige alors le code par e-mail à chaque connexion, **même sur un appareil de confiance et même si la vérification n’est pas activée**, tant que la date n’est pas passée (comptes sans e-mail : pas de code possible) ; prévient le titulaire par `AccountSecurityNotifier::unusualActivity` (notification `security.unusual_activity` de l’espace citoyen).
+
 <!-- backlinks:start -->
 ---
 
@@ -88,4 +95,5 @@ Migration `Version20261003121000` : colonne `auth_users.email_verification` (dé
 - [Parcours de connexion du site](../../../../front/apps/site/doc/parcours-connexion.md)
 - [Citizen — mes données](../../Citizen/doc/mes-donnees.md)
 - [Citizen — notifications](../../Citizen/doc/notifications.md)
+- [ADR 012](../../../../doc/technique/decisions/012-montee-en-charge-integrite-anti-abus.md)
 <!-- backlinks:end -->
