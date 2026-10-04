@@ -4,11 +4,12 @@ import { ArrowRight, Check, Inbox, MessageSquare, Megaphone, RefreshCw } from "@
 import { StatusBadge } from "@boilerplate/shared-ui/components/a11y"
 import { Button, Label } from "@boilerplate/shared-ui/components"
 import { REQUEST_QUEUE_POLLING_MS, useListRequestQueueQuery } from "../../core/application/rtk-api/requests"
-import { REQUEST_STATUSES, STATUS_LABELS, TYPE_LABELS, type RequestStatus } from "../../core/domain/service-request"
+import { PRIORITIES, PRIORITY_LABELS, REQUEST_STATUSES, STATUS_LABELS, TYPE_LABELS, type RequestPriority, type RequestStatus } from "../../core/domain/service-request"
+import { EmergencyBanner } from "../sections/emergency-banner"
 import { RequestQueueSkeleton } from "../sections/request-queue-skeleton"
 import { RequestDetail } from "../sections/request-detail"
 import { SensitiveDataBar } from "@/modules/shared/ui/components/custom/sensitive-data"
-import { RequestStatusBadge } from "../sections/request-status-badge"
+import { MedicalEmergencyBadge, PriorityBadge, RequestStatusBadge } from "../sections/request-status-badge"
 
 const selectClass = "flex h-9 w-full rounded-lg border border-input bg-background px-3 text-sm focus-visible:outline-2 focus-visible:outline-ring"
 const dateTime = new Intl.DateTimeFormat("fr-FR", { dateStyle: "short", timeStyle: "short" })
@@ -17,11 +18,12 @@ const dateTime = new Intl.DateTimeFormat("fr-FR", { dateStyle: "short", timeStyl
 export function RequestQueuePage() {
   const detailRef = useRef<HTMLElement>(null)
   const [status, setStatus] = useState<RequestStatus | null>(null)
+  const [priority, setPriority] = useState<RequestPriority | null>(null)
   const [page, setPage] = useState(1)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [reveal, setReveal] = useState(false)
   // F70 : chaque affichage des données sensibles est journalisé ; pas de rafraîchissement périodique dans ce mode.
-  const queue = useListRequestQueueQuery({ status, page, reveal }, { pollingInterval: reveal ? 0 : REQUEST_QUEUE_POLLING_MS })
+  const queue = useListRequestQueueQuery({ status, page, reveal, priority }, { pollingInterval: reveal ? 0 : REQUEST_QUEUE_POLLING_MS })
   const data = queue.currentData
   const showSkeleton = queue.isFetching && (!data || data.items.length === 0)
   const selected = data?.items.find(item => item.id === selectedId) ?? null
@@ -40,15 +42,20 @@ export function RequestQueuePage() {
             {data && (
               <StatusBadge tone={data.pendingCount > 0 ? "pending" : "success"} label={`${data.pendingCount} en attente`} size="md" />
             )}
+            {data && data.urgentCount > 0 && (
+              <StatusBadge tone="danger" label={`${data.urgentCount} urgente${data.urgentCount > 1 ? "s" : ""}`} size="md" />
+            )}
           </h1>
-          <p className="mt-1 text-muted-foreground">Messages et signalements envoyés par les habitants. Mise à jour en temps réel.</p>
+          <p className="mt-1 text-muted-foreground">Messages et signalements envoyés par les habitants, les plus prioritaires puis les plus anciens d’abord. Mise à jour en temps réel.</p>
         </div>
         <Button type="button" variant="outline" disabled={queue.isFetching} onClick={() => void queue.refetch()}>
           <RefreshCw aria-hidden="true" className={queue.isFetching ? "animate-spin" : undefined} /> Actualiser
         </Button>
       </div>
 
-      <p className="sr-only" aria-live="polite">{data ? `${data.pendingCount} demande(s) en attente de prise en charge` : ""}</p>
+      <p className="sr-only" aria-live="polite">{data ? `${data.pendingCount} demande(s) en attente de prise en charge, ${data.urgentCount} urgente(s)` : ""}</p>
+
+      {data && <EmergencyBanner emergencies={data.pendingEmergencies ?? []} canProcess={data.canProcess} onOpen={id => { setStatus(null); setPriority(null); setPage(1); setSelectedId(id) }} />}
 
       <div className="flex flex-wrap items-end gap-3">
         <div className="w-56 space-y-1">
@@ -65,6 +72,22 @@ export function RequestQueuePage() {
           >
             <option value="all">Tous les états</option>
             {REQUEST_STATUSES.map(option => <option key={option} value={option}>{STATUS_LABELS[option]}</option>)}
+          </select>
+        </div>
+        <div className="w-48 space-y-1">
+          <Label htmlFor="filter-priority">Priorité</Label>
+          <select
+            id="filter-priority"
+            className={selectClass}
+            value={priority ?? "all"}
+            onChange={event => {
+              setPriority(event.target.value === "all" ? null : event.target.value as RequestPriority)
+              setPage(1)
+              setSelectedId(null)
+            }}
+          >
+            <option value="all">Toutes les priorités</option>
+            {PRIORITIES.map(option => <option key={option} value={option}>{PRIORITY_LABELS[option]}</option>)}
           </select>
         </div>
         {data && <p className="pb-2 text-sm text-muted-foreground" role="status">{data.total} demande(s)</p>}
@@ -90,7 +113,7 @@ export function RequestQueuePage() {
                 {status === "submitted" ? "Aucune demande en attente de prise en charge." : "Aucune demande pour ce filtre."}
               </p>
             ) : (
-              <ul className="space-y-3" aria-label="Demandes, les plus anciennes d’abord">
+              <ul className="space-y-3" aria-label="Demandes, par priorité puis les plus anciennes d’abord">
                 {data.items.map(item => {
                   const isSelected = item.id === selectedId
                   const Icon = item.type === "report" ? Megaphone : MessageSquare
@@ -112,6 +135,8 @@ export function RequestQueuePage() {
                       </span>
                       <span className="mt-4 flex flex-wrap items-center gap-2">
                         <RequestStatusBadge status={item.status} />
+                        <PriorityBadge priority={item.priority} />
+                        {item.medicalEmergency && <MedicalEmergencyBadge handled={Boolean(item.emergencyHandledAt)} />}
                         <span className="text-xs text-slate-500">Reçue le <time dateTime={item.createdAt}>{dateTime.format(new Date(item.createdAt))}</time></span>
                       </span>
                       <span className="mt-4 flex items-center justify-between gap-3 text-sm font-semibold text-teal-800">
