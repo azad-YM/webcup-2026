@@ -5,7 +5,8 @@ doctrine:
         use_savepoints: true
     orm:
         auto_generate_proxy_classes: true
-        enable_lazy_ghost_objects: true
+        # PHP 8.4 : objets paresseux natifs, sans classe proxy générée (compatible avec les entités final).
+        enable_native_lazy_objects: true
         report_fields_where_declared: true
         validate_xml_mapping: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
@@ -19,18 +20,48 @@ doctrine:
                 dir: '%kernel.project_dir%/src/IAM/Infrastructure/Doctrine/Entity'
                 prefix: 'IAM\Domain\Entity'
                 alias: IAM
-            Example:
+            Administration:
                 type: xml
                 is_bundle: false
-                dir: '%kernel.project_dir%/src/Example/Infrastructure/Doctrine/Entity'
-                prefix: 'Example\Domain\Entity'
-                alias: Example
-            Shared:
+                dir: '%kernel.project_dir%/src/Administration/Infrastructure/Doctrine/Entity'
+                prefix: 'Administration\Domain\Entity'
+                alias: Administration
+            SharedRealtime:
                 type: xml
                 is_bundle: false
-                dir: '%kernel.project_dir%/src/Shared/Infrastructure/Doctrine/Entity'
-                prefix: 'Shared\Domain\Entity'
-                alias: Shared
+                dir: '%kernel.project_dir%/src/Shared/Infrastructure/Realtime/Doctrine'
+                prefix: 'Shared\Infrastructure\Realtime'
+                alias: SharedRealtime
+            Citizen:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Citizen/Infrastructure/Doctrine/Entity'
+                prefix: 'Citizen\Domain\Entity'
+                alias: Citizen
+            Communication:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Communication/Infrastructure/Doctrine/Entity'
+                prefix: 'Communication\Domain\Entity'
+                alias: Communication
+            Pilotage:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Pilotage/Infrastructure/Doctrine/Entity'
+                prefix: 'Pilotage\Domain\Entity'
+                alias: Pilotage
+            Participation:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Participation/Infrastructure/Doctrine/Entity'
+                prefix: 'Participation\Domain\Entity'
+                alias: Participation
+            Audit:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Audit/Infrastructure/Doctrine/Entity'
+                prefix: 'Audit\Domain\Entity'
+                alias: Audit
         controller_resolver:
             auto_mapping: false
 

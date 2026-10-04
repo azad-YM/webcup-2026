@@ -1,6 +1,70 @@
-import type { AuthGateway } from "@/modules/auth/core/application/ports/gateway/auth.gateway"
+import type { AccountSecurityGateway, AuthGateway } from "@/modules/auth/core/application/ports/gateway/auth.gateway"
+import type { DeviceIdentityGateway } from "@/modules/auth/core/application/ports/gateway/device-identity.gateway"
 import type { AuthSessionGateway } from "@/modules/auth/core/application/ports/gateway/auth-session.gateway"
+import type { ResidentAccessGateway } from "@/modules/auth/core/application/ports/gateway/resident-access.gateway"
+import type { AccountRegistrationGateway } from "@/modules/auth/core/application/ports/gateway/account-registration.gateway"
+import type { CitizenGateway } from "@/modules/citizen/core/application/ports/gateway/citizen.gateway"
+import type { CitizenSessionProvider } from "@/modules/citizen/core/application/ports/provider/citizen-session.provider"
+import type { ServiceCatalogGateway } from "@/modules/public/core/application/ports/gateway/service-catalog.gateway"
+import type { PublicationGateway } from "@/modules/public/core/application/ports/gateway/publication.gateway"
+import type { ExplanationGateway, ServiceFinderGateway } from "@/modules/public/core/application/ports/gateway/assistance.gateway"
+import type { OrientationGateway } from "@/modules/assistance/core/application/ports/gateway/orientation.gateway"
+import type { ServiceRequestGateway } from "@/modules/citizen/core/application/ports/gateway/service-request.gateway"
+import type { NotificationGateway } from "@/modules/citizen/core/application/ports/gateway/notification.gateway"
+import type { AppointmentGateway } from "@/modules/citizen/core/application/ports/gateway/appointment.gateway"
+import type { ParticipationGateway } from "@/modules/citizen/core/application/ports/gateway/participation.gateway"
+import type { PersonalDataGateway } from "@/modules/citizen/core/application/ports/gateway/personal-data.gateway"
+import type { IdentityCodeProvider } from "@/modules/citizen/core/application/ports/provider/identity-code.provider"
+import type { RealtimeSubscriber } from "../application/ports/realtime-subscriber"
+import type { AlertsGateway } from "@/modules/public/core/application/ports/gateway/alerts.gateway"
+import type { OfficialMessageReadGateway } from "@/modules/public/core/application/ports/gateway/official-message-read.gateway"
+import type { SafetyKitGateway } from "@/modules/public/core/application/ports/gateway/safety-kit.gateway"
+import type { TransportGateway } from "@/modules/public/core/application/ports/gateway/transport.gateway"
+import type { ServiceRatingsProvider } from "@/modules/public/core/application/ports/provider/service-ratings.provider"
+import type { CityFeedGateway } from "@/modules/public/core/application/ports/gateway/city-feed.gateway"
+import type { CityParticipationGateway } from "@/modules/participation/core/application/ports/gateway/city-participation.gateway"
+import type { ParticipationSessionProvider } from "@/modules/participation/core/application/ports/provider/participation-session.provider"
+
 export type Dependencies = {
+  // temps réel (un flux SSE par onglet)
+  realtime: RealtimeSubscriber
+  // auth
   authGateway: AuthGateway
   authSessionGateway: AuthSessionGateway
+  accountRegistrationGateway: AccountRegistrationGateway
+  /** F71 : comptes créés à l’accueil (identifiant d’habitant, code provisoire). */
+  residentAccessGateway: ResidentAccessGateway
+  // L15 : appareil, lien de connexion, « Sécurité du compte »
+  deviceIdentityGateway: DeviceIdentityGateway
+  accountSecurityGateway: AccountSecurityGateway
+  // citizen
+  citizenGateway: CitizenGateway
+  citizenSessionProvider: CitizenSessionProvider
+  serviceRequestGateway: ServiceRequestGateway
+  notificationGateway: NotificationGateway
+  appointmentGateway: AppointmentGateway
+  participationGateway: ParticipationGateway
+  // F55 : « Mes données » (Citizen) et code de confirmation fourni par le module auth (IAM)
+  personalDataGateway: PersonalDataGateway
+  identityCodeProvider: IdentityCodeProvider
+  // public : services (Administration), publications et alertes (Communication), flux temps réel
+  serviceCatalogGateway: ServiceCatalogGateway
+  publicationGateway: PublicationGateway
+  alertsGateway: AlertsGateway
+  /** F73 : messages officiels marqués « J'ai lu » dans ce navigateur. */
+  officialMessageReadGateway: OfficialMessageReadGateway
+  /** F93, F101, F104 : quartier choisi et dernière copie des alertes, gardés sur l'appareil. */
+  safetyKitGateway: SafetyKitGateway
+  /** F97 : lignes de transport (Administration) et aide au trajet (Assistance). */
+  transportGateway: TransportGateway
+  cityFeedGateway: CityFeedGateway
+  /** F76 : notes des services, fournies par le module participation. */
+  serviceRatingsProvider: ServiceRatingsProvider
+  // assistance (BC Assistance, L22) : recherche tolérante, explications simples, assistant d’orientation
+  serviceFinderGateway: ServiceFinderGateway
+  explanationGateway: ExplanationGateway
+  orientationGateway: OrientationGateway
+  // participation (BC Participation) : projets, consultations, idées
+  cityParticipationGateway: CityParticipationGateway
+  participationSessionProvider: ParticipationSessionProvider
 }

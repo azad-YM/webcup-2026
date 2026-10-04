@@ -102,12 +102,12 @@ body { margin: 0; }
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+  --muted-foreground: oklch(0.48 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
+  --border: oklch(0.88 0 0);
+  --input: oklch(0.62 0 0);
   --ring: var(--brand-green);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
@@ -161,3 +161,99 @@ body { margin: 0; }
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
+
+/* ------------------------------------------------------------------
+ * Accessibilité (lot L4) — commune au site et à l’admin.
+ * Préférences appliquées sur <html> par `applyDisplayPreferences`
+ * (voir src/a11y/display-preferences.ts).
+ * ------------------------------------------------------------------ */
+
+/* Taille du texte (F24, F44) : toutes les tailles Tailwind sont en rem. */
+html { font-size: 100%; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+html[data-text-size="125"] { font-size: 125%; }
+html[data-text-size="150"] { font-size: 150%; }
+
+/* Pas de défilement horizontal à 320 px ni à 200 % de zoom : les mots longs se coupent. */
+body { overflow-wrap: break-word; }
+img, svg, video { max-width: 100%; }
+
+/* Focus toujours visible au clavier (F41), contrasté sur fond clair comme sombre.
+ * Volontairement hors couche : prime sur les utilitaires `outline-none`. */
+:focus-visible {
+  outline: 3px solid #b45309;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px #ffffff;
+}
+[tabindex="-1"]:focus:not(:focus-visible) { outline: none; }
+
+/* Réduction des animations : préférence système ou réglage du panneau. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+html[data-motion="reduce"] *,
+html[data-motion="reduce"] *::before,
+html[data-motion="reduce"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Mode léger (L17, F62) : ni animation ni transition, pas d’images ou d’effets décoratifs
+ * (ombres, flous, dégradés), mise en page simplifiée. Les informations restent toutes affichées. */
+html[data-light="on"] *,
+html[data-light="on"] *::before,
+html[data-light="on"] *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+  text-shadow: none !important;
+  backdrop-filter: none !important;
+}
+html[data-light="on"] *:not(:focus-visible) { box-shadow: none !important; }
+html[data-light="on"] [data-decorative] { display: none !important; }
+html[data-light="on"] [class*="bg-gradient-"],
+html[data-light="on"] [class*="bg-linear-"],
+html[data-light="on"] [class*="bg-radial-"] { background-image: none !important; }
+
+/* Contraste élevé (F23, F43) : textes plus foncés, bordures marquées, liens soulignés. */
+html[data-contrast="high"] {
+  --foreground: #000000;
+  --card-foreground: #000000;
+  --popover-foreground: #000000;
+  --muted-foreground: #1f2937;
+  --secondary-foreground: #000000;
+  --accent-foreground: #000000;
+  --border: #374151;
+  --input: #111827;
+  --ring: #000000;
+  --primary: #9b0306;
+  --brand-red: #9b0306;
+  --brand-green: #04530b;
+  --sidebar-foreground: #000000;
+  --sidebar-primary: #04530b;
+  --sidebar-accent-foreground: #04530b;
+  --sidebar-border: #374151;
+  /* Palette Tailwind utilisée en texte sur fond clair. */
+  --color-slate-500: #1e293b;
+  --color-slate-600: #111827;
+  --color-slate-700: #0b1220;
+  --color-slate-800: #050a14;
+  --color-teal-700: #0b4f4a;
+  --color-teal-800: #073b37;
+  --color-red-700: #7f0d0d;
+  --color-red-800: #6b0a0a;
+  --color-amber-800: #5c2d06;
+}
+html[data-contrast="high"] body { background: #ffffff; color: #000000; }
+html[data-contrast="high"] a:not([class*="bg-"]) { text-decoration-line: underline; text-underline-offset: 0.2em; }
+html[data-contrast="high"] .border-slate-100,
+html[data-contrast="high"] .border-slate-200,
+html[data-contrast="high"] .border-slate-300 { border-color: #475569; }
+html[data-contrast="high"] :focus-visible { outline: 4px solid #000000; box-shadow: 0 0 0 7px #ffd400; }
+html[data-contrast="high"] ::placeholder { color: #374151; opacity: 1; }

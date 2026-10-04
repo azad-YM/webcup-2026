@@ -1,0 +1,154 @@
+# Parcours citoyen — inscription, espace, profil et demandes
+
+<!-- navigation:start -->
+[Accueil du projet](../../../../README.md) › [Documentation](../../../../doc/README.md) › [site](README.md) › Parcours citoyen
+<!-- navigation:end -->
+
+Les règles (qui devient citoyen, champs du profil, profil « complété ») et le contrat HTTP appartiennent à [Citizen](../../../../api/src/Citizen/doc/README.md#contrat-http--inscription-et-profil-lot-l1). Cette page décrit le comportement du site.
+
+## 1. Créer son compte (`/inscription`)
+
+**Étape 1 sur 2 — Mon compte** : adresse e-mail, mot de passe (8 à 72 caractères) et confirmation. Le site vérifie la saisie avant l’envoi, place le focus sur le premier champ en erreur et relie chaque message à son champ.
+
+Enchaînement (use case `register` du module `auth`) : `POST /api/citizen/register` via le port `AccountRegistrationGateway` (fourni par le module `citizen`), puis `POST /api/login_check` avec les mêmes identifiants, puis passage à `/inscription?etape=informations`.
+
+| Situation | Comportement |
+|---|---|
+| `409` | « Un compte existe déjà avec cet e-mail » et lien « Se connecter avec cet e-mail ». |
+| `422` avec `path` (`email`, `password`) | Message compréhensible sous le champ concerné. |
+| `422` sans champ (`{ error }`, refus IAM) | Message général, sans le texte technique. |
+| Panne réseau | Message, saisie conservée ; le même bouton permet de réessayer. |
+| Compte créé mais connexion automatique impossible | Message et lien vers la connexion. |
+| Double clic | Bouton désactivé et envoi verrouillé tant que la requête est en cours. |
+
+**Étape 2 sur 2 — Mes informations** (facultative) : prénom, nom, téléphone, adresse, quartier, langue préférée. Le formulaire est pré-rempli par `GET /api/citizen/me`. « Enregistrer et accéder à mon espace » envoie `PUT /api/citizen/me`, puis ouvre `/espace` ; « Passer cette étape » ouvre directement `/espace`.
+
+Un visiteur déjà connecté qui ouvre `/inscription` est envoyé vers `/espace` ; l’étape 2 sans session revient à l’étape 1.
+
+## 2. Espace personnel (`/espace`)
+
+Garde : une session est requise (sinon invitation à se connecter, avec retour vers la page demandée), puis `GET /api/citizen/me`.
+
+| Résultat | Comportement |
+|---|---|
+| `200` | « Bonjour <prénom> » (ou « Bonjour »), guide de première visite sous le message de bienvenue (avec complétion du profil), puis « Que souhaitez-vous faire ? » et les notifications de la ville. Le profil, les espaces IAM autorisés et la déconnexion sont regroupés dans le popover de l’avatar de l’en-tête. |
+| `404` | « Ce compte n’est pas encore un compte citoyen », bouton **« Activer mon compte citoyen »** (`POST /api/citizen/me/activate`, puis rechargement du profil) et liste des espaces IAM (carte « Administration » pour un membre, sinon « aucun espace »). |
+| `401` | Session fermée, caches vidés, invitation à se reconnecter. |
+| Panne réseau ou `5xx` | Message et « Réessayer », sans déconnexion. |
+
+## 3. Mon profil (`/espace/profil`)
+
+Même garde. Formulaire pré-rempli. `PUT /api/citizen/me` **remplace tout le profil** : le site envoie toujours les six champs, champ vide → `null`. Après l’enregistrement : « Vos informations ont été enregistrées. » (annonce `aria-live`) et lien de retour vers l’espace. Un `422` rattaché à un champ s’affiche sous ce champ ; la saisie est conservée en cas d’erreur.
+
+À l’ouverture du profil ou de l’étape « Mes informations », le site recharge le profil depuis l’API avant d’afficher le formulaire, même si une version est déjà en cache. Les champs non modifiés suivent le profil reçu ; seules les modifications explicites du citoyen le remplacent, y compris l’effacement volontaire d’un champ.
+
+## 4. Demandes citoyennes (lot L2)
+
+Règles et contrat : [Citizen — demandes](../../../../api/src/Citizen/doc/README.md#livré--demandes-citoyennes-lot-l2). Côté agents : [admin — demandes citoyennes](../../admin/doc/demandes.md). Même garde que l’espace sur chaque page ; un `401` ferme la session.
+
+**Envoyer une demande** (`/espace/demandes/nouvelle?type=contact|report`, D04, F25) : titre « Contacter la mairie » ou « Signaler un problème » selon `type` (raccourcis de `/espace` et boutons de « Mes demandes »), type modifiable dans le formulaire. Champs : objet (≤ 160), description (≤ 5 000), lieu (≤ 255, **obligatoire pour un signalement**, facultatif sinon). Le site vérifie la saisie avant l’envoi (mêmes règles que l’API), place le focus sur le premier champ en erreur et verrouille le bouton pendant l’envoi. `POST /api/citizen/requests`.
+
+**Confirmation** (D16) : dès la réponse, l’écran « Votre demande a bien été envoyée » (focus sur le titre) affiche la **référence** (`NT-2026-0042`), la date de réception, l’objet et l’état, avec « Suivre ma demande » et « Envoyer une autre demande ».
+
+**Mes demandes** (`/espace/demandes`, D11, F26) : boutons d’envoi, puis historique (plus récentes d’abord) : type, référence, date d’envoi, objet, état. États chargement, vide (« Vous n’avez encore envoyé aucune demande ») et erreur avec « Réessayer ».
+
+**Détail** (`/espace/demandes?ref=NT-2026-0042`, export statique) : objet, type, état, lieu, message, puis **chronologie des étapes** horodatées avec le commentaire de la mairie (« Motif : » pour un rejet). Référence inconnue ou demande d’un autre compte : « Cette demande est introuvable dans votre espace ».
+
+**Temps réel** : tant qu’une liste ou un détail est affiché, le site écoute `request.submitted` et `request.status_changed` sur le topic `citizen.{citizenId}` (accordé par le serveur, [ADR 004](../../../../doc/technique/decisions/004-temps-reel.md)) et recharge les demandes depuis l’API ; un rafraîchissement toutes les 60 s sert de filet de sécurité. Un seul flux SSE par onglet (`SseRealtimeSubscriber`), fermé quand plus aucun écran ne l’utilise.
+
+Code : module `citizen` (`ui/pages/service-requests.tsx`, `ui/pages/new-service-request.tsx`, `ui/components/request-status.tsx`, `core/application/rtk-api/service-requests.ts`, `core/application/usecases/service-request.usecase.ts`, `core/infrastructure/for-production/gateway/http/service-request.http.gateway.ts`) et `shared` (`core/application/ports/realtime-subscriber.ts`, `core/infrastructure/realtime/sse-realtime.subscriber.ts`). **Aucun test automatisé ; non vérifié dans un navigateur.**
+
+## Lot L23 — urgence médicale, échanges, accusé de réception, filtres
+
+🟡 Non testé, non vérifié dans un navigateur. API : [Citizen — demandes à grande échelle](../../../../api/src/Citizen/doc/demandes-a-grande-echelle.md) ; côté agents : [admin — demandes](../../admin/doc/demandes.md#lot-l23--priorités-urgences-médicales-demandes-similaires-réponses).
+
+- **Urgence médicale (F86)** : dans le formulaire de demande, case « C’est une urgence médicale » et repérage local des mots d’une urgence à la saisie ; dès que l’un ou l’autre est vrai, un encadré très visible « Urgence médicale : appelez le 15 ou le 112 » (liens `tel:15`, `tel:112`, lien vers `/urgences`) s’affiche, sans bloquer l’envoi. Un rappel permanent dit que la plateforme n’est pas un service d’urgence. L’écran de confirmation et le détail de la demande rappellent les numéros ; une urgence médicale n’est jamais rendue publique.
+- **Quartier** : sélecteur facultatif « Quartier concerné » (liste d’Administration, sinon celui du profil).
+- **Échanges avec la mairie (F84)** : dans le détail d’une demande (`/espace/demandes?ref=`), fil des messages (« La mairie » / « Vous ») et réponse possible tant que la demande n’est pas close ; notification « la mairie vous a répondu » et temps réel `request.message_posted`.
+- **Accusé de réception (F83)** : `/espace/demandes/accuse?ref=` (lien depuis la confirmation et le détail) : référence, date et heure, type, service, objet, empreinte ; « Imprimer ou enregistrer en PDF » et « Télécharger (texte) ». Envoyé aussi par e-mail si le compte a une adresse. Page publique `/verifier-accuse?ref=` : référence + empreinte → « authentique » avec la date, ou « non reconnu », sans contenu.
+- **Filtres (F79)** : « Mes demandes » et « Soutenir une demande d’habitants » (`/espace/participation`) proposent recherche texte, catégorie, service, état, quartier et tri (récentes, anciennes, plus soutenues pour les signalements). Les critères sont dans l’adresse (`?q=&categorie=&etat=&quartier=&service=&tri=`).
+- Les textes de ces écrans sont en français seulement (pas encore dans `defineMessages`).
+- Code : `citizen/ui/components/{medical-emergency-notice,request-conversation,request-filters}.tsx`, `citizen/ui/pages/{request-receipt,verify-receipt}.tsx`, `citizen/core/domain/request-filters.ts`, gateway `ServiceRequestGateway` étendu.
+
+## Notifications de l’espace (F49)
+
+- La cloche de l’en-tête, disponible sur toutes les pages pour un citoyen connecté, affiche le nombre de notifications personnelles non lues et ouvre « Mes notifications » (`citizen/ui/sections/notification-center.tsx`) : message clair (« Votre demande NT-2026-0042 est passée à « Prise en charge ». »), date, badge « Non lue », lien « Voir le détail », bouton « Tout marquer comme lu ». Les filtres « Toutes », « Non lues » et « Lues » permettent de retrouver les messages ; les états « Lue » et « Non lue » sont explicites. Une notification arrivée pendant que le panneau est ouvert est annoncée dans un bandeau « Nouveau : … » (`role="status"`).
+- Pastille du nombre de notifications de demandes non lues sur le raccourci « Mes demandes ». Ouvrir le détail d’une demande marque ses notifications comme lues.
+- Données : port `NotificationGateway` → `NotificationHttpGateway` (`GET /api/citizen/notifications`, `POST /api/citizen/notifications/read`), RTK `notificationsApi` ; contrat dans [Citizen — notifications](../../../../api/src/Citizen/doc/notifications.md).
+- Temps réel : `notification.created` et `request.status_changed` sur l’unique flux de l’onglet invalident le cache ; polling de secours de 60 s.
+
+## Rendez-vous (`/espace/rendez-vous`, F39, F40)
+
+- Raccourci « Mes rendez-vous » de `/espace` (pastille des rappels non lus). Page `citizen/ui/pages/appointments.tsx` : rendez-vous à venir, puis « Rendez-vous passés ou annulés » repliés ; `?id=` met en avant le rendez-vous d’un rappel.
+- « Prendre un rendez-vous » : 1. service (seuls ceux qui ont des créneaux libres, avec le prochain créneau) ; 2. créneau, groupé par jour, horaires affichés en « heure de La Réunion (UTC+4) » ; 3. récapitulatif à confirmer : service, date et heure avec le fuseau, durée et heure de fin, lieu, pièces à apporter. Après confirmation : encadré « Rendez-vous RDV-… confirmé » (focus, `role="status"`).
+- « Déplacer » (même service, nouveau créneau, confirmation) et « Annuler » (confirmation explicite). Créneau pris entre-temps : message clair et nouveau choix.
+- Rappels la veille et 2 h avant dans « Mes notifications » (temps réel). Données : port `AppointmentGateway` → `AppointmentHttpGateway`, RTK `appointmentsApi`, événement `appointment.changed` ; contrat dans [Citizen — rendez-vous](../../../../api/src/Citizen/doc/rendez-vous.md).
+
+### Service désactivé ou perturbé (L18 : F63, F64 — non testé, non vérifié dans un navigateur)
+
+- `/espace/demandes/nouvelle?service=…` : la page compose l’état du service (module `public`, slot `serviceNotice`) en tête du formulaire et envoie `serviceId`. Si le service est désactivé, l’API refuse (`409 service_disabled`) et le message dit quoi faire ; « Contacter la mairie » sans viser le service reste possible.
+- `/espace/rendez-vous` : chaque service de l’offre affiche son état ; pour le service choisi, un bandeau (`citizen/ui/components/service-availability-notice.tsx`) explique la perturbation ou la désactivation ; aucun créneau n’est proposé pour un service désactivé. Contrat : [Citizen — rendez-vous](../../../../api/src/Citizen/doc/rendez-vous.md).
+
+## Participer (`/espace/participation`, F51, F52)
+
+- Raccourci « Participer » de `/espace` (pastille des réponses non lues). Page `citizen/ui/pages/participation.tsx`.
+- **Soutenir une demande d’habitants** (F52) : signalements publics (objet, lieu, état, date ; ni auteur ni message), compteur « N habitants soutiennent cette demande », bouton « Je soutiens », trace « Vous soutenez cette demande » et « Retirer mon soutien » ; « C’est votre signalement » pour les siens. Le formulaire de signalement propose la case facultative « Rendre ce signalement visible des autres habitants » ; le détail d’une de mes demandes publiques affiche son nombre de soutiens.
+- **Faire remonter une inquiétude** (F51) : thème, objet, message ; accusé de réception immédiat avec la référence `INQ-…` (focus) ; « Suivi de mes inquiétudes » avec chaque étape (reçue, prise en compte, réponse de la mairie) ; notification à chaque action d’un agent.
+- **Vos données** (`/vos-donnees`, public, lien dans le pied de page et la page Participer) : quelles données, pourquoi, combien de temps, qui y accède, vos droits (`public/ui/pages/your-data.tsx`).
+- Données : port `ParticipationGateway` → `ParticipationHttpGateway`, RTK `participationApi` ; contrat dans [Citizen — participation](../../../../api/src/Citizen/doc/participation.md).
+
+## 5. Supprimer mon compte (`/espace/profil`, F33)
+
+Lot L8, 🟡 non vérifié dans un navigateur. Sous le formulaire du profil, la section « Supprimer mon compte » explique l’effet (profil et identifiants effacés, sessions fermées, historique des démarches conservé sans identité). « Demander la suppression » ouvre un formulaire : mot de passe actuel **et** case « Je comprends que cette suppression est définitive » obligatoires. `DELETE /api/citizen/me` `{password}` :
+
+| Réponse | Affichage |
+|---|---|
+| `200` | Session locale vidée, redirection vers `/connexion?compte=supprime` (« Votre compte a été supprimé et vos sessions ont été fermées. »). |
+| `403` | « Mot de passe incorrect. La suppression a été refusée. » ; le champ est vidé. |
+| `409` | « Ce compte est aussi un compte d’agent actif. Contactez un administrateur avant de le supprimer. » |
+| `401` | Session expirée : déconnexion. |
+
+Règles (anonymisation, compte agent protégé) : [Citizen — compte et sécurité](../../../../api/src/Citizen/doc/compte-et-securite.md). Code : `citizen/ui/sections/delete-account.tsx`, `citizen/core/application/usecases/delete-my-account.usecase.ts`.
+Le **quartier** se choisit dans une liste fermée (Nord, Sud, Est, Ouest, Centre, Port) chargée depuis `GET /api/administration/districts` ; il sert aux alertes ciblées. Une valeur ancienne hors liste reste affichée pour ne pas être effacée.
+
+Sous l’espace personnel, la section **« Notifications de la ville »** affiche les alertes qui concernent le citoyen, les annonces importantes et la case de consentement aux alertes sanitaires : voir [vitrine et alertes](vitrine-et-alertes.md).
+
+## Mes données et récapitulatif (F55, F56)
+
+🟡 Non testé, non vérifié dans un navigateur. Règles et format : [Citizen — mes données](../../../../api/src/Citizen/doc/mes-donnees.md).
+
+- **Récapitulatif des demandes** (`/espace/demandes/recapitulatif`, lien depuis « Mes demandes ») : page imprimable (tableau d’ensemble, puis détail et étapes de chaque demande ; en-tête, alertes et pied de page masqués à l’impression) et bouton « Télécharger le tableau (CSV) » (UTF-8 avec BOM, `;`, en-têtes en français). Construit sur `GET /api/citizen/requests`.
+- **Mes données** (`/espace/mes-donnees`, menu du compte et page « Vos données ») : confirmation par mot de passe ou par code reçu par e-mail (code demandé à IAM par le port `IdentityCodeProvider` du module citizen, adaptateur `auth/core/infrastructure/adapter/citizen/AuthIdentityCodeAdapter`), puis rubriques expliquées (compte, profil, préférences, demandes, rendez-vous, notifications, participation, appareils, connexions récentes), impression et téléchargement JSON.
+- **Sécurité du compte** (`/espace/securite`) : page du module `auth`, voir [parcours de connexion](parcours-connexion.md).
+
+## Dépendances et limites
+
+- Le parcours de bout en bout dépend de l’API Citizen (lot L1, agent A). Sans elle, `/espace` affiche « ce compte n’est pas un compte citoyen » (la route répond `404`) et l’inscription échoue avec un message ; la connexion IAM et la carte « Administration » continuent de fonctionner.
+- La langue préférée propose « Français » et « English » ; une autre valeur déjà enregistrée reste affichée et conservée. L’API ne contrôle que sa longueur (≤ 5).
+- L’e-mail du compte n’est pas affiché dans l’espace (il viendrait de `GET /api/iam/me`).
+- Demandes : le formulaire ne propose pas encore de choisir le service concerné (catalogue local jusqu’au lot L3) ; le temps réel suppose le worker Messenger actif (sinon, rafraîchissement toutes les 60 s).
+
+Code : modules `auth` (`ui/pages/registration.tsx`, `core/application/usecases/register.usecase.ts`) et `citizen` (`ui/pages`, `core/application/usecases/my-profile.usecase.ts`, `core/infrastructure/for-production/gateway/http/citizen.http.gateway.ts`). Tests : `registration.test.ts`, `citizen.test.ts`, `citizen.http.test.ts`, `citizen-profile.test.ts`.
+
+<!-- backlinks:start -->
+---
+
+[← Retour à site](README.md)
+
+**Référencé depuis :**
+
+- [Site](README.md)
+- [Parcours de connexion](parcours-connexion.md)
+- [Chantier](../../../../doc/chantier/README.md)
+- [Registre des demandes](../../../../doc/chantier/demandes.md)
+- [Citizen — compte et sécurité](../../../../api/src/Citizen/doc/compte-et-securite.md)
+- [Citizen](../../../../api/src/Citizen/doc/README.md)
+- [Admin — demandes citoyennes](../../admin/doc/demandes.md)
+- [Vitrine et alertes](vitrine-et-alertes.md)
+- [Citizen — notifications](../../../../api/src/Citizen/doc/notifications.md)
+- [Citizen — rendez-vous](../../../../api/src/Citizen/doc/rendez-vous.md)
+- [Citizen — participation](../../../../api/src/Citizen/doc/participation.md)
+- [Participation (BC)](../../../../api/src/Participation/doc/README.md)
+- [Citizen — mes données](../../../../api/src/Citizen/doc/mes-donnees.md)
+- [Citizen — demandes à grande échelle](../../../../api/src/Citizen/doc/demandes-a-grande-echelle.md)
+<!-- backlinks:end -->

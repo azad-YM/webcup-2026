@@ -1,0 +1,62 @@
+import { Star, Bus, FileText, ShieldCheck, Activity, ArchiveRestore, Download, BookKey, Building2, CalendarClock, HandHeart, History, Inbox, LayoutDashboard, Lightbulb, MessageCircleWarning, MessagesSquare, Newspaper, ShieldAlert, ShieldQuestion, Siren, Users } from "@boilerplate/shared-ui/components/icon"
+import type { NavGroup } from "../components/sidebar/nav-main"
+
+export type ModuleCode = "admin" | "requests" | "pilotage" | "participation"
+export const MODULES = {
+  admin: { title: "Administration", route: "/admin", icon: Building2, description: "Organisation et vie de la ville" },
+  requests: { title: "Demandes citoyennes", route: "/demandes", icon: Inbox, description: "Accompagner les habitants" },
+  pilotage: { title: "Pilotage", route: "/pilotage", icon: Activity, description: "Suivre l’activité de Nova Terra" },
+  participation: { title: "Participation", route: "/participation", icon: MessagesSquare, description: "Projets, consultations et idées des habitants" },
+} satisfies Record<ModuleCode, unknown>
+
+export function moduleForPath(path: string): ModuleCode | null {
+  const root = path.split("/")[1]
+  if (root === "admin" || root === "contenus") return "admin"
+  if (root === "demandes") return "requests"
+  if (root === "pilotage") return "pilotage"
+  if (root === "participation") return "participation"
+  return null
+}
+
+export const MODULE_NAVIGATION: Record<ModuleCode, NavGroup[]> = {
+  admin: [
+    { title: "Vue d’ensemble", items: [{ title: "Tableau de bord", url: "/admin", icon: LayoutDashboard }] },
+    { title: "Configuration", items: [
+      { title: "Membres", url: "/admin/member", icon: Users, description: "Agents et administrateurs" },
+      { title: "Rôles", url: "/admin/role", icon: BookKey, description: "Permissions et habilitations" },
+      { title: "Comptes citoyens", url: "/admin/citizens", icon: Users },
+    ] },
+    { title: "Contenus de la ville", items: [
+      { title: "Publications", url: "/contenus", icon: Newspaper },
+      { title: "Alertes", url: "/contenus/alertes", icon: Siren },
+      { title: "Services et transports", url: "/contenus/services", icon: Building2 },
+      { title: "Lignes de transport", url: "/contenus/transports", icon: Bus, description: "Interruptions et solutions de remplacement" },
+    ] },
+    { title: "Suivi et sécurité", items: [
+      { title: "Journal des actions", url: "/admin/journal", icon: History },
+      { title: "Événements de sécurité", url: "/securite", icon: ShieldCheck, description: "Les derniers événements, en clair" },
+      { title: "Journal de sécurité", url: "/admin/security", icon: ShieldAlert },
+      { title: "Activité inhabituelle", url: "/admin/activite-inhabituelle", icon: ShieldQuestion, description: "Anomalies, robots, données incohérentes" },
+      { title: "Sauvegardes", url: "/admin/sauvegardes", icon: ArchiveRestore, description: "Rapports de sauvegarde et de restauration" },
+    ] },
+  ],
+  requests: [{ title: "Relation citoyenne", items: [
+    { title: "File des demandes", url: "/demandes", icon: Inbox, description: "Messages et signalements" },
+    { title: "Rendez-vous", url: "/demandes/rendez-vous", icon: CalendarClock, description: "Créneaux et réservations" },
+    { title: "Inquiétudes", url: "/demandes/inquietudes", icon: MessageCircleWarning, description: "Écouter et répondre aux habitants" },
+    { title: "Accueil des nouveaux arrivants", url: "/demandes/accueil", icon: HandHeart, description: "Créer un compte au guichet, même sans e-mail" },
+  ] }],
+  pilotage: [{ title: "Activité de la ville", items: [
+    { title: "Flux Nova Terra", url: "/pilotage", icon: Activity, description: "Demandes de la ville et suivi de l’équipe" },
+    { title: "Tableau de bord", url: "/pilotage/tableau-de-bord", icon: LayoutDashboard, description: "Chiffres clés et activité" },
+    { title: "Services les plus utilisés", url: "/pilotage/services", icon: Star, description: "Classement, évolution et satisfaction" },
+    { title: "Rapport d’activité", url: "/pilotage/rapport", icon: FileText, description: "Synthèse à transmettre aux responsables" },
+    { title: "Exports", url: "/pilotage/exports", icon: Download, description: "Télécharger des données de suivi (CSV, JSON)" },
+  ] }],
+  participation: [{ title: "Participation des habitants", items: [
+    { title: "Projets", url: "/participation", icon: Building2, description: "Projets en cours dans la ville" },
+    { title: "Consultations et avis", url: "/participation/consultations", icon: MessagesSquare, description: "Questions posées aux habitants" },
+    { title: "Boîte à idées", url: "/participation/idees", icon: Lightbulb, description: "Idées proposées par les habitants" },
+    { title: "Avis sur les services", url: "/participation/avis", icon: Star, description: "Notes et commentaires après un service" },
+  ] }],
+}

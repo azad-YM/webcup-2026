@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="Participation\Domain\Entity\Idea" table="participation_ideas">
+        <indexes>
+            <index name="IDX_PARTICIPATION_IDEA_CITIZEN" columns="citizen_id,created_at"/>
+            <index name="IDX_PARTICIPATION_IDEA_STATUS" columns="status,created_at"/>
+        </indexes>
+        <unique-constraints>
+            <unique-constraint name="UNIQ_PARTICIPATION_IDEA_REFERENCE" columns="reference"/>
+        </unique-constraints>
+        <id name="id" type="string" length="36"/>
+        <field name="reference" type="string" length="20"/>
+        <field name="citizenId" column="citizen_id" type="string" length="36"/>
+        <field name="title" type="string" length="160"/>
+        <field name="description" type="text"/>
+        <field name="district" type="string" length="40" nullable="true"/>
+        <field name="status" type="string" length="20">
+            <options><option name="default">received</option></options>
+        </field>
+        <field name="statusComment" column="status_comment" type="text" nullable="true"/>
+        <field name="public" column="is_public" type="boolean">
+            <options><option name="default">1</option></options>
+        </field>
+        <field name="hiddenReason" column="hidden_reason" type="text" nullable="true"/>
+        <field name="trail" type="json"/>
+        <field name="createdAt" column="created_at" type="datetime_immutable"/>
+        <field name="updatedAt" column="updated_at" type="datetime_immutable"/>
+    </entity>
+</doctrine-mapping>

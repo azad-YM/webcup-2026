@@ -41,3 +41,7 @@ Les applications dont les signatures diffèrent conservent leur propre câblage.
 - [Frontend](../../README.md)
 - [Admin](../../apps/admin/doc/README.md)
 <!-- backlinks:end -->
+
+## `realtime`
+
+Client du flux temps réel SSE de l’API (`GET /api/realtime/stream`) : `openRealtimeStream` (topics publics, ou privés avec un ticket ; reprise après refus depuis le dernier identifiant reçu) et `createRealtimeTicketProvider` (échange du JWT contre un ticket). Voir l’[ADR 004](../../../doc/technique/decisions/004-temps-reel.md).

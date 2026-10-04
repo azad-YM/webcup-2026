@@ -2,7 +2,7 @@
 
 ## Structure
 
-BC : `IAM` (identité et accès) et `Example` (BC d’exemple, à dupliquer pour un nouveau domaine). `Shared` est le socle transversal. Un BC peut être découpé en sous-domaines (SD) lorsqu’il grossit ; les règles ci-dessous s’appliquent alors aussi entre SD.
+BC : `IAM` (comptes et sessions), `Administration` (membres, rôles, permissions de la ville), `Citizen` (citoyens : inscription et profil livrés ; demandes à venir), `Communication` (publications et alertes aux habitants), `Participation` (projets, consultations et avis, boîte à idées, [ADR 008](../doc/technique/decisions/008-bc-participation.md)), `Assistance` (recherche tolérante, assistant d’orientation, explications simples et brouillons « En clair », sans table, [ADR 011](../doc/technique/decisions/011-bc-assistance.md)), `Pilotage` (flux de l’API du concours, suivi de l’équipe, tableau de bord de l’activité), `Audit` (journal des actions, [ADR 006](../doc/technique/decisions/006-journal-des-actions.md) : les handlers de mutation de l’administration appellent le port Shared `AuditTrail`). `Shared` est le socle transversal. `Demo` n’est pas un BC : composition d’exploitation qui charge le jeu de démonstration par les commandes publiques ([consignes](src/Demo/AGENTS.md)). Un BC peut être découpé en sous-domaines (SD) lorsqu’il grossit ; les règles ci-dessous s’appliquent alors aussi entre SD.
 
 Chaque BC simple ou SD porte `Application`, `Domain`, `Infrastructure`, `Tests` et `doc`. Lire son `doc/README.md` avant de modifier ses règles ; les décisions transverses restent dans la documentation centrale. Les namespaces suivent le chemin sous `src`.
 
@@ -13,7 +13,7 @@ Chaque BC simple ou SD porte `Application`, `Domain`, `Infrastructure`, `Tests` 
 
 ## Workflow par défaut d’une commande
 
-Appliquer ce parcours à tout nouveau cas d’usage de mutation : test unitaire du comportement → commande et handler → test applicatif HTTP avec persistance réelle. Prendre `Example` (CreateItem, UpdateItem, DeleteItem) comme exemple de parcours et de tests ; `IAM/CreateRole` montre en plus une politique d’autorisation locale, sans recopier sa dette de placement du modèle Role dans Shared.
+Appliquer ce parcours à tout nouveau cas d’usage de mutation : test unitaire du comportement → commande et handler → test applicatif HTTP avec persistance réelle. Prendre `Administration` comme exemple de parcours et de tests : `AddMember` (port de création de compte vers IAM, événement de domaine) et `CreateRole` (politique d’autorisation locale).
 
 - Placer `<Action>Command` et `<Action>Handler` dans `Application/Command/<Action>`. La commande porte les entrées typées et les contraintes de validation du payload. Le handler invocable porte `#[AsMessageHandler]`, orchestre les règles et utilise des ports injectés, sans connaître HTTP.
 - Le contrôleur étend `Shared\Application\Lib\AppController`. Déclarer une route au format JSON ; recevoir `#[MapRequestPayload] <Action>Command $cmd`, puis retourner `$this->dispatch($cmd)`. Ne pas décoder manuellement le JSON, reconstruire la commande ou injecter/appeler directement le handler depuis le contrôleur.
@@ -46,18 +46,18 @@ Appliquer strictement la règle racine : port chez le consommateur, implémentat
 Exemple livré :
 
 ```text
-Example/Application/Ports/Provider/ItemAccessPolicy.php
-IAM/Infrastructure/Adapter/Example/AdminItemAccessPolicy.php
-config/services.yaml : alias du port Example vers cet adaptateur IAM
+Administration/Application/Ports/Provider/MemberAccountProvisioner.php
+IAM/Infrastructure/Adapter/Administration/IAMMemberAccountProvisioner.php
+config/services.yaml : alias du port Administration vers cet adaptateur IAM
 ```
 
-L’adaptateur implémente l’interface Example et utilise le cas d’usage interne `CheckCurrentMemberPermissions`. Example n’importe aucune entité ni aucun handler d’IAM. Les erreurs et résultats doivent rester compréhensibles pour le consommateur. Les contrats traversant les BC ne transportent ni EntityManager ni entité Doctrine.
+L’adaptateur implémente l’interface d’Administration et appelle le cas d’usage interne `CreateAccount` d’IAM. Administration n’importe aucune entité ni aucun handler d’IAM. Les erreurs et résultats doivent rester compréhensibles pour le consommateur. Les contrats traversant les BC ne transportent ni EntityManager ni entité Doctrine.
 
 ## Tests
 
 - Tests dans `<module>/Tests/Suites/Unit` et `Application`. Doubles, Fixtures et Helpers locaux selon le besoin.
 - Support partagé entre SD d’un même BC dans `<BC>/Shared/Tests` ; support partagé entre BC dans `Shared/Tests`.
-- Namespaces `Tests\<BC>\<SD>\…` (ex. `Tests\IAM\…`, `Tests\Example\…`), déclarés dans `autoload-dev`. Exclure Tests des services Symfony et de la couverture.
+- Namespaces `Tests\<BC>\<SD>\…` (ex. `Tests\IAM\…`, `Tests\Administration\…`), déclarés dans `autoload-dev`. Exclure Tests des services Symfony et de la couverture.
 - Une suite PHPUnit par BC ; dossiers Application et Unit à l’intérieur. Chaque classe porte `#[Group('Unit')]` ou `#[Group('Application')]`.
 - Unitaires : construire le handler avec des doubles Ram/Stub, sans kernel ni Docker. Tester les comportements métier.
 - Applicatifs : étendre `Tests\Shared\Infrastructure\ApplicationTestCase`, appeler `parent::setUp()` puis `initialize()`, utiliser `load()` et `request()`. Employer les repositories Doctrine et le vrai firewall ; ne pas remplacer globalement les ports de persistance par des doubles.

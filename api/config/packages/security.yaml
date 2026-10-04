@@ -22,8 +22,25 @@ security:
             jwt: ~
 
     access_control:
+        # Vitrine : catalogue des services, quartiers, publications et alertes générales en lecture publique.
+        - { path: ^/api/administration/(services(/[a-z0-9-]+)?|districts|transport-lines)$, roles: PUBLIC_ACCESS, methods: [GET] }
+        - { path: ^/api/communication/(publications(/[A-Za-z0-9-]+)?|alerts|official-messages)$, roles: PUBLIC_ACCESS, methods: [GET] }
+        # Participation (L19) : projets, consultations (résultats après clôture) et idées publiques en lecture publique.
+        - { path: ^/api/participation/(projects|consultations)(/[A-Za-z0-9-]+)?$, roles: PUBLIC_ACCESS, methods: [GET] }
+        - { path: ^/api/participation/(ideas|service-ratings)$, roles: PUBLIC_ACCESS, methods: [GET] }
+        # Assistance (L22) : recherche tolérante, orientation et explications sans compte (POST limités par IP).
+        - { path: ^/api/assistance/(services/search|orientation|explanations|transport)$, roles: PUBLIC_ACCESS, methods: [GET, POST] }
         - { path: ^/api/iam/portal-sessions$, roles: PUBLIC_ACCESS, methods: [POST] }
         - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
+        # L15 : lien de connexion (D02) et seconde étape par code e-mail (F53).
+        - { path: ^/api/iam/(login-links(/consume)?|sign-in/(verify|resend))$, roles: PUBLIC_ACCESS, methods: [POST] }
+        - { path: ^/api/citizen/register$, roles: PUBLIC_ACCESS, methods: [POST] }
+        # L23 (F83) : vérification publique d'un accusé de réception (référence + empreinte, sans contenu).
+        - { path: ^/api/citizen/receipts/verify$, roles: PUBLIC_ACCESS, methods: [POST] }
+        # Flux SSE : public pour les topics `public.*`, privé via un ticket vérifié par le contrôleur.
+        - { path: ^/api/realtime/stream$, roles: PUBLIC_ACCESS, methods: [GET] }
+        # L24, L25 (ADR 012) : état de la plateforme (bandeau « mode allégé ») et jeton des formulaires protégés.
+        - { path: ^/api/(platform/status|forms/token)$, roles: PUBLIC_ACCESS, methods: [GET] }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:

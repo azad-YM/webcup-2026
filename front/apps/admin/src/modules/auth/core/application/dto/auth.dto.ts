@@ -4,7 +4,7 @@ export type AuthProfile = {
 }
 
 export type AuthSpace = {
-  code: "admin" | "example"
+  code: "admin" | "pilotage" | "requests" | "participation"
   name: string
   description: string
 }

@@ -5,9 +5,30 @@ import ReactDOM from "react-dom/client"
 import { Provider } from "react-redux"
 import { RouterProvider } from "react-router"
 import "@boilerplate/shared-ui/global.css"
+import "./nova-terra.css"
 import { router } from "./routes"
 import { app } from "@/modules/shared/core/config/kernel"
 import { DependenciesProvider } from "@/modules/shared/ui/context/dependencies.context"
+import { AccessibilityPreferencesProvider, SkipLink } from "@boilerplate/shared-ui/components/a11y"
+import { accessibilityGateways, applyStoredDisplayPreferences } from "@/modules/shared/core/config/accessibility"
+
+// Préférences d’affichage (taille du texte, contraste, animations) appliquées avant le premier rendu.
+applyStoredDisplayPreferences()
+
+// Après un déploiement, un onglet ouvert peut réclamer un module qui n’existe plus : recharger une fois la page.
+window.addEventListener("vite:preloadError", event => {
+  try {
+    if (sessionStorage.getItem("module-reload") === location.pathname) return
+    sessionStorage.setItem("module-reload", location.pathname)
+  } catch {
+    return
+  }
+  event.preventDefault()
+  location.reload()
+})
+window.addEventListener("load", () => {
+  try { sessionStorage.removeItem("module-reload") } catch { /* stockage indisponible */ }
+})
 
 window.addEventListener("storage", event => {
   if (event.key === SESSION_STORAGE_KEY || event.key === null) {
@@ -17,10 +38,13 @@ window.addEventListener("storage", event => {
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <DependenciesProvider dependencies={app.dependencies}>
-      <Provider store={app.store}>
-        <RouterProvider router={router} />
-      </Provider>
-    </DependenciesProvider>
+    <AccessibilityPreferencesProvider displayGateway={accessibilityGateways.display} hintsGateway={accessibilityGateways.hints}>
+      <SkipLink targetId="contenu" />
+      <DependenciesProvider dependencies={app.dependencies}>
+        <Provider store={app.store}>
+          <RouterProvider router={router} />
+        </Provider>
+      </DependenciesProvider>
+    </AccessibilityPreferencesProvider>
   </React.StrictMode>
 )

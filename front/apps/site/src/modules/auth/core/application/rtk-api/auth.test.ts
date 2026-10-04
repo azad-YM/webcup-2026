@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
-import { createStore } from "@/modules/shared/core/config/store"
+import { createTestContext } from "@/test-support/test-dependencies"
 import { AuthHttpGateway } from "../../infrastructure/for-production/gateway/http/auth.http.gateway"
 import { authApi } from "./auth"
 
@@ -9,7 +9,7 @@ function setup() {
   let token: string | null = null
   const authSessionGateway = { getToken: () => token, saveToken: (value: string) => { token = value }, clear: () => { token = null } }
   const authGateway = new AuthHttpGateway("http://localhost:8083/api")
-  return { authSessionGateway, authGateway, store: createStore({ authSessionGateway, authGateway }) }
+  return { authSessionGateway, authGateway, store: createTestContext({ authSessionGateway, authGateway }).store }
 }
 afterEach(() => vi.unstubAllGlobals())
 describe("Connexion HTTP IAM", () => {

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="Participation\Domain\Entity\Contribution" table="participation_contributions">
+        <indexes>
+            <index name="IDX_PARTICIPATION_CONTRIBUTION_CITIZEN" columns="citizen_id,submitted_at"/>
+        </indexes>
+        <unique-constraints>
+            <unique-constraint name="UNIQ_PARTICIPATION_CONTRIBUTION" columns="consultation_id,citizen_id"/>
+            <unique-constraint name="UNIQ_PARTICIPATION_CONTRIBUTION_REFERENCE" columns="reference"/>
+        </unique-constraints>
+        <id name="id" type="string" length="36"/>
+        <field name="reference" type="string" length="20"/>
+        <field name="consultationId" column="consultation_id" type="string" length="36"/>
+        <field name="citizenId" column="citizen_id" type="string" length="36"/>
+        <field name="choice" type="string" length="20" nullable="true"/>
+        <field name="rating" type="string" length="20" nullable="true"/>
+        <field name="comment" type="text" nullable="true"/>
+        <field name="revisions" type="integer">
+            <options><option name="default">0</option></options>
+        </field>
+        <field name="submittedAt" column="submitted_at" type="datetime_immutable"/>
+        <field name="updatedAt" column="updated_at" type="datetime_immutable"/>
+    </entity>
+</doctrine-mapping>

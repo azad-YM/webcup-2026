@@ -1,12 +1,36 @@
+import { HttpCitizenWorkspaceProvider } from "@/modules/citizen-accounts/core/infrastructure/adapter/auth/citizen-workspace.provider"
+import { CitizenAccountsHttpGateway } from "@/modules/citizen-accounts/core/infrastructure/for-production/gateway/http/citizen-accounts.http.gateway"
+import { AuthAccountSessionProvider } from "@/modules/auth/core/infrastructure/adapter/citizen-accounts/auth-account-session.provider"
+import { SecurityJournalHttpGateway } from "@/modules/security/core/infrastructure/for-production/gateway/http/security-journal.http.gateway"
+import { OperationsHttpGateway } from "@/modules/security/core/infrastructure/for-production/gateway/http/operations.http.gateway"
+import { SECURITY_EVENTS } from "@/modules/security/core/domain/operations"
+import { AuthSecuritySessionProvider } from "@/modules/auth/core/infrastructure/adapter/security/auth-security-session.provider"
+import { ContentHttpGateway } from "@/modules/content/core/infrastructure/for-production/gateway/http/content.http.gateway"
+import { AuthContentSessionProvider } from "@/modules/auth/core/infrastructure/adapter/content/auth-content-session.provider"
+import { ParticipationHttpGateway } from "@/modules/participation/core/infrastructure/for-production/gateway/http/participation.http.gateway"
+import { AuthParticipationSessionProvider } from "@/modules/auth/core/infrastructure/adapter/participation/auth-participation-session.provider"
+import { AuditJournalHttpGateway } from "@/modules/audit/core/infrastructure/for-production/gateway/http/audit-journal.http.gateway"
+import { AuthAuditSessionProvider } from "@/modules/auth/core/infrastructure/adapter/audit/auth-audit-session.provider"
+import { DataExportHttpGateway } from "@/modules/pilotage/core/infrastructure/for-production/gateway/http/data-export.http.gateway"
+import { BrowserFileDownloader, ExportTemplateLocalStorageGateway } from "@/modules/pilotage/core/infrastructure/for-production/gateway/local/export-template.local-storage.gateway"
+import { ActivityDashboardHttpGateway } from "@/modules/pilotage/core/infrastructure/for-production/gateway/http/activity-dashboard.http.gateway"
 import { sessionCleared } from "./session"
 import { AuthAccessSessionProvider } from "@/modules/auth/core/infrastructure/adapter/admin/auth-access-session.provider"
-import { AuthExampleSessionProvider } from "@/modules/auth/core/infrastructure/adapter/example/auth-example-session.provider"
 import { PermissionHttpGateway } from "@/modules/admin/core/infrastructure/for-production/gateway/http/permission.http.gateway"
 import { RoleHttpGateway } from "@/modules/admin/core/infrastructure/for-production/gateway/http/role.http.gateway"
+import { MemberHttpGateway } from "@/modules/admin/core/infrastructure/for-production/gateway/http/member.http.gateway"
+import { AuthPilotageSessionProvider } from "@/modules/auth/core/infrastructure/adapter/pilotage/auth-pilotage-session.provider"
+import { WebcupFeedHttpGateway } from "@/modules/pilotage/core/infrastructure/for-production/gateway/http/webcup-feed.http.gateway"
+import { SeenRequestsLocalStorageGateway } from "@/modules/pilotage/core/infrastructure/for-production/gateway/local/seen-requests.local-storage.gateway"
 import { AuthSessionLocalStorageGateway } from "@/modules/auth/core/infrastructure/for-production/gateway/local/auth-session.local-storage.gateway"
 import { AuthHttpGateway } from "@/modules/auth/core/infrastructure/for-production/gateway/http/auth.http.gateway"
 import { PortalLoginHttpGateway } from "@/modules/auth/core/infrastructure/for-production/gateway/http/portal-login.http.gateway"
-import { ItemHttpGateway } from "@/modules/example/core/infrastructure/for-production/gateway/http/item.http.gateway"
+import { AuthRequestSessionProvider } from "@/modules/auth/core/infrastructure/adapter/requests/auth-request-session.provider"
+import { RequestQueueHttpGateway } from "@/modules/requests/core/infrastructure/for-production/gateway/http/request-queue.http.gateway"
+import { REQUEST_EVENTS } from "@/modules/requests/core/application/rtk-api/requests"
+import { AgentDeskHttpGateway } from "@/modules/requests/core/infrastructure/for-production/gateway/http/agent-desk.http.gateway"
+import { DESK_EVENTS } from "@/modules/requests/core/application/rtk-api/agent-desk"
+import { SseRealtimeSubscriber } from "../infrastructure/sse-realtime.subscriber"
 import type { Dependencies } from "./dependencies"
 import { createStore, type AppStore } from "./store"
 
@@ -26,15 +50,34 @@ export class App {
     const authSessionGateway = new AuthSessionLocalStorageGateway()
     // Each consumer module owns its session port; the auth module provides one adapter per consumer.
     const adminSession = new AuthAccessSessionProvider(authSessionGateway, onSessionInvalidated)
-    const exampleSession = new AuthExampleSessionProvider(authSessionGateway, onSessionInvalidated)
+    const pilotageSession = new AuthPilotageSessionProvider(authSessionGateway, onSessionInvalidated)
+    const requestSession = new AuthRequestSessionProvider(authSessionGateway, onSessionInvalidated)
+    const contentSession = new AuthContentSessionProvider(authSessionGateway, onSessionInvalidated)
 
     return {
+      citizenWorkspaceProvider: new HttpCitizenWorkspaceProvider(apiBaseUrl, new AuthAccountSessionProvider(authSessionGateway, onSessionInvalidated)),
+      citizenAccountsGateway: new CitizenAccountsHttpGateway(apiBaseUrl, new AuthAccountSessionProvider(authSessionGateway, onSessionInvalidated)),
+      securityJournalGateway: new SecurityJournalHttpGateway(apiBaseUrl, new AuthSecuritySessionProvider(authSessionGateway, onSessionInvalidated)),
+      operationsGateway: new OperationsHttpGateway(apiBaseUrl, new AuthSecuritySessionProvider(authSessionGateway, onSessionInvalidated)),
       authSessionGateway,
       authGateway: new AuthHttpGateway(apiBaseUrl, authSessionGateway, onSessionInvalidated),
       portalLoginGateway: new PortalLoginHttpGateway(apiBaseUrl, siteUrl, authSessionGateway),
       permissionGateway: new PermissionHttpGateway(apiBaseUrl, adminSession),
       roleGateway: new RoleHttpGateway(apiBaseUrl, adminSession),
-      itemGateway: new ItemHttpGateway(apiBaseUrl, exampleSession),
+      memberGateway: new MemberHttpGateway(apiBaseUrl, adminSession),
+      webcupFeedGateway: new WebcupFeedHttpGateway(apiBaseUrl, pilotageSession),
+      activityDashboardGateway: new ActivityDashboardHttpGateway(apiBaseUrl, pilotageSession),
+      dataExportGateway: new DataExportHttpGateway(apiBaseUrl, pilotageSession),
+      exportTemplateGateway: new ExportTemplateLocalStorageGateway(),
+      fileDownloader: new BrowserFileDownloader(),
+      seenRequestsGateway: new SeenRequestsLocalStorageGateway(),
+      requestQueueGateway: new RequestQueueHttpGateway(apiBaseUrl, requestSession),
+      agentDeskGateway: new AgentDeskHttpGateway(apiBaseUrl, requestSession),
+      // One stream per tab; the list gathers the events listened to by the admin screens.
+      realtime: new SseRealtimeSubscriber(apiBaseUrl, () => authSessionGateway.getToken(), [...REQUEST_EVENTS, ...DESK_EVENTS, ...SECURITY_EVENTS]),
+      contentGateway: new ContentHttpGateway(apiBaseUrl, contentSession),
+      participationGateway: new ParticipationHttpGateway(apiBaseUrl, new AuthParticipationSessionProvider(authSessionGateway, onSessionInvalidated)),
+      auditJournalGateway: new AuditJournalHttpGateway(apiBaseUrl, new AuthAuditSessionProvider(authSessionGateway, onSessionInvalidated)),
     }
   }
 }

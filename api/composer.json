@@ -53,7 +53,14 @@
   "autoload": {
     "psr-4": {
       "IAM\\": "src/IAM/",
-      "Example\\": "src/Example/",
+      "Administration\\": "src/Administration/",
+      "Citizen\\": "src/Citizen/",
+      "Pilotage\\": "src/Pilotage/",
+      "Communication\\": "src/Communication/",
+      "Audit\\": "src/Audit/",
+      "Participation\\": "src/Participation/",
+      "Assistance\\": "src/Assistance/",
+      "Demo\\": "src/Demo/",
       "Shared\\": "src/Shared/"
     },
     "exclude-from-classmap": [
@@ -63,7 +70,10 @@
   "autoload-dev": {
     "psr-4": {
       "Tests\\IAM\\": "src/IAM/Tests/",
-      "Tests\\Example\\": "src/Example/Tests/",
+      "Tests\\Administration\\": "src/Administration/Tests/",
+      "Tests\\Citizen\\": "src/Citizen/Tests/",
+      "Tests\\Pilotage\\": "src/Pilotage/Tests/",
+      "Tests\\Communication\\": "src/Communication/Tests/",
       "Tests\\Shared\\": "src/Shared/Tests/"
     }
   },

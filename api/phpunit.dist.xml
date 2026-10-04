@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/12.2/phpunit.xsd" bootstrap="src/Shared/Tests/bootstrap.php" colors="true" cacheDirectory=".phpunit.cache">
-  <php><server name="APP_ENV" value="test" force="true"/></php>
+  <php><server name="APP_ENV" value="test" force="true"/><server name="REALTIME_STREAM_SECONDS" value="0" force="true"/></php>
   <testsuites>
     <testsuite name="IAM">
       <directory>src/IAM/Tests/Suites/Application</directory>
       <directory>src/IAM/Tests/Suites/Unit</directory>
     </testsuite>
-    <testsuite name="Example">
-      <directory>src/Example/Tests/Suites/Application</directory>
-      <directory>src/Example/Tests/Suites/Unit</directory>
+    <testsuite name="Administration">
+      <directory>src/Administration/Tests/Suites/Application</directory>
+      <directory>src/Administration/Tests/Suites/Unit</directory>
+    </testsuite>
+    <testsuite name="Citizen">
+      <directory>src/Citizen/Tests/Suites/Application</directory>
+      <directory>src/Citizen/Tests/Suites/Unit</directory>
+    </testsuite>
+    <testsuite name="Pilotage">
+      <directory>src/Pilotage/Tests/Suites/Application</directory>
+      <directory>src/Pilotage/Tests/Suites/Unit</directory>
     </testsuite>
     <testsuite name="Shared">
       <directory>src/Shared/Tests/Suites/Application</directory>
@@ -17,7 +25,9 @@
   </testsuites>
   <source><include><directory suffix=".php">src</directory></include><exclude>
     <directory>src/IAM/Tests</directory>
-    <directory>src/Example/Tests</directory>
+    <directory>src/Administration/Tests</directory>
+    <directory>src/Citizen/Tests</directory>
+    <directory>src/Pilotage/Tests</directory>
     <directory>src/Shared/Tests</directory>
   </exclude></source>
 </phpunit>

@@ -18,3 +18,7 @@
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
+
+# F87 (ADR 012) : sauvegardes, jamais commitées.
+/backups/
+*.ndjson.gz

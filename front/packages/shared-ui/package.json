@@ -2,11 +2,15 @@
   "name": "@boilerplate/shared-ui",
   "type": "module",
   "private": true,
+  "sideEffects": [
+    "*.css"
+  ],
   "scripts": {
     "lint": "eslint ."
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
+    "@boilerplate/shared-utils": "workspace:*",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-slot": "^1.2.3",
     "@tailwindcss/postcss": "^4.1.14",
@@ -42,10 +46,13 @@
     "./global.css": "./src/styles/global.css",
     "./postcss.config": "./postcss.config.mjs",
     "./components": "./src/components/index.ts",
+    "./components/a11y": "./src/components/a11y/index.ts",
+    "./components/shadcn/*": "./src/components/shadcn/*.tsx",
     "./components/*": "./src/components/*",
     "./components/icon": "./src/components/icon/index.ts",
     "./lib": "./src/lib/index.ts",
     "./hooks": "./src/hooks/index.ts",
-    "./hooks/*": "./src/hooks/*"
+    "./hooks/*": "./src/hooks/*",
+    "./a11y": "./src/a11y/index.ts"
   }
 }

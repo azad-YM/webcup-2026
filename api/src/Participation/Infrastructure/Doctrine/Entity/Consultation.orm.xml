@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="Participation\Domain\Entity\Consultation" table="participation_consultations">
+        <indexes>
+            <index name="IDX_PARTICIPATION_CONSULTATION_PROJECT" columns="project_id"/>
+            <index name="IDX_PARTICIPATION_CONSULTATION_STATE" columns="state,closes_at"/>
+        </indexes>
+        <id name="id" type="string" length="36"/>
+        <field name="projectId" column="project_id" type="string" length="36" nullable="true"/>
+        <field name="kind" type="string" length="20"/>
+        <field name="title" type="string" length="200"/>
+        <field name="question" type="text"/>
+        <field name="description" type="json"/>
+        <field name="options" type="json"/>
+        <field name="opensAt" column="opens_at" type="datetime_immutable"/>
+        <field name="closesAt" column="closes_at" type="datetime_immutable"/>
+        <field name="state" type="string" length="20">
+            <options><option name="default">draft</option></options>
+        </field>
+        <field name="publishedAt" column="published_at" type="datetime_immutable" nullable="true"/>
+        <field name="outcome" type="json"/>
+        <field name="outcomeAt" column="outcome_at" type="datetime_immutable" nullable="true"/>
+        <field name="updatedAt" column="updated_at" type="datetime_immutable"/>
+        <field name="createdAt" column="created_at" type="datetime_immutable"/>
+    </entity>
+</doctrine-mapping>

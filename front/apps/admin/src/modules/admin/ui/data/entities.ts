@@ -20,10 +20,7 @@ export const adminEntities: AdminEntity[] = [
     code: "member",
     title: "Membres",
     shortLabel: "Membre",
-    description: "Ajouter les membres de l’administration et leur attribuer des rôles (à venir).",
+    description: "Consulter les membres de l’administration, en ajouter et leur attribuer des rôles.",
     icon: UserRound,
   },
 ]
-
-export const findAdminEntity = (entityCode?: string) =>
-  adminEntities.find((entity) => entity.code === entityCode)

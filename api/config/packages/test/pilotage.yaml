@@ -1,0 +1,9 @@
+# Aucun appel réseau en test : le client HTTP de Symfony devient un MockHttpClient
+# piloté par le simulateur de l'API Webcup du BC Pilotage.
+framework:
+    http_client:
+        mock_response_factory: Tests\Pilotage\Doubles\Http\WebcupApiSimulator
+
+services:
+    Tests\Pilotage\Doubles\Http\WebcupApiSimulator:
+        public: true

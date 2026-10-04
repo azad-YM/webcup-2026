@@ -20,6 +20,10 @@ Réutiliser `@boilerplate/shared-ui`, ses composants, icônes et styles. Conserv
 
 Garder les capacités retournées par l’API comme source pour l’interface ; les contrôles serveur restent obligatoires. Nettoyer les caches lors d’un changement de compte ou de périmètre. Ne pas confondre données locales de démonstration et règles backend validées.
 
+## Sobriété (L17)
+
+Ne pas alourdir le premier chargement : composant lourd ou rare (fenêtre, carte, assistant, éditeur, graphique, contenu réservé aux personnes connectées) chargé à la demande (`next/dynamic`, `React.lazy`) ; `@boilerplate/shared-ui` importé par sous-chemin (`components/shadcn/<composant>`, `components/a11y`, `components/icon`) plutôt que par le baril `components` ; aucune police web ; images avec dimensions, `loading="lazy"`, `decoding="async"`, WebP/AVIF. Côté site, rafraîchissement de secours via `polling(ms)` (`shared/ui/sobriety/polling.ts`), éléments décoratifs marqués `data-decorative`, formulaires de saisie longue marqués `data-brouillon="<clé>"`. Mesure : `node scripts/ecoindex.mjs` ([détail](apps/site/doc/sobriete.md)).
+
 ## Authentification
 
 `site` porte l’unique formulaire. Les autres apps conservent leurs gardes et redirigent via `VITE_SITE_URL`. L’admin valide sa session auprès d’IAM. Ne pas réintroduire de login local, jeton constant accepté, passerelle iframe ou contournement de garde.

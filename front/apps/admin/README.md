@@ -35,8 +35,7 @@ src/
 │   └── routes.tsx            routes et garde de session
 └── modules/
     ├── auth/                 échange de code PKCE, profil, espaces internes, adaptateurs de session
-    ├── admin/                layout Administration, tableau de bord, rôles (BC IAM)
-    ├── example/              module d’exemple : CRUD des éléments (BC Example)
+    ├── admin/                tableau de bord, rôles (BC Administration)
     └── shared/               kernel (dépendances), store, use cases, composants de navigation
 ```
 
@@ -44,10 +43,10 @@ Chaque module suit `core/{domain,application,infrastructure}` et `ui/{layouts,pa
 
 ## Ajouter un module
 
-1. Copier `modules/example` et renommer types, gateway, API RTK et pages.
+1. Créer le module sur le modèle de `modules/admin` : types, port de session, gateway, API RTK et pages.
 2. Déclarer la gateway dans `shared/core/config/dependencies.ts` et l’instancier dans `kernel.ts`.
 3. Ajouter le reducer et le middleware de son API RTK dans `store.ts`.
-4. Déclarer ses routes dans `app/routes.tsx` et, s’il s’agit d’un espace, son entrée dans `module-switcher.tsx`, `list-spaces.hook.ts` et `AuthHttpGateway.listSpaces`.
+4. Déclarer ses routes dans `app/routes.tsx` et ses rubriques dans `shared/ui/layout/workspace-navigation.ts`. Pour un nouveau module principal, compléter aussi `AuthSpace`, `AuthHttpGateway.listSpaces` et `list-spaces.hook.ts`. L’enveloppe commune `app/backoffice-layout.tsx` compose les deux barres et la page.
 5. Si le module appelle l’API, définir son port de session et son adaptateur dans `auth/core/infrastructure/adapter/<module>`.
 
 Documentation fonctionnelle : [doc/README.md](doc/README.md).

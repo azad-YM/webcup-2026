@@ -1,0 +1,65 @@
+/* Habillage Nova Terra propre au site.
+ * Focus visible, réduction des animations, contraste élevé et taille du texte :
+ * voir `@boilerplate/shared-ui/global.css` (lot L4, commun au site et à l’admin). */
+
+html {
+  scroll-padding-top: 5rem;
+}
+
+body {
+  background: #f8fafc;
+  color: #0f172a;
+  line-height: 1.5;
+}
+
+main:focus {
+  outline: none;
+}
+
+/* En-tête collant libéré quand la place manque (texte 150 %, zoom 200 %, écran bas) :
+ * le contenu n’est jamais masqué sous l’en-tête (F44). */
+html[data-text-size="150"] .site-header {
+  position: static;
+}
+
+@media (max-height: 32rem) {
+  .site-header {
+    position: static;
+  }
+}
+
+/* Impression (F56, F55) : seul le contenu de la page est imprimé, sans en-tête, alertes ni pied de page. */
+@media print {
+  .site-header,
+  footer.bg-slate-950,
+  aside[aria-label="Alertes de la ville"],
+  [data-print="hide"] {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+    color: #000;
+  }
+  [data-print="avoid-break"] {
+    break-inside: avoid;
+  }
+}
+
+/* L17 (F61) : le pied de page, hors écran au chargement, n’est mis en page qu’à l’approche du défilement. */
+.site-footer { content-visibility: auto; contain-intrinsic-size: auto 28rem; }
+
+/* L17 (F60) : une image éventuelle ne déborde pas et garde ses proportions (dimensions explicites attendues). */
+img { height: auto; }
+
+/* F96 : sur petit écran ou en mode léger, l’essentiel d’abord.
+ * - `data-decorative` : décor masqué sur mobile (il l’est déjà partout en mode léger) ;
+ * - `data-optional` : contenu utile mais non indispensable (appel à l’inscription, textes d’accroche), masqué
+ *   sur mobile en mode léger et sur tout écran en mode léger ;
+ * - `data-mobile-limit` : une liste n’affiche que ses 3 premiers éléments sur mobile (le lien « Voir tout » reste). */
+@media (max-width: 639px) {
+  [data-decorative] { display: none !important; }
+  [data-mobile-limit] > ul > li:nth-child(n + 4) { display: none; }
+  .nt-mobile-compact { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+}
+html[data-light="on"] [data-optional] { display: none !important; }
+html[data-light="on"] [data-mobile-limit] > ul > li:nth-child(n + 4) { display: none; }

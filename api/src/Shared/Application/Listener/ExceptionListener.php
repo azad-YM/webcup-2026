@@ -7,6 +7,7 @@ use Shared\Domain\Exception\AccessDeniedException;
 use Shared\Domain\Exception\ConflitException;
 use Shared\Domain\Exception\DomainException;
 use Shared\Domain\Exception\NotFoundException;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -14,6 +15,11 @@ use Symfony\Component\Messenger\Exception\HandlerFailedException;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 
 class ExceptionListener {
+  /** F69 : hors mode debug, une erreur 500 ne révèle aucun détail technique (classe, SQL, chemin…). */
+  public const GENERIC_MESSAGE = 'Une erreur technique est survenue. Réessayez dans quelques instants ; si elle persiste, contactez la mairie.';
+
+  public function __construct(#[Autowire('%kernel.debug%')] private bool $debug = false) {}
+
   public function __invoke(ExceptionEvent $event) {
     $exception = $event->getThrowable();
 
@@ -47,6 +53,11 @@ class ExceptionListener {
     } else if($exception instanceof DomainException) {
       // A broken business rule is a client error, not a server crash.
       $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+    }
+
+    if ($response->getStatusCode() >= 500 && !$this->debug) {
+      $output['message'] = self::GENERIC_MESSAGE;
+      unset($output['details']);
     }
 
     $response->headers->set('Content-Type', 'application/json');

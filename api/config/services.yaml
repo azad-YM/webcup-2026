@@ -1,75 +1,340 @@
+parameters:
+    # Valeurs par défaut : le conteneur démarre sans ces variables ; sans clé, la route Pilotage répond 503.
+    env(WEBCUP_API_URL): 'https://24h.webcup.fr/wp-json/webcup/v1/requests'
+    env(WEBCUP_API_KEY): ''
+    # Temps réel : transport choisi par REALTIME_TRANSPORT (database | mercure | pusher | none), sans toucher au code.
+    # `database` (défaut) : buffer realtime_event + flux SSE, sans serveur supplémentaire.
+    env(REALTIME_TRANSPORT): 'database'
+    # Durée d'une connexion SSE avant reconnexion automatique (hébergement mutualisé : connexions courtes).
+    env(REALTIME_STREAM_SECONDS): '20'
+    # Mercure : URL du hub vue par l'API ; sans secret, la publication est désactivée sans erreur.
+    env(MERCURE_URL): ''
+    env(MERCURE_JWT_SECRET): ''
+    # Pusher Channels : sans identifiants, la publication est désactivée sans erreur.
+    env(PUSHER_APP_ID): ''
+    env(PUSHER_KEY): ''
+    env(PUSHER_SECRET): ''
+    env(PUSHER_CLUSTER): 'eu'
+    # L15 : adresse publique du site (liens de connexion et d'alerte dans les e-mails) et expéditeur des e-mails.
+    env(SITE_URL): 'http://localhost:5178'
+    # IA (D10, F75, F85, F90, F91, F92) : sans clé, le port LanguageModel renvoie null et chaque usage applique son repli local.
+    env(ANTHROPIC_API_KEY): ''
+    env(ANTHROPIC_MODEL): 'claude-haiku-4-5-20251001'
+    env(MAILER_FROM): 'Mairie de Nova Terra <no-reply@nova-terra.local>'
+
 services:
     _defaults:
         autowire: true
         autoconfigure: true
-
-    # Ports internes d'IAM.
-    IAM\Application\Ports\Provider\MemberAccountProvisioner:
-        alias: IAM\Infrastructure\Service\IAMMemberAccountProvisioner
-
-    IAM\Application\Ports\Provider\CurrentAccountProvider:
-        alias: IAM\Infrastructure\Service\IAMCurrentAccountProvider
-
-    # Port intermodule : port du consommateur (Example) -> adaptateur dans l'infrastructure du fournisseur (IAM).
-    Example\Application\Ports\Provider\ItemAccessPolicy:
-        alias: IAM\Infrastructure\Adapter\Example\AdminItemAccessPolicy
 
     IAM\:
         resource: '../src/IAM/'
         exclude:
             - '../src/IAM/Tests/'
 
-    Example\:
-        resource: '../src/Example/'
+    Administration\:
+        resource: '../src/Administration/'
         exclude:
-            - '../src/Example/Tests/'
+            - '../src/Administration/Tests/'
+
+    Citizen\:
+        resource: '../src/Citizen/'
+        exclude:
+            - '../src/Citizen/Tests/'
+
+    Communication\:
+        resource: '../src/Communication/'
+        exclude: ['../src/Communication/Tests/']
+
+    Pilotage\:
+        resource: '../src/Pilotage/'
+        exclude:
+            - '../src/Pilotage/Tests/'
+
+    Participation\:
+        resource: '../src/Participation/'
+        exclude: ['../src/Participation/Tests/']
+
+    Assistance\:
+        resource: '../src/Assistance/'
+        exclude: ['../src/Assistance/Tests/']
+
+    # Composition d'exploitation : jeu de démonstration joué par les cas d'usage (src/Demo/AGENTS.md).
+    Demo\:
+        resource: '../src/Demo/'
+
+    Audit\:
+        resource: '../src/Audit/'
+        exclude:
+            - '../src/Audit/Tests/'
 
     Shared\:
         resource: '../src/Shared/'
         exclude:
             - '../src/Shared/**/Tests/'
             - '../src/Shared/Infrastructure/Kernel.php'
+            - '../src/Shared/Infrastructure/Realtime/RealtimeEvent.php'
+            - '../src/Shared/Infrastructure/RateLimit/RateLimitCounter.php'
+            - '../src/Shared/Infrastructure/Doctrine/EncryptedStringType.php'
+            - '../src/Shared/Infrastructure/AbuseSignal/AbuseSignal.php'
+            - '../src/Shared/Infrastructure/Idempotency/IdempotencyKey.php'
+
+    # --- IAM : comptes et sessions ---
 
     IAM\Application\Ports\Repository\IUserRepository:
         alias: IAM\Infrastructure\Doctrine\Repository\DoctrineUserRepository
-
-    Example\Application\Ports\Repository\ItemRepository:
-        alias: Example\Infrastructure\Doctrine\Repository\DoctrineItemRepository
-
-    Shared\Infrastructure\Doctrine\Repository\SqlRoleRepository:
-        arguments:
-            $permissionsRepository: !tagged_iterator iam.access_permissions
-
-    IAM\Infrastructure\InMemory\InMemoryAdminPermissionRepository:
-        tags: ['iam.access_permissions']
-
-    IAM\Application\Command\CreateRole\CreateRoleHandler:
-        arguments:
-            $permissionRepository: '@IAM\Infrastructure\InMemory\InMemoryAdminPermissionRepository'
-
-    IAM\Application\Query\ListPermissions\ListPermissionsHandler:
-        arguments:
-            $permissions: '@IAM\Infrastructure\InMemory\InMemoryAdminPermissionRepository'
 
     IAM\Application\Query\ListMySpaces\ListMySpacesHandler:
         arguments:
             $providers: !tagged_iterator iam.accessible_spaces
 
-    IAM\Infrastructure\Service\AdminAccessibleSpacesProvider:
+    IAM\Application\Service\PortalAccessPolicy:
+        arguments:
+            $providers: !tagged_iterator iam.accessible_spaces
+
+    # --- Administration : membres, rôles, permissions ---
+
+    Administration\Infrastructure\Doctrine\Repository\SqlRoleRepository:
+        arguments:
+            $permissionsRepository: !tagged_iterator administration.permissions
+
+    Administration\Infrastructure\InMemory\InMemoryAdminPermissionRepository:
+        tags: ['administration.permissions']
+
+    Administration\Application\Command\CreateRole\CreateRoleHandler:
+        arguments:
+            $permissionRepository: '@Administration\Infrastructure\InMemory\InMemoryAdminPermissionRepository'
+
+    Administration\Application\Query\ListPermissions\ListPermissionsHandler:
+        arguments:
+            $permissions: '@Administration\Infrastructure\InMemory\InMemoryAdminPermissionRepository'
+
+    Administration\Infrastructure\Service\BootstrapAdminService:
+        arguments:
+            $permissions: '@Administration\Infrastructure\InMemory\InMemoryAdminPermissionRepository'
+
+    # --- Pilotage : flux de l'API du concours Webcup ---
+
+    Pilotage\Infrastructure\Http\WebcupHttpFeedGateway:
+        arguments:
+            $cache: '@pilotage.webcup_feed.cache'
+            $apiUrl: '%env(WEBCUP_API_URL)%'
+            $apiKey: '%env(WEBCUP_API_KEY)%'
+
+    Pilotage\Application\Ports\Gateway\WebcupFeedGateway:
+        alias: Pilotage\Infrastructure\Http\WebcupHttpFeedGateway
+
+    Pilotage\Application\Ports\Repository\RequestTrackingRepository:
+        alias: Pilotage\Infrastructure\Doctrine\Repository\DoctrineRequestTrackingRepository
+
+    # --- Audit : journal des actions de l'administration (ADR 006) ---
+
+    Audit\Application\Ports\Repository\AuditEntryRepository:
+        alias: Audit\Infrastructure\Doctrine\Repository\DbalAuditEntryRepository
+
+    # --- Ports intermodules : port du consommateur -> adaptateur dans l'infrastructure du fournisseur ---
+
+    # Administration consomme IAM (compte connecté, création de compte).
+    Administration\Application\Ports\Provider\CurrentAccountProvider:
+        alias: IAM\Infrastructure\Adapter\Administration\IAMCurrentAccountProvider
+
+    Administration\Application\Ports\Provider\MemberAccountProvisioner:
+        alias: IAM\Infrastructure\Adapter\Administration\IAMMemberAccountProvisioner
+
+    # Citizen consomme IAM (création du compte à l'inscription, compte connecté).
+    Citizen\Application\Ports\Provider\CitizenAccountProvisioner:
+        alias: IAM\Infrastructure\Adapter\Citizen\IAMCitizenAccountProvisioner
+    # F71 : compte d'habitant créé à l'accueil (identifiant d'habitant, code provisoire).
+    Citizen\Application\Ports\Provider\ResidentAccountProvisioner:
+        alias: IAM\Infrastructure\Adapter\Citizen\IAMResidentAccountProvisioner
+
+    Citizen\Application\Ports\Provider\CurrentAccountProvider:
+        alias: IAM\Infrastructure\Adapter\Citizen\IAMCurrentAccountProvider
+
+    # IAM consomme Administration (espace « admin » accessible aux membres actifs).
+    Administration\Infrastructure\Adapter\IAM\AdminAccessibleSpacesProvider:
         tags: ['iam.accessible_spaces']
+
+    # Pilotage consomme Administration (lecture du flux réservée à admin.pilotage.read).
+    Pilotage\Application\Ports\Provider\PilotageAccessPolicy:
+        alias: Administration\Infrastructure\Adapter\Pilotage\AdminPilotageAccessPolicy
+
+    # Tableau de bord de l'activité (F50) : Pilotage consomme Citizen, Communication, IAM et Administration.
+    Pilotage\Application\Ports\Provider\Activity\CitizenActivityProvider:
+        alias: Citizen\Infrastructure\Adapter\Pilotage\CitizenPilotageActivity
+    Pilotage\Application\Ports\Provider\Activity\CommunicationActivityProvider:
+        alias: Communication\Infrastructure\Adapter\Pilotage\CommunicationPilotageActivity
+    Pilotage\Application\Ports\Provider\Activity\AccountSecurityActivityProvider:
+        alias: IAM\Infrastructure\Adapter\Pilotage\IAMPilotageSecurityActivity
+    Pilotage\Application\Ports\Provider\Activity\AdministrationActivityProvider:
+        alias: Administration\Infrastructure\Adapter\Pilotage\AdminPilotageActivity
+
+    # Pilotage consomme IAM (auteur d'une mise à jour du suivi des demandes Webcup).
+    Pilotage\Application\Ports\Provider\CurrentAgentProvider:
+        alias: IAM\Infrastructure\Adapter\Pilotage\IAMPilotageCurrentAgent
+
+    # Audit consomme IAM (acteur courant) et Administration (lecture : admin.audit.read, entrées de sécurité : admin.security.read).
+    Audit\Application\Ports\Provider\AuditActorProvider:
+        alias: IAM\Infrastructure\Adapter\Audit\IAMAuditActorProvider
+    Audit\Application\Ports\Provider\AuditAccessPolicy:
+        alias: Administration\Infrastructure\Adapter\Audit\AdminAuditAccessPolicy
+
+    # F85 (L25) : détecteur d'activité inhabituelle — Audit consomme IAM (connexions, protection d'un compte) et Citizen
+    # (cohérence des données, rafales d'envois) ; le port Shared AbuseSignals donne les refus 429 et des formulaires.
+    Audit\Application\Ports\Repository\AnomalyRepository:
+        alias: Audit\Infrastructure\Doctrine\Repository\DoctrineAnomalyRepository
+    Audit\Application\Ports\Provider\AccountSignalsProvider:
+        alias: IAM\Infrastructure\Adapter\Audit\IAMAccountSignals
+    Audit\Application\Ports\Provider\AccountProtector:
+        alias: IAM\Infrastructure\Adapter\Audit\IAMAccountProtector
+    Audit\Application\Ports\Provider\CitizenSignalsProvider:
+        alias: Citizen\Infrastructure\Adapter\Audit\CitizenSignals
+
+    # Port Shared du journal des actions, appelé par les cas d'usage des BC propriétaires ; implémenté par Audit.
+    Shared\Application\Ports\Service\AuditTrail:
+        alias: Audit\Infrastructure\Adapter\Shared\AuditTrailRecorder
+
+    # Citizen consomme Administration (file des demandes : admin.request.read / admin.request.write).
+    Citizen\Application\Ports\Provider\RequestAccessPolicy:
+        alias: Administration\Infrastructure\Adapter\Citizen\AdminRequestAccessPolicy
+
+    # F70 : données personnelles sensibles des habitants (admin.sensitive-data.read).
+    Citizen\Application\Ports\Provider\SensitiveDataAccessPolicy:
+        alias: Administration\Infrastructure\Adapter\Citizen\AdminSensitiveDataAccessPolicy
+
+    # --- Socle ---
 
     Symfony\Component\Messenger\MessageBusInterface $commandBus: '@command.bus'
     Symfony\Component\Messenger\MessageBusInterface $queryBus: '@query.bus'
     Symfony\Component\Messenger\MessageBusInterface $eventBus: '@event.bus'
 
+    # Temps réel : le port est fourni par la fabrique selon REALTIME_TRANSPORT ; chaque adaptateur
+    # est le seul endroit qui connaît son fournisseur. Ajouter un fournisseur = un adaptateur + une entrée du locator.
+    # --- Shared : modèle de langage (API Claude, repli local sans clé) ---
+    Shared\Infrastructure\LanguageModel\AnthropicLanguageModel:
+        arguments:
+            $apiKey: '%env(ANTHROPIC_API_KEY)%'
+            $model: '%env(ANTHROPIC_MODEL)%'
+    Shared\Application\Ports\Service\LanguageModel: '@Shared\Infrastructure\LanguageModel\AnthropicLanguageModel'
+
+    Shared\Infrastructure\Realtime\MercureRealtimePublisher:
+        arguments:
+            $hubUrl: '%env(MERCURE_URL)%'
+            $jwtSecret: '%env(MERCURE_JWT_SECRET)%'
+
+    Shared\Infrastructure\Realtime\PusherRealtimePublisher:
+        arguments:
+            $appId: '%env(PUSHER_APP_ID)%'
+            $key: '%env(PUSHER_KEY)%'
+            $secret: '%env(PUSHER_SECRET)%'
+            $cluster: '%env(PUSHER_CLUSTER)%'
+
+    Shared\Infrastructure\Realtime\RealtimePublisherFactory:
+        arguments:
+            $transports: !service_locator
+                database: '@Shared\Infrastructure\Realtime\DatabaseRealtimePublisher'
+                mercure: '@Shared\Infrastructure\Realtime\MercureRealtimePublisher'
+                pusher: '@Shared\Infrastructure\Realtime\PusherRealtimePublisher'
+                none: '@Shared\Infrastructure\Realtime\NullRealtimePublisher'
+
+    # Flux SSE du transport `database` : topics privés fournis par les BC (RealtimeAudienceProvider).
+    Shared\Infrastructure\Realtime\RealtimeAudience:
+        arguments:
+            $providers: !tagged_iterator shared.realtime_audience
+
+    Shared\Infrastructure\Realtime\RealtimeTicketSigner:
+        arguments:
+            $secret: '%kernel.secret%'
+
+    Shared\Infrastructure\Realtime\Http\RealtimeController:
+        tags: ['controller.service_arguments']
+        arguments:
+            $streamSeconds: '%env(int:REALTIME_STREAM_SECONDS)%'
+            $maxStreams: '%env(int:REALTIME_MAX_STREAMS)%'
+
+    # --- Shared : montée en charge, sauvegardes, anti-abus (L24, L25, ADR 012 ; réglages dans config/packages/platform.yaml) ---
+    Shared\Infrastructure\Platform\Http\PlatformController:
+        tags: ['controller.service_arguments']
+    Shared\Infrastructure\FormGuard\Http\FormGuardController:
+        tags: ['controller.service_arguments']
+    Shared\Infrastructure\Backup\Http\BackupController:
+        tags: ['controller.service_arguments']
+    Shared\Application\Ports\Service\AbuseSignals:
+        alias: Shared\Infrastructure\AbuseSignal\DatabaseAbuseSignals
+    # F87 : écran « Sauvegardes » réservé à admin.backup.read (Administration).
+    Shared\Application\Ports\Provider\OperationsAccessPolicy:
+        alias: Administration\Infrastructure\Adapter\Shared\AdminOperationsAccessPolicy
+
+    # Le flux temps réel (Shared) consomme IAM pour identifier le compte connecté.
+    Shared\Application\Ports\Provider\RealtimeAccountProvider:
+        alias: IAM\Infrastructure\Adapter\Shared\IAMRealtimeAccountProvider
+
+    Shared\Application\Ports\Service\RealtimePublisher:
+        factory: ['@Shared\Infrastructure\Realtime\RealtimePublisherFactory', 'create']
+        arguments: ['%env(REALTIME_TRANSPORT)%']
+
     Shared\Application\Listener\ExceptionListener:
         tags:
             - { name: kernel.event_listener, event: kernel.exception, method: __invoke }
 
-    Shared\Infrastructure\Service\BootstrapAdminService:
+    # Citizen consomme IAM (F55 : confirmation d'identité et données du compte pour « Mes données »).
+    Citizen\Application\Ports\Provider\PersonalAccountDataProvider:
+        alias: IAM\Infrastructure\Adapter\Citizen\IAMPersonalAccountDataProvider
+    Citizen\Application\Ports\Provider\CitizenAccountManager:
+        alias: IAM\Infrastructure\Adapter\Citizen\IAMCitizenAccountManager
+    Citizen\Application\Ports\Provider\CitizenAccountAccessPolicy:
+        alias: Administration\Infrastructure\Adapter\Citizen\AdminCitizenAccountAccessPolicy
+    IAM\Application\Ports\Service\AccountSessionRevoker:
+        alias: IAM\Infrastructure\Security\DoctrineAccountSessionRevoker
+    IAM\Application\Ports\Service\LoginAttemptLimiter:
+        alias: IAM\Infrastructure\Security\DoctrineLoginAttemptLimiter
+    IAM\Application\Ports\Repository\LoginSecurityEventRepository:
+        alias: IAM\Infrastructure\Doctrine\Repository\DoctrineLoginSecurityEventRepository
+    # IAM consomme Citizen (F54 : notification « nouvel appareil » dans l'espace citoyen).
+    IAM\Application\Ports\Provider\AccountSecurityNotifier:
+        alias: Citizen\Infrastructure\Adapter\IAM\CitizenAccountSecurityNotifier
+    IAM\Application\Ports\Provider\SecurityJournalAccessPolicy:
+        alias: Administration\Infrastructure\Adapter\IAM\AdminSecurityJournalAccessPolicy
+    Citizen\Application\Command\DeleteMyCitizenAccount\DeleteMyCitizenAccountHandler:
         arguments:
-            $permissions: '@IAM\Infrastructure\InMemory\InMemoryAdminPermissionRepository'
+            $dataErasers: !tagged_iterator citizen.account_data_eraser
+    # Communication consomme Administration (permission de publier, liste fermée des quartiers)
+    # et Citizen (audience du citoyen connecté : quartier, consentement aux alertes sanitaires).
+    Communication\Application\Ports\Provider\CommunicationAccessPolicy:
+        alias: Administration\Infrastructure\Adapter\Communication\AdminCommunicationAccessPolicy
+    Communication\Application\Ports\Provider\DistrictDirectory:
+        alias: Administration\Infrastructure\Adapter\Communication\AdminCommunicationDistrictDirectory
+    Communication\Application\Ports\Provider\AudienceProvider:
+        alias: Citizen\Infrastructure\Adapter\Communication\CitizenAudienceProvider
 
-    IAM\Application\Service\PortalAccessPolicy:
-        arguments:
-            $providers: !tagged_iterator iam.accessible_spaces
+    # Citizen consomme Administration (liste fermée des quartiers du profil).
+    Citizen\Application\Ports\Provider\DistrictDirectory:
+        alias: Administration\Infrastructure\Adapter\Citizen\AdminCitizenDistrictDirectory
+    # Citizen consomme Administration (catalogue des services pour les rendez-vous, L10).
+    Citizen\Application\Ports\Provider\MunicipalServiceDirectory:
+        alias: Administration\Infrastructure\Adapter\Citizen\AdminCitizenServiceDirectory
+
+    # Participation (L19) consomme Administration (droits des agents : admin.participation.read / write ;
+    # liste fermée des quartiers) et Citizen (citoyen connecté ; notifications des idées).
+    # Citizen consomme Participation : effacement des contributions et idées à la suppression du compte
+    # (Participation\Infrastructure\Adapter\Citizen\ParticipationAccountDataEraser, tag citizen.account_data_eraser autoconfiguré).
+    Participation\Application\Ports\Provider\ParticipationAccessPolicy:
+        alias: Administration\Infrastructure\Adapter\Participation\AdminParticipationAccessPolicy
+    Participation\Application\Ports\Provider\DistrictDirectory:
+        alias: Administration\Infrastructure\Adapter\Participation\AdminParticipationDistrictDirectory
+    # F76 (L26) : avis sur les services — le service évalué (existence, nom) vient du catalogue d'Administration.
+    Participation\Application\Ports\Provider\ReviewedServiceDirectory:
+        alias: Administration\Infrastructure\Adapter\Participation\AdminParticipationServiceDirectory
+    Participation\Application\Ports\Provider\ParticipantProvider:
+        alias: Citizen\Infrastructure\Adapter\Participation\CitizenParticipantProvider
+    Participation\Application\Ports\Provider\CitizenNotifier:
+        alias: Citizen\Infrastructure\Adapter\Participation\CitizenParticipationNotifier
+
+    # Assistance (L22, ADR 011) consomme Administration (catalogue des services : textes publics, état, traductions,
+    # version « En clair ») ; Administration et Communication consomment Assistance (brouillon « En clair », F89).
+    Assistance\Application\Ports\Provider\ServiceCatalog:
+        alias: Administration\Infrastructure\Adapter\Assistance\AdminAssistanceServiceCatalog
+    Administration\Application\Ports\Provider\PlainLanguageDrafter:
+        alias: Assistance\Infrastructure\Adapter\Administration\AssistancePlainLanguageDrafter
+    Communication\Application\Ports\Provider\PlainLanguageDrafter:
+        alias: Assistance\Infrastructure\Adapter\Communication\AssistancePublicationPlainLanguageDrafter

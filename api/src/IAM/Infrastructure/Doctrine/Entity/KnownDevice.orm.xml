@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping">
+  <entity name="IAM\Domain\Entity\KnownDevice" table="iam_known_devices">
+    <unique-constraints>
+      <unique-constraint name="UNIQ_IAM_DEVICE_USER_HASH" columns="user_id,device_hash"/>
+    </unique-constraints>
+    <indexes>
+      <index name="IDX_IAM_DEVICE_FIRST_SEEN" columns="first_seen_at"/>
+    </indexes>
+    <id name="id" type="string" length="36"/>
+    <field name="userId" column="user_id" type="string" length="36"/>
+    <field name="deviceHash" column="device_hash" type="string" length="64"/>
+    <field name="label" type="string" length="80"/>
+    <field name="firstSeenAt" column="first_seen_at" type="datetime_immutable"/>
+    <field name="lastUsedAt" column="last_used_at" type="datetime_immutable"/>
+    <field name="trustedUntil" column="trusted_until" type="datetime_immutable" nullable="true"/>
+  </entity>
+</doctrine-mapping>

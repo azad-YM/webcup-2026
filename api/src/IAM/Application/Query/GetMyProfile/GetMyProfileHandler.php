@@ -16,6 +16,13 @@ final readonly class GetMyProfileHandler
     {
         $identity = $this->identity->getUser();
         $user = $this->users->findByEmail($identity->getEmail());
-        return ['email' => $identity->getEmail(), 'name' => $user?->getName() ?? '', 'spaces' => ($this->spaces)(new ListMySpacesQuery())];
+        return [
+            'email' => $user !== null && !$user->hasRealEmail() ? '' : $identity->getEmail(),
+            'name' => $user?->getName() ?? '',
+            'spaces' => ($this->spaces)(new ListMySpacesQuery()),
+            // F71 : compte créé à l’accueil (identifiant d’habitant) ; code provisoire à remplacer.
+            'residentId' => $user?->residentId(),
+            'passwordChangeRequired' => $user?->passwordChangeRequired() ?? false,
+        ];
     }
 }

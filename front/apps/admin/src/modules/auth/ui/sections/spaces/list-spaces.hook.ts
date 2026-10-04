@@ -6,7 +6,9 @@ import type { AuthSpace } from "@/modules/auth/core/application/dto/auth.dto"
 
 const LOCAL_SPACE_ROUTES: Record<string, string> = {
   admin: "/admin",
-  example: "/example",
+  pilotage: "/pilotage",
+  requests: "/demandes",
+  participation: "/participation",
 }
 
 export const useListSpaces = () => {
@@ -28,5 +30,7 @@ export const useListSpaces = () => {
     isLoading: query.isLoading,
     isError: query.isError,
     openSpace,
+    refetch: query.refetch,
+    isFetching: query.isFetching,
   }
 }

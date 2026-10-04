@@ -1,0 +1,47 @@
+# F69 — protection des données (ADR 007 : doc/technique/decisions/007-protection-des-donnees.md).
+parameters:
+    # Clé de chiffrement au repos (32 octets en base64). Vide : dérivée de APP_SECRET (développement seulement).
+    env(DATA_ENCRYPTION_KEY): ''
+    app.data_encryption_key: '%env(DATA_ENCRYPTION_KEY)%'
+
+    # Limitation de débit des points d'entrée sensibles, par adresse IP et par nom de route (méthodes d'écriture).
+    # `limit` requêtes par fenêtre de `window` secondes ; `action` complète le message 429 en français.
+    app.rate_limit_enabled: true
+    app.rate_limits:
+        api_login_check: { limit: 30, window: 600, action: 'la connexion' }
+        citizen_register: { limit: 5, window: 900, action: 'la création de compte' }
+        citizen_update_my_profile: { limit: 30, window: 600, action: 'la mise à jour du profil' }
+        citizen_delete_my_account: { limit: 5, window: 900, action: 'la suppression du compte' }
+        citizen_submit_request: { limit: 10, window: 600, action: 'l’envoi de demandes' }
+        citizen_raise_concern: { limit: 5, window: 600, action: 'l’envoi d’inquiétudes' }
+        citizen_support_request: { limit: 30, window: 600, action: 'le soutien des signalements' }
+        citizen_post_request_message: { limit: 20, window: 600, action: 'l’envoi de messages sur vos demandes' }
+        citizen_verify_receipt: { limit: 20, window: 600, action: 'la vérification des accusés de réception' }
+        citizen_book_appointment: { limit: 15, window: 600, action: 'la réservation de rendez-vous' }
+        citizen_change_appointment: { limit: 15, window: 600, action: 'la modification de rendez-vous' }
+        iam_application_portalsession_issue: { limit: 30, window: 600, action: 'l’ouverture de l’espace de travail' }
+        iam_application_portalsession_exchange: { limit: 30, window: 600, action: 'l’ouverture de l’espace de travail' }
+        # L22 (ADR 011) : routes qui peuvent appeler le modèle de langage.
+        assistance_refine_search: { limit: 40, window: 600, action: 'la recherche assistée' }
+        assistance_orient: { limit: 30, window: 600, action: 'l’assistant d’orientation' }
+        assistance_explain: { limit: 40, window: 600, action: 'les explications simplifiées' }
+        assistance_transport: { limit: 40, window: 600, action: 'l’aide aux trajets' }
+        administration_suggest_plain_language: { limit: 30, window: 600, action: 'les propositions de version en clair' }
+        communication_suggest_plain_language: { limit: 30, window: 600, action: 'les propositions de version en clair' }
+
+doctrine:
+    dbal:
+        types:
+            encrypted_string: Shared\Infrastructure\Doctrine\EncryptedStringType
+    orm:
+        mappings:
+            SharedRateLimit:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Shared/Infrastructure/RateLimit/Doctrine'
+                prefix: 'Shared\Infrastructure\RateLimit'
+                alias: SharedRateLimit
+
+when@test:
+    parameters:
+        app.rate_limit_enabled: false

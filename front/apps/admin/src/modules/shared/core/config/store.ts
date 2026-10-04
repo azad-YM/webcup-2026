@@ -5,9 +5,15 @@ import {
   type Action,
 } from "@reduxjs/toolkit"
 import { useDispatch } from "react-redux"
+import { citizenAccountsApi } from "@/modules/citizen-accounts/core/application/rtk-api/citizen-accounts"
+import { securityApi } from "@/modules/security/core/application/rtk-api/security"
 import { authApi } from "@/modules/auth/core/application/rtk-api/auth"
 import { accessManagementApi } from "@/modules/admin/core/application/rtk-api/access-management"
-import { itemApi } from "@/modules/example/core/application/rtk-api/item"
+import { pilotageApi } from "@/modules/pilotage/core/application/rtk-api/pilotage"
+import { requestsApi } from "@/modules/requests/core/application/rtk-api/requests"
+import { contentApi } from "@/modules/content/core/application/rtk-api/content"
+import { participationApi } from "@/modules/participation/core/application/rtk-api/participation"
+import { auditApi } from "@/modules/audit/core/application/rtk-api/audit"
 import type { Dependencies } from "./dependencies"
 import { sessionCleared } from "./session"
 
@@ -18,9 +24,15 @@ export type AppDispatch = AppStore["dispatch"]
 export type AppGetState = AppStore["getState"]
 
 const reducers = combineReducers({
+  [citizenAccountsApi.reducerPath]: citizenAccountsApi.reducer,
+  [securityApi.reducerPath]: securityApi.reducer,
   [authApi.reducerPath]: authApi.reducer,
   [accessManagementApi.reducerPath]: accessManagementApi.reducer,
-  [itemApi.reducerPath]: itemApi.reducer,
+  [pilotageApi.reducerPath]: pilotageApi.reducer,
+  [requestsApi.reducerPath]: requestsApi.reducer,
+  [contentApi.reducerPath]: contentApi.reducer,
+  [participationApi.reducerPath]: participationApi.reducer,
+  [auditApi.reducerPath]: auditApi.reducer,
 })
 
 // A session change (logout, 401, other tab) wipes every cache.
@@ -46,9 +58,15 @@ export const createStore = (config: {
 
       middleware.unshift(listener.middleware)
       middleware.push(
+        citizenAccountsApi.middleware,
+        securityApi.middleware,
         authApi.middleware,
         accessManagementApi.middleware,
-        itemApi.middleware,
+        pilotageApi.middleware,
+        requestsApi.middleware,
+        contentApi.middleware,
+        participationApi.middleware,
+        auditApi.middleware,
       )
 
       return middleware

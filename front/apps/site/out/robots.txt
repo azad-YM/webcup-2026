@@ -1,4 +1,4 @@
 User-Agent: *
 Disallow: /
 
-Sitemap: http://localhost:5178/sitemap.xml
+Sitemap: https://adumillion.lescomores.webcup.hodi.cloud/sitemap.xml

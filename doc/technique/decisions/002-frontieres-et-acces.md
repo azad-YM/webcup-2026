@@ -23,11 +23,11 @@ Interdits : SQL sur les tables d’un autre module, association ORM entre agrég
 
 ### Accès
 
-- Le BC `IAM` possède l’identité de connexion (compte, e-mail, secret haché, JWT, codes de portail) et l’administration des accès de l’espace `admin` (membres, rôles, catalogue de permissions).
+- Le BC `IAM` possède l’identité de connexion (compte, e-mail, secret haché, JWT, codes de portail). L’administration des accès de l’espace `admin` (membres, rôles, catalogue de permissions) appartient au BC `Administration` depuis l’[ADR 003](003-identite-et-habilitations.md).
 - Un futur BC qui expose son propre espace peut déterminer ses membres et rôles ; il les fournit à IAM via `AccessibleSpacesProvider`.
 - IAM compose les espaces accessibles via le port `AccessibleSpacesProvider` que chaque fournisseur implémente et étiquette `iam.accessible_spaces`.
 - Le site porte le seul formulaire de connexion ; les applications reçoivent un code à usage unique (60 s max) lié à la destination et à un challenge PKCE, échangé contre un JWT d’audience dédiée.
-- L’affichage d’un espace ne vaut pas autorisation : chaque opération est contrôlée par son BC (ex. `ItemAccessPolicy` pour `Example`).
+- L’affichage d’un espace ne vaut pas autorisation : chaque opération est contrôlée par son BC (ex. `RoleCreationPolicy` dans Administration ; Citizen consultera Administration via son propre port).
 
 ## Conséquences
 
@@ -44,4 +44,6 @@ Interdits : SQL sur les tables d’un autre module, association ORM entre agrég
 
 - [Architecture technique](../architecture.md)
 - [Documentation — IAM](../../../api/src/IAM/doc/README.md)
+- [ADR 003](003-identite-et-habilitations.md)
+- [ADR 007](007-protection-des-donnees.md)
 <!-- backlinks:end -->

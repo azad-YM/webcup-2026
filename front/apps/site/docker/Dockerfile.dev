@@ -6,11 +6,12 @@ WORKDIR /app
 
 COPY front/pnpm-workspace.yaml ./
 COPY front/package.json ./
+COPY front/pnpm-lock.yaml ./
 
 COPY front/apps/site/package.json apps/site/
 COPY front/packages ./packages
 
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 
 COPY front .
 

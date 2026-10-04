@@ -1,0 +1,84 @@
+/* Identité du portail citoyen, appliquée à l’admin sans modifier le package partagé. */
+:root {
+  --radius: 0.75rem;
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #0f766e;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #334155;
+  --muted: #f8fafc;
+  --muted-foreground: #475569;
+  --accent: #f0fdfa;
+  --accent-foreground: #134e4a;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #0f766e;
+}
+body { background: #f8fafc; color: #0f172a; }
+
+/* Champs admin : h-10, rounded-2xl et contours discrets. */
+:is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="hidden"]):not([type="submit"]):not([type="button"]), select, textarea) {
+  border-radius: 1rem;
+  border-color: var(--input);
+  box-shadow: none;
+}
+:is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="hidden"]):not([type="submit"]):not([type="button"]), select:not([multiple])) {
+  height: 2.5rem;
+}
+textarea { min-height: 2.5rem; }
+html:not([data-contrast="high"]) :is(input, select, textarea):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+:is(input, select, textarea)[aria-invalid="true"] { border-color: var(--destructive); }
+/* Conserver les préférences communes, avec le teal de Nova Terra. */
+html[data-contrast="high"] { --primary: #0b4f4a; --accent-foreground: #073b37; }
+
+/* Actions secondaires pleines et douces, sans contour décoratif. */
+[data-slot="button"][data-variant="outline"] {
+  border-color: transparent;
+  background: #eef2f6;
+  color: #334155;
+  box-shadow: none;
+}
+[data-slot="button"][data-variant="outline"]:hover:not(:disabled) {
+  background: #e2eeeb;
+  color: #134e4a;
+}
+
+/* Des lignes espacées comme des cartes, en conservant la sémantique tabulaire. */
+.nt-data-table table { border-collapse: separate; border-spacing: 0 0.6rem; }
+.nt-data-table thead { background: transparent; }
+.nt-data-table tr { border: 0; }
+.nt-data-table th { padding: 0.5rem 1rem; color: #64748b; font-size: 0.75rem; font-weight: 600; }
+.nt-data-table tbody tr { background: #ffffff; }
+.nt-data-table td { padding: 1rem; border: 0; }
+.nt-data-table td:first-child { border-radius: 0.875rem 0 0 0.875rem; }
+.nt-data-table td:last-child { border-radius: 0 0.875rem 0.875rem 0; }
+.nt-data-table tbody tr:hover { background: #f0fdfa; }
+.nt-data-table tbody tr[data-highlight="new"] { background: #fffbeb; }
+/* Les membres se trouvent déjà dans une surface blanche. */
+[data-slot="card"] .nt-data-table tbody tr { background: #f8fafc; }
+[data-slot="card"] .nt-data-table tbody tr:hover { background: #f0fdfa; }
+.nt-content-list > li { border: 0; border-radius: 1rem; background: #ffffff; padding: 1.25rem; box-shadow: 0 2px 8px #0f172a05; }
+
+/* Les repères de focus, statuts et formulaires restent visibles. */
+html[data-contrast="high"] [data-slot="button"][data-variant="outline"] { border: 1px solid #374151; color: #000000; }
+html[data-contrast="high"] .nt-data-table th { color: #111827; }
+html[data-contrast="high"] .nt-data-table td { border-block: 1px solid #374151; }
+[data-slot="card"]:has(.nt-data-table) { border-color: transparent; box-shadow: 0 3px 16px #0f172a05; }
+html[data-contrast="high"] [data-slot="card"]:has(.nt-data-table) { border-color: #374151; }
+
+/* F103 : impression d’un rapport (ou « Enregistrer en PDF ») — seul le contenu de la page est imprimé. */
+@media print {
+  aside, header, #navigation-desktop, [aria-label="Modules et compte"] { display: none !important; }
+  .sticky { position: static !important; }
+  main { padding: 0 !important; background: #fff !important; }
+  body { background: #fff; }
+}
