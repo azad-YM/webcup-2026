@@ -7,7 +7,7 @@ import { CitizenAccessState, useCitizenAccess } from "../components/citizen-acce
 /** Étape 2 de l’inscription : « Mes informations », que l’on peut passer. */
 export function ProfileOnboardingStep() {
   const router = useRouter()
-  const access = useCitizenAccess()
+  const access = useCitizenAccess({ refreshProfile: true })
   if (!access.profile) return <CitizenAccessState access={access} returnTo="/espace/profil" />
   return (
     <section aria-labelledby="titre-etape-informations" className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">

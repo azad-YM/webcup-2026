@@ -5,7 +5,7 @@ import type { BreadcrumbTrailItem } from "@boilerplate/shared-ui/components/a11y
  * ajoute ici son chemin ; un chemin inconnu affiche le dernier niveau connu.
  */
 export const BREADCRUMB_LABELS: Record<string, string> = {
-  "/espaces": "Espaces",
+  "/espaces": "Modules",
   "/admin": "Administration",
   "/admin/role": "Rôles",
   "/admin/member": "Membres",
@@ -22,11 +22,11 @@ export const BREADCRUMB_LABELS: Record<string, string> = {
   "/demandes/inquietudes": "Inquiétudes",
 }
 
-/** « Espaces » puis chaque niveau connu du chemin ; le dernier est la page courante. */
+/** « Modules » puis chaque niveau connu du chemin ; le dernier est la page courante. */
 export function breadcrumbFor(pathname: string): BreadcrumbTrailItem[] {
   const clean = pathname.replace(/\/+$/, "") || "/"
   const segments = clean.split("/").filter(Boolean)
-  const trail: BreadcrumbTrailItem[] = [{ label: "Espaces", href: "/espaces" }]
+  const trail: BreadcrumbTrailItem[] = [{ label: "Modules", href: "/espaces" }]
   segments.forEach((_, index) => {
     const path = `/${segments.slice(0, index + 1).join("/")}`
     const label = BREADCRUMB_LABELS[path]

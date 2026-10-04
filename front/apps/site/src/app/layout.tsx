@@ -1,3 +1,5 @@
+import { NotificationBell } from "@/modules/citizen/ui/sections/notification-bell"
+import { SpacesList } from "@/modules/auth/ui/components/spaces-list"
 import { AlertBanner } from "@/modules/public/ui/sections/alerts"
 import { StoreProvider } from "@/modules/shared/ui/store-provider"
 import type { Metadata } from "next"
@@ -32,7 +34,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <SiteAccessibilityProvider>
         <StoreProvider>
           <SkipLink />
-          <SiteHeader />
+          <SiteHeader notifications={<NotificationBell />} spaces={<SpacesList variant="menu" />} />
           <AlertBanner />
           <main id={MAIN_CONTENT_ID} tabIndex={-1} className="flex-1">
             {children}

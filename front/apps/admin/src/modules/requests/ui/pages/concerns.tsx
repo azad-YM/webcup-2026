@@ -4,6 +4,7 @@ import { RefreshCw } from "@boilerplate/shared-ui/components/icon"
 import { Button, Label, Textarea } from "@boilerplate/shared-ui/components"
 import { DESK_POLLING_MS, useConcernQueueQuery, useHandleConcernMutation } from "../../core/application/rtk-api/agent-desk"
 import { CONCERN_STATUS_LABELS, CONCERN_TOPIC_LABELS, type AgentConcern, type ConcernStatus } from "../../core/domain/agent-desk"
+import { RequestQueueSkeleton } from "../sections/request-queue-skeleton"
 
 const selectClass = "flex h-9 w-full rounded-lg border border-input bg-background px-3 text-sm focus-visible:outline-2 focus-visible:outline-ring"
 const dateTime = new Intl.DateTimeFormat("fr-FR", { dateStyle: "short", timeStyle: "short" })
@@ -60,7 +61,7 @@ function ConcernCard({ concern, canProcess }: { concern: AgentConcern; canProces
 export function ConcernsPage() {
   const [status, setStatus] = useState<ConcernStatus | null>("received")
   const query = useConcernQueueQuery(status, { pollingInterval: DESK_POLLING_MS })
-  const data = query.data
+  const data = query.currentData
   return (
     <div className="mx-auto w-full max-w-5xl space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -82,8 +83,8 @@ export function ConcernsPage() {
           {(Object.keys(CONCERN_STATUS_LABELS) as ConcernStatus[]).map((option) => <option key={option} value={option}>{CONCERN_STATUS_LABELS[option]}</option>)}
         </select>
       </div>
-      {query.isLoading ? (
-        <p role="status">Chargement des inquiétudes…</p>
+      {query.isFetching && (!data || data.items.length === 0) ? (
+        <RequestQueueSkeleton label="Chargement des inquiétudes…" />
       ) : query.error && !data ? (
         <div role="alert" className="rounded-xl border border-destructive/40 bg-white p-4">
           <p>{getErrorMessage(query.error)}</p>

@@ -120,7 +120,7 @@ export function AlertsPage() {
           <Button type="button" onClick={() => setEditing(newAlert())}>Nouvelle alerte</Button>
         </div>
         <ListState isLoading={alerts.isLoading} error={alerts.error} isEmpty={items.length === 0} emptyLabel="Aucune alerte." onRetry={() => void alerts.refetch()} retrying={alerts.isFetching}>
-          <ul className="divide-y rounded-lg border bg-white">
+          <ul className="nt-content-list space-y-3">
             {items.map((item) => (
               <li key={item.id} className="flex items-start justify-between gap-3 p-3">
                 <div className="min-w-0">
