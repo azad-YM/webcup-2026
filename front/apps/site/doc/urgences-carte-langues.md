@@ -21,6 +21,10 @@ Code : module `public` (`core/domain/service-places.ts`, `newcomer-guide.ts`, po
 
 Leaflet 1.9.4 est chargé depuis cdnjs avec contrôle d’intégrité (SRI) au premier clic sur « Afficher la carte » : aucune dépendance npm, rien n’est téléchargé tant que la liste suffit. La géolocalisation n’est demandée qu’au clic et la position ne quitte pas l’appareil. Une politique CSP future devra autoriser `cdnjs.cloudflare.com` (script, style) et `tile.openstreetmap.org` (images).
 
+## Associations partenaires (F74, L26 — non testé, non vérifié dans un navigateur)
+
+`/partenaires` (`public/ui/pages/partners.tsx`, liste puis fiche via `?id=`) : ce que propose l’association, « Où nous trouver » (adresse, itinéraire, carte à la demande), horaires de la semaine, contact (personne, téléphone, e-mail, site) et badge « Ouvert maintenant · ferme à 18 h » / « Fermé · ouvre lundi à 9 h » calculé dans le navigateur à l’heure de Nova Terra (`openingState`, fuseau `Indian/Reunion`). Les partenaires viennent du catalogue d’Administration (catégorie `partenaires`, [contrat](../../../../api/src/Administration/doc/README.md#associations-partenaires-f74-l26--non-testé-non-vérifié-dans-un-navigateur)) : ils apparaissent aussi sur `/carte` et dans la recherche de services, dont la fiche renvoie vers `/partenaires`. Libellés en français, anglais et arabe (`PARTNERS_MESSAGES`, `cat_partenaires`). Lien dans le pied de page.
+
 ## Langues (D14) et contenus traduits (F27)
 
 - Langues : français (défaut), anglais, arabe. Sélecteur « Langue » dans l’en-tête (liste native, chaque langue écrite dans sa langue), choix mémorisé dans le navigateur (`nova-terra.site.langue`, via `LocalePreferenceGateway`), `<html lang dir>` mis à jour ; un script de `<head>` applique `lang`/`dir` avant le premier rendu.
