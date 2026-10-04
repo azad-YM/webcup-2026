@@ -37,6 +37,10 @@ Chargement, erreur avec « Réessayer » et liste vide sont distincts sur chaque
 - Le début et la fin de validité d’une alerte n’émettent pas d’événement : l’affichage suit au plus tard 60 s après.
 - Le module `public` ouvre son propre flux ; le flux des demandes (lot L2) devra être fusionné avec lui pour garder un seul flux par onglet.
 
+## Messages officiels du Haut Conseil (L26/F73 — non testé, non vérifié dans un navigateur)
+
+Le bandeau `AlertBanner` (toutes les pages, y compris en mode léger et en mode allégé serveur : `/api/communication/alerts` reste essentiel) affiche d’abord les alertes de catégorie `official` avec `OfficialMessageNotice` : en-tête « Message officiel du Haut Conseil », date et heure de publication, signataire, « Ce qu’il faut savoir ou faire », bouton « J’ai lu ». L’accusé est mémorisé dans ce navigateur (port `OfficialMessageReadGateway`, adaptateur `OfficialMessageReadLocalStorageGateway`) ; un message lu reste visible sur une ligne dépliable. Mise à jour par le flux SSE unique (`alert.published`) et repli `polling(60 s)`. Archive : `/messages-officiels` (`ui/pages/official-messages.tsx`, `GET /api/communication/official-messages`, [contrat](../../../../api/src/Communication/doc/README.md#lecture-publique-sans-compte)), lien dans le pied de page.
+
 ## État du service avant la démarche (L18 : F63, F64 — non testé, non vérifié dans un navigateur)
 
 - La fiche `/services?service=…` commence par l’état du service (`public/ui/components/service-status-notice.tsx`, `StatusBadge`) : disponible, perturbé (maintenance, incident) ou **désactivé** par la mairie. Hors état normal : pourquoi, ce qui reste possible (alternative, quand revenir, accueil, « Contacter la mairie »). Les cartes du catalogue montrent aussi « Service désactivé ».

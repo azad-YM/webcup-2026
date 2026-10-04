@@ -23,6 +23,7 @@ Communication ne connaît ni comptes, ni rôles, ni profils : il demande à [Adm
 - Alertes : création, révision, diffusion, retrait ; bandeau public (audience « tous ») ; notifications ciblées du citoyen.
 - Temps réel : projection des événements de domaine vers le port `RealtimePublisher` ([ADR 004](../../../../doc/technique/decisions/004-temps-reel.md)).
 - Contenu initial : les trois premières actualités de la ville sont insérées par la migration `Version20261003003000`.
+- Message officiel du Haut Conseil (F73, L26 — non testé, non vérifié dans un navigateur) : une alerte de catégorie `official` (colonnes `category`, `signatory`, migration `Version20261004130100`) ; toujours adressée à tous (`audience = all`), signataire obligatoire, recommandations = « ce qu’il faut savoir ou faire ». Publiée par `admin.communication.write` avec `confirmOfficial: true` (sinon `422`) ; journalisée `communication.official-message.{created,updated,published,withdrawn}`. Elle passe en tête de `GET /api/communication/alerts` et du bandeau du site, arrive par l’événement temps réel `alert.published` (topic `public.alerts`, après traitement par le worker `async`) avec un repli `polling` de 60 s côté site. `GET /api/communication/official-messages` (public, cache 15 s invalidé à l’écriture) : archive des messages officiels publiés, du plus récent au plus ancien (50 au plus), avec `active`.
 - Aucun test automatisé n’a été écrit pour ce BC (décision d’économie du chantier) : pas de suite PHPUnit `Communication` pour l’instant.
 
 ## Règles
@@ -46,7 +47,8 @@ Format d’erreur commun `{path, message}` : `400` règle métier refusée (mess
 |---|---|
 | `GET /api/communication/publications` (`?important=1` pour les seules annonces importantes) | Liste des publications publiées |
 | `GET /api/communication/publications/{id}` | Une publication publiée, sinon `404` |
-| `GET /api/communication/alerts` | Alertes actives d’audience `all` (bandeau du site) |
+| `GET /api/communication/alerts` | Alertes actives d’audience `all` (bandeau du site), messages officiels en tête |
+| `GET /api/communication/official-messages` | F73 : archive des messages officiels publiés (`+ active`) |
 
 Publication publique :
 
@@ -58,7 +60,8 @@ Alerte publique :
 
 ```json
 { "id": "…", "title": "…", "message": "…", "severity": "critical", "audience": "district", "district": "Sud",
-  "startsAt": "2026-10-03T08:00:00+00:00", "endsAt": "2026-10-04T08:00:00+00:00", "recommendations": ["…"], "publishedAt": "…" }
+  "startsAt": "2026-10-03T08:00:00+00:00", "endsAt": "2026-10-04T08:00:00+00:00", "recommendations": ["…"], "publishedAt": "…",
+  "category": "standard", "signatory": null }
 ```
 
 ### Citoyen connecté

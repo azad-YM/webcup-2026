@@ -17,6 +17,7 @@ import type { PersonalDataGateway } from "@/modules/citizen/core/application/por
 import type { IdentityCodeProvider } from "@/modules/citizen/core/application/ports/provider/identity-code.provider"
 import type { RealtimeSubscriber } from "../application/ports/realtime-subscriber"
 import type { AlertsGateway } from "@/modules/public/core/application/ports/gateway/alerts.gateway"
+import type { OfficialMessageReadGateway } from "@/modules/public/core/application/ports/gateway/official-message-read.gateway"
 import type { CityFeedGateway } from "@/modules/public/core/application/ports/gateway/city-feed.gateway"
 import type { CityParticipationGateway } from "@/modules/participation/core/application/ports/gateway/city-participation.gateway"
 import type { ParticipationSessionProvider } from "@/modules/participation/core/application/ports/provider/participation-session.provider"
@@ -47,6 +48,8 @@ export type Dependencies = {
   serviceCatalogGateway: ServiceCatalogGateway
   publicationGateway: PublicationGateway
   alertsGateway: AlertsGateway
+  /** F73 : messages officiels marqués « J'ai lu » dans ce navigateur. */
+  officialMessageReadGateway: OfficialMessageReadGateway
   cityFeedGateway: CityFeedGateway
   // assistance (BC Assistance, L22) : recherche tolérante, explications simples, assistant d’orientation
   serviceFinderGateway: ServiceFinderGateway

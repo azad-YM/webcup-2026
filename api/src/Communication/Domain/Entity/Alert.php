@@ -22,6 +22,8 @@ final class Alert
     public const SEVERITIES = ['info', 'warning', 'critical'];
     public const AUDIENCES = ['all', 'district', 'health'];
     public const STATES = ['draft', 'published', 'withdrawn'];
+    /** F73 (L26) : `official` = message officiel du Haut Conseil, signé, toujours adressé à tous les habitants. */
+    public const CATEGORIES = ['standard', 'official'];
 
     private string $title;
     private string $message;
@@ -33,6 +35,8 @@ final class Alert
     /** @var list<string> */
     private array $recommendations;
     private string $state = 'draft';
+    private string $category = 'standard';
+    private ?string $signatory = null;
     private ?\DateTimeImmutable $publishedAt = null;
     private \DateTimeImmutable $updatedAt;
 
@@ -52,7 +56,7 @@ final class Alert
     /**
      * Validates the whole content before changing anything.
      *
-     * @param array{title: string, message: string, severity: string, audience: string, district: ?string, startsAt: \DateTimeImmutable, endsAt: \DateTimeImmutable, recommendations: list<string>} $content
+     * @param array{title: string, message: string, severity: string, audience: string, district: ?string, startsAt: \DateTimeImmutable, endsAt: \DateTimeImmutable, recommendations: list<string>, category?: string, signatory?: ?string} $content
      */
     public function revise(array $content, \DateTimeImmutable $now): void
     {
@@ -61,6 +65,17 @@ final class Alert
         }
         if (!in_array($content['audience'], self::AUDIENCES, true)) {
             throw new DomainException('Audience inconnue (all, district, health).');
+        }
+        $category = $content['category'] ?? 'standard';
+        if (!in_array($category, self::CATEGORIES, true)) {
+            throw new DomainException('Type d’alerte inconnu (standard, official).');
+        }
+        $signatory = null;
+        if ($category === 'official') {
+            if ($content['audience'] !== 'all') {
+                throw new DomainException('Un message officiel s’adresse à tous les habitants.');
+            }
+            $signatory = Text::required((string) ($content['signatory'] ?? ''), 160, 'Signataire');
         }
         $district = $content['audience'] === 'district' ? trim((string) $content['district']) : null;
         if ($district === '') {
@@ -81,6 +96,8 @@ final class Alert
         $this->startsAt = $content['startsAt'];
         $this->endsAt = $content['endsAt'];
         $this->recommendations = $recommendations;
+        $this->category = $category;
+        $this->signatory = $signatory;
         $this->updatedAt = $now;
     }
 
@@ -110,6 +127,13 @@ final class Alert
     public function district(): ?string { return $this->district; }
 
     public function startsAt(): \DateTimeImmutable { return $this->startsAt; }
+
+    public function isOfficial(): bool { return $this->category === 'official'; }
+
+    /** Published once (archive of the official messages), whether still valid or not. */
+    public function wasPublished(): bool { return $this->state === 'published' && $this->publishedAt !== null; }
+
+    public function publishedAt(): ?\DateTimeImmutable { return $this->publishedAt; }
 
     public function isActive(\DateTimeImmutable $now): bool
     {
@@ -141,6 +165,8 @@ final class Alert
             'endsAt' => $this->endsAt->format(DATE_ATOM),
             'recommendations' => $this->recommendations,
             'publishedAt' => $this->publishedAt?->format(DATE_ATOM),
+            'category' => $this->category,
+            'signatory' => $this->signatory,
         ];
     }
 

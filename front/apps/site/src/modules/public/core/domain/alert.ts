@@ -19,7 +19,14 @@ export type CityAlert = {
   endsAt: string
   recommendations: string[]
   publishedAt: string | null
+  /** F73 : `official` = message officiel du Haut Conseil (tous les habitants, signé). */
+  category?: "standard" | "official"
+  signatory?: string | null
+  /** Archive des messages officiels : encore en cours de validité. */
+  active?: boolean
 }
+
+export const isOfficialMessage = (alert: Pick<CityAlert, "category">) => alert.category === "official"
 
 /** Notifications du citoyen connecté : alertes qui le concernent et annonces importantes (F30). */
 export type CitizenNotifications = { alerts: CityAlert[]; announcements: Publication[] }

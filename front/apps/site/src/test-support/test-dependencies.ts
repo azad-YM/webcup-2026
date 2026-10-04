@@ -61,6 +61,7 @@ export function createTestContext(overrides: Partial<Dependencies> = {}) {
     serviceCatalogGateway,
     publicationGateway,
     alertsGateway: new InMemoryAlertsGateway(),
+    officialMessageReadGateway: { readIds: async () => [], markRead: async (id: string) => [id] },
     cityFeedGateway: new InMemoryCityFeedGateway(),
     serviceFinderGateway: {
       search: async ({ query }) => ({ query, results: [], suggestion: null, reformulation: null, source: "local", modelAvailable: false }),

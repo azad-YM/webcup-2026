@@ -35,6 +35,7 @@ import { PersonalDataHttpGateway } from "@/modules/citizen/core/infrastructure/f
 import { AuthIdentityCodeAdapter } from "@/modules/auth/core/infrastructure/adapter/citizen/auth-identity-code.adapter"
 import { SseRealtimeSubscriber } from "../core/infrastructure/realtime/sse-realtime.subscriber"
 import { HttpPublicContentGateway } from "@/modules/public/core/infrastructure/for-production/gateway/http/public-content.http.gateway"
+import { OfficialMessageReadLocalStorageGateway } from "@/modules/public/core/infrastructure/for-production/gateway/local/official-message-read.local-storage.gateway"
 import { AlertsHttpGateway } from "@/modules/public/core/infrastructure/for-production/gateway/http/alerts.http.gateway"
 import { AssistanceHttpGateway } from "@/modules/public/core/infrastructure/for-production/gateway/http/assistance.http.gateway"
 import { OrientationHttpGateway } from "@/modules/assistance/core/infrastructure/for-production/gateway/http/orientation.http.gateway"
@@ -89,6 +90,7 @@ function createDependencies(): Dependencies {
     serviceCatalogGateway: publicContent,
     publicationGateway: publicContent,
     alertsGateway: new AlertsHttpGateway(siteEnv.apiBaseUrl, publicSession),
+    officialMessageReadGateway: new OfficialMessageReadLocalStorageGateway(),
     cityFeedGateway: new RealtimeCityFeedAdapter(realtime),
     serviceFinderGateway: assistance,
     explanationGateway: assistance,

@@ -13,6 +13,10 @@ export class InMemoryAlertsGateway implements AlertsGateway {
     return this.alerts
   }
 
+  async listOfficialMessages() {
+    return this.alerts.filter((alert) => alert.category === "official")
+  }
+
   async myNotifications() {
     return this.notifications
   }

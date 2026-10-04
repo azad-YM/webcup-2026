@@ -30,6 +30,7 @@ parameters:
         communication_application_communication_publications: 60
         communication_application_communication_publication: 60
         communication_application_communication_alerts: 15
+        communication_official_messages: 15
         participation_projects: 60
         participation_project: 60
         participation_consultations: 60

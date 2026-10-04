@@ -21,5 +21,10 @@ final readonly class SaveAlertCommand
         #[Assert\Count(max: 50)] public array $recommendations = [],
         #[Assert\Choice(['draft', 'published', 'withdrawn'])] public string $state = 'draft',
         #[Assert\Length(max: 80)] public ?string $id = null,
+        /** F73 : `official` = message officiel du Haut Conseil (tous les habitants, signataire obligatoire). */
+        #[Assert\Choice(['standard', 'official'])] public string $category = 'standard',
+        #[Assert\Length(max: 160)] public ?string $signatory = null,
+        /** F73 : la publication d'un message officiel doit être confirmée explicitement. */
+        public bool $confirmOfficial = false,
     ) {}
 }

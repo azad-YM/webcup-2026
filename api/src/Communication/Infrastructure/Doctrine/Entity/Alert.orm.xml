@@ -15,6 +15,9 @@
         <field name="endsAt" column="ends_at" type="datetime_immutable"/>
         <field name="recommendations" type="json"/>
         <field name="state" type="string" length="20"/>
+        <!-- F73 (L26) : message officiel du Haut Conseil (catégorie `official`) et son signataire. -->
+        <field name="category" type="string" length="20"><options><option name="default">standard</option></options></field>
+        <field name="signatory" type="string" length="160" nullable="true"/>
         <field name="publishedAt" column="published_at" type="datetime_immutable" nullable="true"/>
         <field name="updatedAt" column="updated_at" type="datetime_immutable"/>
     </entity>

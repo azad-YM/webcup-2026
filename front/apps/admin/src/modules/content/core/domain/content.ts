@@ -130,7 +130,14 @@ export type Alert = {
   state: ContentState
   publishedAt?: string | null
   updatedAt?: string
+  /** F73 : `official` = message officiel du Haut Conseil (tous les habitants, signé). */
+  category?: AlertCategory
+  signatory?: string | null
+  /** F73 : confirmation explicite avant de publier un message officiel (envoyée, jamais stockée). */
+  confirmOfficial?: boolean
 }
+
+export type AlertCategory = "standard" | "official"
 
 /** Texte multiligne ↔ liste de paragraphes (lignes vides ignorées). */
 export const toLines = (text: string) => text.split("\n").map((line) => line.trim()).filter(Boolean)
@@ -159,6 +166,16 @@ export const newAlert = (now = new Date()): Alert => ({
   endsAt: new Date(now.getTime() + 24 * 3_600_000).toISOString(),
   recommendations: [],
   state: "draft",
+})
+
+/** F73 : message officiel du Haut Conseil, adressé à tous, en tête de toutes les pages du site. */
+export const newOfficialMessage = (now = new Date()): Alert => ({
+  ...newAlert(now),
+  severity: "info",
+  audience: "all",
+  endsAt: new Date(now.getTime() + 7 * 24 * 3_600_000).toISOString(),
+  category: "official",
+  signatory: "Le Haut Conseil de Nova Terra",
 })
 
 export const newService = (): MunicipalService => ({

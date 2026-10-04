@@ -9,6 +9,7 @@ use Communication\Application\Command\SavePublication\SavePublicationCommand;
 use Communication\Application\Query\GetMyNotifications\GetMyNotificationsQuery;
 use Communication\Application\Query\GetPublication\GetPublicationQuery;
 use Communication\Application\Query\ListActiveAlerts\ListActiveAlertsQuery;
+use Communication\Application\Query\ListOfficialMessages\ListOfficialMessagesQuery;
 use Communication\Application\Query\ListManagedAlerts\ListManagedAlertsQuery;
 use Communication\Application\Query\ListManagedPublications\ListManagedPublicationsQuery;
 use Communication\Application\Query\ListPublications\ListPublicationsQuery;
@@ -38,6 +39,13 @@ final class CommunicationController extends AppController
     public function alerts(): JsonResponse
     {
         return $this->dispatchQuery(new ListActiveAlertsQuery());
+    }
+
+    /** F73 : archive des messages officiels du Haut Conseil (page `/messages-officiels` du site). */
+    #[Route('/api/communication/official-messages', name: 'communication_official_messages', methods: ['GET'], format: 'json')]
+    public function officialMessages(): JsonResponse
+    {
+        return $this->dispatchQuery(new ListOfficialMessagesQuery());
     }
 
     #[Route('/api/communication/me/notifications', methods: ['GET'], format: 'json')]

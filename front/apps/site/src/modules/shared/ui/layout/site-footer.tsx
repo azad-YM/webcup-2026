@@ -28,6 +28,8 @@ export function SiteFooter() {
             <li><Link href="/aide/glossaire" className="hover:text-white hover:underline">{t.footerGlossary}</Link></li>
             <li><Link href="/vos-donnees" className="hover:text-white hover:underline">{t.footerData}</Link></li>
             <li><Link href="/sobriete" className="hover:text-white hover:underline">{t.footerSobriety}</Link></li>
+            <li><Link href="/messages-officiels" className="hover:text-white hover:underline">{t.footerOfficial}</Link></li>
+            <li><Link href="/partenaires" className="hover:text-white hover:underline">{t.footerPartners}</Link></li>
           </ul>
         </nav>
         <div>

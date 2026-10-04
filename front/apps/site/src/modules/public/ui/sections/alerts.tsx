@@ -2,18 +2,20 @@
 import { useEffect } from "react"
 import { polling } from "@/modules/shared/ui/sobriety/polling"
 import Link from "next/link"
-import { AlertTriangle, Info, Megaphone } from "@boilerplate/shared-ui/components/icon"
+import { AlertTriangle, BadgeCheck, Info, Megaphone } from "@boilerplate/shared-ui/components/icon"
 import { useSession } from "@/modules/shared/ui/store-provider"
 import { isUnauthorized, toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
 import { ErrorState, LoadingState } from "@/modules/shared/ui/components/states"
 import {
   ALERTS_POLLING_MS,
   useListAlertsQuery,
+  useMarkOfficialMessageReadMutation,
+  useReadOfficialMessagesQuery,
   useMyAlertPreferenceQuery,
   useMyNotificationsQuery,
   useSetHealthConsentMutation
 } from "../../core/application/rtk-api/alerts"
-import { audienceLabel, formatDateTime, mergeAlerts, SEVERITY_LABELS, type CityAlert } from "../../core/domain/alert"
+import { audienceLabel, formatDateTime, isOfficialMessage, mergeAlerts, SEVERITY_LABELS, type CityAlert } from "../../core/domain/alert"
 import { formatPublicationDate } from "../../core/domain/publication"
 import { publicationHref } from "../components/content-cards"
 
@@ -55,6 +57,64 @@ export function AlertNotice({ alert, headingLevel = 2 }: { alert: CityAlert; hea
 }
 
 /**
+ * F73 : message officiel du Haut Conseil — en-tête « Message officiel », date et heure, signataire, ce qu’il faut
+ * savoir ou faire, accusé « J’ai lu » mémorisé dans ce navigateur. Une fois lu, il reste visible en une ligne.
+ */
+export function OfficialMessageNotice({ alert, read, onRead, headingLevel = 2 }: { alert: CityAlert; read: boolean; onRead?: () => void; headingLevel?: 2 | 3 }) {
+  const Heading = headingLevel === 2 ? "h2" : "h3"
+  const date = <time dateTime={alert.publishedAt ?? alert.startsAt}>{formatDateTime(alert.publishedAt ?? alert.startsAt)}</time>
+  if (read && onRead) {
+    return (
+      <details className="rounded-xl border-2 border-blue-900 bg-blue-50 px-4 py-2 text-blue-950">
+        <summary className="cursor-pointer text-sm">
+          <BadgeCheck className="mr-2 inline size-4 align-text-bottom" aria-hidden="true" />
+          <strong>Message officiel</strong> du {date} : {alert.title} <span className="text-blue-900">(lu)</span>
+        </summary>
+        <p className="mt-2 whitespace-pre-line">{alert.message}</p>
+        {alert.signatory && <p className="mt-2 text-sm font-medium">— {alert.signatory}</p>}
+      </details>
+    )
+  }
+  return (
+    <article className="rounded-xl border-2 border-blue-900 bg-blue-50 p-4 text-blue-950" aria-labelledby={`officiel-${alert.id}`}>
+      <div className="flex items-start gap-3">
+        <BadgeCheck className="mt-1 size-6 shrink-0" aria-hidden="true" />
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-bold uppercase tracking-wide">Message officiel du Haut Conseil</p>
+          <Heading id={`officiel-${alert.id}`} className="mt-1 text-lg font-semibold">{alert.title}</Heading>
+          <p className="mt-1 text-sm">Publié le {date}{alert.signatory ? <> · signé : <strong>{alert.signatory}</strong></> : null}</p>
+          <p className="mt-2 whitespace-pre-line">{alert.message}</p>
+          {alert.recommendations.length > 0 && (
+            <div className="mt-3">
+              <p className="font-semibold">Ce qu’il faut savoir ou faire</p>
+              <ul className="mt-1 list-disc space-y-1 ps-6">
+                {alert.recommendations.map((recommendation) => <li key={recommendation}>{recommendation}</li>)}
+              </ul>
+            </div>
+          )}
+          <div className="mt-3 flex flex-wrap items-center gap-4">
+            {onRead && <button type="button" onClick={onRead} className="rounded-md bg-blue-900 px-4 py-2 font-medium text-white hover:bg-blue-800 focus-visible:outline-2 focus-visible:outline-offset-2">J’ai lu</button>}
+            <Link href="/messages-officiels" className="text-sm font-medium underline underline-offset-4">Tous les messages officiels</Link>
+          </div>
+        </div>
+      </div>
+    </article>
+  )
+}
+
+/** Messages officiels en cours, avec l’accusé « J’ai lu » de ce navigateur. */
+function OfficialMessages({ messages }: { messages: CityAlert[] }) {
+  const read = useReadOfficialMessagesQuery()
+  const [markRead] = useMarkOfficialMessageReadMutation()
+  const ids = read.data ?? []
+  return (
+    <>
+      {messages.map((alert) => <OfficialMessageNotice key={alert.id} alert={alert} read={ids.includes(alert.id)} onRead={() => void markRead(alert.id)} />)}
+    </>
+  )
+}
+
+/**
  * Bandeau d’alertes (D18, F29) sous l’en-tête de chaque page : alertes générales,
  * plus celles qui visent le citoyen connecté (quartier, alertes sanitaires).
  * Mis à jour en temps réel, avec un rafraîchissement de secours toutes les 60 s.
@@ -66,10 +126,13 @@ export function AlertBanner() {
   const mine = useMyNotificationsQuery(undefined, { skip: !connected, ...polling(ALERTS_POLLING_MS) })
   const alerts = mergeAlerts(general.data ?? [], connected ? mine.data?.alerts ?? [] : [])
   if (alerts.length === 0) return null
+  // F73 : les messages officiels du Haut Conseil passent avant les alertes.
+  const official = alerts.filter(isOfficialMessage)
   return (
     <aside aria-label="Alertes de la ville" className="border-b border-slate-200 bg-white">
       <div className="mx-auto max-w-7xl space-y-3 px-4 py-4 sm:px-6 lg:px-8" aria-live="polite">
-        {alerts.map((alert) => <AlertNotice key={alert.id} alert={alert} />)}
+        {official.length > 0 && <OfficialMessages messages={official} />}
+        {alerts.filter((alert) => !isOfficialMessage(alert)).map((alert) => <AlertNotice key={alert.id} alert={alert} />)}
       </div>
     </aside>
   )
