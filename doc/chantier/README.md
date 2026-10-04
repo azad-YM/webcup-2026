@@ -27,6 +27,8 @@ Notes du Pilotage local simplifiées le 2026-10-04 à la demande de l’utilisat
 
 Livré : [file des demandes](../../front/apps/admin/doc/demandes.md) ouverte sur tous les états, skeletons pendant le chargement des listes du module Demandes et [champs admin harmonisés](../../front/apps/admin/doc/navigation.md). Validation : 44 tests admin, lint et build réussis (avertissement de bundle supérieur à 500 kB). Les menus du profil du site et de l’admin affichent aussi un skeleton limité à la ligne des espaces en cours de vérification. Recette visuelle encore à réaliser.
 
+Synchronisation déployable : commande [Pilotage — synchroniser en production](../../api/src/Pilotage/doc/README.md#synchroniser-le-suivi-en-production), avec prévisualisation, `--apply` et URL du site/admin configurables. Le snapshot inclut les statuts validés et les notes courtes ; aucune exécution en production réalisée par l’agent.
+
 ## Lots
 
 Les lots regroupent les demandes qui partagent un même modèle ou un même écran. L’ordre de travail retenu est L1, L2, L3, L7, L4, L5, L6. L7 vient après L3 parce que les alertes s’appuient sur les publications et sur le quartier du citoyen ; L6 est court (environ 1 h) et peut être intercalé dès qu’un créneau se libère.
