@@ -1,5 +1,5 @@
 /** Participation (lot L14 : F51, F52) : contrat de Citizen, voir `api/src/Citizen/doc/participation.md`. */
-import type { RequestStatus } from "./service-request"
+import type { RequestCategory, RequestStatus } from "./service-request"
 
 export type PublicRequest = {
   id: string
@@ -11,6 +11,10 @@ export type PublicRequest = {
   supportCount: number
   supportedByMe: boolean
   mine: boolean
+  /** F79 : filtres par sujet et quartier. */
+  serviceId?: string | null
+  category?: RequestCategory
+  district?: string | null
 }
 
 export type SupportChange = { requestId: string; support: boolean }
