@@ -11,7 +11,7 @@ Suivi des travaux de la plateforme pendant les 24H By Webcup : ce qui est livré
 
 ## État du flux
 
-Relevé du 2026-10-03 : vagues 9 (H+10) à 13 (H+14) diffusées, 71 demandes visibles pour 43 770 XP.
+Relevé du 2026-10-04 : vagues 14 (H+15) à 18 (H+19) diffusées, 92 demandes visibles pour 64 790 XP. Les demandes marquées « IA » utilisent le port Shared `LanguageModel` (API Claude, repli local sans clé).
 
 ## Revue du suivi — 2026-10-03
 
@@ -55,6 +55,11 @@ Les lots regroupent les demandes qui partagent un même modèle ou un même écr
 | L19 | Participation : projets en cours, consultations et avis, boîte à idées — nouveau BC [Participation](../../api/src/Participation/doc/README.md) ([ADR 008](../technique/decisions/008-bc-participation.md)), pages [site](../../front/apps/site/doc/participation.md) et [admin](../../front/apps/admin/doc/participation.md) | F65, F66, F67, F68 | 2 960 | 🟡 API (migration `Version20261003122000`, permissions `admin.participation.read`/`write`), site et espace admin « Participation » livrés ; non testé, non vérifié dans un navigateur |
 | L20 | Protection des données : durcissement contre les failles, données administratives réservées aux agents habilités — [ADR 007](../technique/decisions/007-protection-des-donnees.md), [Citizen](../../api/src/Citizen/doc/compte-et-securite.md), [Shared](../../api/src/Shared/doc/README.md), [admin](../../front/apps/admin/doc/demandes.md) | F69, F70 | 2 660 | 🟡 masquage par l’API et affichage journalisé (`admin.sensitive-data.read`), inventaire des routes ; en-têtes, CSP, limitation de débit, chiffrement au repos, page « Sécurité de vos données » ; non testé, non vérifié dans un navigateur |
 | L21 | Nouveaux arrivants : accès sans e-mail et en plusieurs langues (avec L5), orientation « par où commencer » | F71, F72 | 1 520 | 🟡 comptes créés à l’accueil ([ADR 010](../technique/decisions/010-comptes-crees-a-l-accueil.md)), fiche imprimable en 3 langues, connexion par identifiant, `/bienvenue` — [site](../../front/apps/site/doc/urgences-carte-langues.md) ; non testé, non vérifié dans un navigateur |
+| L22 | Assistance et orientation (IA) : recherche tolérante, assistant d’orientation, explication simple à la demande, version en langage clair | D10, F89, F90, F91, F92 | 5 160 | ⬜ |
+| L23 | Demandes à grande échelle : priorités, demandes similaires (IA), urgence médicale, réponse des agents, filtres citoyens, accusé de réception | F75, F79, F80, F83, F84, F86 | 5 280 | ⬜ |
+| L24 | Montée en charge et sauvegarde : mode dégradé en surcharge, stabilité sous forte affluence, sauvegarde vérifiée | F77, F78, F87 | 4 060 | ⬜ |
+| L25 | Anti-abus et intégrité : robots, envois multiples, activité inhabituelle (IA) | F81, F82, F85 | 3 730 | ⬜ |
+| L26 | Message officiel, partenaires, avis sur un service, export de suivi | F73, F74, F76, F88 | 2 790 | ⬜ |
 
 ## Travail en parallèle
 

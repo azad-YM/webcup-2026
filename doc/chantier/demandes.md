@@ -161,6 +161,52 @@ Les 15 suivis déjà faits sont conservés. F40 reste en cours (cron et récepti
 | F71 | 3 | 1 140 | Accueillir des habitants sans adresse e-mail et ne parlant pas tous la même langue | L21 | IAM, Citizen, site, admin | 🟡 compte créé à l’accueil (`/demandes/accueil`, `POST /api/citizen/accounts/welcome`), identifiant `NT-XXXX-XXXX` et code provisoire sur fiche imprimable fr/en/ar, connexion sans e-mail, code personnel obligatoire — [ADR 010](../technique/decisions/010-comptes-crees-a-l-accueil.md), [site](../../front/apps/site/doc/urgences-carte-langues.md) ; non testé, non vérifié dans un navigateur |
 | F72 | 1 | 380 | Nouvel arrivant : savoir par où commencer sans refaire l’inscription | L21 | site, Citizen | 🟡 `/bienvenue` : 3 questions sans inscription, check-list et services priorisés ; connecté, invitation à compléter le profil ; liens depuis l’accueil, l’espace et la fiche d’accueil — [site](../../front/apps/site/doc/urgences-carte-langues.md) ; non testé, non vérifié dans un navigateur |
 
+## Vague 14 (H+15) — « Participation et nouveaux usages »
+
+| Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
+|---|---|---|---|---|---|---|
+| F73 | 2 | 780 | Publier un message officiel du Haut Conseil, visible par tous immédiatement | L26 | Communication, site, admin | ⬜ |
+| F74 | 1 | 390 | Voir facilement les horaires et l’adresse des associations partenaires | L26 | Administration, site | ⬜ |
+| F75 (IA) | 3 | 1 170 | Aider les agents à repérer les demandes similaires qui parlent du même problème | L23 | Citizen, admin | ⬜ |
+| F76 | 2 | 780 | Laisser un commentaire après avoir utilisé un service, avec trace de prise en compte | L26 | Participation, site, admin | ⬜ |
+
+## Vague 15 (H+16) — « Montée en charge et incidents »
+
+| Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
+|---|---|---|---|---|---|---|
+| F77 | 3 | 1 200 | Rester utilisable pendant une surcharge des serveurs, sans perdre l’essentiel | L24 | API, site, admin | ⬜ |
+| F78 | 4 | 1 600 | Rester stable quand beaucoup d’habitants se connectent en même temps | L24 | API, site | ⬜ |
+| F79 | 1 | 400 | Trier et filtrer par sujet les demandes et signalements consultés | L23 | Citizen, site | ⬜ |
+| F80 | 2 | 800 | Identifier et classer les dossiers prioritaires dans l’espace des agents | L23 | Citizen, admin | ⬜ |
+
+## Vague 16 (H+17) — « Montée en charge et incidents »
+
+| Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
+|---|---|---|---|---|---|---|
+| F81 | 3 | 1 230 | Protéger les formulaires contre les envois automatiques de robots, sans gêner l’usage normal | L25 | Shared, site | ⬜ |
+| F82 | 2 | 820 | Empêcher l’envoi multiple d’un même formulaire | L25 | Shared, Citizen, site | ⬜ |
+| F83 | 1 | 410 | Accusé de réception avec une référence identifiable, à conserver comme preuve | L23 | Citizen, site | ⬜ |
+| F84 | 2 | 820 | Les agents répondent directement à certaines demandes depuis leur interface | L23 | Citizen, admin, site | ⬜ |
+
+## Vague 17 (H+18) — « Montée en charge et incidents »
+
+| Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
+|---|---|---|---|---|---|---|
+| F85 (IA) | 4 | 1 680 | Détecter une activité inhabituelle et des informations incohérentes, protection perceptible | L25 | Audit, IAM, Shared, admin | ⬜ |
+| F86 | 4 | 1 680 | Signalement d’une urgence médicale : traitement distinct d’une demande ordinaire, repérable immédiatement | L23 | Citizen, site, admin | ⬜ |
+| F87 | 3 | 1 260 | Vérifier que les données importantes peuvent être sauvegardées et restaurées, avec un rapport clair | L24 | API, admin | ⬜ |
+| F88 | 2 | 840 | Sélectionner des données de suivi et les exporter dans un format simple à réutiliser | L26 | Pilotage, Citizen, admin | ⬜ |
+
+## Vague 18 (H+19) — « Assistance et résilience »
+
+| Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
+|---|---|---|---|---|---|---|
+| D10 (IA) | 3 | 1 290 | Trouver le bon service même avec une demande mal formulée | L22 | Assistance, site | ⬜ |
+| F89 | 2 | 860 | Version en langage clair des informations essentielles, sans perte de sens | L22 | Administration, site | ⬜ |
+| F90 (IA) | 1 | 430 | Demander une explication plus simple d’un passage, uniquement au besoin | L22 | Assistance, site | ⬜ |
+| F91 (IA) | 4 | 1 720 | Assistance automatisée qui oriente les habitants vers une réponse ou un service pertinent | L22 | Assistance, site | ⬜ |
+| F92 (IA) | 2 | 860 | Décrire son besoin simplement et être orienté vers le bon service ou la bonne démarche | L22 | Assistance, site | ⬜ |
+
 ## Vagues suivantes
 
 Ajouter une section par vague au moment de sa diffusion, en suivant la [procédure](README.md#quand-une-vague-arrive).
