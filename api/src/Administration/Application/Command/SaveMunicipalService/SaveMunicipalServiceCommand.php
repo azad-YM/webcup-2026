@@ -35,5 +35,7 @@ final readonly class SaveMunicipalServiceCommand
         public ?array $location = null,
         #[Assert\Choice(['hospital', 'emergency', 'fire', 'police', 'pharmacy'])] public ?string $emergency = null,
         public ?array $translations = null,
+        /** F89 : version « En clair » relue par l'agent ; l'enregistrer vaut validation. */
+        #[Assert\Length(max: 600)] public string $plainLanguage = '',
     ) {}
 }

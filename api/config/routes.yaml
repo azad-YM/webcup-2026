@@ -48,3 +48,9 @@ audit:
         path: ../src/Audit/Application/Controller/
         namespace: Audit\Application\Controller
     type: attribute
+
+assistance:
+    resource:
+        path: ../src/Assistance/Application/Controller/
+        namespace: Assistance\Application\Controller
+    type: attribute

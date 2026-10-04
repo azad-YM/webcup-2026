@@ -12,6 +12,7 @@ use Communication\Application\Query\ListActiveAlerts\ListActiveAlertsQuery;
 use Communication\Application\Query\ListManagedAlerts\ListManagedAlertsQuery;
 use Communication\Application\Query\ListManagedPublications\ListManagedPublicationsQuery;
 use Communication\Application\Query\ListPublications\ListPublicationsQuery;
+use Communication\Application\Query\SuggestPublicationPlainLanguage\SuggestPublicationPlainLanguageQuery;
 use Shared\Application\Lib\AppController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -55,6 +56,13 @@ final class CommunicationController extends AppController
     public function savePublication(#[MapRequestPayload] SavePublicationCommand $cmd): JsonResponse
     {
         return $this->dispatch($cmd);
+    }
+
+    /** F89 : brouillon de version « En clair » d'une publication (modèle de langage ou repli local), rien n'est enregistré. */
+    #[Route('/api/communication/manage/publications/plain-language', name: 'communication_suggest_plain_language', methods: ['POST'], format: 'json')]
+    public function suggestPlainLanguage(#[MapRequestPayload] SuggestPublicationPlainLanguageQuery $query): JsonResponse
+    {
+        return $this->dispatchQuery($query);
     }
 
     #[Route('/api/communication/manage/alerts', methods: ['GET'], format: 'json')]

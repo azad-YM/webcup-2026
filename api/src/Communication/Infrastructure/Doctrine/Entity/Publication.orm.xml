@@ -12,5 +12,6 @@
         <field name="state" type="string" length="20"/>
         <field name="publishedAt" column="published_at" type="datetime_immutable" nullable="true"/>
         <field name="updatedAt" column="updated_at" type="datetime_immutable"/>
+        <field name="plainLanguage" column="plain_language" type="string" length="600"><options><option name="default"></option></options></field>
     </entity>
 </doctrine-mapping>

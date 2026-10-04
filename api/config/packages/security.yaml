@@ -28,6 +28,8 @@ security:
         # Participation (L19) : projets, consultations (résultats après clôture) et idées publiques en lecture publique.
         - { path: ^/api/participation/(projects|consultations)(/[A-Za-z0-9-]+)?$, roles: PUBLIC_ACCESS, methods: [GET] }
         - { path: ^/api/participation/ideas$, roles: PUBLIC_ACCESS, methods: [GET] }
+        # Assistance (L22) : recherche tolérante, orientation et explications sans compte (POST limités par IP).
+        - { path: ^/api/assistance/(services/search|orientation|explanations)$, roles: PUBLIC_ACCESS, methods: [GET, POST] }
         - { path: ^/api/iam/portal-sessions$, roles: PUBLIC_ACCESS, methods: [POST] }
         - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
         # L15 : lien de connexion (D02) et seconde étape par code e-mail (F53).
