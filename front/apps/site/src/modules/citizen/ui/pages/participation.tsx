@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useRef, useState, type FormEvent } from "react"
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react"
 import Link from "next/link"
 import { CheckCircle2, HandHeart, MapPin, MessageCircleWarning, ShieldCheck } from "@boilerplate/shared-ui/components/icon"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
@@ -188,8 +188,11 @@ function MyConcerns() {
   )
 }
 
-/** « Participer » (lot L14) : soutenir une demande (F52), faire remonter une inquiétude avec suivi (F51). */
-export function ParticipationPage() {
+/**
+ * « Participer » (lot L14) : soutenir une demande (F52), faire remonter une inquiétude avec suivi (F51).
+ * `cityParticipation` : bloc composé par la route (module participation, lot L19 : consultations, idées, contributions).
+ */
+export function ParticipationPage({ cityParticipation }: { cityParticipation?: ReactNode } = {}) {
   const access = useCitizenAccess()
   return (
     <>
@@ -203,6 +206,7 @@ export function ParticipationPage() {
           <CitizenAccessState access={access} returnTo="/espace/participation" />
         ) : (
           <div className="space-y-12">
+            {cityParticipation}
             <PublicRequests />
             <section aria-labelledby="titre-inquietude" className="space-y-6">
               <div>

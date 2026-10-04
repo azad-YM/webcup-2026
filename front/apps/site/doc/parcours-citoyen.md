@@ -123,4 +123,5 @@ Code : modules `auth` (`ui/pages/registration.tsx`, `core/application/usecases/r
 - [Citizen — notifications](../../../../api/src/Citizen/doc/notifications.md)
 - [Citizen — rendez-vous](../../../../api/src/Citizen/doc/rendez-vous.md)
 - [Citizen — participation](../../../../api/src/Citizen/doc/participation.md)
+- [Participation (BC)](../../../../api/src/Participation/doc/README.md)
 <!-- backlinks:end -->

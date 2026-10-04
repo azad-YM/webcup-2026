@@ -26,6 +26,7 @@ Livré : création des rôles, liste et ajout des membres ([membres](membres.md)
 | Sécurité | `/admin/security` | [IAM](../../../../api/src/IAM/doc/comptes-et-sessions.md) | Journal des verrouillages de connexion ([détail](securite.md)) |
 | Pilotage | `/pilotage`, `/pilotage/tableau-de-bord` | [Pilotage](../../../../api/src/Pilotage/doc/README.md) | Flux Nova Terra et suivi de l’équipe, tableau de bord de l’activité ([détail](pilotage.md)) |
 | Contenus (`content`) | `/contenus`, `/contenus/alertes`, `/contenus/services` (entrée « Contenus de la ville » de la barre latérale d’Administration) | [Communication](../../../../api/src/Communication/doc/README.md), [Administration](../../../../api/src/Administration/doc/README.md) | Publications, alertes, services et transports livrés ([détail](contenus.md)) |
+| Participation (`participation`) | `/participation`, `/participation/consultations`, `/participation/idees` (espace « Participation ») | [Participation](../../../../api/src/Participation/doc/README.md) | Projets, consultations et avis, boîte à idées ([détail](participation.md)) — 🟡 non vérifié dans un navigateur |
 
 ## Navigation livrée
 
@@ -42,6 +43,7 @@ L’admin regroupe toutes les opérations de la mairie. Un module par domaine, c
 | `content` | Administration (services), Communication (publications, alertes — [ADR 005](../../../../doc/technique/decisions/005-bc-communication.md)) | Services (état, horaires), publications, alertes | L3, L7, L9 |
 | `pilotage` | Pilotage | Flux de l’API Webcup, suivi des demandes, tableau de bord de l’activité | L6, L13 |
 | `audit` | Audit | Journal des actions | L12 |
+| `participation` | Participation ([ADR 008](../../../../doc/technique/decisions/008-bc-participation.md)) | Projets, consultations et avis, idées | L19 |
 
 ## Accessibilité
 
@@ -71,6 +73,8 @@ La déconnexion volontaire est locale ; seuls la suspension et la suppression d�
 - [Citizen](../../../../api/src/Citizen/doc/README.md)
 - [Pilotage](../../../../api/src/Pilotage/doc/README.md)
 - [Communication](../../../../api/src/Communication/doc/README.md)
+- [Participation](../../../../api/src/Participation/doc/README.md)
+- [Participation (pages)](participation.md)
 - [Navigation et habillage](navigation.md)
 - [Contenus](contenus.md)
 - [Accessibilité](accessibilite.md)

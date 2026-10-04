@@ -147,10 +147,10 @@ Les 15 suivis déjà faits sont conservés. F40 reste en cours (cron et récepti
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
-| F65 | 3 | 1 110 | Soumettre certaines décisions à l’avis des habitants, avec trace de la contribution | L19 | Participation, site, admin | ⬜ |
-| F66 | 2 | 740 | Donner son avis sur un projet sans vote officiel, et savoir qu’il est enregistré | L19 | Participation, site | ⬜ |
-| F67 | 2 | 740 | Consulter les projets en cours dans la ville | L19 | Participation, site, admin | ⬜ |
-| F68 | 1 | 370 | Proposer des idées pour améliorer la colonie | L19 | Participation, site, admin | ⬜ |
+| F65 | 3 | 1 110 | Soumettre certaines décisions à l’avis des habitants, avec trace de la contribution | L19 | Participation, site, admin | 🟡 consultations (choix + commentaire), accusé de réception, « Mes contributions », résultats à la clôture, « Ce que la ville en a retenu » — [BC](../../api/src/Participation/doc/README.md) ; non testé, non vérifié dans un navigateur |
+| F66 | 2 | 740 | Donner son avis sur un projet sans vote officiel, et savoir qu’il est enregistré | L19 | Participation, site | 🟡 avis non officiel (appréciation et/ou texte) avec accusé de réception — [site](../../front/apps/site/doc/participation.md) ; non testé, non vérifié dans un navigateur |
+| F67 | 2 | 740 | Consulter les projets en cours dans la ville | L19 | Participation, site, admin | 🟡 `/projets` filtrable, détail avec étapes, gestion dans l’admin — [admin](../../front/apps/admin/doc/participation.md) ; non testé, non vérifié dans un navigateur |
+| F68 | 1 | 370 | Proposer des idées pour améliorer la colonie | L19 | Participation, site, admin | 🟡 boîte à idées, statuts suivis, non-publication motivée, notification de l’auteur ; non testé, non vérifié dans un navigateur |
 
 ## Vague 13 (H+14) — « Participation et nouveaux usages »
 

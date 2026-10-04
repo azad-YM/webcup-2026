@@ -8,6 +8,8 @@ Les habitants comprennent l’usage de leurs données et font remonter leurs inq
 
 > **État : livré côté API, site et admin, non testé** (décision d’économie : aucun test écrit ni exécuté) et non vérifié dans un navigateur.
 
+> Les projets, consultations, avis et la boîte à idées (lot L19 : F65 à F68) appartiennent au BC [Participation](../../Participation/doc/README.md) ; la page `/espace/participation` les réunit par composition.
+
 ## Vos données (F51)
 
 Page publique statique `/vos-donnees` du [site](../../../../front/apps/site/doc/parcours-citoyen.md#participer-espaceparticipation-f51-f52) : tableau « donnée / pourquoi / combien de temps / qui y accède » et « vos droits ». Inventaire de référence (à tenir à jour avec les BC propriétaires) :
@@ -65,4 +67,5 @@ La vue `ServiceRequest` porte désormais `isPublic` et `supportCount` (« Mes de
 - [Notifications](notifications.md)
 - [Site — parcours citoyen](../../../../front/apps/site/doc/parcours-citoyen.md)
 - [Admin — demandes citoyennes](../../../../front/apps/admin/doc/demandes.md)
+- [Participation (BC)](../../Participation/doc/README.md)
 <!-- backlinks:end -->

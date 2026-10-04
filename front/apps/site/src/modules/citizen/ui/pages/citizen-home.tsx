@@ -2,7 +2,7 @@
 import Link from "next/link"
 import type { Route } from "next"
 import type { ReactNode } from "react"
-import { ArrowRight, CalendarClock, ClipboardList, HandHeart, Megaphone, MessageSquare, Newspaper, Search } from "@boilerplate/shared-ui/components/icon"
+import { ArrowRight, CalendarClock, ClipboardList, HandHeart, ListChecks, Megaphone, MessageSquare, Newspaper, Search } from "@boilerplate/shared-ui/components/icon"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
 import { greeting } from "../../core/domain/citizen-profile"
 import { CitizenAccessState, useCitizenAccess } from "../components/citizen-access"
@@ -18,6 +18,7 @@ const SHORTCUTS: Shortcut[] = [
   { title: "Mes demandes", text: "Retrouvez vos demandes, leur état et chaque étape de leur traitement.", href: "/espace/demandes", icon: ClipboardList, notifications: "request.status_changed" },
   { title: "Mes rendez-vous", text: "Prenez rendez-vous avec un agent, déplacez-le ou annulez-le ; un rappel vous est envoyé.", href: "/espace/rendez-vous" as Route, icon: CalendarClock, notifications: "appointment.reminder" },
   { title: "Participer", text: "Soutenez les signalements de vos voisins, faites remonter une inquiétude et suivez la réponse.", href: "/espace/participation" as Route, icon: HandHeart, notifications: "concern.updated" },
+  { title: "Mes contributions", text: "Vos réponses aux consultations de la ville et le suivi de vos idées.", href: "/espace/contributions" as Route, icon: ListChecks, notifications: "idea.updated" },
   { title: "Trouver un service", text: "État civil, santé, transports, logement… tout ce que la ville peut faire pour vous.", href: "/services", icon: Search },
   { title: "Actualités de la ville", text: "Les dernières informations publiées par la mairie.", href: "/actualites", icon: Newspaper },
 ]

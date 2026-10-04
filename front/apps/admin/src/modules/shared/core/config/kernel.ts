@@ -5,6 +5,8 @@ import { SecurityJournalHttpGateway } from "@/modules/security/core/infrastructu
 import { AuthSecuritySessionProvider } from "@/modules/auth/core/infrastructure/adapter/security/auth-security-session.provider"
 import { ContentHttpGateway } from "@/modules/content/core/infrastructure/for-production/gateway/http/content.http.gateway"
 import { AuthContentSessionProvider } from "@/modules/auth/core/infrastructure/adapter/content/auth-content-session.provider"
+import { ParticipationHttpGateway } from "@/modules/participation/core/infrastructure/for-production/gateway/http/participation.http.gateway"
+import { AuthParticipationSessionProvider } from "@/modules/auth/core/infrastructure/adapter/participation/auth-participation-session.provider"
 import { AuditJournalHttpGateway } from "@/modules/audit/core/infrastructure/for-production/gateway/http/audit-journal.http.gateway"
 import { AuthAuditSessionProvider } from "@/modules/auth/core/infrastructure/adapter/audit/auth-audit-session.provider"
 import { ActivityDashboardHttpGateway } from "@/modules/pilotage/core/infrastructure/for-production/gateway/http/activity-dashboard.http.gateway"
@@ -66,6 +68,7 @@ export class App {
       // One stream per tab; the list gathers the events listened to by the admin screens.
       realtime: new SseRealtimeSubscriber(apiBaseUrl, () => authSessionGateway.getToken(), [...REQUEST_EVENTS, ...DESK_EVENTS]),
       contentGateway: new ContentHttpGateway(apiBaseUrl, contentSession),
+      participationGateway: new ParticipationHttpGateway(apiBaseUrl, new AuthParticipationSessionProvider(authSessionGateway, onSessionInvalidated)),
       auditJournalGateway: new AuditJournalHttpGateway(apiBaseUrl, new AuthAuditSessionProvider(authSessionGateway, onSessionInvalidated)),
     }
   }

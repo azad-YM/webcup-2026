@@ -15,6 +15,7 @@ Règles :
 - Une demande ne référence un service que par son identifiant.
 - Compte et sécurité (L8) : suppression par anonymisation, suspension et liste des comptes pour les agents, règle du compte agent protégé — voir [compte et sécurité](doc/compte-et-securite.md). Les données citoyennes ajoutées plus tard s’effacent via un `AccountDataEraser` (tag `citizen.account_data_eraser`).
 - Citizen fournit à Communication l’audience du citoyen connecté (`Infrastructure/Adapter/Communication/CitizenAudienceProvider`) et accorde les topics temps réel des alertes ciblées (`Infrastructure/Adapter/Shared/CitizenAlertRealtimeAudience`) ; ne jamais exposer de donnée de santé, seulement le consentement.
+- Citizen fournit à [Participation](../Participation/doc/README.md) le citoyen connecté (`Infrastructure/Adapter/Participation/CitizenParticipantProvider`) et enregistre ses notifications `idea.updated` (`CitizenParticipationNotifier`) ; Participation branche son effaceur sur `AccountDataEraser`.
 - Un citoyen ne voit que ses propres données ; l’identité vient toujours du compte connecté, jamais du payload.
 - Le contrat HTTP de la doc est consommé par le site : toute évolution est faite dans la doc d’abord.
 - Une erreur contractuelle qui doit produire `409` étend `Shared\Domain\Exception\ConflitException` (une `\DomainException` est traduite en `422` par `AppController`).

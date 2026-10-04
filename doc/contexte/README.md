@@ -14,9 +14,9 @@ Le projet est réalisé pendant les **24H By Webcup 2026**. Les besoins de la vi
 
 | Profil | Application | Ce qu’il fait | Propriétaire backend |
 |---|---|---|---|
-| Visiteur | site | Découvre la ville, ses services et ses actualités, voit les alertes ; s’inscrit | Administration (services), Communication (publications, alertes), Citizen (inscription) |
-| Citoyen | site | Se connecte, complète son profil, reçoit les alertes qui le concernent, envoie des demandes, suit leur traitement | Citizen, Communication |
-| Agent municipal | admin | Traite les demandes, publie des informations et des alertes, tient le catalogue des services, suit le flux du concours | Citizen, Communication, Administration, Pilotage |
+| Visiteur | site | Découvre la ville, ses services et ses actualités, voit les alertes, consulte les projets, les résultats des consultations et les idées ; s’inscrit | Administration (services), Communication (publications, alertes), Participation (projets, consultations, idées), Citizen (inscription) |
+| Citoyen | site | Se connecte, complète son profil, reçoit les alertes qui le concernent, envoie des demandes, suit leur traitement, répond aux consultations, propose des idées | Citizen, Communication, Participation |
+| Agent municipal | admin | Traite les demandes, publie des informations et des alertes, publie les projets et les consultations, suit les idées, tient le catalogue des services, suit le flux du concours | Citizen, Communication, Participation, Administration, Pilotage |
 | Administrateur | admin | Gère les membres et leurs rôles | Administration |
 
 Un même compte ([IAM](../../api/src/IAM/doc/README.md)) peut porter plusieurs profils : un agent peut aussi être citoyen.
@@ -38,14 +38,20 @@ Communication ───── publications, alertes, audiences (livré, ADR 005)
    │ port (droit de publier, quartiers) → Administration
    └ port (quartier, consentement du citoyen) → Citizen
 
+Participation ───── projets, consultations et avis, contributions, idées (livré, ADR 008)
+   │ port (droits des agents, quartiers) → Administration
+   │ port (citoyen connecté, notifications) → Citizen
+   └ adaptateur d’effacement à la suppression du compte ← Citizen
+
 Pilotage ────────── flux de l’API du concours pour les agents
    │ port (droit admin.pilotage.read) → Administration
    └ port (lecture de l’API Webcup, cache 20 s) → API du concours
 ```
 
 Communication est décidé par l’[ADR 005](../technique/decisions/005-bc-communication.md) ; ses mises à jour sans rechargement passent par le port temps réel de l’[ADR 004](../technique/decisions/004-temps-reel.md).
+Participation est décidé par l’[ADR 008](../technique/decisions/008-bc-participation.md).
 
-- [IAM](../../api/src/IAM/doc/README.md) · [Administration](../../api/src/Administration/doc/README.md) · [Citizen](../../api/src/Citizen/doc/README.md) · [Communication](../../api/src/Communication/doc/README.md) · [Pilotage](../../api/src/Pilotage/doc/README.md)
+- [IAM](../../api/src/IAM/doc/README.md) · [Administration](../../api/src/Administration/doc/README.md) · [Citizen](../../api/src/Citizen/doc/README.md) · [Communication](../../api/src/Communication/doc/README.md) · [Participation](../../api/src/Participation/doc/README.md) · [Pilotage](../../api/src/Pilotage/doc/README.md)
 - Applications : [site](../../front/apps/site/doc/README.md) (portail citoyen) · [admin](../../front/apps/admin/doc/README.md) (espace des agents)
 - Décision de découpage : [ADR 003](../technique/decisions/003-identite-et-habilitations.md)
 
@@ -75,4 +81,6 @@ C’est le **flux des besoins de la ville**, au fil des 24 heures. Il ne s’agi
 - [Chantier](../chantier/README.md)
 - [Registre des demandes](../chantier/demandes.md)
 - [Communication](../../api/src/Communication/doc/README.md)
+- [Participation](../../api/src/Participation/doc/README.md)
+- [ADR 008](../technique/decisions/008-bc-participation.md)
 <!-- backlinks:end -->

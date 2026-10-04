@@ -23,6 +23,7 @@ Pour comprendre une fonctionnalité, partir de l’application qui la présente 
 - [IAM](../api/src/IAM/doc/README.md) : comptes, connexion, passage site → admin, espaces
 - [Administration](../api/src/Administration/doc/README.md) : membres, rôles, permissions ; services municipaux (état, horaires des transports) et liste des quartiers
 - [Communication](../api/src/Communication/doc/README.md) : publications et alertes, diffusées en temps réel ([ADR 005](technique/decisions/005-bc-communication.md))
+- [Participation](../api/src/Participation/doc/README.md) : projets de la ville, consultations et avis des habitants, boîte à idées ([ADR 008](technique/decisions/008-bc-participation.md))
 - [Citizen](../api/src/Citizen/doc/README.md) : citoyens et demandes (inscription, profil et préférences d’alerte livrés ; demandes à venir)
 - [Pilotage](../api/src/Pilotage/doc/README.md) : flux de l’API du concours Webcup pour les agents, suivi de l’équipe, tableau de bord de l’activité (F50)
 - [Audit](../api/src/Audit/doc/README.md) : journal des actions de l’administration ([ADR 006](technique/decisions/006-journal-des-actions.md))

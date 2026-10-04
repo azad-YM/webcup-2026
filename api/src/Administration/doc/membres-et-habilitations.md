@@ -20,7 +20,7 @@ Créés ou resynchronisés par la [CLI d’initialisation](initialisation-admin.
 | Identifiant | Nom | Permissions |
 |---|---|---|
 | `principal-administrator` | Administrateur principal | tout le catalogue |
-| `municipal-agent` | Agent municipal | `admin.pilotage.read` (flux, tableau de bord F50), `admin.request.read`, `admin.request.write`, `admin.service.write`, `admin.communication.write`, `admin.citizen.read`, `admin.citizen.write`, `admin.audit.read` (journal des actions sans les connexions bloquées). Le journal de sécurité (`admin.security.read`) et la modification du suivi Webcup (`admin.pilotage.write`) restent réservés à l’administrateur principal. |
+| `municipal-agent` | Agent municipal | `admin.pilotage.read` (flux, tableau de bord F50), `admin.request.read`, `admin.request.write`, `admin.service.write`, `admin.communication.write`, `admin.participation.read`, `admin.participation.write` (projets, consultations, idées, L19), `admin.citizen.read`, `admin.citizen.write`, `admin.audit.read` (journal des actions sans les connexions bloquées). Le journal de sécurité (`admin.security.read`) et la modification du suivi Webcup (`admin.pilotage.write`) restent réservés à l’administrateur principal. |
 
 Un administrateur attribue le rôle « Agent municipal » depuis la page Membres de l’admin.
 

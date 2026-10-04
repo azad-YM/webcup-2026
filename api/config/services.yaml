@@ -45,6 +45,10 @@ services:
         exclude:
             - '../src/Pilotage/Tests/'
 
+    Participation\:
+        resource: '../src/Participation/'
+        exclude: ['../src/Participation/Tests/']
+
     Audit\:
         resource: '../src/Audit/'
         exclude:
@@ -246,3 +250,16 @@ services:
     # Citizen consomme Administration (catalogue des services pour les rendez-vous, L10).
     Citizen\Application\Ports\Provider\MunicipalServiceDirectory:
         alias: Administration\Infrastructure\Adapter\Citizen\AdminCitizenServiceDirectory
+
+    # Participation (L19) consomme Administration (droits des agents : admin.participation.read / write ;
+    # liste fermée des quartiers) et Citizen (citoyen connecté ; notifications des idées).
+    # Citizen consomme Participation : effacement des contributions et idées à la suppression du compte
+    # (Participation\Infrastructure\Adapter\Citizen\ParticipationAccountDataEraser, tag citizen.account_data_eraser autoconfiguré).
+    Participation\Application\Ports\Provider\ParticipationAccessPolicy:
+        alias: Administration\Infrastructure\Adapter\Participation\AdminParticipationAccessPolicy
+    Participation\Application\Ports\Provider\DistrictDirectory:
+        alias: Administration\Infrastructure\Adapter\Participation\AdminParticipationDistrictDirectory
+    Participation\Application\Ports\Provider\ParticipantProvider:
+        alias: Citizen\Infrastructure\Adapter\Participation\CitizenParticipantProvider
+    Participation\Application\Ports\Provider\CitizenNotifier:
+        alias: Citizen\Infrastructure\Adapter\Participation\CitizenParticipationNotifier

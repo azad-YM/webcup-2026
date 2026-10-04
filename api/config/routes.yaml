@@ -37,6 +37,12 @@ communication:
         namespace: Communication\Application\Controller
     type: attribute
 
+participation:
+    resource:
+        path: ../src/Participation/Application/Controller/
+        namespace: Participation\Application\Controller
+    type: attribute
+
 audit:
     resource:
         path: ../src/Audit/Application/Controller/
