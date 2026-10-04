@@ -46,7 +46,13 @@ final readonly class SaveAlertHandler
             'startsAt' => self::date($cmd->startsAt, 'Début de validité'),
             'endsAt' => self::date($cmd->endsAt, 'Fin de validité'),
             'recommendations' => $cmd->recommendations,
+            'category' => $cmd->category,
+            'signatory' => $cmd->signatory,
         ];
+        $official = $cmd->category === 'official';
+        if ($official && $cmd->state === 'published' && !$cmd->confirmOfficial) {
+            throw new DomainException('Confirmez la publication du message officiel : il s’affichera immédiatement en haut de toutes les pages du site.');
+        }
         $now = $this->clock->now();
         if ($cmd->id === null || $cmd->id === '') {
             $previousState = null;
@@ -62,17 +68,18 @@ final readonly class SaveAlertHandler
         $this->alerts->save($alert);
         $view = $alert->managementView();
         $labels = ['draft' => 'brouillon', 'published' => 'publiée', 'withdrawn' => 'retirée'];
+        $resource = $official ? 'official-message' : 'alert';
         $this->audit?->record(
             match (true) {
-                $cmd->state === 'published' && $previousState !== 'published' => 'communication.alert.published',
-                $cmd->state === 'withdrawn' && $previousState !== 'withdrawn' => 'communication.alert.withdrawn',
-                $previousState === null => 'communication.alert.created',
-                default => 'communication.alert.updated',
+                $cmd->state === 'published' && $previousState !== 'published' => "communication.$resource.published",
+                $cmd->state === 'withdrawn' && $previousState !== 'withdrawn' => "communication.$resource.withdrawn",
+                $previousState === null => "communication.$resource.created",
+                default => "communication.$resource.updated",
             },
-            'alert',
+            $resource,
             $alert->id,
-            sprintf('Alerte « %s » (%s) : %s.', $cmd->title, $cmd->severity, $labels[$cmd->state] ?? $cmd->state),
-            ['previousState' => $previousState, 'state' => $cmd->state, 'severity' => $cmd->severity, 'audience' => $cmd->audience, 'district' => $cmd->district],
+            sprintf($official ? 'Message officiel « %s » (signé %s) : %s.' : 'Alerte « %s » (%s) : %s.', $cmd->title, $official ? (string) $cmd->signatory : $cmd->severity, $labels[$cmd->state] ?? $cmd->state),
+            ['previousState' => $previousState, 'state' => $cmd->state, 'severity' => $cmd->severity, 'audience' => $cmd->audience, 'district' => $cmd->district, 'category' => $cmd->category],
         );
 
         return $view;

@@ -35,12 +35,14 @@ import { PersonalDataHttpGateway } from "@/modules/citizen/core/infrastructure/f
 import { AuthIdentityCodeAdapter } from "@/modules/auth/core/infrastructure/adapter/citizen/auth-identity-code.adapter"
 import { SseRealtimeSubscriber } from "../core/infrastructure/realtime/sse-realtime.subscriber"
 import { HttpPublicContentGateway } from "@/modules/public/core/infrastructure/for-production/gateway/http/public-content.http.gateway"
+import { OfficialMessageReadLocalStorageGateway } from "@/modules/public/core/infrastructure/for-production/gateway/local/official-message-read.local-storage.gateway"
 import { AlertsHttpGateway } from "@/modules/public/core/infrastructure/for-production/gateway/http/alerts.http.gateway"
 import { AssistanceHttpGateway } from "@/modules/public/core/infrastructure/for-production/gateway/http/assistance.http.gateway"
 import { OrientationHttpGateway } from "@/modules/assistance/core/infrastructure/for-production/gateway/http/orientation.http.gateway"
 import { CITY_FEED_EVENTS } from "@/modules/public/core/application/ports/gateway/city-feed.gateway"
 import { RealtimeCityFeedAdapter } from "../core/infrastructure/adapter/public/realtime-city-feed.adapter"
 import { AuthPublicSessionAdapter } from "@/modules/auth/core/infrastructure/adapter/public/auth-public-session.adapter"
+import { ParticipationServiceRatingsAdapter } from "@/modules/participation/core/infrastructure/adapter/public/participation-service-ratings.adapter"
 import { CityParticipationHttpGateway } from "@/modules/participation/core/infrastructure/for-production/gateway/http/city-participation.http.gateway"
 import { AuthParticipationSessionAdapter } from "@/modules/auth/core/infrastructure/adapter/participation/auth-participation-session.adapter"
 
@@ -68,6 +70,7 @@ function createDependencies(): Dependencies {
     ...CITY_FEED_EVENTS
   ], isLightModeActive)
   const authGateway = new AuthHttpGateway(siteEnv.apiBaseUrl)
+  const cityParticipation = new CityParticipationHttpGateway(siteEnv.apiBaseUrl)
   const assistance = new AssistanceHttpGateway(siteEnv.apiBaseUrl)
   return {
     realtime,
@@ -89,11 +92,13 @@ function createDependencies(): Dependencies {
     serviceCatalogGateway: publicContent,
     publicationGateway: publicContent,
     alertsGateway: new AlertsHttpGateway(siteEnv.apiBaseUrl, publicSession),
+    officialMessageReadGateway: new OfficialMessageReadLocalStorageGateway(),
     cityFeedGateway: new RealtimeCityFeedAdapter(realtime),
     serviceFinderGateway: assistance,
     explanationGateway: assistance,
     orientationGateway: new OrientationHttpGateway(siteEnv.apiBaseUrl),
-    cityParticipationGateway: new CityParticipationHttpGateway(siteEnv.apiBaseUrl),
+    cityParticipationGateway: cityParticipation,
+    serviceRatingsProvider: new ParticipationServiceRatingsAdapter(cityParticipation),
     participationSessionProvider: new AuthParticipationSessionAdapter(authSessionGateway)
   }
 }

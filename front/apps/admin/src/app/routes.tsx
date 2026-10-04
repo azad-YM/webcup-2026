@@ -18,6 +18,7 @@ const AdminDashboardPage = lazy(() => import("@/modules/admin/ui/pages/dashboard
 const RolesPage = lazy(() => import("@/modules/admin/ui/pages/roles").then((module) => ({ default: module.RolesPage })))
 const WebcupFeedPage = lazy(() => import("@/modules/pilotage/ui/pages/webcup-feed").then((module) => ({ default: module.WebcupFeedPage })))
 const ActivityDashboardPage = lazy(() => import("@/modules/pilotage/ui/pages/activity-dashboard").then((module) => ({ default: module.ActivityDashboardPage })))
+const DataExportsPage = lazy(() => import("@/modules/pilotage/ui/pages/data-exports").then((module) => ({ default: module.DataExportsPage })))
 const RequestQueuePage = lazy(() => import("@/modules/requests/ui/pages/request-queue").then((module) => ({ default: module.RequestQueuePage })))
 const AppointmentsPage = lazy(() => import("@/modules/requests/ui/pages/appointments").then((module) => ({ default: module.AppointmentsPage })))
 const ConcernsPage = lazy(() => import("@/modules/requests/ui/pages/concerns").then((module) => ({ default: module.ConcernsPage })))
@@ -26,6 +27,7 @@ const AlertsPage = lazy(() => import("@/modules/content/ui/pages/alerts").then((
 const ServicesPage = lazy(() => import("@/modules/content/ui/pages/services").then((module) => ({ default: module.ServicesPage })))
 const ParticipationProjectsPage = lazy(() => import("@/modules/participation/ui/pages/projects").then((module) => ({ default: module.ParticipationProjectsPage })))
 const ParticipationConsultationsPage = lazy(() => import("@/modules/participation/ui/pages/consultations").then((module) => ({ default: module.ParticipationConsultationsPage })))
+const ServiceReviewsPage = lazy(() => import("@/modules/participation/ui/pages/service-reviews").then((module) => ({ default: module.ServiceReviewsPage })))
 const ParticipationIdeasPage = lazy(() => import("@/modules/participation/ui/pages/ideas").then((module) => ({ default: module.ParticipationIdeasPage })))
 
 /**
@@ -102,6 +104,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: page(WebcupFeedPage) },
           { path: "tableau-de-bord", element: page(ActivityDashboardPage) },
+          { path: "exports", element: page(DataExportsPage) },
         ],
       },
       {
@@ -121,6 +124,7 @@ export const router = createBrowserRouter([
           { index: true, element: page(ParticipationProjectsPage) },
           { path: "consultations", element: page(ParticipationConsultationsPage) },
           { path: "idees", element: page(ParticipationIdeasPage) },
+          { path: "avis", element: page(ServiceReviewsPage) },
         ],
       },
     ],

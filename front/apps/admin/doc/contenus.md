@@ -23,6 +23,14 @@ Les erreurs de règle métier (`400`) affichent le message français de l’API 
 
 Dans « Services et transports », chaque service porte un bouton « Désactiver le service » (permission `admin.service.disable`). Un petit formulaire demande le **motif, obligatoire** (5 à 500 caractères, affiché aux habitants) et rappelle l’effet immédiat : plus aucune nouvelle demande ni réservation, l’existant est conservé. Un service désactivé affiche le badge « Désactivé », son motif, sa date, et un bouton « Réactiver le service ». Backend : `POST /api/administration/services/availability` ([Administration](../../../../api/src/Administration/doc/README.md)) ; journal des actions et mise à jour du site en temps réel.
 
+### Message officiel du Haut Conseil (L26/F73 — non testé, non vérifié dans un navigateur)
+
+Page « Alertes », bouton « Message officiel » : même formulaire qu’une alerte, sans choix d’audience (tous les habitants), avec signataire et « Ce qu’il faut savoir ou faire ». La publication demande de cocher une confirmation (`confirmOfficial`), car le message s’affiche aussitôt en tête de toutes les pages du site. Badge « Message officiel » dans la liste. Contrat : [Communication](../../../../api/src/Communication/doc/README.md).
+
+### Associations partenaires (L26/F74 — non testé, non vérifié dans un navigateur)
+
+Page « Services et transports » : catégorie « Association partenaire » ; la section `PartnerContactFields` ajoute personne à contacter, e-mail, site et horaires par jour (« 09:00-12:00, 14:00-18:00 »), utilisés par « Ouvert maintenant » sur le site.
+
 ## Code
 
 `src/modules/content` : domaine (`core/domain/content.ts`), port `ContentGateway`, adaptateur `ContentHttpGateway` (`core/infrastructure/for-production/gateway/http`), session fournie par `auth/core/infrastructure/adapter/content/AuthContentSessionProvider`, pages `ui/pages/{publications,alerts,services}.tsx` dans l’enveloppe commune `app/backoffice-layout.tsx`.

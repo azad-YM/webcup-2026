@@ -10,7 +10,7 @@ import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
 import { SelectField, TextField } from "@/modules/shared/ui/components/form-field"
 import { EmptyState, ErrorState, LoadingState, SkeletonCards } from "@/modules/shared/ui/components/states"
-import { CONTENT_POLLING_MS, useLazyRefineServiceSearchQuery, useListServicesQuery, useSearchServicesQuery } from "../../core/application/rtk-api/public"
+import { CONTENT_POLLING_MS, useGetServiceRatingQuery, useLazyRefineServiceSearchQuery, useListServicesQuery, useSearchServicesQuery } from "../../core/application/rtk-api/public"
 import { rankServices } from "../../core/domain/service-search"
 import { PLAIN_MESSAGES } from "../i18n/plain-messages"
 import { ExplainSimply } from "../components/explain-simply"
@@ -19,6 +19,7 @@ import {
   filterServices,
   findService,
   isServiceCategory,
+  PARTNER_CATEGORY,
   SERVICE_CATEGORIES,
   type MunicipalService,
   type ServiceCategory
@@ -193,6 +194,23 @@ function UntranslatedNote({ show }: { show: boolean }) {
   return <p className="mt-2 inline-flex rounded-full bg-slate-100 px-3 py-0.5 text-sm text-slate-700" title={common.notTranslatedHint}>{common.notTranslated} — <span className="ms-1">{common.notTranslatedHint}</span></p>
 }
 
+/** F76 : note moyenne des habitants (sans identité) et lien pour donner son avis. */
+function ServiceRating({ serviceId }: { serviceId: string }) {
+  const rating = useGetServiceRatingQuery(serviceId)
+  const summary = rating.data && rating.data.count > 0
+    ? `${rating.data.average.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} sur 5 · ${rating.data.count} avis`
+    : null
+  return (
+    <section aria-labelledby="titre-avis-service" className="mt-8 rounded-2xl border border-slate-200 bg-white p-5" lang="fr">
+      <h2 id="titre-avis-service" className="text-lg font-semibold">Avis des habitants</h2>
+      <p className="mt-1 text-slate-800">{summary ? <>Note moyenne : <strong>{summary}</strong></> : rating.isLoading ? "Chargement des avis…" : "Pas encore d’avis sur ce service."}</p>
+      <Link href={`/espace/avis?service=${encodeURIComponent(serviceId)}` as Route} className="mt-3 inline-flex font-medium text-teal-800 underline underline-offset-4">
+        Vous avez utilisé ce service ? Donnez votre avis
+      </Link>
+    </section>
+  )
+}
+
 function ServiceDetail({ service }: { service: MunicipalService }) {
   const Icon = serviceIcon(service.id)
   const t = useMessages(PLACES_MESSAGES)
@@ -209,7 +227,15 @@ function ServiceDetail({ service }: { service: MunicipalService }) {
         <p className="mt-4 text-lg leading-8 text-slate-800" lang={text.descriptionUntranslated ? "fr" : undefined}>{text.description}</p>
         <UntranslatedNote show={text.descriptionUntranslated} />
         <ExplainSimply text={text.description} plainVersion={service.plainLanguage} />
-        {!service.disabled && (
+        {/* F74 : une association partenaire a sa propre fiche (horaires, « Où nous trouver »). */}
+        {service.category === PARTNER_CATEGORY && (
+          <p className="mt-6">
+            <Link href={`/partenaires?id=${encodeURIComponent(service.id)}` as Route} className="rounded-xl bg-teal-700 px-5 py-3 font-medium text-white hover:bg-teal-800">
+              Horaires et accès de l’association
+            </Link>
+          </p>
+        )}
+        {!service.disabled && service.category !== PARTNER_CATEGORY && (
           <p className="mt-6 flex flex-wrap gap-3">
             <Link href={`/espace/demandes/nouvelle?service=${encodeURIComponent(service.id)}` as Route} className="rounded-xl bg-teal-700 px-5 py-3 font-medium text-white hover:bg-teal-800">
               Faire une demande à ce service
@@ -220,6 +246,7 @@ function ServiceDetail({ service }: { service: MunicipalService }) {
           </p>
         )}
         <ServiceLocation service={service} />
+        {service.category !== PARTNER_CATEGORY && <ServiceRating serviceId={service.id} />}
         {service.transport && <TransportTimetable transport={service.transport} />}
         <h2 className="mt-8 text-xl font-semibold">{t.whatYouCanDo}</h2>
         <ul className="mt-4 list-disc space-y-2 ps-6 text-slate-800" lang="fr">

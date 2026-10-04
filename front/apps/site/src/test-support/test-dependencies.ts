@@ -61,6 +61,7 @@ export function createTestContext(overrides: Partial<Dependencies> = {}) {
     serviceCatalogGateway,
     publicationGateway,
     alertsGateway: new InMemoryAlertsGateway(),
+    officialMessageReadGateway: { readIds: async () => [], markRead: async (id: string) => [id] },
     cityFeedGateway: new InMemoryCityFeedGateway(),
     serviceFinderGateway: {
       search: async ({ query }) => ({ query, results: [], suggestion: null, reformulation: null, source: "local", modelAvailable: false }),
@@ -77,8 +78,12 @@ export function createTestContext(overrides: Partial<Dependencies> = {}) {
       listDistricts: async () => [],
       myParticipation: async () => ({ contributions: [], ideas: [] }),
       contribute: async () => { throw new Error("Not configured") },
-      proposeIdea: async () => { throw new Error("Not configured") }
+      proposeIdea: async () => { throw new Error("Not configured") },
+      reviewService: async () => { throw new Error("Not configured") },
+      listServiceRatings: async () => [],
+      serviceName: async () => null
     },
+    serviceRatingsProvider: { ratingOf: async () => null },
     participationSessionProvider: { getToken: () => null },
     ...overrides
   }

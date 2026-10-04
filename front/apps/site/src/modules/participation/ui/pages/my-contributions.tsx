@@ -8,7 +8,8 @@ import { EmptyState, ErrorState, LoadingState } from "@/modules/shared/ui/compon
 import { useSession } from "@/modules/shared/ui/store-provider"
 import { PARTICIPATION_POLLING_MS, useMyParticipationQuery } from "../../core/application/rtk-api/city-participation"
 import { NOT_CITIZEN } from "../../core/domain/participation"
-import { formatDateTime, IDEA_STATUS_LABELS, RATING_LABELS, type MyContribution, type MyIdea } from "../../core/domain/participation"
+import { formatDateTime, IDEA_STATUS_LABELS, NEED_MET_LABELS, RATING_LABELS, REVIEW_STATUS_LABELS, SCORE_LABELS, type MyContribution, type MyIdea, type ServiceReview } from "../../core/domain/participation"
+import { StatusBadge } from "@boilerplate/shared-ui/components/a11y"
 import { consultationHref, IdeaStatusBadge, PhaseBadge, useLogoutOnUnauthorized } from "../components/participation-ui"
 
 function ContributionItem({ item }: { item: MyContribution }) {
@@ -36,6 +37,34 @@ function ContributionItem({ item }: { item: MyContribution }) {
           <span className="sr-only"> : {consultation.title}</span>
         </Link>
       )}
+    </article>
+  )
+}
+
+/** F76 : avis sur un service, avec « Lu par le service » ou « Réponse du service ». */
+function ServiceReviewItem({ review }: { review: ServiceReview }) {
+  return (
+    <article id={review.reference} aria-labelledby={`mon-avis-${review.id}`} className="rounded-2xl border border-slate-200 bg-white p-5">
+      <div className="flex flex-wrap items-center gap-2">
+        <StatusBadge tone={review.status === "answered" ? "success" : review.status === "read" ? "info" : "pending"} label={REVIEW_STATUS_LABELS[review.status]} srPrefix="Statut :" />
+        <span className="text-sm text-slate-700">Numéro {review.reference}</span>
+      </div>
+      <h3 id={`mon-avis-${review.id}`} className="mt-2 text-lg font-semibold text-slate-950">{review.serviceName}</h3>
+      <p className="mt-1 text-slate-700">Donné le <time dateTime={review.createdAt}>{formatDateTime(review.createdAt)}</time>{review.updatedAt !== review.createdAt && <>, mis à jour le <time dateTime={review.updatedAt}>{formatDateTime(review.updatedAt)}</time></>}</p>
+      <ul className="mt-2 list-disc space-y-1 ps-5 text-slate-800">
+        <li>Votre note : {review.rating} / 5 ({SCORE_LABELS[review.rating]})</li>
+        <li>Besoin obtenu : {NEED_MET_LABELS[review.needMet]}</li>
+        {review.comment && <li className="whitespace-pre-wrap">Votre commentaire : {review.comment}</li>}
+      </ul>
+      {review.response && (
+        <div className="mt-3 rounded-xl bg-teal-50 p-3 text-slate-900">
+          <p className="font-medium">Réponse du service{review.respondedAt && <> · <time className="font-normal" dateTime={review.respondedAt}>{formatDateTime(review.respondedAt)}</time></>}</p>
+          <p className="mt-1 whitespace-pre-wrap">{review.response}</p>
+        </div>
+      )}
+      <Link href={`/espace/avis?service=${encodeURIComponent(review.serviceId)}`} className="mt-3 inline-flex font-medium text-teal-800 underline underline-offset-4">
+        Modifier mon avis du mois<span className="sr-only"> : {review.serviceName}</span>
+      </Link>
     </article>
   )
 }
@@ -73,7 +102,7 @@ export function MyContributionsPage() {
       <PageHeader
         trail={[{ label: "Mon espace", href: "/espace" }, { label: "Mes contributions" }]}
         title="Mes contributions"
-        lead="Vos réponses aux consultations, avec leur numéro et leur date, et le suivi de vos idées."
+        lead="Vos réponses aux consultations, avec leur numéro et leur date, le suivi de vos idées et vos avis sur les services."
       />
       <PageBody>
         {!ready ? (
@@ -109,6 +138,16 @@ export function MyContributionsPage() {
                   <EmptyState title="Vous n’avez pas encore proposé d’idée."><Link href="/participer/idees" className="font-medium text-teal-800 underline">Proposer une idée</Link></EmptyState>
                 ) : (
                   <ul className="grid gap-4 md:grid-cols-2">{query.data.ideas.map((idea) => <li key={idea.id}><IdeaItem idea={idea} /></li>)}</ul>
+                )}
+              </div>
+            </section>
+            <section aria-labelledby="titre-mes-avis">
+              <h2 id="titre-mes-avis" className="text-2xl font-semibold tracking-tight">Mes avis sur les services</h2>
+              <div className="mt-5">
+                {(query.data.serviceReviews ?? []).length === 0 ? (
+                  <EmptyState title="Vous n’avez pas encore donné d’avis sur un service."><Link href="/services" className="font-medium text-teal-800 underline">Voir les services</Link></EmptyState>
+                ) : (
+                  <ul className="grid gap-4 md:grid-cols-2">{(query.data.serviceReviews ?? []).map((review) => <li key={review.id}><ServiceReviewItem review={review} /></li>)}</ul>
                 )}
               </div>
             </section>

@@ -24,4 +24,14 @@ final readonly class StubPilotageAccessPolicy implements PilotageAccessPolicy
     {
         return $this->allowed;
     }
+
+    public function canExportData(): bool
+    {
+        return $this->allowed;
+    }
+
+    public function canExportSensitiveData(): bool
+    {
+        return false;
+    }
 }

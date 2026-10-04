@@ -7,6 +7,7 @@ Participation porte les **projets** de la ville (F67), les **consultations** et 
 Règles :
 
 - Ports dans `Application/Ports/Provider` : `ParticipationAccessPolicy` et `DistrictDirectory` (implémentés par Administration, `Administration/Infrastructure/Adapter/Participation`), `ParticipantProvider` et `CitizenNotifier` (implémentés par Citizen, `Citizen/Infrastructure/Adapter/Participation`). Ne jamais importer une classe d’un autre BC, sauf dans l’adaptateur fournisseur `Infrastructure/Adapter/Citizen/ParticipationAccountDataEraser` (port `AccountDataEraser` de Citizen).
+- F76 : avis sur les services (`ServiceReview`, table `participation_service_reviews`) ; le service évalué vient d’Administration par `ReviewedServiceDirectory` (`Administration/Infrastructure/Adapter/Participation/AdminParticipationServiceDirectory`).
 - Les agents ne voient jamais l’identité des citoyens : vues `anonymousView()` / `followUpView()` sans `citizenId`. Le public ne voit que les éléments publiés, les résultats après clôture et les idées publiques.
 - Toute mutation d’un agent est journalisée par `AuditTrail` (`participation.<ressource>.<verbe>`) dans la transaction du `command.bus`.
 - Repositories sans `flush()` (transaction du `command.bus`). Pas d’événement de domaine ni de temps réel pour l’instant.

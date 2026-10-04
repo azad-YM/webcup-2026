@@ -12,6 +12,9 @@ import type {
   MyParticipation,
   Project,
   ProjectFilters,
+  ServiceRating,
+  ServiceReview,
+  ServiceReviewDraft,
 } from "../../../../domain/participation"
 
 type Messages = Partial<Record<number, string>>
@@ -65,6 +68,36 @@ export class CityParticipationHttpGateway extends ApiClient implements CityParti
     return this.call(() => this.post<MyIdea>("/participation/me/ideas", body, ApiClient.authHeaders(token)), {
       422: "Votre idée n’a pas pu être enregistrée. Vérifiez le titre et la description."
     }, true)
+  }
+
+  reviewService(token: string, draft: ServiceReviewDraft): Promise<ServiceReview> {
+    const body = {
+      serviceId: draft.serviceId,
+      rating: draft.rating,
+      needMet: draft.needMet,
+      comment: draft.comment.trim() || null,
+      context: draft.context,
+      contextReference: draft.contextReference,
+    }
+    return this.call(() => this.post<ServiceReview>("/participation/me/service-reviews", body, ApiClient.authHeaders(token)), {
+      422: "Votre avis n’a pas pu être enregistré. Vérifiez la note, la réponse à la question et la longueur du commentaire."
+    }, true)
+  }
+
+  async listServiceRatings(serviceId?: string): Promise<ServiceRating[]> {
+    const query = serviceId ? `?service=${encodeURIComponent(serviceId)}` : ""
+    const body = await this.call(() => this.get<{ items: ServiceRating[] }>(`/participation/service-ratings${query}`))
+    return body.items
+  }
+
+  async serviceName(serviceId: string): Promise<string | null> {
+    try {
+      const service = await this.get<{ name: string }>(`/administration/services/${encodeURIComponent(serviceId)}`)
+      return service.name
+    } catch (error) {
+      if (error instanceof ApiHttpError && error.status === 404) return null
+      throw new AppError("NETWORK_ERROR", "Impossible de joindre le service. Vérifiez votre connexion puis réessayez.")
+    }
   }
 
   /** Les règles métier refusées (400) renvoient un message français rédigé par l’API. */

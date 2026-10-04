@@ -318,6 +318,9 @@ services:
         alias: Administration\Infrastructure\Adapter\Participation\AdminParticipationAccessPolicy
     Participation\Application\Ports\Provider\DistrictDirectory:
         alias: Administration\Infrastructure\Adapter\Participation\AdminParticipationDistrictDirectory
+    # F76 (L26) : avis sur les services — le service évalué (existence, nom) vient du catalogue d'Administration.
+    Participation\Application\Ports\Provider\ReviewedServiceDirectory:
+        alias: Administration\Infrastructure\Adapter\Participation\AdminParticipationServiceDirectory
     Participation\Application\Ports\Provider\ParticipantProvider:
         alias: Citizen\Infrastructure\Adapter\Participation\CitizenParticipantProvider
     Participation\Application\Ports\Provider\CitizenNotifier:

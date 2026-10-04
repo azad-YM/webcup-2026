@@ -7,6 +7,8 @@ import { getSeenRequestCodes, markRequestsSeen } from "../usecases/seen-requests
 import { updateTracking } from "../usecases/update-tracking.usecase"
 import { getActivityDashboard } from "../usecases/get-activity-dashboard.usecase"
 import type { ActivityDashboard } from "../../domain/activity-dashboard"
+import type { ExportCatalog, ExportPreview, ExportRequest, ExportTemplate } from "../../domain/data-export"
+import { deleteExportTemplate, downloadExport, getExportCatalog, getExportTemplates, previewExport, saveExportTemplate } from "../usecases/data-export.usecase"
 
 /** The agents' page refreshes the feed every 30 s; the server itself keeps the API answer for 20 s. */
 export const WEBCUP_FEED_POLLING_MS = 30_000
@@ -16,12 +18,35 @@ export const ACTIVITY_POLLING_MS = 60_000
 export const pilotageApi = createApi({
   reducerPath: "pilotageApi",
   baseQuery: fakeBaseQuery(),
+  tagTypes: ["ExportTemplate"],
   endpoints: (build) => ({
     getWebcupFeed: build.query<WebcupFeed, void>({
       queryFn: withUseCase(getWebcupFeed),
     }),
     getActivityDashboard: build.query<ActivityDashboard, void>({
       queryFn: withUseCase(getActivityDashboard),
+    }),
+    // F88 : écran « Exports ».
+    getExportCatalog: build.query<ExportCatalog, void>({
+      queryFn: withUseCase(getExportCatalog),
+    }),
+    previewExport: build.mutation<ExportPreview, ExportRequest>({
+      queryFn: withUseCase(previewExport),
+    }),
+    downloadExport: build.mutation<{ rowCount: number; truncated: boolean }, ExportRequest>({
+      queryFn: withUseCase(downloadExport),
+    }),
+    getExportTemplates: build.query<ExportTemplate[], void>({
+      queryFn: withUseCase(getExportTemplates),
+      providesTags: ["ExportTemplate"],
+    }),
+    saveExportTemplate: build.mutation<ExportTemplate[], ExportTemplate>({
+      queryFn: withUseCase(saveExportTemplate),
+      invalidatesTags: ["ExportTemplate"],
+    }),
+    deleteExportTemplate: build.mutation<ExportTemplate[], { name: string; dataset: string }>({
+      queryFn: withUseCase(deleteExportTemplate),
+      invalidatesTags: ["ExportTemplate"],
     }),
     getSeenRequestCodes: build.query<string[] | null, void>({
       queryFn: withUseCase(getSeenRequestCodes),
@@ -43,4 +68,5 @@ export const pilotageApi = createApi({
   }),
 })
 
-export const { useGetWebcupFeedQuery, useGetSeenRequestCodesQuery, useMarkRequestsSeenMutation, useUpdateTrackingMutation, useGetActivityDashboardQuery } = pilotageApi
+export const { useGetWebcupFeedQuery, useGetSeenRequestCodesQuery, useMarkRequestsSeenMutation, useUpdateTrackingMutation, useGetActivityDashboardQuery,
+  useGetExportCatalogQuery, usePreviewExportMutation, useDownloadExportMutation, useGetExportTemplatesQuery, useSaveExportTemplateMutation, useDeleteExportTemplateMutation } = pilotageApi

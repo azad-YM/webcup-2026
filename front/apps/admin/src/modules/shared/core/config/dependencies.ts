@@ -16,6 +16,7 @@ import type { SecurityJournalGateway } from "@/modules/security/core/application
 import type { OperationsGateway } from "@/modules/security/core/application/ports/gateway/operations.gateway"
 import type { AuditJournalGateway } from "@/modules/audit/core/application/ports/gateway/audit-journal.gateway"
 import type { ActivityDashboardGateway } from "@/modules/pilotage/core/application/ports/gateway/activity-dashboard.gateway"
+import type { DataExportGateway, ExportTemplateGateway, FileDownloader } from "@/modules/pilotage/core/application/ports/gateway/data-export.gateway"
 import type { ContentGateway } from "@/modules/content/core/application/ports/gateway/content.gateway"
 import type { ParticipationGateway } from "@/modules/participation/core/application/ports/gateway/participation.gateway"
 
@@ -41,4 +42,8 @@ export type Dependencies = {
   participationGateway: ParticipationGateway
   auditJournalGateway: AuditJournalGateway
   activityDashboardGateway: ActivityDashboardGateway
+  /** F88 : écran « Exports ». */
+  dataExportGateway: DataExportGateway
+  exportTemplateGateway: ExportTemplateGateway
+  fileDownloader: FileDownloader
 }

@@ -38,6 +38,10 @@ export class AlertsHttpGateway implements AlertsGateway {
     return this.request<CityAlert[]>("/communication/alerts", { authenticated: false })
   }
 
+  listOfficialMessages() {
+    return this.request<CityAlert[]>("/communication/official-messages", { authenticated: false })
+  }
+
   myNotifications() {
     return this.request<CitizenNotifications>("/communication/me/notifications", { authenticated: true })
   }

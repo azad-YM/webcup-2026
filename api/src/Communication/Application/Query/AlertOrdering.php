@@ -18,7 +18,8 @@ final class AlertOrdering
     public static function views(array $alerts): array
     {
         $views = array_map(fn (Alert $alert) => $alert->publicView(), array_values($alerts));
-        usort($views, fn (array $a, array $b) => [self::RANK[$a['severity']] ?? 3, $b['startsAt']] <=> [self::RANK[$b['severity']] ?? 3, $a['startsAt']]);
+        // F73 : the official messages of the High Council come first.
+        usort($views, fn (array $a, array $b) => [($a['category'] ?? '') === 'official' ? 0 : 1, self::RANK[$a['severity']] ?? 3, $b['startsAt']] <=> [($b['category'] ?? '') === 'official' ? 0 : 1, self::RANK[$b['severity']] ?? 3, $a['startsAt']]);
 
         return $views;
     }

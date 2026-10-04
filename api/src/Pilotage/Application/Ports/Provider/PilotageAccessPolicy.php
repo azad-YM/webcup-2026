@@ -15,4 +15,10 @@ interface PilotageAccessPolicy
 
     /** Read the activity dashboard of the platform (`admin.pilotage.read`). */
     public function canReadActivityDashboard(): bool;
+
+    /** Export tracking data from the "Exports" screen (`admin.export.read`, F88). */
+    public function canExportData(): bool;
+
+    /** Include sensitive personal data columns in an export (`admin.sensitive-data.read`). */
+    public function canExportSensitiveData(): bool;
 }

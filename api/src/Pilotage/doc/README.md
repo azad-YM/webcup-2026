@@ -106,6 +106,16 @@ Validation : tests unitaires du lot, des URL, de la prévisualisation, de l’id
 
 `GET /api/pilotage/activity` (`admin.pilotage.read`, agents compris) : `{generatedAt, recentHours: 24, requests: {byStatus, waiting, open, recent, oldestWaitingSince}, citizens: {active, suspended, recent}, communication: {activeAlerts, criticalAlerts, scheduledAlerts, publishedPublications, draftPublications}, security: {suspendedAccounts, blockedLogins}, administration: {activeMembers, services, disruptedServices}}`. Comptages seulement, aucune donnée personnelle. Chaque bloc vient de son propriétaire par un port de Pilotage ; « récent » = 24 dernières heures. Pas de temps réel : l’admin relit toutes les 60 s.
 
+### Exports de données de suivi (F88, L26 — non testé)
+
+Écran « Exports » de l’admin ([parcours](../../../../front/apps/admin/doc/pilotage.md#exports-de-données-f88-non-testé)). Permission `admin.export.read` (administrateur principal et agent municipal) ; les colonnes marquées sensibles (nom de l’habitant, description, message, lieu précis) demandent en plus `admin.sensitive-data.read`. Téléphone et adresse chiffrés ne sont jamais exportables.
+
+- `GET /api/pilotage/exports` → `{canExportSensitiveData, datasets: [{key, label, description, periodLabel, statuses: [{value, label}], columns: [{key, label, sensitive, locked, selected}]}]}`.
+- `POST /api/pilotage/exports` (`ExportTrackingDataCommand` : `dataset`, `from`/`to` `Y-m-d` facultatifs, `status`, `columns` (1 à 40), `format` `csv|json`, `preview`). Aperçu (`preview: true`) : `{columns, rows}` des 10 premières lignes, sans journal. Export : `{fileName, mimeType, content, rowCount, truncated}` (10 000 lignes au plus) et entrée `pilotage.export.created` au journal des actions (jeu, format, période, colonnes, nombre de lignes) dans la transaction du `command.bus`.
+- CSV : UTF-8 avec BOM, `;`, CRLF, en-têtes français, cellules commençant par `= + - @` (hors nombres), tabulation ou retour chariot préfixées d’une apostrophe (injection de formules). JSON : `{dataset, generatedAt, columns, rows}` avec les libellés pour clés.
+- Jeux de données : `requests`, `appointments`, `concerns` (Citizen, `CitizenExportDataSource`), `webcup-tracking` et `activity` (Pilotage : suivi Webcup et instantané du tableau de bord via les ports Activity). Chaque fournisseur implémente le port `Application/Ports/Provider/Export/ExportDataSource` (étiquette `pilotage.export_source`) sur ses propres tables ; Pilotage ne fait que choisir les colonnes, mettre en forme et journaliser.
+- Modèles d’export : sélections de colonnes mémorisées dans le navigateur de l’agent (pas côté serveur).
+
 ## Ports et raccordements
 
 | Sens | Port (propriétaire) | Adaptateur (fournisseur) |
@@ -117,6 +127,8 @@ Validation : tests unitaires du lot, des URL, de la prévisualisation, de l’id
 | Tableau de bord ← Communication | `Application/Ports/Provider/Activity/CommunicationActivityProvider` | `Communication/Infrastructure/Adapter/Pilotage/CommunicationPilotageActivity` |
 | Tableau de bord ← IAM | `Application/Ports/Provider/Activity/AccountSecurityActivityProvider` | `IAM/Infrastructure/Adapter/Pilotage/IAMPilotageSecurityActivity` |
 | Tableau de bord ← Administration | `Application/Ports/Provider/Activity/AdministrationActivityProvider` | `Administration/Infrastructure/Adapter/Pilotage/AdminPilotageActivity` |
+| Exports ← Citizen (F88) | `Application/Ports/Provider/Export/ExportDataSource` (tag `pilotage.export_source`) | `Citizen/Infrastructure/Adapter/Pilotage/CitizenExportDataSource` ; Pilotage lui-même : `Infrastructure/Export/PilotageExportDataSource` |
+| Exports ← Administration (F88) | `PilotageAccessPolicy::canExportData` / `canExportSensitiveData` | `AdminPilotageAccessPolicy` (`admin.export.read`, `admin.sensitive-data.read`) |
 
 Chaque adaptateur compte uniquement sur les tables de son propre BC.
 

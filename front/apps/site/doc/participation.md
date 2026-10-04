@@ -22,6 +22,13 @@ Module `src/modules/participation`, branché sur le BC [Participation](../../../
 
 Entrées : « Projets » et « Participer » dans la navigation principale (en-tête et pied de page), raccourci « Mes contributions » de `/espace` (pastille des notifications `idea.updated`). Destinations de retour après connexion ajoutées : `/espace/contributions`, `/participer`, `/participer/idees`.
 
+### Avis sur un service (F76, L26 — non testé, non vérifié dans un navigateur)
+
+- `/espace/avis?service=<id>` (avec `demande=<numéro>` ou `rendez-vous=<numéro>`) : note 1 à 5 avec libellés en mots, « Avez-vous obtenu ce dont vous aviez besoin ? », commentaire facultatif ; envoi protégé par `useProtectedSubmit` (formulaire `avis-service`) ; accusé avec numéro ; un avis du mois déjà donné est proposé à la modification. Retour après connexion autorisé pour ce chemin et ses paramètres.
+- Proposé depuis le détail d’une demande close (« Mes demandes »), un rendez-vous passé (« Mes rendez-vous ») et la fiche service (`/services?service=…`, bloc « Avis des habitants » avec moyenne et nombre d’avis, sans identité — port `ServiceRatingsProvider` du module `public`, adaptateur `participation/core/infrastructure/adapter/public/ParticipationServiceRatingsAdapter`).
+- « Mes contributions » : section « Mes avis sur les services » avec « Lu par le service » / « Réponse du service ».
+- Contrat : [Participation](../../../../api/src/Participation/doc/README.md#avis-sur-les-services-f76-l26--non-testé-non-vérifié-dans-un-navigateur).
+
 ## Architecture
 
 - Ports : `CityParticipationGateway` (HTTP : `CityParticipationHttpGateway`, quartiers lus sur `GET /administration/districts`) et `ParticipationSessionProvider` (adaptateur `auth/core/infrastructure/adapter/participation/AuthParticipationSessionAdapter`), injectés dans `StoreProvider`.

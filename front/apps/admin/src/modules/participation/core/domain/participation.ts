@@ -129,3 +129,29 @@ export const formatDate = (iso: string | null | undefined) =>
   iso ? new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(iso)) : "—"
 export const formatDateTime = (iso: string | null | undefined) =>
   iso ? new Intl.DateTimeFormat("fr-FR", { dateStyle: "short", timeStyle: "short" }).format(new Date(iso)) : "—"
+
+/** F76 (L26) : avis des habitants sur les services (sans identité). */
+export type ServiceReviewStatus = "received" | "read" | "answered"
+export type ServiceReview = {
+  id: string
+  reference: string
+  serviceId: string
+  serviceName: string
+  period: string
+  rating: 1 | 2 | 3 | 4 | 5
+  needMet: "yes" | "partly" | "no"
+  comment: string | null
+  context: "service" | "request" | "appointment"
+  contextReference: string | null
+  status: ServiceReviewStatus
+  response: string | null
+  respondedAt: string | null
+  createdAt: string
+  updatedAt: string
+}
+export type ServiceReviewQueue = { items: ServiceReview[]; ratings: Record<string, { average: number; count: number }> }
+export type ServiceReviewAction = { reviewId: string; action: "read" | "respond"; response: string | null }
+export const REVIEW_STATUS_LABELS: Record<ServiceReviewStatus, string> = { received: "Nouveau", read: "Lu par le service", answered: "Réponse envoyée" }
+export const SCORE_LABELS: Record<number, string> = { 1: "Très insatisfait", 2: "Plutôt insatisfait", 3: "Moyen", 4: "Plutôt satisfait", 5: "Très satisfait" }
+export const NEED_MET_LABELS = { yes: "Oui", partly: "En partie", no: "Non" } as const
+export const CONTEXT_LABELS = { service: "Depuis la fiche du service", request: "Après une demande close", appointment: "Après un rendez-vous" } as const

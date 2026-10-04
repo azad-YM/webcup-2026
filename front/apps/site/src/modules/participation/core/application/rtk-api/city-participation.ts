@@ -12,6 +12,10 @@ import {
   type MyParticipation,
   type Project,
   type ProjectFilters,
+  type ServiceRating,
+  type ServiceReview,
+  type ServiceReviewDraft,
+  validateServiceReview,
 } from "../../domain/participation"
 
 export const PARTICIPATION_POLLING_MS = 60_000
@@ -44,10 +48,19 @@ const proposeIdea: UseCase<IdeaDraft, MyIdea> = async (deps, draft) => {
   return deps.cityParticipationGateway.proposeIdea(auth, draft)
 }
 
+const reviewService: UseCase<ServiceReviewDraft, ServiceReview> = async (deps, draft) => {
+  const auth = token(deps)
+  const message = validateServiceReview(draft)
+  if (message) throw new AppError(422, message)
+  return deps.cityParticipationGateway.reviewService(auth, draft)
+}
+const listServiceRatings: UseCase<string | undefined, ServiceRating[]> = async (deps, serviceId) => deps.cityParticipationGateway.listServiceRatings(serviceId)
+const serviceName: UseCase<string, string | null> = async (deps, serviceId) => deps.cityParticipationGateway.serviceName(serviceId)
+
 export const cityParticipationApi = createApi({
   reducerPath: "cityParticipationApi",
   baseQuery: fakeBaseQuery<QueryError>(),
-  tagTypes: ["Projects", "Consultations", "Ideas", "Mine"],
+  tagTypes: ["Projects", "Consultations", "Ideas", "Mine", "Ratings"],
   endpoints: (build) => ({
     listProjects: build.query<Project[], ProjectFilters>({ queryFn: withUseCase(listProjects), providesTags: ["Projects"] }),
     getProject: build.query<Project, string>({ queryFn: withUseCase(getProject), providesTags: ["Projects", "Consultations"] }),
@@ -60,6 +73,10 @@ export const cityParticipationApi = createApi({
       queryFn: withUseCase(contribute),
       invalidatesTags: ["Mine", "Consultations"]
     }),
+    // F76 : avis sur les services.
+    reviewService: build.mutation<ServiceReview, ServiceReviewDraft>({ queryFn: withUseCase(reviewService), invalidatesTags: ["Mine", "Ratings"] }),
+    listServiceRatings: build.query<ServiceRating[], string | undefined>({ queryFn: withUseCase(listServiceRatings), providesTags: ["Ratings"] }),
+    serviceName: build.query<string | null, string>({ queryFn: withUseCase(serviceName), keepUnusedDataFor: 3600 }),
     proposeIdea: build.mutation<MyIdea, IdeaDraft>({ queryFn: withUseCase(proposeIdea), invalidatesTags: ["Mine", "Ideas"] })
   })
 })
@@ -73,5 +90,8 @@ export const {
   useListDistrictsQuery,
   useMyParticipationQuery,
   useContributeMutation,
-  useProposeIdeaMutation
+  useProposeIdeaMutation,
+  useReviewServiceMutation,
+  useListServiceRatingsQuery,
+  useServiceNameQuery
 } = cityParticipationApi

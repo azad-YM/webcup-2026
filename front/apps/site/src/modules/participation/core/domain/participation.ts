@@ -113,7 +113,59 @@ export type MyIdea = Idea & {
 
 export type IdeaDraft = { title: string; description: string; district: string }
 
-export type MyParticipation = { contributions: MyContribution[]; ideas: MyIdea[] }
+export type MyParticipation = { contributions: MyContribution[]; ideas: MyIdea[]; serviceReviews?: ServiceReview[] }
+
+/** F76 (L26) : avis sur un service municipal, un par service et par mois (modifiable). */
+export type ServiceScore = 1 | 2 | 3 | 4 | 5
+export type NeedMet = "yes" | "partly" | "no"
+export type ServiceReviewStatus = "received" | "read" | "answered"
+export type ServiceReviewContext = "service" | "request" | "appointment"
+export type ServiceReview = {
+  id: string
+  reference: string
+  serviceId: string
+  serviceName: string
+  period: string
+  rating: ServiceScore
+  needMet: NeedMet
+  comment: string | null
+  context: ServiceReviewContext
+  contextReference: string | null
+  status: ServiceReviewStatus
+  response: string | null
+  respondedAt: string | null
+  createdAt: string
+  updatedAt: string
+  /** Vrai si l’envoi a modifié l’avis déjà donné ce mois-ci. */
+  updated?: boolean
+}
+export type ServiceReviewDraft = {
+  serviceId: string
+  rating: ServiceScore | null
+  needMet: NeedMet | null
+  comment: string
+  context: ServiceReviewContext
+  contextReference: string | null
+}
+export type ServiceRating = { serviceId: string; average: number; count: number }
+
+export const SCORE_LABELS: Record<ServiceScore, string> = { 1: "Très insatisfait", 2: "Plutôt insatisfait", 3: "Moyen", 4: "Plutôt satisfait", 5: "Très satisfait" }
+export const SCORES: ServiceScore[] = [5, 4, 3, 2, 1]
+export const NEED_MET_LABELS: Record<NeedMet, string> = { yes: "Oui", partly: "En partie", no: "Non" }
+export const REVIEW_STATUS_LABELS: Record<ServiceReviewStatus, string> = { received: "Reçu", read: "Lu par le service", answered: "Réponse du service" }
+export const REVIEW_COMMENT_MAX = 2000
+
+export function validateServiceReview(draft: ServiceReviewDraft): string | null {
+  if (!draft.serviceId) return "Choisissez le service à évaluer."
+  if (draft.rating === null) return "Choisissez une note."
+  if (draft.needMet === null) return "Dites si vous avez obtenu ce dont vous aviez besoin."
+  if (draft.comment.trim().length > REVIEW_COMMENT_MAX) return `Le commentaire ne doit pas dépasser ${REVIEW_COMMENT_MAX} caractères.`
+  return null
+}
+
+/** « 4,2 sur 5 (12 avis) » ; null sans avis. */
+export const ratingSummary = (rating: ServiceRating | undefined) =>
+  rating && rating.count > 0 ? `${rating.average.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} sur 5 (${rating.count} avis)` : null
 
 export const IDEA_LIMITS = { title: 160, description: 5000 } as const
 export const COMMENT_MAX = 3000

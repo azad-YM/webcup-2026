@@ -2,6 +2,8 @@
 import { useEffect, useRef, useState } from "react"
 import { polling } from "@/modules/shared/ui/sobriety/polling"
 import { useSearchParams } from "next/navigation"
+import Link from "next/link"
+import type { Route } from "next"
 import { CalendarCheck, CalendarClock, CalendarX, Clock, FileText, MapPin } from "@boilerplate/shared-ui/components/icon"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
 import { useSession } from "@/modules/shared/ui/store-provider"
@@ -180,6 +182,14 @@ function AppointmentCard({ appointment, highlighted, onMove }: { appointment: Ap
             </div>
           )}
         </div>
+      )}
+      {/* F76 : un rendez-vous passé propose de donner son avis sur le service. */}
+      {!upcoming && appointment.status !== "cancelled" && (
+        <p className="mt-5">
+          <Link href={`/espace/avis?service=${encodeURIComponent(appointment.serviceId)}&rendez-vous=${encodeURIComponent(appointment.reference)}` as Route} className="inline-flex rounded-xl border border-teal-700 px-4 py-2 font-medium text-teal-800 hover:bg-teal-50">
+            Donner mon avis sur ce service
+          </Link>
+        </p>
       )}
       {error && <p role="alert" className="mt-3 rounded-xl bg-red-50 p-3 text-red-900">{error.data}</p>}
     </article>

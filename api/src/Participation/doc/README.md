@@ -55,6 +55,16 @@ Hors périmètre : les soutiens de signalements (F52) et les inquiétudes (F51) 
 - Journal des actions des agents ; effacement des contributions et idées à la suppression du compte.
 - Aucun test automatisé (décision d’économie du chantier).
 
+### Avis sur les services (F76, L26 — non testé, non vérifié dans un navigateur)
+
+- Un habitant connecté donne un avis sur un service municipal : note 1 à 5 (libellés « Très insatisfait » … « Très satisfait »), « avez-vous obtenu ce dont vous aviez besoin ? » (`yes` / `partly` / `no`), commentaire facultatif (2 000 caractères). Contexte : fiche du service, demande close ou rendez-vous passé (`context`, `contextReference`).
+- **Un avis par habitant, par service et par mois** (`period` = `AAAA-MM`, contrainte unique) : un nouvel envoi dans le mois modifie l’avis (il repasse « reçu », la réponse précédente reste visible).
+- Accusé de réception avec numéro `AVI-…`. Suivi : `received` → `read` (« Lu par le service ») → `answered` (« Réponse du service »), visible dans « Mes contributions » ; la réponse d’un agent notifie l’habitant (`CitizenNotifier`, lien `/espace/contributions#AVI-…`).
+- Le service évalué (existence, nom) vient d’Administration par le port `ReviewedServiceDirectory`.
+- Agrégat public par service (moyenne arrondie à 0,1, nombre d’avis), jamais d’identité. Les agents ne voient pas l’identité des habitants.
+- Lu / réponse journalisés (`participation.service-review.read`, `participation.service-review.answered`). Avis effacés à la suppression du compte (`EraseParticipantData`). Table `participation_service_reviews` (migration `Version20261004130200`), incluse dans les sauvegardes.
+- Routes : `GET /api/participation/service-ratings[?service=<id>]` (public, cache 60 s) → `{items: [{serviceId, average, count}]}` ; `POST /api/participation/me/service-reviews` (citoyen, formulaire protégé `avis-service`) → vue de suivi + `updated` ; `GET /api/participation/manage/service-reviews[?status=]` (`admin.participation.read`) → `{items, ratings}` ; `PUT /api/participation/manage/service-reviews` `{reviewId, action: read|respond, response}` (`admin.participation.write`). `GET /api/participation/me` renvoie aussi `serviceReviews`.
+
 ## Règles
 
 - Projet : titre (200), résumé (1 000), description (1 à 50 paragraphes), quartier de la liste fermée ou `null` (toute la ville), 30 étapes au plus, prochaine étape (500). Les étapes sont triées par date.
@@ -123,6 +133,7 @@ Journal (`AuditTrail`) : `participation.project.{created,updated,published,withd
 | `Ports/Provider/DistrictDirectory` | `Administration/Infrastructure/Adapter/Participation/AdminParticipationDistrictDirectory` | liste fermée des quartiers |
 | `Ports/Provider/ParticipantProvider` | `Citizen/Infrastructure/Adapter/Participation/CitizenParticipantProvider` | identifiant du citoyen connecté (`null` si non citoyen) |
 | `Ports/Provider/CitizenNotifier` | `Citizen/Infrastructure/Adapter/Participation/CitizenParticipationNotifier` | notification `idea.updated` (cas d’usage `RecordCitizenNotification` de Citizen) |
+| `Ports/Provider/ReviewedServiceDirectory` (F76) | `Administration/Infrastructure/Adapter/Participation/AdminParticipationServiceDirectory` | existence et nom du service évalué |
 | Citizen `AccountDataEraser` | `Participation/Infrastructure/Adapter/Citizen/ParticipationAccountDataEraser` | efface contributions et idées (cas d’usage interne `EraseParticipantData`) |
 
 Câblage : autoload `Participation\`, `config/services.yaml` (alias des ports), `config/routes.yaml`, mapping Doctrine `Participation`, règles `PUBLIC_ACCESS` en lecture dans `security.yaml`. Tables `participation_projects`, `participation_consultations`, `participation_contributions`, `participation_ideas` et permissions des rôles de référence : migration `Version20261003122000`.

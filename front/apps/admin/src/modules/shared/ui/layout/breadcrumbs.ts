@@ -19,6 +19,7 @@ export const BREADCRUMB_LABELS: Record<string, string> = {
   "/contenus/services": "Services et transports",
   "/pilotage": "Pilotage",
   "/pilotage/tableau-de-bord": "Tableau de bord",
+  "/pilotage/exports": "Exports",
   "/demandes": "Demandes des habitants",
   "/demandes/rendez-vous": "Rendez-vous",
   "/demandes/inquietudes": "Inquiétudes",
@@ -26,6 +27,7 @@ export const BREADCRUMB_LABELS: Record<string, string> = {
   "/participation": "Participation des habitants",
   "/participation/consultations": "Consultations et avis",
   "/participation/idees": "Boîte à idées",
+  "/participation/avis": "Avis sur les services",
 }
 
 /** « Modules » puis chaque niveau connu du chemin ; le dernier est la page courante. */

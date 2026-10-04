@@ -26,6 +26,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
+use Participation\Application\Command\HandleServiceReview\HandleServiceReviewCommand;
+use Participation\Application\Command\ReviewService\ReviewServiceCommand;
+use Participation\Application\Query\ListServiceRatings\ListServiceRatingsQuery;
+use Participation\Application\Query\ListServiceReviews\ListServiceReviewsQuery;
 
 /** HTTP contract: see `src/Participation/doc/README.md`. */
 final class ParticipationController extends AppController
@@ -64,6 +68,13 @@ final class ParticipationController extends AppController
         return $this->dispatchQuery(new ListPublicIdeasQuery($request->query->getString('status') ?: null));
     }
 
+    /** F76 : moyenne et nombre d'avis par service (agrégat public, sans identité ; `?service=<id>` pour un seul). */
+    #[Route('/api/participation/service-ratings', name: 'participation_service_ratings', methods: ['GET'], format: 'json')]
+    public function serviceRatings(Request $request): JsonResponse
+    {
+        return $this->dispatchQuery(new ListServiceRatingsQuery($request->query->getString('service') ?: null));
+    }
+
     // --- Connected citizen ---
 
     #[Route('/api/participation/me', name: 'participation_me', methods: ['GET'], format: 'json')]
@@ -84,7 +95,26 @@ final class ParticipationController extends AppController
         return $this->dispatch($cmd);
     }
 
+    /** F76 : avis du mois sur un service (créé ou modifié). */
+    #[Route('/api/participation/me/service-reviews', name: 'participation_review_service', methods: ['POST'], format: 'json')]
+    public function reviewService(#[MapRequestPayload] ReviewServiceCommand $cmd): JsonResponse
+    {
+        return $this->dispatch($cmd);
+    }
+
     // --- Agents (admin.participation.read / admin.participation.write) ---
+
+    #[Route('/api/participation/manage/service-reviews', name: 'participation_manage_service_reviews', methods: ['GET'], format: 'json')]
+    public function serviceReviews(Request $request): JsonResponse
+    {
+        return $this->dispatchQuery(new ListServiceReviewsQuery($request->query->getString('status') ?: null, $request->query->getString('service') ?: null));
+    }
+
+    #[Route('/api/participation/manage/service-reviews', name: 'participation_handle_service_review', methods: ['PUT'], format: 'json')]
+    public function handleServiceReview(#[MapRequestPayload] HandleServiceReviewCommand $cmd): JsonResponse
+    {
+        return $this->dispatch($cmd);
+    }
 
     #[Route('/api/participation/manage/projects', name: 'participation_manage_projects', methods: ['GET'], format: 'json')]
     public function managedProjects(): JsonResponse

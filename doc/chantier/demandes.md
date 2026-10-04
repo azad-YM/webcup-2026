@@ -165,10 +165,10 @@ Les 15 suivis déjà faits sont conservés. F40 reste en cours (cron et récepti
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
-| F73 | 2 | 780 | Publier un message officiel du Haut Conseil, visible par tous immédiatement | L26 | Communication, site, admin | ⬜ |
-| F74 | 1 | 390 | Voir facilement les horaires et l’adresse des associations partenaires | L26 | Administration, site | ⬜ |
+| F73 | 2 | 780 | Publier un message officiel du Haut Conseil, visible par tous immédiatement | L26 | Communication, site, admin | 🟡 alerte `official` signée, confirmation, bandeau en tête de toutes les pages (SSE + `polling`), « J’ai lu », `/messages-officiels` ([Communication](../../api/src/Communication/doc/README.md)) ; non testé, non vérifié dans un navigateur |
+| F74 | 1 | 390 | Voir facilement les horaires et l’adresse des associations partenaires | L26 | Administration, site | 🟡 catégorie `partenaires`, horaires structurés, `/partenaires` (fr/en/ar), carte, 3 associations de démonstration ([Administration](../../api/src/Administration/doc/README.md)) ; non testé, non vérifié dans un navigateur |
 | F75 (IA) | 3 | 1 170 | Aider les agents à repérer les demandes similaires qui parlent du même problème | L23 | Citizen, admin | 🟡 L23 — panneau « Même problème ? », repli local (similarité de texte) et IA facultative, liaison et traitement groupé — [Citizen](../../api/src/Citizen/doc/demandes-a-grande-echelle.md) ; non testé, non vérifié dans un navigateur |
-| F76 | 2 | 780 | Laisser un commentaire après avoir utilisé un service, avec trace de prise en compte | L26 | Participation, site, admin | ⬜ |
+| F76 | 2 | 780 | Laisser un commentaire après avoir utilisé un service, avec trace de prise en compte | L26 | Participation, site, admin | 🟡 `/espace/avis`, un avis par service et par mois, « Lu / Réponse du service », moyenne sur la fiche, page admin « Avis sur les services » ([Participation](../../api/src/Participation/doc/README.md)) ; non testé, non vérifié dans un navigateur |
 
 ## Vague 15 (H+16) — « Montée en charge et incidents »
 
@@ -195,7 +195,7 @@ Les 15 suivis déjà faits sont conservés. F40 reste en cours (cron et récepti
 | F85 (IA) | 4 | 1 680 | Détecter une activité inhabituelle et des informations incohérentes, protection perceptible | L25 | Audit, IAM, Shared, admin | 🟡 `app:security:scan`, écran « Activité inhabituelle », alerte en direct, protection automatique du compte, résumé IA avec repli — [Audit](../../api/src/Audit/doc/README.md) ; non testé, non vérifié dans un navigateur |
 | F86 | 4 | 1 680 | Signalement d’une urgence médicale : traitement distinct d’une demande ordinaire, repérable immédiatement | L23 | Citizen, site, admin | 🟡 L23 — 15/112 immédiat sur le site, priorité urgente, alerte temps réel, bandeau et prise en charge horodatée — [Citizen](../../api/src/Citizen/doc/demandes-a-grande-echelle.md) ; non testé, non vérifié dans un navigateur |
 | F87 | 3 | 1 260 | Vérifier que les données importantes peuvent être sauvegardées et restaurées, avec un rapport clair | L24 | API, admin | 🟡 `app:backup:run` / `app:backup:verify` (restauration d’essai, verdict), écran « Sauvegardes » (`admin.backup.read`), [procédure](../technique/montee-en-charge.md#sauvegarde-et-restauration-f87) ; non testé, non vérifié dans un navigateur |
-| F88 | 2 | 840 | Sélectionner des données de suivi et les exporter dans un format simple à réutiliser | L26 | Pilotage, Citizen, admin | ⬜ |
+| F88 | 2 | 840 | Sélectionner des données de suivi et les exporter dans un format simple à réutiliser | L26 | Pilotage, Citizen, admin | 🟡 `/pilotage/exports` : 5 jeux, période, statut, colonnes (sensibles masquées), aperçu, CSV/JSON, modèles locaux, journal (`admin.export.read`, [Pilotage](../../api/src/Pilotage/doc/README.md)) ; non testé, non vérifié dans un navigateur |
 
 ## Vague 18 (H+19) — « Assistance et résilience »
 

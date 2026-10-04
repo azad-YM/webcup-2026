@@ -1,4 +1,4 @@
-import { Activity, ArchiveRestore, BookKey, Building2, CalendarClock, HandHeart, History, Inbox, LayoutDashboard, Lightbulb, MessageCircleWarning, MessagesSquare, Newspaper, ShieldAlert, ShieldQuestion, Siren, Users } from "@boilerplate/shared-ui/components/icon"
+import { Star, Activity, ArchiveRestore, Download, BookKey, Building2, CalendarClock, HandHeart, History, Inbox, LayoutDashboard, Lightbulb, MessageCircleWarning, MessagesSquare, Newspaper, ShieldAlert, ShieldQuestion, Siren, Users } from "@boilerplate/shared-ui/components/icon"
 import type { NavGroup } from "../components/sidebar/nav-main"
 
 export type ModuleCode = "admin" | "requests" | "pilotage" | "participation"
@@ -47,10 +47,12 @@ export const MODULE_NAVIGATION: Record<ModuleCode, NavGroup[]> = {
   pilotage: [{ title: "Activité de la ville", items: [
     { title: "Flux Nova Terra", url: "/pilotage", icon: Activity, description: "Demandes de la ville et suivi de l’équipe" },
     { title: "Tableau de bord", url: "/pilotage/tableau-de-bord", icon: LayoutDashboard, description: "Chiffres clés et activité" },
+    { title: "Exports", url: "/pilotage/exports", icon: Download, description: "Télécharger des données de suivi (CSV, JSON)" },
   ] }],
   participation: [{ title: "Participation des habitants", items: [
     { title: "Projets", url: "/participation", icon: Building2, description: "Projets en cours dans la ville" },
     { title: "Consultations et avis", url: "/participation/consultations", icon: MessagesSquare, description: "Questions posées aux habitants" },
     { title: "Boîte à idées", url: "/participation/idees", icon: Lightbulb, description: "Idées proposées par les habitants" },
+    { title: "Avis sur les services", url: "/participation/avis", icon: Star, description: "Notes et commentaires après un service" },
   ] }],
 }

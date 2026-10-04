@@ -87,7 +87,8 @@ export const PLACES_MESSAGES = defineMessages({
     "cat_sante-solidarite": "Santé et solidarité",
     cat_mobilite: "Mobilité",
     cat_habitat: "Habitat",
-    cat_famille: "Famille et éducation"
+    cat_famille: "Famille et éducation",
+    cat_partenaires: "Associations partenaires"
   },
   en: {
     emergencyTitle: "Emergency",
@@ -174,7 +175,8 @@ export const PLACES_MESSAGES = defineMessages({
     "cat_sante-solidarite": "Health and solidarity",
     cat_mobilite: "Mobility",
     cat_habitat: "Housing",
-    cat_famille: "Family and education"
+    cat_famille: "Family and education",
+    cat_partenaires: "Partner associations"
   },
   ar: {
     emergencyTitle: "الطوارئ",
@@ -261,7 +263,8 @@ export const PLACES_MESSAGES = defineMessages({
     "cat_sante-solidarite": "الصحة والتضامن",
     cat_mobilite: "التنقل",
     cat_habitat: "السكن",
-    cat_famille: "الأسرة والتعليم"
+    cat_famille: "الأسرة والتعليم",
+    cat_partenaires: "الجمعيات الشريكة"
   }
 })
 

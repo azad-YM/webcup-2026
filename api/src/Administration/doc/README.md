@@ -75,6 +75,18 @@ Livré, non testé, non vérifié dans un navigateur. Champs facultatifs ajouté
 - Données : migration `Version20261003123000` (lieux des huit services sur des coordonnées de démonstration autour de Saint-Denis de La Réunion, cinq services d’urgence : hôpital, urgences, pompiers, police, pharmacie de garde) et `Version20261003123100` (noms et résumés en anglais et en arabe). Une base créée par `doctrine:schema:update` n’a pas ces données.
 - Consommateurs : [site — urgences, carte, langues](../../../../front/apps/site/doc/urgences-carte-langues.md), [admin — contenus](../../../../front/apps/admin/doc/contenus.md).
 
+### Associations partenaires (F74, L26 — non testé, non vérifié dans un navigateur)
+
+- Catégorie de catalogue `partenaires` (« Association partenaire ») : même fiche qu’un service (résumé, description, « ce qu’elle propose » = `actions`, `location` pour la carte), saisie dans l’admin (page Services).
+- `contact` accepte en plus, pour tout lieu : `person`, `email` (validé), `website` (http/https) et `openingHours` : `[{day: 1..7 (lundi..dimanche), opens: "HH:MM", closes: "HH:MM"}]` (21 plages au plus, ouverture avant fermeture, triées). Aucune colonne nouvelle (JSON `contact`).
+- Données de démonstration : trois associations (Entraide de l’Aurore, Jardins partagés, Lire ensemble) insérées par la migration `Version20261004130300`.
+- Consommateurs : site `/partenaires` (liste, fiche « Où nous trouver », « Ouvert maintenant / ferme à 18 h ») et `/carte` ([site](../../../../front/apps/site/doc/urgences-carte-langues.md)) ; [admin — contenus](../../../../front/apps/admin/doc/contenus.md).
+
+### Exports et avis (L26)
+
+- Permission `admin.export.read` (F88, administrateur principal et agent municipal ; migration `Version20261004130000`, `BootstrapAdminService`) : `AdminPilotageAccessPolicy::canExportData` / `canExportSensitiveData` (avec `admin.sensitive-data.read`) pour [Pilotage](../../Pilotage/doc/README.md).
+- F76 : `Adapter/Participation/AdminParticipationServiceDirectory` (port `ReviewedServiceDirectory` de [Participation](../../Participation/doc/README.md)) donne l’existence et le nom du service évalué.
+
 CLI : `php bin/console app:admin:bootstrap` ([initialisation de l’administrateur principal et des rôles de référence](initialisation-admin.md)).
 
 Interface : la page [Membres](../../../../front/apps/admin/doc/membres.md) de l’admin liste les membres et ajoute un membre ; la page [Rôles](../../../../front/apps/admin/doc/roles.md) crée les rôles.

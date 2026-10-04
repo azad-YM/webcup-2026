@@ -1,3 +1,4 @@
+import type { ServiceReview, ServiceReviewAction, ServiceReviewQueue, ServiceReviewStatus } from "../../domain/participation"
 import type { UseCase } from "@/modules/shared/core/config/use-cases"
 import type {
   Consultation,
@@ -22,3 +23,5 @@ export const listContributions: UseCase<string, ContributionView[]> = async (_d,
 export const listIdeas: UseCase<IdeaStatus | null, Idea[]> = async (_d, _s, deps, status) => deps.participationGateway.listIdeas(status)
 export const followIdea: UseCase<IdeaFollowUp, Idea> = async (_d, _s, deps, change) => deps.participationGateway.followIdea(change)
 export const setIdeaVisibility: UseCase<IdeaVisibility, Idea> = async (_d, _s, deps, change) => deps.participationGateway.setIdeaVisibility(change)
+export const listServiceReviews: UseCase<ServiceReviewStatus | null, ServiceReviewQueue> = async (_d, _s, deps, status) => deps.participationGateway.listServiceReviews(status)
+export const handleServiceReview: UseCase<ServiceReviewAction, ServiceReview> = async (_d, _s, deps, action) => deps.participationGateway.handleServiceReview(action)

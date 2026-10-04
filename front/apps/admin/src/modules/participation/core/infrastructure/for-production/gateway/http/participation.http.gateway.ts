@@ -12,6 +12,10 @@ import type {
   IdeaStatus,
   IdeaVisibility,
   Project,
+  ServiceReview,
+  ServiceReviewAction,
+  ServiceReviewQueue,
+  ServiceReviewStatus,
 } from "../../../../domain/participation"
 
 const READ = "admin.participation.read"
@@ -68,6 +72,15 @@ export class ParticipationHttpGateway extends ApiClient implements Participation
 
   setIdeaVisibility(change: IdeaVisibility) {
     return this.call(() => this.putAuth<Idea>("/participation/manage/ideas/visibility", change), "l’idée", WRITE)
+  }
+
+  listServiceReviews(status: ServiceReviewStatus | null) {
+    const query = status ? `?status=${encodeURIComponent(status)}` : ""
+    return this.call(() => this.getAuth<ServiceReviewQueue>(`/participation/manage/service-reviews${query}`), "les avis", READ)
+  }
+
+  handleServiceReview(action: ServiceReviewAction) {
+    return this.call(() => this.putAuth<ServiceReview>("/participation/manage/service-reviews", action), "l’avis", WRITE)
   }
 
   private async call<T>(request: () => Promise<T>, what: string, permission?: string): Promise<T> {

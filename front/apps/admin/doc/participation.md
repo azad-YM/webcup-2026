@@ -18,6 +18,8 @@ Navigation : module `participation` déclaré dans `shared/ui/layout/workspace-n
 
 Architecture : port `ParticipationGateway` (adaptateur HTTP `ParticipationHttpGateway`), session par `ParticipationSessionProvider` (adaptateur `auth/core/infrastructure/adapter/participation/AuthParticipationSessionProvider`), RTK Query `participationApi`, injectés dans `kernel.ts`. Erreurs `ParticipationError` : `403` indique la permission manquante, `400` reprend le message de l’API.
 
+Avis sur les services (F76, L26 — non testé, non vérifié dans un navigateur) : page `/participation/avis` (`ui/pages/service-reviews.tsx`, chargée à la demande) — file des avis filtrable par statut (nouveaux d’abord), note, besoin obtenu, contexte, commentaire, « Marquer comme lu » et « Répondre » (l’habitant est prévenu), notes moyennes par service. Endpoints `listServiceReviews` / `handleServiceReview` du `ParticipationGateway`. Contrat : [Participation](../../../../api/src/Participation/doc/README.md#avis-sur-les-services-f76-l26--non-testé-non-vérifié-dans-un-navigateur).
+
 Limites : pas de temps réel ; la carte « Participation » de `/espaces` s’affiche pour tout membre (le contrôle reste côté API).
 
 <!-- backlinks:start -->
