@@ -6,6 +6,7 @@ namespace Citizen\Application\Command\SubmitServiceRequest;
 
 use Citizen\Application\Exception\MunicipalServiceUnavailable;
 use Citizen\Application\Ports\Provider\CurrentAccountProvider;
+use Citizen\Application\Ports\Provider\DistrictDirectory;
 use Citizen\Application\Ports\Provider\MunicipalServiceDirectory;
 use Citizen\Application\Ports\Repository\CitizenRepository;
 use Citizen\Application\Ports\Repository\ServiceRequestRepository;
@@ -28,6 +29,7 @@ final readonly class SubmitServiceRequestHandler
         private IIdProvider $ids,
         private IClock $clock,
         private ?MunicipalServiceDirectory $services = null,
+        private ?DistrictDirectory $districts = null,
     ) {}
 
     public function __invoke(SubmitServiceRequestCommand $cmd): ServiceRequestView
@@ -39,6 +41,12 @@ final readonly class SubmitServiceRequestHandler
         if ($serviceId !== '' && ($service = $this->services?->find($serviceId)) !== null && $service->disabled) {
             throw MunicipalServiceUnavailable::for($service);
         }
+        // F79 : le quartier choisi doit appartenir à la liste fermée ; sinon celui du profil, s'il existe.
+        $district = trim($cmd->district ?? '');
+        if ($district !== '' && $this->districts !== null && !$this->districts->exists($district)) {
+            throw new \DomainException('Quartier inconnu : choisissez un quartier de la liste.');
+        }
+        $district = $district !== '' ? $district : $citizen->district();
         $now = $this->clock->now();
         $request = ServiceRequest::submit(
             $this->ids->getId(),
@@ -51,9 +59,11 @@ final readonly class SubmitServiceRequestHandler
             $cmd->serviceId,
             $now,
             $cmd->isPublic,
+            $district,
+            $cmd->medicalEmergency,
         );
         $this->requests->save($request);
 
-        return ServiceRequestView::fromRequest($request);
+        return ServiceRequestView::fromRequest($request)->forCitizen();
     }
 }

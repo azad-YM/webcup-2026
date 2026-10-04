@@ -6,6 +6,7 @@ namespace Citizen\Application\Query\ListMyServiceRequests;
 
 use Citizen\Application\Ports\Provider\CurrentAccountProvider;
 use Citizen\Application\Ports\Repository\CitizenRepository;
+use Citizen\Application\Ports\Repository\RequestMessageRepository;
 use Citizen\Application\Ports\Repository\RequestSupportRepository;
 use Citizen\Application\Ports\Repository\ServiceRequestRepository;
 use Citizen\Application\ViewModel\ServiceRequestView;
@@ -20,6 +21,7 @@ final readonly class ListMyServiceRequestsHandler
         private CurrentAccountProvider $identity,
         private ServiceRequestRepository $requests,
         private RequestSupportRepository $supports,
+        private ?RequestMessageRepository $messages = null,
     ) {}
 
     /** @return array{items: list<ServiceRequestView>} */
@@ -29,8 +31,11 @@ final readonly class ListMyServiceRequestsHandler
             ?? throw new NotFoundException('The current account is not a citizen.');
 
         $requests = $this->requests->findByCitizen($citizen->id);
-        $counts = $this->supports->countByRequests(array_map(fn ($request) => $request->id, $requests));
+        $ids = array_map(fn ($request) => $request->id, $requests);
+        $counts = $this->supports->countByRequests($ids);
+        $messages = $this->messages?->countByRequests($ids) ?? [];
 
-        return ['items' => array_map(fn ($request) => ServiceRequestView::fromRequest($request, $counts[$request->id] ?? 0), $requests)];
+        return ['items' => array_map(fn ($request) => ServiceRequestView::fromRequest($request, $counts[$request->id] ?? 0)
+            ->withMessageCount($messages[$request->id] ?? 0)->forCitizen(), $requests)];
     }
 }

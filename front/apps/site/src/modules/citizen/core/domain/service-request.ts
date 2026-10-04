@@ -20,6 +20,64 @@ export type ServiceRequest = {
   /** F52 : signalement visible des autres habitants. */
   isPublic?: boolean
   supportCount?: number
+  /** F80 : priorité de traitement ; F79 : catégorie déduite du texte, quartier. */
+  priority?: "urgent" | "high" | "normal" | "low"
+  category?: RequestCategory
+  district?: string | null
+  /** F86 : urgence médicale signalée ; heure de prise en charge par un agent. */
+  medicalEmergency?: boolean
+  emergencyHandledAt?: string | null
+  /** F84 : messages échangés avec la mairie. */
+  messageCount?: number
+}
+
+export type RequestCategory =
+  | "medical_emergency" | "safety" | "water" | "roads" | "lighting" | "cleanliness" | "noise" | "administrative" | "other"
+
+export const CATEGORY_LABELS: Record<RequestCategory, string> = {
+  medical_emergency: "Urgence médicale",
+  safety: "Sécurité",
+  water: "Eau, inondation",
+  roads: "Voirie",
+  lighting: "Éclairage",
+  cleanliness: "Propreté",
+  noise: "Bruit",
+  administrative: "Démarches",
+  other: "Autre"
+}
+
+/** F84 : message du fil avec la mairie. */
+export type RequestMessage = { id: string; author: "agent" | "citizen"; body: string; createdAt: string }
+export type RequestMessages = { items: RequestMessage[]; canReply: boolean }
+export const MESSAGE_MAX = 3000
+
+/** F83 : accusé de réception. */
+export type RequestReceipt = {
+  reference: string
+  type: RequestType
+  subject: string
+  serviceId: string | null
+  serviceName: string | null
+  submittedAt: string
+  fingerprint: string
+  medicalEmergency: boolean
+}
+export type ReceiptVerification = { valid: boolean; reference: string; submittedAt: string | null }
+
+/**
+ * F86 : repérage local, à la saisie, des mots d'une urgence médicale (mêmes familles que l'API).
+ * Ne bloque jamais l'envoi : sert seulement à afficher tout de suite « Appelez le 15 ou le 112 ».
+ */
+const MEDICAL_WORDS = [
+  "urgence medicale", "malaise", "inconscient", "ne respire plus", "respire mal", "arret cardiaque", "crise cardiaque",
+  "infarctus", "avc", "hemorragie", "saigne", "overdose", "convulsion", "etouffe", "douleur thoracique",
+  "douleur dans la poitrine", "blesse grave", "grievement blesse", "evanoui", "suicide", "intoxication", "empoisonnement",
+  "accouchement", "choc anaphylactique", "samu", "ambulance"
+]
+
+export function looksLikeMedicalEmergency(text: string): boolean {
+  const normalized = ` ${text.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ")} `
+  return MEDICAL_WORDS.some((word) => normalized.includes(` ${word}`))
 }
 
 export type RequestDraft = {
@@ -30,6 +88,10 @@ export type RequestDraft = {
   serviceId: string | null
   /** F52 : partager le signalement (sujet, lieu, état) avec les autres habitants. */
   isPublic?: boolean
+  /** F86 : case « C'est une urgence médicale ». */
+  medicalEmergency?: boolean
+  /** F79 : quartier concerné (facultatif ; à défaut, celui du profil). */
+  district?: string
 }
 
 export const REQUEST_TYPE_LABELS: Record<RequestType, string> = {

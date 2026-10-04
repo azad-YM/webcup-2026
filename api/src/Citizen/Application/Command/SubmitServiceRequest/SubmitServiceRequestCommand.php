@@ -27,5 +27,10 @@ final readonly class SubmitServiceRequestCommand
         public ?string $serviceId = null,
         /** F52 : rendre le signalement visible des autres habitants (sujet, lieu, état ; jamais l'auteur). */
         public bool $isPublic = false,
+        /** F86 : case « C'est une urgence médicale » ; l'API détecte aussi les mots d'une urgence médicale. */
+        public bool $medicalEmergency = false,
+        /** F79 : quartier concerné (liste d'Administration) ; à défaut, celui du profil. */
+        #[Assert\Length(max: ServiceRequest::DISTRICT_MAX)]
+        public ?string $district = null,
     ) {}
 }

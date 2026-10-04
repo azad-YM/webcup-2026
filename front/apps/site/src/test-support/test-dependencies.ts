@@ -39,7 +39,11 @@ export function createTestContext(overrides: Partial<Dependencies> = {}) {
     serviceRequestGateway: {
       listMine: async () => [],
       getMine: async () => { throw new Error("Not configured") },
-      submit: async () => { throw new Error("Not configured") }
+      submit: async () => { throw new Error("Not configured") },
+      listMessages: async () => ({ items: [], canReply: false }),
+      postMessage: async () => { throw new Error("Not configured") },
+      getReceipt: async () => { throw new Error("Not configured") },
+      verifyReceipt: async (reference: string) => ({ valid: false, reference, submittedAt: null })
     },
     notificationGateway: { list: async () => ({ items: [], unreadCount: 0 }), markRead: async () => undefined },
     appointmentGateway: {

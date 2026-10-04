@@ -58,6 +58,18 @@ Règles et contrat : [Citizen — demandes](../../../../api/src/Citizen/doc/READ
 
 Code : module `citizen` (`ui/pages/service-requests.tsx`, `ui/pages/new-service-request.tsx`, `ui/components/request-status.tsx`, `core/application/rtk-api/service-requests.ts`, `core/application/usecases/service-request.usecase.ts`, `core/infrastructure/for-production/gateway/http/service-request.http.gateway.ts`) et `shared` (`core/application/ports/realtime-subscriber.ts`, `core/infrastructure/realtime/sse-realtime.subscriber.ts`). **Aucun test automatisé ; non vérifié dans un navigateur.**
 
+## Lot L23 — urgence médicale, échanges, accusé de réception, filtres
+
+🟡 Non testé, non vérifié dans un navigateur. API : [Citizen — demandes à grande échelle](../../../../api/src/Citizen/doc/demandes-a-grande-echelle.md) ; côté agents : [admin — demandes](../../admin/doc/demandes.md#lot-l23--priorités-urgences-médicales-demandes-similaires-réponses).
+
+- **Urgence médicale (F86)** : dans le formulaire de demande, case « C’est une urgence médicale » et repérage local des mots d’une urgence à la saisie ; dès que l’un ou l’autre est vrai, un encadré très visible « Urgence médicale : appelez le 15 ou le 112 » (liens `tel:15`, `tel:112`, lien vers `/urgences`) s’affiche, sans bloquer l’envoi. Un rappel permanent dit que la plateforme n’est pas un service d’urgence. L’écran de confirmation et le détail de la demande rappellent les numéros ; une urgence médicale n’est jamais rendue publique.
+- **Quartier** : sélecteur facultatif « Quartier concerné » (liste d’Administration, sinon celui du profil).
+- **Échanges avec la mairie (F84)** : dans le détail d’une demande (`/espace/demandes?ref=`), fil des messages (« La mairie » / « Vous ») et réponse possible tant que la demande n’est pas close ; notification « la mairie vous a répondu » et temps réel `request.message_posted`.
+- **Accusé de réception (F83)** : `/espace/demandes/accuse?ref=` (lien depuis la confirmation et le détail) : référence, date et heure, type, service, objet, empreinte ; « Imprimer ou enregistrer en PDF » et « Télécharger (texte) ». Envoyé aussi par e-mail si le compte a une adresse. Page publique `/verifier-accuse?ref=` : référence + empreinte → « authentique » avec la date, ou « non reconnu », sans contenu.
+- **Filtres (F79)** : « Mes demandes » et « Soutenir une demande d’habitants » (`/espace/participation`) proposent recherche texte, catégorie, service, état, quartier et tri (récentes, anciennes, plus soutenues pour les signalements). Les critères sont dans l’adresse (`?q=&categorie=&etat=&quartier=&service=&tri=`).
+- Les textes de ces écrans sont en français seulement (pas encore dans `defineMessages`).
+- Code : `citizen/ui/components/{medical-emergency-notice,request-conversation,request-filters}.tsx`, `citizen/ui/pages/{request-receipt,verify-receipt}.tsx`, `citizen/core/domain/request-filters.ts`, gateway `ServiceRequestGateway` étendu.
+
 ## Notifications de l’espace (F49)
 
 - La cloche de l’en-tête, disponible sur toutes les pages pour un citoyen connecté, affiche le nombre de notifications personnelles non lues et ouvre « Mes notifications » (`citizen/ui/sections/notification-center.tsx`) : message clair (« Votre demande NT-2026-0042 est passée à « Prise en charge ». »), date, badge « Non lue », lien « Voir le détail », bouton « Tout marquer comme lu ». Les filtres « Toutes », « Non lues » et « Lues » permettent de retrouver les messages ; les états « Lue » et « Non lue » sont explicites. Une notification arrivée pendant que le panneau est ouvert est annoncée dans un bandeau « Nouveau : … » (`role="status"`).
@@ -138,4 +150,5 @@ Code : modules `auth` (`ui/pages/registration.tsx`, `core/application/usecases/r
 - [Citizen — participation](../../../../api/src/Citizen/doc/participation.md)
 - [Participation (BC)](../../../../api/src/Participation/doc/README.md)
 - [Citizen — mes données](../../../../api/src/Citizen/doc/mes-donnees.md)
+- [Citizen — demandes à grande échelle](../../../../api/src/Citizen/doc/demandes-a-grande-echelle.md)
 <!-- backlinks:end -->

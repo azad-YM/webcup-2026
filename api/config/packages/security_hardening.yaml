@@ -15,6 +15,8 @@ parameters:
         citizen_submit_request: { limit: 10, window: 600, action: 'l’envoi de demandes' }
         citizen_raise_concern: { limit: 5, window: 600, action: 'l’envoi d’inquiétudes' }
         citizen_support_request: { limit: 30, window: 600, action: 'le soutien des signalements' }
+        citizen_post_request_message: { limit: 20, window: 600, action: 'l’envoi de messages sur vos demandes' }
+        citizen_verify_receipt: { limit: 20, window: 600, action: 'la vérification des accusés de réception' }
         citizen_book_appointment: { limit: 15, window: 600, action: 'la réservation de rendez-vous' }
         citizen_change_appointment: { limit: 15, window: 600, action: 'la modification de rendez-vous' }
         iam_application_portalsession_issue: { limit: 30, window: 600, action: 'l’ouverture de l’espace de travail' }

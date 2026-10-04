@@ -10,6 +10,8 @@ import { EmptyState, ErrorState, LoadingState } from "@/modules/shared/ui/compon
 import { FormAnnouncement, SelectField, TextAreaField, TextField } from "@/modules/shared/ui/components/form-field"
 import { CitizenAccessState, useCitizenAccess } from "../components/citizen-access"
 import { StatusBadge } from "../components/request-status"
+import { RequestFilters, useRequestFilters } from "../components/request-filters"
+import { applyFilters } from "../../core/domain/request-filters"
 import {
   PARTICIPATION_POLLING_MS,
   useListConcernsQuery,
@@ -75,6 +77,8 @@ function PublicRequests() {
   useLogoutOnUnauthorized(query.error)
   const failure = toQueryError(query.error)
   const items = query.data ?? []
+  const [filters, setFilters, resetFilters] = useRequestFilters()
+  const shown = applyFilters(items, filters)
   return (
     <section aria-labelledby="titre-soutenir">
       <h2 id="titre-soutenir" className="text-2xl font-semibold tracking-tight">Soutenir une demande d’habitants</h2>
@@ -87,9 +91,16 @@ function PublicRequests() {
         ) : items.length === 0 ? (
           <EmptyState title="Aucune demande publique en cours.">Lorsque vous signalez un problème, vous pouvez choisir de le rendre visible pour que d’autres habitants le soutiennent.</EmptyState>
         ) : (
-          <ul className="grid gap-4 md:grid-cols-2">
-            {items.map((item) => <li key={item.id}><PublicRequestCard request={item} /></li>)}
-          </ul>
+          <div className="space-y-5">
+            <RequestFilters idPrefix="signalements" items={items} filters={filters} onChange={setFilters} onReset={resetFilters} withSupports shown={shown.length} />
+            {shown.length === 0 ? (
+              <EmptyState title="Aucun signalement ne correspond à ces critères.">Modifiez ou effacez les filtres.</EmptyState>
+            ) : (
+              <ul className="grid gap-4 md:grid-cols-2">
+                {shown.map((item) => <li key={item.id}><PublicRequestCard request={item} /></li>)}
+              </ul>
+            )}
+          </div>
         )}
       </div>
     </section>

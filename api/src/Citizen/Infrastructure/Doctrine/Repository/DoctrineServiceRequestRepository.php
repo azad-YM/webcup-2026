@@ -37,15 +37,69 @@ final readonly class DoctrineServiceRequestRepository implements ServiceRequestR
             ->findBy(['citizenId' => $citizenId], ['createdAt' => 'DESC', 'reference' => 'DESC']));
     }
 
-    public function findQueue(?string $status, int $offset, int $limit): array
+    public function findQueue(?string $status, int $offset, int $limit, ?string $priority = null): array
     {
         return array_values($this->manager->getRepository(ServiceRequest::class)
-            ->findBy($this->criteria($status), ['createdAt' => 'ASC', 'reference' => 'ASC'], $limit, $offset));
+            ->findBy($this->criteria($status, $priority), ['priorityRank' => 'ASC', 'createdAt' => 'ASC', 'reference' => 'ASC'], $limit, $offset));
     }
 
-    public function countByStatus(?string $status): int
+    public function countByStatus(?string $status, ?string $priority = null): int
     {
-        return $this->manager->getRepository(ServiceRequest::class)->count($this->criteria($status));
+        return $this->manager->getRepository(ServiceRequest::class)->count($this->criteria($status, $priority));
+    }
+
+    public function countOpenByPriority(string $priority): int
+    {
+        return (int) $this->open()->select('COUNT(r.id)')
+            ->andWhere('r.priority = :priority')->setParameter('priority', $priority)
+            ->getQuery()->getSingleScalarResult();
+    }
+
+    public function findUnhandledEmergencies(int $limit): array
+    {
+        return array_values($this->open()
+            ->andWhere('r.medicalEmergency = true')->andWhere('r.emergencyHandledAt IS NULL')
+            ->orderBy('r.createdAt', 'ASC')->setMaxResults($limit)
+            ->getQuery()->getResult());
+    }
+
+    public function findOpenSince(\DateTimeImmutable $since, int $limit): array
+    {
+        return array_values($this->open()
+            ->andWhere('r.createdAt >= :since')->setParameter('since', $since)
+            ->orderBy('r.createdAt', 'DESC')->setMaxResults($limit)
+            ->getQuery()->getResult());
+    }
+
+    public function findByGroup(string $groupId): array
+    {
+        return array_values($this->manager->getRepository(ServiceRequest::class)
+            ->findBy(['groupId' => $groupId], ['createdAt' => 'ASC']));
+    }
+
+    public function findByIds(array $ids): array
+    {
+        if ($ids === []) {
+            return [];
+        }
+
+        return array_values($this->manager->getRepository(ServiceRequest::class)->findBy(['id' => array_values($ids)]));
+    }
+
+    public function findOpenAutoPrioritized(int $limit): array
+    {
+        return array_values($this->open()
+            ->andWhere('r.prioritySource = :auto')->setParameter('auto', ServiceRequest::PRIORITY_AUTO)
+            ->orderBy('r.createdAt', 'ASC')->setMaxResults($limit)
+            ->getQuery()->getResult());
+    }
+
+    private function open(): \Doctrine\ORM\QueryBuilder
+    {
+        return $this->manager->createQueryBuilder()
+            ->select('r')->from(ServiceRequest::class, 'r')
+            ->where('r.status NOT IN (:closed)')
+            ->setParameter('closed', [ServiceRequest::RESOLVED, ServiceRequest::REJECTED]);
     }
 
     public function findPublic(int $limit): array
@@ -59,8 +113,8 @@ final readonly class DoctrineServiceRequestRepository implements ServiceRequestR
     }
 
     /** @return array<string, string> */
-    private function criteria(?string $status): array
+    private function criteria(?string $status, ?string $priority = null): array
     {
-        return $status === null ? [] : ['status' => $status];
+        return array_filter(['status' => $status, 'priority' => $priority], fn (?string $value) => $value !== null);
     }
 }

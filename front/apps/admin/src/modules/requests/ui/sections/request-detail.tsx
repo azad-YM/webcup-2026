@@ -9,11 +9,15 @@ import {
   statusChangeError,
   TRANSITION_LABELS,
   TYPE_LABELS,
+  CATEGORY_LABELS,
   type RequestStatus,
   type ServiceRequest,
 } from "../../core/domain/service-request"
 import { MaskedValue } from "@/modules/shared/ui/components/custom/sensitive-data"
-import { RequestStatusBadge } from "./request-status-badge"
+import { MedicalEmergencyBadge, PriorityBadge, RequestStatusBadge } from "./request-status-badge"
+import { PriorityPanel } from "./priority-panel"
+import { SimilarRequestsPanel } from "./similar-requests-panel"
+import { RequestMessages } from "./request-messages"
 
 const dateTime = new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeStyle: "short" })
 
@@ -24,8 +28,21 @@ export function RequestDetail({ request, canProcess }: { request: ServiceRequest
       <div>
         <p className="font-mono text-sm text-muted-foreground">{request.reference} · {TYPE_LABELS[request.type]}</p>
         <h2 id="request-detail-title" className="mt-1 text-lg font-semibold">{request.subject}</h2>
-        <div className="mt-2"><RequestStatusBadge status={request.status} /></div>
+        <div className="mt-2 flex flex-wrap gap-2">
+          <RequestStatusBadge status={request.status} />
+          <PriorityBadge priority={request.priority} />
+          {request.medicalEmergency && <MedicalEmergencyBadge handled={Boolean(request.emergencyHandledAt)} />}
+        </div>
+        <p className="mt-2 text-sm text-muted-foreground">Catégorie : {CATEGORY_LABELS[request.category]}{request.district ? ` · Quartier : ${request.district}` : ""}</p>
       </div>
+      {request.medicalEmergency && (
+        <p className="rounded-xl border-2 border-red-700 bg-red-50 p-3 text-sm text-red-950">
+          {request.emergencyHandledAt
+            ? <>Urgence médicale prise en charge le <time dateTime={request.emergencyHandledAt}>{dateTime.format(new Date(request.emergencyHandledAt))}</time>.</>
+            : "Urgence médicale signalée : l’habitant a été invité à appeler le 15 ou le 112. Utilisez « Prise en charge » dans le bandeau rouge."}
+        </p>
+      )}
+      <PriorityPanel key={`${request.id}-${request.priority}`} request={request} canProcess={canProcess} />
       {(request.location || request.maskedFields?.includes("location")) && (
         <p className="flex items-start gap-2 text-sm"><MapPin className="mt-0.5 size-4 shrink-0" aria-hidden="true" /><span><span className="font-medium">Lieu : </span><MaskedValue field="location" masked={request.maskedFields} value={request.location} /></span></p>
       )}
@@ -45,6 +62,8 @@ export function RequestDetail({ request, canProcess }: { request: ServiceRequest
           ))}
         </ol>
       </div>
+      <RequestMessages request={request} canProcess={canProcess} />
+      <SimilarRequestsPanel request={request} canProcess={canProcess} />
       {request.allowedTransitions.length === 0 ? (
         <p className="rounded-md bg-slate-50 p-3 text-sm text-muted-foreground">Demande close : aucune autre étape possible.</p>
       ) : canProcess ? (

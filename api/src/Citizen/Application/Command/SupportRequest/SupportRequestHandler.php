@@ -44,6 +44,10 @@ final readonly class SupportRequestHandler
         }
         $count = ($this->supports->countByRequests([$request->id])[$request->id] ?? 0)
             + ($cmd->support && $existing === null ? 1 : 0) - (!$cmd->support && $existing !== null ? 1 : 0);
+        // F80 : un signalement très soutenu monte en priorité (règle automatique, sans effet sur une priorité d'agent).
+        if ($request->reassessPriority(max(0, $count), $this->clock->now())) {
+            $this->requests->save($request);
+        }
 
         return PublicRequestView::from($request, max(0, $count), $cmd->support, $citizen->id);
     }
