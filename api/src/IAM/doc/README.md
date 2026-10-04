@@ -22,7 +22,6 @@ IAM ne sait pas ce qu’est un agent ou un citoyen. Les profils métier rattach�
 | POST | `/api/login_check` | Login, JWT d’audience `site` |
 | GET | `/api/iam/me`, `/api/iam/me/spaces` | Profil et espaces accessibles |
 | POST | `/api/iam/portal-codes`, `/api/iam/portal-sessions` | Passage site → admin (PKCE) |
-| POST | `/api/iam/me/password` | Changer son code (`{currentPassword, newPassword}`), lève l’obligation du code provisoire (F71) |
 | GET | `/api/iam/security/login-events` | Journal des verrouillages de connexion (permission `admin.security.read`, L8) |
 | POST | `/api/iam/login-links`, `/api/iam/login-links/consume` | Connexion par lien e-mail à usage unique, lié au navigateur (D02, L15) |
 | POST | `/api/iam/sign-in/verify`, `/api/iam/sign-in/resend` | Seconde étape : code à 6 chiffres envoyé par e-mail (F53, L15) |

@@ -24,12 +24,12 @@ Option 2, validée par l’équipe.
 - **Citizen** orchestre le cas d’usage `WelcomeNewResident` (`POST /api/citizen/accounts/welcome`), autorisé par le port `CitizenAccountAccessPolicy` (permission `admin.citizen.write`, Administration), journalisé par `AuditTrail` (sans le code).
 - **IAM** fournit le port Citizen `ResidentAccountProvisioner` (`IAM/Infrastructure/Adapter/Citizen/IAMResidentAccountProvisioner`, cas d’usage `CreateResidentAccount`) : identifiant `NT-XXXX-XXXX` unique, code provisoire `XXXX-XXXX` (alphabet sans 0/O/1/I), haché, renvoyé une seule fois.
 - Sans e-mail, IAM enregistre une adresse technique non routable `nt-xxxx-xxxx@habitant.nova-terra.invalid` pour conserver l’unicité et l’identifiant de sécurité ; elle n’est jamais affichée (`/api/iam/me`, liste des comptes citoyens).
-- Connexion : `POST /api/login_check` accepte l’identifiant d’habitant dans le champ `email`. Tant que le code provisoire n’est pas remplacé (`POST /api/iam/me/password`), l’API refuse les routes privées autres que le profil IAM (403 `password_change_required`).
+- Connexion : `POST /api/login_check` accepte l’identifiant d’habitant dans le champ `email`. Tant que le code provisoire n’est pas remplacé (`PUT /api/iam/me/password`), l’API refuse les routes privées autres que le profil IAM (403 `password_change_required`).
 
 ## Conséquences
 
 - Modifications localisées de `User` (deux colonnes, migration `Version20261003123200`) ; la connexion par e-mail est inchangée.
-- Le changement de code ne révoque pas les autres sessions (version de session inchangée) : à revoir avec la révocation commune.
+- Le changement de code passe par le cas d’usage `ChangeMyPassword` du lot L15 (`PUT /api/iam/me/password`) : les autres sessions sont fermées et une nouvelle session est rendue à l’appareil. La connexion par identifiant suit `CompleteSignIn` (appareils, alertes) ; `User::contactEmail()` ignore l’adresse technique, aucun e-mail n’est donc envoyé à un compte sans e-mail.
 - La fiche imprimée existe en français, anglais et arabe (sens de droite à gauche).
 
 <!-- backlinks:start -->

@@ -15,7 +15,7 @@ Lots L11 (F45, F46), L21 (F71, F72) et L5 (D14, F27). Livré, **non testé et no
 | Fiche `/services?service=<id>` | Bloc « Où nous trouver » : adresse, quartier, itinéraire, mini-carte à la demande | idem |
 | `/bienvenue` (accueil, espace citoyen, fiche d’accueil imprimée) | 3 questions sans inscription (foyer, besoins, soins réguliers) → check-list de premières démarches et services priorisés ; connecté : invitation à compléter le profil au lieu de s’inscrire | catalogue public |
 | `/connexion` → « Je n’ai pas d’adresse e-mail » | Connexion par identifiant d’habitant `NT-XXXX-XXXX` et code | [ADR 010](../../../../doc/technique/decisions/010-comptes-crees-a-l-accueil.md), IAM `login_check` |
-| `/espace/nouveau-code` | Remplacement obligatoire du code provisoire (`POST /api/iam/me/password`) ; l’espace citoyen y renvoie tant que l’API répond 403 | [IAM](../../../../api/src/IAM/doc/README.md) |
+| `/espace/nouveau-code` | Remplacement obligatoire du code provisoire (`PUT /api/iam/me/password`) ; l’espace citoyen y renvoie tant que l’API répond 403 | [IAM](../../../../api/src/IAM/doc/README.md) |
 
 Code : module `public` (`core/domain/service-places.ts`, `newcomer-guide.ts`, ports `places.gateway.ts`, adaptateurs navigateur `geolocation.browser.gateway.ts` et `leaflet-cdn.map.gateway.ts`, composition `ui/places-dependencies.ts`) ; module `auth` (`resident-access.*`, `ui/sections/resident-login.tsx`, `ui/pages/new-code.tsx`).
 
