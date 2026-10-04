@@ -2,7 +2,14 @@ import { ApiClient, ApiHttpError } from "@boilerplate/shared-utils/api-client"
 import { AppError } from "@/modules/shared/core/lib/use-cases.decorator"
 import { apiExplanation } from "./citizen-api"
 import type { ServiceRequestGateway } from "../../../../application/ports/gateway/service-request.gateway"
-import type { RequestDraft, ServiceRequest } from "../../../../domain/service-request"
+import type {
+  ReceiptVerification,
+  RequestDraft,
+  RequestMessage,
+  RequestMessages,
+  RequestReceipt,
+  ServiceRequest
+} from "../../../../domain/service-request"
 
 const NETWORK_MESSAGE = "Impossible de joindre le service. Vérifiez votre connexion puis réessayez."
 const UNAVAILABLE_MESSAGE = "Le service est momentanément indisponible. Réessayez dans quelques instants."
@@ -48,7 +55,25 @@ export class ServiceRequestHttpGateway extends ApiClient implements ServiceReque
       description: draft.description,
       location: draft.location || null,
       serviceId: draft.serviceId,
-      isPublic: Boolean(draft.isPublic)
+      isPublic: Boolean(draft.isPublic),
+      medicalEmergency: Boolean(draft.medicalEmergency),
+      district: draft.district || null
     }, ApiClient.authHeaders(token)))
+  }
+
+  listMessages(token: string, reference: string): Promise<RequestMessages> {
+    return this.execute(() => this.get<RequestMessages>(`/citizen/requests/${encodeURIComponent(reference)}/messages`, ApiClient.authHeaders(token)))
+  }
+
+  postMessage(token: string, reference: string, body: string): Promise<RequestMessage> {
+    return this.execute(() => this.post<RequestMessage>("/citizen/requests/messages", { reference, body }, ApiClient.authHeaders(token)))
+  }
+
+  getReceipt(token: string, reference: string): Promise<RequestReceipt> {
+    return this.execute(() => this.get<RequestReceipt>(`/citizen/requests/${encodeURIComponent(reference)}/receipt`, ApiClient.authHeaders(token)))
+  }
+
+  verifyReceipt(reference: string, fingerprint: string): Promise<ReceiptVerification> {
+    return this.execute(() => this.post<ReceiptVerification>("/citizen/receipts/verify", { reference, fingerprint }))
   }
 }

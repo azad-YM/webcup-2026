@@ -12,10 +12,13 @@ import { FormAnnouncement, SelectField, TextAreaField, TextField } from "@/modul
 import { CitizenAccessState, useCitizenAccess } from "../components/citizen-access"
 import { StatusBadge } from "../components/request-status"
 import { useSubmitRequestMutation } from "../../core/application/rtk-api/service-requests"
+import { useListDistrictsQuery } from "../../core/application/rtk-api/citizen"
+import { MedicalEmergencyNotice, NotAnEmergencyServiceNote } from "../components/medical-emergency-notice"
 import {
   formatDateTime,
   isRequestType,
   LIMITS,
+  looksLikeMedicalEmergency,
   REQUEST_TYPE_LABELS,
   validateDraft,
   type DraftErrors,
@@ -74,7 +77,11 @@ export function NewServiceRequestPage({ serviceNotice }: { serviceNotice?: React
 }
 
 function RequestForm({ initialType, serviceId, onSent }: { initialType: RequestType; serviceId: string | null; onSent: (request: ServiceRequest) => void }) {
-  const [draft, setDraft] = useState<RequestDraft>({ type: initialType, subject: "", description: "", location: "", serviceId })
+  const [draft, setDraft] = useState<RequestDraft>({ type: initialType, subject: "", description: "", location: "", serviceId, district: "", medicalEmergency: false })
+  const districts = useListDistrictsQuery()
+  // F86 : repérage local à la saisie ; le message s'affiche tout de suite, sans bloquer l'envoi.
+  const detected = looksLikeMedicalEmergency(`${draft.subject} ${draft.description}`)
+  const emergency = Boolean(draft.medicalEmergency) || detected
   const [errors, setErrors] = useState<DraftErrors>({})
   const [submit, { isLoading, error }] = useSubmitRequestMutation()
   const sending = useRef(false)
@@ -108,6 +115,21 @@ function RequestForm({ initialType, serviceId, onSent }: { initialType: RequestT
   const report = draft.type === "report"
   return (
     <form onSubmit={send} noValidate className="space-y-6">
+      <div className="flex items-start gap-3 rounded-xl border-2 border-red-200 bg-white p-4">
+        <input
+          id="demande-urgence"
+          type="checkbox"
+          className="mt-1 size-5 accent-red-700"
+          checked={Boolean(draft.medicalEmergency)}
+          onChange={(event) => setDraft((current) => ({ ...current, medicalEmergency: event.target.checked, isPublic: event.target.checked ? false : current.isPublic }))}
+          aria-describedby="demande-urgence-aide"
+        />
+        <div>
+          <label htmlFor="demande-urgence" className="font-medium text-slate-950">C’est une urgence médicale</label>
+          <p id="demande-urgence-aide" className="text-sm text-slate-700">Votre demande sera traitée en priorité, mais appelez d’abord le 15 ou le 112.</p>
+        </div>
+      </div>
+      {emergency && <MedicalEmergencyNotice detected={detected && !draft.medicalEmergency} />}
       <SelectField
         id="demande-type"
         label="Type de demande"
@@ -147,7 +169,17 @@ function RequestForm({ initialType, serviceId, onSent }: { initialType: RequestT
         error={errors.location}
         onChange={(event) => update("location", event.target.value)}
       />
-      {report && (
+      <SelectField
+        id="demande-district"
+        label="Quartier concerné"
+        optional
+        placeholder={districts.isError ? "Liste des quartiers indisponible" : "Celui de mon profil"}
+        hint="Aide les agents à regrouper les demandes d’un même secteur."
+        options={(districts.data ?? []).map((district) => ({ value: district, label: district }))}
+        value={draft.district ?? ""}
+        onChange={(event) => update("district", event.target.value)}
+      />
+      {report && !draft.medicalEmergency && (
         <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
           <input
             id="demande-publique"
@@ -163,6 +195,7 @@ function RequestForm({ initialType, serviceId, onSent }: { initialType: RequestT
           </div>
         </div>
       )}
+      <NotAnEmergencyServiceNote />
       <FormAnnouncement tone="error">{failure && failure.status !== 401 ? failure.data : null}</FormAnnouncement>
       <button
         type="submit"
@@ -190,9 +223,17 @@ function Confirmation({ request, onAnother }: { request: ServiceRequest; onAnoth
         <div><dt className="text-sm text-slate-600">Objet</dt><dd className="font-medium text-slate-900">{request.subject}</dd></div>
         <div><dt className="text-sm text-slate-600">État</dt><dd className="mt-1"><StatusBadge status={request.status} /></dd></div>
       </dl>
-      <p className="mt-5 text-slate-800">Vous suivrez chaque étape du traitement dans « Mes demandes ».</p>
+      {request.medicalEmergency && (
+        <div className="mt-5"><MedicalEmergencyNotice detected={false} /></div>
+      )}
+      <p className="mt-5 text-slate-800">
+        {request.medicalEmergency
+          ? "Votre demande a été signalée comme urgence médicale : les agents de la mairie sont alertés immédiatement. Elle ne remplace pas les secours."
+          : "Vous suivrez chaque étape du traitement dans « Mes demandes »."}
+      </p>
       <div className="mt-6 flex flex-wrap gap-3">
         <Link href={`/espace/demandes?ref=${encodeURIComponent(request.reference)}` as Route} className="rounded-xl bg-teal-700 px-5 py-3 font-medium text-white hover:bg-teal-800">Suivre ma demande</Link>
+        <Link href={`/espace/demandes/accuse?ref=${encodeURIComponent(request.reference)}` as Route} className="rounded-xl border border-slate-300 bg-white px-5 py-3 font-medium hover:bg-slate-50">Accusé de réception (imprimer ou télécharger)</Link>
         <button type="button" onClick={onAnother} className="rounded-xl border border-slate-300 bg-white px-5 py-3 font-medium hover:bg-slate-50">Envoyer une autre demande</button>
       </div>
     </section>
