@@ -13,4 +13,7 @@ namespace IAM\Application\Ports\Provider;
 interface AccountSecurityNotifier
 {
     public function newDeviceSignedIn(string $userId, string $deviceId, string $deviceLabel, \DateTimeImmutable $at): void;
+
+    /** F85 : activité suspecte sur le compte (protection appliquée). Idempotent pour une même `$sourceKey`. */
+    public function unusualActivity(string $userId, string $sourceKey, string $message, \DateTimeImmutable $at): void;
 }

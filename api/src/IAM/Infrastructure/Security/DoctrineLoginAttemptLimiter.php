@@ -107,6 +107,21 @@ final readonly class DoctrineLoginAttemptLimiter implements LoginAttemptLimiter
         return $lock;
     }
 
+    public function lockAccount(string $email, int $seconds): void
+    {
+        if ($seconds <= 0) {
+            return;
+        }
+        $now = $this->now();
+        $id = $this->keys($email, '')['account'];
+        $until = $now + min(self::MAX_LOCK, $seconds);
+        $this->db()->executeStatement(
+            'INSERT INTO iam_login_attempt_buckets (id, failures, window_until, locked_until, lockouts, expires_at) VALUES (?, 0, ?, ?, 1, ?)
+             ON DUPLICATE KEY UPDATE locked_until = GREATEST(locked_until, VALUES(locked_until)), lockouts = lockouts + 1, expires_at = GREATEST(expires_at, VALUES(expires_at))',
+            [$id, $now, $until, $until + self::MEMORY],
+        );
+    }
+
     public function recordSuccess(string $email, string $ip): void
     {
         $keys = $this->keys($email, $ip);

@@ -23,7 +23,9 @@ class CitizenNotification
     public const KIND_IDEA_UPDATED = 'idea.updated';
     /** F54 : connexion au compte depuis un nouvel appareil (fait signalé par IAM). */
     public const KIND_SECURITY_NEW_DEVICE = 'security.new_device';
-    public const KINDS = [self::KIND_REQUEST_STATUS, self::KIND_APPOINTMENT_REMINDER, self::KIND_CONCERN_UPDATED, self::KIND_IDEA_UPDATED, self::KIND_SECURITY_NEW_DEVICE];
+    /** F85 : protection appliquée après une activité suspecte (verrouillage, code exigé). */
+    public const KIND_SECURITY_UNUSUAL_ACTIVITY = 'security.unusual_activity';
+    public const KINDS = [self::KIND_REQUEST_STATUS, self::KIND_APPOINTMENT_REMINDER, self::KIND_CONCERN_UPDATED, self::KIND_IDEA_UPDATED, self::KIND_SECURITY_NEW_DEVICE, self::KIND_SECURITY_UNUSUAL_ACTIVITY];
 
     private ?\DateTimeImmutable $readAt = null;
 

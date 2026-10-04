@@ -46,6 +46,10 @@ final readonly class SignInFlow
     {
         $deviceHash = self::deviceHash($deviceSecret);
         $email = $user->contactEmail();
+        // F85 : après une activité suspecte, le code est exigé même sans vérification activée ni appareil de confiance.
+        if ($email !== null && $user->codeRequiredAt($this->clock->now())) {
+            return $this->challenge($user, $email, $method, $deviceHash);
+        }
         if ($user->emailVerificationEnabled() && $email !== null) {
             $device = $deviceHash !== null ? $this->devices->findByHash($user->getId(), $deviceHash) : null;
             if ($device === null || !$device->isTrusted($this->clock->now())) {

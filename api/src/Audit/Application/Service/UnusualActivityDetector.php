@@ -33,6 +33,12 @@ final readonly class UnusualActivityDetector
         'submissions.citizen_burst' => 'Rafale d’envois d’un habitant',
         'agent.mass_changes' => 'Masse de changements par un agent',
         'agent.sensitive_views' => 'Affichages répétés de données sensibles',
+        'integrity.request_closed_without_step' => 'Demande close sans étape',
+        'integrity.appointment_disabled_service' => 'Rendez-vous sur un service désactivé',
+        'integrity.duplicate_reference' => 'Référence en double',
+        'integrity.negative_counter' => 'Compteur négatif',
+        'integrity.orphan_supports' => 'Soutiens sans demande',
+        'integrity.slot_without_appointment' => 'Créneaux bloqués sans rendez-vous',
     ];
 
     public const PEAK_WARNING = 5;

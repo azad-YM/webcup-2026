@@ -171,6 +171,17 @@ services:
     Audit\Application\Ports\Provider\AuditAccessPolicy:
         alias: Administration\Infrastructure\Adapter\Audit\AdminAuditAccessPolicy
 
+    # F85 (L25) : détecteur d'activité inhabituelle — Audit consomme IAM (connexions, protection d'un compte) et Citizen
+    # (cohérence des données, rafales d'envois) ; le port Shared AbuseSignals donne les refus 429 et des formulaires.
+    Audit\Application\Ports\Repository\AnomalyRepository:
+        alias: Audit\Infrastructure\Doctrine\Repository\DoctrineAnomalyRepository
+    Audit\Application\Ports\Provider\AccountSignalsProvider:
+        alias: IAM\Infrastructure\Adapter\Audit\IAMAccountSignals
+    Audit\Application\Ports\Provider\AccountProtector:
+        alias: IAM\Infrastructure\Adapter\Audit\IAMAccountProtector
+    Audit\Application\Ports\Provider\CitizenSignalsProvider:
+        alias: Citizen\Infrastructure\Adapter\Audit\CitizenSignals
+
     # Port Shared du journal des actions, appelé par les cas d'usage des BC propriétaires ; implémenté par Audit.
     Shared\Application\Ports\Service\AuditTrail:
         alias: Audit\Infrastructure\Adapter\Shared\AuditTrailRecorder

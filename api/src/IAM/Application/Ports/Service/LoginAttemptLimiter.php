@@ -16,6 +16,9 @@ interface LoginAttemptLimiter
     /** Counts a failed attempt; returns the lock duration when this failure triggers a lock (zero otherwise). */
     public function recordFailure(string $email, string $ip): int;
 
+    /** F85 : verrouille les connexions de ce compte (toutes adresses) pendant `$seconds`, sans compter d'échec. */
+    public function lockAccount(string $email, int $seconds): void;
+
     /** A successful login clears the account and pair counters (the IP counter is kept). */
     public function recordSuccess(string $email, string $ip): void;
 }

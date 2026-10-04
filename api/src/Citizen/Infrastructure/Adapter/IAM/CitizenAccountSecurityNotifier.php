@@ -35,4 +35,20 @@ final readonly class CitizenAccountSecurityNotifier implements AccountSecurityNo
             '/espace/securite',
         ));
     }
+
+    public function unusualActivity(string $userId, string $sourceKey, string $message, \DateTimeImmutable $at): void
+    {
+        $citizen = $this->citizens->findByUserId($userId);
+        if ($citizen === null) {
+            return;
+        }
+        $this->commandBus->dispatch(new RecordCitizenNotificationCommand(
+            $citizen->id,
+            CitizenNotification::KIND_SECURITY_UNUSUAL_ACTIVITY,
+            'unusual:'.mb_substr($sourceKey, 0, 60),
+            'Activité inhabituelle sur votre compte',
+            $message,
+            '/espace/securite',
+        ));
+    }
 }

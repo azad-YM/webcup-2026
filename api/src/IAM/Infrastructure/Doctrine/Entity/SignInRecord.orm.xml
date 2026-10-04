@@ -3,6 +3,7 @@
   <entity name="IAM\Domain\Entity\SignInRecord" table="iam_sign_ins">
     <indexes>
       <index name="IDX_IAM_SIGN_IN_USER" columns="user_id,occurred_at"/>
+      <index name="IDX_IAM_SIGN_IN_OCCURRED" columns="occurred_at"/>
     </indexes>
     <id name="id" type="string" length="36"/>
     <field name="userId" column="user_id" type="string" length="36"/>
