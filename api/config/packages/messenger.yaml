@@ -16,6 +16,8 @@ framework:
             sync: 'sync://'
         routing:
             'Shared\Domain\Event\DomainEvent': async
+            # E-mails (L15) : envoyés par le worker, après validation de la transaction.
+            'Symfony\Component\Mailer\Messenger\SendEmailMessage': async
 
 when@test:
     framework:

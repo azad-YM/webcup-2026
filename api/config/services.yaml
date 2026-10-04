@@ -15,6 +15,9 @@ parameters:
     env(PUSHER_KEY): ''
     env(PUSHER_SECRET): ''
     env(PUSHER_CLUSTER): 'eu'
+    # L15 : adresse publique du site (liens de connexion et d'alerte dans les e-mails) et expéditeur des e-mails.
+    env(SITE_URL): 'http://localhost:5178'
+    env(MAILER_FROM): 'Mairie de Nova Terra <no-reply@nova-terra.local>'
 
 services:
     _defaults:
@@ -226,6 +229,9 @@ services:
         alias: IAM\Infrastructure\Security\DoctrineLoginAttemptLimiter
     IAM\Application\Ports\Repository\LoginSecurityEventRepository:
         alias: IAM\Infrastructure\Doctrine\Repository\DoctrineLoginSecurityEventRepository
+    # IAM consomme Citizen (F54 : notification « nouvel appareil » dans l'espace citoyen).
+    IAM\Application\Ports\Provider\AccountSecurityNotifier:
+        alias: Citizen\Infrastructure\Adapter\IAM\CitizenAccountSecurityNotifier
     IAM\Application\Ports\Provider\SecurityJournalAccessPolicy:
         alias: Administration\Infrastructure\Adapter\IAM\AdminSecurityJournalAccessPolicy
     Citizen\Application\Command\DeleteMyCitizenAccount\DeleteMyCitizenAccountHandler:

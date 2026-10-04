@@ -2,7 +2,12 @@
 
 namespace IAM\Infrastructure\Security;
 
+use IAM\Application\Command\CompleteSignIn\CompleteSignInCommand;
 use IAM\Application\Command\LoginWithCredentials\LoginWithCredentialsHandler;
+use IAM\Domain\Entity\User;
+use IAM\Domain\Entity\SignInRecord;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\HandledStamp;
 use IAM\Application\Ports\Service\LoginAttemptLimiter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -11,7 +16,6 @@ use Symfony\Component\Security\Core\Exception\AccountStatusException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 
@@ -19,8 +23,8 @@ class PasswordAuthenticator extends AbstractAuthenticator
 {
     public function __construct(
         private LoginWithCredentialsHandler $commandHandler,
-        private JWTTokenManagerInterface $jwtManager,
         private LoginAttemptLimiter $limiter,
+        private MessageBusInterface $commandBus,
     ) {}
 
     public function supports(Request $request): ?bool
@@ -54,8 +58,16 @@ class PasswordAuthenticator extends AbstractAuthenticator
     ): JsonResponse {
         [$email] = $this->credentials($request);
         $this->limiter->recordSuccess($email ?? '', $request->getClientIp() ?? 'unknown');
-        $jwt = $this->jwtManager->createFromPayload($token->getUser(), ['aud' => 'site']);
-        return new JsonResponse(['token' => $jwt]);
+        $user = $token->getUser();
+        if (!$user instanceof User) {
+            return new JsonResponse(['error' => 'Identifiants invalides.'], 401);
+        }
+        // L15 : seconde étape éventuelle (code e-mail, F53), appareil reconnu (F54), puis JWT `site`.
+        $data = json_decode($request->getContent(), true);
+        $deviceId = is_array($data) && is_string($data['deviceId'] ?? null) ? $data['deviceId'] : null;
+        $envelope = $this->commandBus->dispatch(new CompleteSignInCommand($user->getId(), SignInRecord::METHOD_PASSWORD, $deviceId));
+
+        return new JsonResponse($envelope->last(HandledStamp::class)?->getResult());
     }
 
     public function onAuthenticationFailure(

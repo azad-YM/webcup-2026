@@ -19,7 +19,9 @@ class CitizenNotification
     public const KIND_REQUEST_STATUS = 'request.status_changed';
     public const KIND_APPOINTMENT_REMINDER = 'appointment.reminder';
     public const KIND_CONCERN_UPDATED = 'concern.updated';
-    public const KINDS = [self::KIND_REQUEST_STATUS, self::KIND_APPOINTMENT_REMINDER, self::KIND_CONCERN_UPDATED];
+    /** F54 : connexion au compte depuis un nouvel appareil (fait signalé par IAM). */
+    public const KIND_SECURITY_NEW_DEVICE = 'security.new_device';
+    public const KINDS = [self::KIND_REQUEST_STATUS, self::KIND_APPOINTMENT_REMINDER, self::KIND_CONCERN_UPDATED, self::KIND_SECURITY_NEW_DEVICE];
 
     private ?\DateTimeImmutable $readAt = null;
 

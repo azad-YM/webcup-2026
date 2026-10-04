@@ -5,7 +5,9 @@ x-api-environment: &api-environment
   APP_SECRET: dev-only-change-me
   DATABASE_URL: "mysql://novaterra:novaterra@db:3306/novaterra?serverVersion=8.4.0&charset=utf8mb4"
   MESSENGER_TRANSPORT_DSN: "doctrine://default?auto_setup=0"
-  MAILER_DSN: "null://null"
+  # Mailpit (http://localhost:8025) reçoit les e-mails de développement (liens de connexion, codes, alertes).
+  MAILER_DSN: "smtp://mailpit:1025"
+  SITE_URL: http://localhost:5178
   CORS_ALLOW_ORIGIN: "^https?://(localhost|127\\.0\\.0\\.1)(:[0-9]+)?$"
   JWT_SECRET_KEY: "%kernel.project_dir%/config/jwt/private.pem"
   JWT_PUBLIC_KEY: "%kernel.project_dir%/config/jwt/public.pem"
@@ -129,6 +131,15 @@ services:
     environment:
       <<: *api-environment
       SKIP_APP_SETUP: "1"
+    networks:
+      - novaterra
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: novaterra-mailpit
+    restart: unless-stopped
+    ports:
+      - "8025:8025"
     networks:
       - novaterra
 
