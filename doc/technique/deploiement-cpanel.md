@@ -33,7 +33,7 @@ Les étapes ci-dessous détaillent ce que font les scripts, pour une installatio
 ## 1. Préparer le compte cPanel
 
 1. **Domaines** : créer les trois (sous-)domaines avec les racines ci-dessus, puis activer le certificat SSL (AutoSSL / Let’s Encrypt) pour chacun.
-2. **PHP** (« Sélecteur de version PHP » ou MultiPHP) : PHP **8.2 ou plus** pour l’API, avec `pdo_mysql`, `mbstring`, `intl`, `openssl`, `sodium`, `zlib`, `ctype`, `iconv`, `opcache`. `memory_limit` ≥ 256M.
+2. **PHP** (« Sélecteur de version PHP » ou MultiPHP) : PHP **8.4** pour l’API (objets paresseux natifs de Doctrine), avec `pdo_mysql`, `mbstring`, `intl`, `openssl`, `sodium`, `zlib`, `ctype`, `iconv`, `opcache`. `memory_limit` ≥ 256M.
 3. **Base de données** (« Bases de données MySQL ») : créer la base et l’utilisateur (préfixés par le nom du compte), donner tous les privilèges. Relever la version dans phpMyAdmin : les migrations sont écrites et validées pour **MySQL 8.4** ; sur MariaDB, renseigner `serverVersion=mariadb-10.x.y` et surveiller la première migration.
 4. **E-mail** : créer une adresse d’envoi (ex. `no-reply@…`) et noter son serveur SMTP.
 5. **Terminal / SSH** : PHP s’appelle `ea-php84` (ex. `ea-php84 bin/console`), Composer `ea-php84 /usr/local/bin/composer` ; les tâches cron utilisent la même commande.
