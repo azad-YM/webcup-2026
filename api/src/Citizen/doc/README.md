@@ -310,4 +310,5 @@ Pas d’espace IAM « citoyen » : l’espace citoyen est une zone du site, qui 
 - [Notifications](notifications.md)
 - [Rendez-vous](rendez-vous.md)
 - [Participation](participation.md)
+- [Participation (BC)](../../Participation/doc/README.md)
 <!-- backlinks:end -->

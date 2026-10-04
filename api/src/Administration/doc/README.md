@@ -1,3 +1,4 @@
+| Participation consomme Administration | `Participation\Application\Ports\Provider\ParticipationAccessPolicy`, `DistrictDirectory` | `Infrastructure/Adapter/Participation/AdminParticipationAccessPolicy` (`admin.participation.read` / `write`), `AdminParticipationDistrictDirectory` |
 # Documentation — Administration
 
 <!-- navigation:start -->
@@ -85,7 +86,7 @@ Les deux adaptateurs s’appuient sur les requêtes internes `CheckCurrentMember
 | Communication consomme Administration | `Communication\Application\Ports\Provider\DistrictDirectory` | `Infrastructure/Adapter/Communication/AdminCommunicationDistrictDirectory` |
 | Citizen consomme Administration | `Citizen\Application\Ports\Provider\DistrictDirectory` | `Infrastructure/Adapter/Citizen/AdminCitizenDistrictDirectory` |
 
-Permissions ajoutées au catalogue : `admin.service.write` (catalogue des services) et `admin.communication.write` (publications et alertes), données au rôle de référence « Agent municipal » par la CLI d’initialisation.
+Permissions ajoutées au catalogue : `admin.service.write` (catalogue des services) et `admin.communication.write` (publications et alertes), puis `admin.participation.read` et `admin.participation.write` (BC Participation, L19, migration `Version20261003122000`), données au rôle de référence « Agent municipal » par la CLI d’initialisation.
 
 Les erreurs contractuelles `AccountAlreadyExists` et `AccountCreationRejected` appartiennent à Administration ; l’adaptateur IAM y traduit ses propres erreurs.
 
@@ -128,4 +129,5 @@ Les erreurs contractuelles `AccountAlreadyExists` et `AccountCreationRejected` a
 - [Admin — membres](../../../../front/apps/admin/doc/membres.md)
 - [ADR 005](../../../../doc/technique/decisions/005-bc-communication.md)
 - [Site — vitrine et alertes](../../../../front/apps/site/doc/vitrine-et-alertes.md)
+- [Participation (BC)](../../Participation/doc/README.md)
 <!-- backlinks:end -->

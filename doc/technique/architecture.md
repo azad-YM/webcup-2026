@@ -1,3 +1,6 @@
+| `Participation` — `ParticipationAccessPolicy`, `DistrictDirectory` | `Administration/Infrastructure/Adapter/Participation/AdminParticipationAccessPolicy`, `AdminParticipationDistrictDirectory` |
+| `Participation` — `ParticipantProvider`, `CitizenNotifier` | `Citizen/Infrastructure/Adapter/Participation/CitizenParticipantProvider`, `CitizenParticipationNotifier` |
+| `Citizen` — `AccountDataEraser` (tag `citizen.account_data_eraser`) | `Participation/Infrastructure/Adapter/Citizen/ParticipationAccountDataEraser` (contributions et idées) |
 # Architecture technique
 
 <!-- navigation:start -->
@@ -16,7 +19,7 @@ Admin React/Vite (agents) ───────┼──► API Symfony ──�
 
 ## API modulaire
 
-L’API est découpée en bounded contexts (BC) de même niveau : `IAM`, `Administration`, `Citizen`, `Communication`, `Pilotage` et `Audit`, plus le socle `Shared`. Un BC peut être subdivisé en sous-domaines (SD) lorsqu’il grossit. Chaque BC simple ou SD porte `Application`, `Domain`, `Infrastructure`, `Tests` et `doc`.
+L’API est découpée en bounded contexts (BC) de même niveau : `IAM`, `Administration`, `Citizen`, `Communication`, `Participation`, `Pilotage` et `Audit`, plus le socle `Shared`. Un BC peut être subdivisé en sous-domaines (SD) lorsqu’il grossit. Chaque BC simple ou SD porte `Application`, `Domain`, `Infrastructure`, `Tests` et `doc`.
 
 ```text
 api/src/
@@ -30,6 +33,7 @@ api/src/
 ├── Pilotage/                   BC pilotage : flux de l’API du concours Webcup, suivi de l’équipe, tableau de bord (F50)
 ├── Audit/                      BC journal des actions de l’administration (ADR 006)
 ├── Communication/              BC information aux habitants : publications, alertes, audiences (ADR 005)
+├── Participation/              BC participation : projets, consultations et avis, contributions, boîte à idées (ADR 008)
 └── Shared/                     kernel, AppController, exceptions, AggregateRoot, ports techniques (dont temps réel)
 ```
 
@@ -86,9 +90,11 @@ Temps réel : Citizen projette ses événements de domaine de demande (`PublishS
 
 Pilotage lit aussi l’API externe du concours par son port `WebcupFeedGateway`, implémenté dans sa propre infrastructure (`Infrastructure/Http/WebcupHttpFeedGateway`, cache de 20 s) ; voir [Pilotage](../../api/src/Pilotage/doc/README.md).
 
-Journal des actions : les handlers d’Administration, Communication, Citizen, Pilotage et le limiteur de connexion d’IAM appellent le port Shared `AuditTrail` dans leur transaction ; le BC [Audit](../../api/src/Audit/doc/README.md) stocke et sert le journal ; voir l’[ADR 006](decisions/006-journal-des-actions.md).
+Journal des actions : les handlers d’Administration, Communication, Participation, Citizen, Pilotage et le limiteur de connexion d’IAM appellent le port Shared `AuditTrail` dans leur transaction ; le BC [Audit](../../api/src/Audit/doc/README.md) stocke et sert le journal ; voir l’[ADR 006](decisions/006-journal-des-actions.md).
 
 Publications et alertes : BC [Communication](../../api/src/Communication/doc/README.md), qui consulte Administration (droit de publier, quartiers) et Citizen (audience) par ses ports et projette ses événements vers le temps réel (`public.alerts`, `public.publications`, `district.{quartier}`, `alerts.health`) ; voir l’[ADR 005](decisions/005-bc-communication.md).
+
+Participation des habitants : BC [Participation](../../api/src/Participation/doc/README.md) (projets, consultations et avis, boîte à idées), qui consulte Administration (droits des agents, quartiers) et Citizen (citoyen connecté, notifications) par ses ports et journalise les actions des agents ; voir l’[ADR 008](decisions/008-bc-participation.md).
 
 Point d’extension : un BC exposant son propre espace implémente `IAM\Application\Ports\Provider\AccessibleSpacesProvider` dans son infrastructure (tag `iam.accessible_spaces`).
 
@@ -144,6 +150,7 @@ Les `AGENTS.md` sont répartis par périmètre : racine, `api/`, chaque BC/SD, `
 - [Documentation — IAM](../../api/src/IAM/doc/README.md)
 - [Documentation — Administration](../../api/src/Administration/doc/README.md)
 - [Documentation — Communication](../../api/src/Communication/doc/README.md)
+- [Documentation — Participation](../../api/src/Participation/doc/README.md)
 - [Documentation — Citizen](../../api/src/Citizen/doc/README.md)
 - [Documentation — Shared](../../api/src/Shared/doc/README.md)
 - [Documentation — Pilotage](../../api/src/Pilotage/doc/README.md)

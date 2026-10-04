@@ -52,7 +52,7 @@ Les lots regroupent les demandes qui partagent un même modèle ou un même écr
 | L16 | Mes données : export clair des informations personnelles, récapitulatif téléchargeable des demandes | F55, F56 | 1 700 | ⬜ |
 | L17 | Sobriété et performance : diagnostic environnemental, chargement sobre, connexion lente, médias légers, appareils peu puissants, version allégée | F57, F58, F59, F60, F61, F62 | 4 600 | ⬜ |
 | L18 | Services hors service : désactivation rapide par les administrateurs, état visible avant la démarche (prolonge L9) | F63, F64 | 1 440 | ⚠️ état visible et modifiable déjà livré (L9) ; blocage des démarches et réservations à construire |
-| L19 | Participation : projets en cours, consultations et avis, boîte à idées | F65, F66, F67, F68 | 2 960 | ⬜ |
+| L19 | Participation : projets en cours, consultations et avis, boîte à idées — nouveau BC [Participation](../../api/src/Participation/doc/README.md) ([ADR 008](../technique/decisions/008-bc-participation.md)), pages [site](../../front/apps/site/doc/participation.md) et [admin](../../front/apps/admin/doc/participation.md) | F65, F66, F67, F68 | 2 960 | 🟡 API (migration `Version20261003122000`, permissions `admin.participation.read`/`write`), site et espace admin « Participation » livrés ; non testé, non vérifié dans un navigateur |
 | L20 | Protection des données : durcissement contre les failles, données administratives réservées aux agents habilités | F69, F70 | 2 660 | ⬜ |
 | L21 | Nouveaux arrivants : accès sans e-mail et en plusieurs langues (avec L5), orientation « par où commencer » | F71, F72 | 1 520 | ⚠️ guide et raccourcis déjà présents (L4) ; accès sans e-mail, multilingue et réouverture du guide à construire |
 

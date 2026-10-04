@@ -2,7 +2,7 @@
 
 Lire [la documentation de l’application](doc/README.md), ses parcours et les documents IAM et Citizen qu’elle référence.
 
-Portail des habitants de Nova Terra : vitrine (`public`), connexion et inscription (`auth`), espace citoyen (`citizen`), socle (`shared`). Next.js App Router avec export statique (pas de route dynamique : paramètres d’URL), Redux Toolkit et RTK Query. Les usages navigateur sont dans des composants clients après initialisation ; le store est créé par instance dans `StoreProvider`, qui compose aussi les adaptateurs. Ne pas importer le code de l’admin.
+Portail des habitants de Nova Terra : vitrine (`public`), connexion et inscription (`auth`), espace citoyen (`citizen`), participation aux décisions (`participation` : projets, consultations, boîte à idées — [détail](doc/participation.md)), socle (`shared`). Next.js App Router avec export statique (pas de route dynamique : paramètres d’URL), Redux Toolkit et RTK Query. Les usages navigateur sont dans des composants clients après initialisation ; le store est créé par instance dans `StoreProvider`, qui compose aussi les adaptateurs. Ne pas importer le code de l’admin.
 
 Entre modules du site : port chez le consommateur, adaptateur dans `core/infrastructure/adapter/<consommateur>` du fournisseur, injection dans `StoreProvider` ; un écran qui réunit deux modules se compose dans `src/app/*/page.tsx` par props (slots). Pas d’import du store, des gateways concrètes ou de l’UI d’un autre module.
 
