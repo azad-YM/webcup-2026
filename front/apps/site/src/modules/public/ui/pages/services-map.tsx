@@ -1,5 +1,6 @@
 "use client"
 import { useMemo, useState } from "react"
+import { polling } from "@/modules/shared/ui/sobriety/polling"
 import { useSearchParams } from "next/navigation"
 import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
 import { format } from "@/modules/shared/core/i18n/locales"
@@ -84,7 +85,7 @@ function PlacesExplorer({ services }: { services: MunicipalService[] }) {
 /** F45 : carte des services physiques, chargée à la demande, et liste textuelle équivalente. */
 export function ServicesMapPage() {
   const t = useMessages(PLACES_MESSAGES)
-  const { data, error, isFetching, refetch } = useListServicesQuery(undefined, { pollingInterval: CONTENT_POLLING_MS })
+  const { data, error, isFetching, refetch } = useListServicesQuery(undefined, polling(CONTENT_POLLING_MS))
   return (
     <>
       <PageHeader trail={[{ label: t.mapTitle }]} title={t.mapTitle} lead={t.mapLead} />

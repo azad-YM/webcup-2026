@@ -44,3 +44,9 @@ html[data-text-size="150"] .site-header {
     break-inside: avoid;
   }
 }
+
+/* L17 (F61) : le pied de page, hors écran au chargement, n’est mis en page qu’à l’approche du défilement. */
+.site-footer { content-visibility: auto; contain-intrinsic-size: auto 28rem; }
+
+/* L17 (F60) : une image éventuelle ne déborde pas et garde ses proportions (dimensions explicites attendues). */
+img { height: auto; }

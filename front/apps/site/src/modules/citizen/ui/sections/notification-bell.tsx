@@ -1,8 +1,9 @@
 "use client"
 import { useEffect, useState } from "react"
+import { polling } from "@/modules/shared/ui/sobriety/polling"
 import { usePathname } from "next/navigation"
 import { Bell } from "@boilerplate/shared-ui/components/icon"
-import { Popover, PopoverContent, PopoverTrigger } from "@boilerplate/shared-ui/components"
+import { Popover, PopoverContent, PopoverTrigger } from "@boilerplate/shared-ui/components/shadcn/popover"
 import { useSession } from "@/modules/shared/ui/store-provider"
 import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
 import { useCitizenAccess } from "../components/citizen-access"
@@ -14,7 +15,7 @@ export function NotificationBell() {
   const { logout } = useSession()
   const pathname = usePathname()
   const [openOn, setOpenOn] = useState<string | null>(null)
-  const query = useListMyNotificationsQuery(undefined, { skip: !profile, pollingInterval: NOTIFICATIONS_POLLING_MS })
+  const query = useListMyNotificationsQuery(undefined, { skip: !profile, ...polling(NOTIFICATIONS_POLLING_MS) })
   const unauthorized = toQueryError(query.error)?.status === 401
   useEffect(() => { if (unauthorized) logout() }, [unauthorized, logout])
   if (!profile || unauthorized) return null

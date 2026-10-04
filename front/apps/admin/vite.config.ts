@@ -48,6 +48,21 @@ export default defineConfig({
   server: {
     host: true,
   },
+  // L17 (F58/F61) : bibliothèques stables dans des morceaux séparés (mis en cache d’une version à l’autre),
+  // pages chargées à la demande (`routes.tsx`).
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id: string) {
+          if (!id.includes("node_modules")) return undefined
+          if (/[\\/]node_modules[\\/](react|react-dom|scheduler|react-router)[\\/]/.test(id)) return "react"
+          if (/[\\/]node_modules[\\/](@reduxjs|redux|react-redux|immer|reselect)[\\/]/.test(id)) return "redux"
+          if (/[\\/]node_modules[\\/](radix-ui|@radix-ui|@base-ui|@floating-ui)[\\/]/.test(id)) return "ui"
+          return undefined
+        },
+      },
+    },
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),

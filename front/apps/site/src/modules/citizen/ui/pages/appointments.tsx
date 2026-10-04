@@ -1,5 +1,6 @@
 "use client"
 import { useEffect, useRef, useState } from "react"
+import { polling } from "@/modules/shared/ui/sobriety/polling"
 import { useSearchParams } from "next/navigation"
 import { CalendarCheck, CalendarClock, CalendarX, Clock, FileText, MapPin } from "@boilerplate/shared-ui/components/icon"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
@@ -56,7 +57,7 @@ function AppointmentFacts({ item }: { item: Pick<Appointment, "serviceName" | "w
 function BookingFlow({ moving, onDone }: { moving: Appointment | null; onDone: (appointment: Appointment) => void }) {
   const [serviceId, setServiceId] = useState<string | null>(moving?.serviceId ?? null)
   const [slot, setSlot] = useState<AppointmentSlot | null>(null)
-  const offer = useGetAppointmentOfferQuery(serviceId, { pollingInterval: APPOINTMENTS_POLLING_MS })
+  const offer = useGetAppointmentOfferQuery(serviceId, polling(APPOINTMENTS_POLLING_MS))
   const [book, booking] = useBookAppointmentMutation()
   const [change, changing] = useChangeAppointmentMutation()
   const failure = toQueryError(offer.error)
@@ -188,7 +189,7 @@ function AppointmentCard({ appointment, highlighted, onMove }: { appointment: Ap
 function AppointmentsContent() {
   const highlight = useSearchParams().get("id")
   const { logout } = useSession()
-  const query = useListMyAppointmentsQuery(undefined, { pollingInterval: APPOINTMENTS_POLLING_MS })
+  const query = useListMyAppointmentsQuery(undefined, polling(APPOINTMENTS_POLLING_MS))
   const [mode, setMode] = useState<{ kind: "list" } | { kind: "book" } | { kind: "move"; appointment: Appointment }>({ kind: "list" })
   const [confirmed, setConfirmed] = useState<Appointment | null>(null)
   const confirmation = useRef<HTMLHeadingElement>(null)

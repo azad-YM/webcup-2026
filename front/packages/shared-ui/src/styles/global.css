@@ -204,6 +204,23 @@ html[data-motion="reduce"] *::after {
   scroll-behavior: auto !important;
 }
 
+/* Mode léger (L17, F62) : ni animation ni transition, pas d’images ou d’effets décoratifs
+ * (ombres, flous, dégradés), mise en page simplifiée. Les informations restent toutes affichées. */
+html[data-light="on"] *,
+html[data-light="on"] *::before,
+html[data-light="on"] *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+  text-shadow: none !important;
+  backdrop-filter: none !important;
+}
+html[data-light="on"] *:not(:focus-visible) { box-shadow: none !important; }
+html[data-light="on"] [data-decorative] { display: none !important; }
+html[data-light="on"] [class*="bg-gradient-"],
+html[data-light="on"] [class*="bg-linear-"],
+html[data-light="on"] [class*="bg-radial-"] { background-image: none !important; }
+
 /* Contraste élevé (F23, F43) : textes plus foncés, bordures marquées, liens soulignés. */
 html[data-contrast="high"] {
   --foreground: #000000;

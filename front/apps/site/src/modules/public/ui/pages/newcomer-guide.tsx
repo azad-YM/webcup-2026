@@ -1,5 +1,6 @@
 "use client"
 import { useEffect, useRef, useState, type FormEvent } from "react"
+import { polling } from "@/modules/shared/ui/sobriety/polling"
 import Link from "next/link"
 import type { Route } from "next"
 import { ArrowRight, UserRound } from "@boilerplate/shared-ui/components/icon"
@@ -20,7 +21,7 @@ const radioClass = "flex items-center gap-3 rounded-xl border border-slate-200 b
 
 function RecommendedServices({ ids }: { ids: string[] }) {
   const places = useMessages(PLACES_MESSAGES)
-  const { data, error, isFetching, refetch } = useListServicesQuery(undefined, { pollingInterval: CONTENT_POLLING_MS })
+  const { data, error, isFetching, refetch } = useListServicesQuery(undefined, polling(CONTENT_POLLING_MS))
   if (error) return <ErrorState message={toQueryError(error)?.data ?? places.loadError} onRetry={() => void refetch()} retrying={isFetching} />
   if (!data) return <LoadingState label={places.loadingPlaces}><SkeletonCards count={3} /></LoadingState>
   const services = ids.map((id) => findService(data, id)).filter((service): service is MunicipalService => service !== null)

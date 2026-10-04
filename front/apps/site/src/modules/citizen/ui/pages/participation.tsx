@@ -1,5 +1,6 @@
 "use client"
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react"
+import { polling } from "@/modules/shared/ui/sobriety/polling"
 import Link from "next/link"
 import { CheckCircle2, HandHeart, MapPin, MessageCircleWarning, ShieldCheck } from "@boilerplate/shared-ui/components/icon"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
@@ -70,7 +71,7 @@ function PublicRequestCard({ request }: { request: PublicRequest }) {
 }
 
 function PublicRequests() {
-  const query = useListPublicRequestsQuery(undefined, { pollingInterval: PARTICIPATION_POLLING_MS })
+  const query = useListPublicRequestsQuery(undefined, polling(PARTICIPATION_POLLING_MS))
   useLogoutOnUnauthorized(query.error)
   const failure = toQueryError(query.error)
   const items = query.data ?? []
@@ -138,7 +139,7 @@ function ConcernForm() {
     )
   }
   return (
-    <form onSubmit={(event) => void send(event)} noValidate className="space-y-5 rounded-2xl border border-slate-200 bg-white p-6">
+    <form onSubmit={(event) => void send(event)} noValidate className="space-y-5 rounded-2xl border border-slate-200 bg-white p-6" data-brouillon="inquietude">
       <SelectField id="inquietude-sujet" label="Thème" options={TOPIC_OPTIONS} value={draft.topic} onChange={(event) => setDraft({ ...draft, topic: event.target.value as ConcernTopic })} />
       <TextField id="inquietude-objet" label="Objet" value={draft.subject} maxLength={CONCERN_LIMITS.subject} required error={errors.subject} onChange={(event) => setDraft({ ...draft, subject: event.target.value })} />
       <TextAreaField id="inquietude-message" label="Votre message" rows={6} value={draft.message} maxLength={CONCERN_LIMITS.message} required error={errors.message} hint="N’indiquez pas d’information médicale ni de mot de passe." onChange={(event) => setDraft({ ...draft, message: event.target.value })} />
@@ -151,7 +152,7 @@ function ConcernForm() {
 }
 
 function MyConcerns() {
-  const query = useListConcernsQuery(undefined, { pollingInterval: PARTICIPATION_POLLING_MS })
+  const query = useListConcernsQuery(undefined, polling(PARTICIPATION_POLLING_MS))
   useLogoutOnUnauthorized(query.error)
   const failure = toQueryError(query.error)
   const items = query.data ?? []

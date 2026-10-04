@@ -1,7 +1,8 @@
 "use client"
 import { useEffect, useId } from "react"
+import { polling } from "@/modules/shared/ui/sobriety/polling"
 import Link from "next/link"
-import { Skeleton } from "@boilerplate/shared-ui/components"
+import { Skeleton } from "@boilerplate/shared-ui/components/shadcn/skeleton"
 import {
   ArrowRight,
   Building2
@@ -35,7 +36,7 @@ export function SpacesList({ variant = "full" }: { variant?: "full" | "compact" 
   const { data, error, refetch, isFetching } = useListSpacesQuery(undefined, {
     skip: !ready || !hasToken,
     refetchOnMountOrArgChange: true,
-    pollingInterval: 60_000
+    ...polling(60_000)
   })
   const unauthorized = error && "status" in error && error.status === 401
   const compact = variant !== "full"

@@ -1,5 +1,6 @@
 "use client"
 import { useEffect } from "react"
+import { polling } from "@/modules/shared/ui/sobriety/polling"
 import Link from "next/link"
 import { AlertTriangle, Info, Megaphone } from "@boilerplate/shared-ui/components/icon"
 import { useSession } from "@/modules/shared/ui/store-provider"
@@ -60,9 +61,9 @@ export function AlertNotice({ alert, headingLevel = 2 }: { alert: CityAlert; hea
  */
 export function AlertBanner() {
   const session = useSession()
-  const general = useListAlertsQuery(undefined, { pollingInterval: ALERTS_POLLING_MS })
+  const general = useListAlertsQuery(undefined, polling(ALERTS_POLLING_MS))
   const connected = session.ready && session.hasToken
-  const mine = useMyNotificationsQuery(undefined, { skip: !connected, pollingInterval: ALERTS_POLLING_MS })
+  const mine = useMyNotificationsQuery(undefined, { skip: !connected, ...polling(ALERTS_POLLING_MS) })
   const alerts = mergeAlerts(general.data ?? [], connected ? mine.data?.alerts ?? [] : [])
   if (alerts.length === 0) return null
   return (
@@ -114,7 +115,7 @@ function HealthConsent() {
 export function CitizenNotifications() {
   const session = useSession()
   const skip = !session.ready || !session.hasToken
-  const notifications = useMyNotificationsQuery(undefined, { skip, pollingInterval: ALERTS_POLLING_MS })
+  const notifications = useMyNotificationsQuery(undefined, { skip, ...polling(ALERTS_POLLING_MS) })
   const error = toQueryError(notifications.error)
   const unauthorized = isUnauthorized(notifications.error)
   useEffect(() => {

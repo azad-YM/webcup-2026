@@ -1,5 +1,6 @@
 "use client"
 import { useEffect, useRef, useState, type FormEvent } from "react"
+import { polling } from "@/modules/shared/ui/sobriety/polling"
 import Link from "next/link"
 import { LogIn, MapPin } from "@boilerplate/shared-ui/components/icon"
 import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
@@ -55,7 +56,7 @@ function IdeaForm() {
       {failure?.code === NOT_CITIZEN ? (
         <p className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-amber-950">{failure.data} <Link href="/espace" className="font-medium underline">Mon espace</Link></p>
       ) : (
-        <form onSubmit={(event) => void send(event)} noValidate className="space-y-5 rounded-2xl border border-slate-200 bg-white p-6" aria-labelledby="titre-proposer">
+        <form onSubmit={(event) => void send(event)} noValidate className="space-y-5 rounded-2xl border border-slate-200 bg-white p-6" aria-labelledby="titre-proposer" data-brouillon="idee">
           <h2 id="titre-proposer" className="text-xl font-semibold">Proposer une idée</h2>
           <TextField id="idee-titre" label="Titre de votre idée" required maxLength={IDEA_LIMITS.title} error={errors.title} value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} />
           <TextAreaField id="idee-description" label="Description" hint="Expliquez ce que vous proposez et pourquoi. N’indiquez pas de données personnelles : les idées sont visibles par tous les habitants." required rows={6} maxLength={IDEA_LIMITS.description} error={errors.description} value={draft.description} onChange={(event) => setDraft({ ...draft, description: event.target.value })} />
@@ -71,7 +72,7 @@ function IdeaForm() {
 /** Boîte à idées (F68) : idées publiques des habitants et formulaire pour le citoyen connecté. */
 export function IdeasPage() {
   const { ready, hasToken } = useSession()
-  const { data, error, isFetching, refetch } = useListIdeasQuery(undefined, { pollingInterval: PARTICIPATION_POLLING_MS })
+  const { data, error, isFetching, refetch } = useListIdeasQuery(undefined, polling(PARTICIPATION_POLLING_MS))
   return (
     <>
       <PageHeader

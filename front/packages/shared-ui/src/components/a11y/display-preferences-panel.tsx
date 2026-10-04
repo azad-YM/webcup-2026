@@ -1,9 +1,8 @@
 "use client"
-import { useId, useState } from "react"
+import { lazy, Suspense, useId, useRef, useState } from "react"
 import { Accessibility } from "lucide-react"
 import { cn } from "../../lib/utils"
 import { TEXT_SIZES, TEXT_SIZE_LABELS, type TextSize } from "../../a11y/display-preferences"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../shadcn/dialog"
 import { useAccessibilityPreferences } from "./preferences-provider"
 
 const choice = "flex cursor-pointer items-start gap-3 rounded-lg border border-border p-3 has-[:checked]:border-foreground has-[:checked]:bg-muted"
@@ -14,7 +13,7 @@ const control = "mt-1 size-5 shrink-0 accent-[var(--ring)]"
  * réduction des animations. Chaque changement s’applique immédiatement et est
  * mémorisé par la gateway de l’application.
  */
-export function DisplayPreferencesPanel({ showHintsReset = false }: { showHintsReset?: boolean }) {
+export function DisplayPreferencesPanel({ showHintsReset = false, showLightMode = false }: { showHintsReset?: boolean; showLightMode?: boolean }) {
   const prefs = useAccessibilityPreferences()
   const [message, setMessage] = useState("")
   const id = useId()
@@ -66,6 +65,24 @@ export function DisplayPreferencesPanel({ showHintsReset = false }: { showHintsR
           </span>
         </label>
       </fieldset>
+      {showLightMode && (
+        <fieldset className="space-y-2">
+          <legend className="mb-2 font-medium">Connexion et appareil</legend>
+          <label className={choice}>
+            <input
+              type="checkbox"
+              checked={prefs.preferences.lightMode}
+              onChange={(event) => { prefs.updatePreferences({ lightMode: event.target.checked }); confirm(event.target.checked ? "Mode léger activé." : "Mode léger désactivé.") }}
+              className={control}
+              aria-describedby={`${id}-leger`}
+            />
+            <span>
+              <span className="block font-medium">Mode léger</span>
+              <span id={`${id}-leger`} className="block text-sm text-muted-foreground">Pour une connexion lente ou un appareil ancien : pas d’images décoratives ni d’animations, la carte remplacée par la liste, des mises à jour moins fréquentes. Toutes les informations et démarches restent disponibles.</span>
+            </span>
+          </label>
+        </fieldset>
+      )}
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
@@ -90,31 +107,41 @@ export function DisplayPreferencesPanel({ showHintsReset = false }: { showHintsR
   )
 }
 
+const DisplayPreferencesDialog = lazy(() => import("./display-preferences-dialog"))
+
 /**
  * Bouton « Affichage » ouvrant le panneau dans une fenêtre de dialogue
  * accessible (focus piégé, fermeture par Échap, retour du focus au bouton).
+ * La fenêtre est chargée à la première ouverture (L17 : pas de JavaScript inutile au premier affichage).
  */
-export function DisplayPreferencesButton({ className, label = "Affichage", showHintsReset = false }: {
+export function DisplayPreferencesButton({ className, label = "Affichage", showHintsReset = false, showLightMode = false }: {
   className?: string
   label?: string
   showHintsReset?: boolean
+  showLightMode?: boolean
 }) {
+  const [open, setOpen] = useState(false)
+  const [requested, setRequested] = useState(false)
+  const button = useRef<HTMLButtonElement>(null)
   return (
-    <Dialog>
-      <DialogTrigger
+    <>
+      <button
+        ref={button}
+        type="button"
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        onClick={() => { setRequested(true); setOpen(true) }}
         className={cn("inline-flex items-center gap-2 rounded-lg px-3 py-2 font-medium hover:bg-muted", className)}
       >
         <Accessibility className="size-5" aria-hidden="true" />
         <span>{label}</span>
         <span className="sr-only"> et accessibilité</span>
-      </DialogTrigger>
-      <DialogContent className="max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Affichage et accessibilité</DialogTitle>
-          <DialogDescription>Adaptez la taille du texte, les couleurs et les animations à vos besoins.</DialogDescription>
-        </DialogHeader>
-        <DisplayPreferencesPanel showHintsReset={showHintsReset} />
-      </DialogContent>
-    </Dialog>
+      </button>
+      {requested && (
+        <Suspense fallback={<span role="status" className="sr-only">Ouverture des réglages d’affichage…</span>}>
+          <DisplayPreferencesDialog open={open} onOpenChange={setOpen} returnFocusTo={button} showHintsReset={showHintsReset} showLightMode={showLightMode} />
+        </Suspense>
+      )}
+    </>
   )
 }
