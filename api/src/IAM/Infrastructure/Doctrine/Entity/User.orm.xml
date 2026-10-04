@@ -11,5 +11,8 @@
         <options><option name="default">0</option></options>
     </field>
     <field name="name" type="string" nullable="true"/>
+    <field name="emailVerification" column="email_verification" type="boolean">
+        <options><option name="default">0</option></options>
+    </field>
   </entity>
 </doctrine-mapping>

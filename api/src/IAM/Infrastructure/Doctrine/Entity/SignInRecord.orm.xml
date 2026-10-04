@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping">
+  <entity name="IAM\Domain\Entity\SignInRecord" table="iam_sign_ins">
+    <indexes>
+      <index name="IDX_IAM_SIGN_IN_USER" columns="user_id,occurred_at"/>
+    </indexes>
+    <id name="id" type="string" length="36"/>
+    <field name="userId" column="user_id" type="string" length="36"/>
+    <field name="deviceId" column="device_id" type="string" length="36" nullable="true"/>
+    <field name="deviceLabel" column="device_label" type="string" length="80"/>
+    <field name="method" type="string" length="16"/>
+    <field name="secondFactor" column="second_factor" type="boolean"/>
+    <field name="ip" type="string" length="45"/>
+    <field name="occurredAt" column="occurred_at" type="datetime_immutable"/>
+  </entity>
+</doctrine-mapping>
