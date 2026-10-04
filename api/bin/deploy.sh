@@ -27,6 +27,15 @@ export APP_ENV=prod APP_DEBUG=0
 step "Dépendances Composer (sans dev)"
 "$PHP_BIN" "$COMPOSER_PHAR" install --no-dev --optimize-autoloader --classmap-authoritative --no-interaction --no-progress
 
+step "Variables de production"
+# Valeurs effectives (.env puis .env.local) : les liens des e-mails ne doivent jamais pointer vers le poste de développement.
+SITE_URL_VALUE="$("$PHP_BIN" -r 'require "vendor/autoload.php"; (new Symfony\Component\Dotenv\Dotenv())->bootEnv(".env"); echo $_SERVER["SITE_URL"] ?? "";')"
+if [[ -z "$SITE_URL_VALUE" || "$SITE_URL_VALUE" == *localhost* || "$SITE_URL_VALUE" == *127.0.0.1* ]]; then
+  echo "SITE_URL vaut « $SITE_URL_VALUE » : définissez l'adresse publique du site dans .env.local (ex. SITE_URL=https://adumillion.lescomores.webcup.hodi.cloud)." >&2
+  exit 1
+fi
+echo "SITE_URL=$SITE_URL_VALUE"
+
 step "Clés JWT"
 if [[ -f config/jwt/private.pem && -f config/jwt/public.pem ]]; then
   echo "Clés présentes, conservées."
