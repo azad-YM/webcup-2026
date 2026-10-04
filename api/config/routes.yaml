@@ -28,6 +28,25 @@ shared_realtime:
         namespace: Shared\Infrastructure\Realtime\Http
     type: attribute
 
+# L24, L25 (ADR 012) : état de la plateforme, jetons des formulaires protégés, rapports de sauvegarde.
+shared_platform:
+    resource:
+        path: ../src/Shared/Infrastructure/Platform/Http/
+        namespace: Shared\Infrastructure\Platform\Http
+    type: attribute
+
+shared_form_guard:
+    resource:
+        path: ../src/Shared/Infrastructure/FormGuard/Http/
+        namespace: Shared\Infrastructure\FormGuard\Http
+    type: attribute
+
+shared_backup:
+    resource:
+        path: ../src/Shared/Infrastructure/Backup/Http/
+        namespace: Shared\Infrastructure\Backup\Http
+    type: attribute
+
 api_login_check:
     path: /api/login_check
 

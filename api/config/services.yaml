@@ -68,6 +68,8 @@ services:
             - '../src/Shared/Infrastructure/Realtime/RealtimeEvent.php'
             - '../src/Shared/Infrastructure/RateLimit/RateLimitCounter.php'
             - '../src/Shared/Infrastructure/Doctrine/EncryptedStringType.php'
+            - '../src/Shared/Infrastructure/AbuseSignal/AbuseSignal.php'
+            - '../src/Shared/Infrastructure/Idempotency/IdempotencyKey.php'
 
     # --- IAM : comptes et sessions ---
 
@@ -229,6 +231,20 @@ services:
         tags: ['controller.service_arguments']
         arguments:
             $streamSeconds: '%env(int:REALTIME_STREAM_SECONDS)%'
+            $maxStreams: '%env(int:REALTIME_MAX_STREAMS)%'
+
+    # --- Shared : montée en charge, sauvegardes, anti-abus (L24, L25, ADR 012 ; réglages dans config/packages/platform.yaml) ---
+    Shared\Infrastructure\Platform\Http\PlatformController:
+        tags: ['controller.service_arguments']
+    Shared\Infrastructure\FormGuard\Http\FormGuardController:
+        tags: ['controller.service_arguments']
+    Shared\Infrastructure\Backup\Http\BackupController:
+        tags: ['controller.service_arguments']
+    Shared\Application\Ports\Service\AbuseSignals:
+        alias: Shared\Infrastructure\AbuseSignal\DatabaseAbuseSignals
+    # F87 : écran « Sauvegardes » réservé à admin.backup.read (Administration).
+    Shared\Application\Ports\Provider\OperationsAccessPolicy:
+        alias: Administration\Infrastructure\Adapter\Shared\AdminOperationsAccessPolicy
 
     # Le flux temps réel (Shared) consomme IAM pour identifier le compte connecté.
     Shared\Application\Ports\Provider\RealtimeAccountProvider:

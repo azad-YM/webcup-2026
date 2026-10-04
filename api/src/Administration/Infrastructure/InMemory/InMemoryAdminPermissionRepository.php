@@ -22,6 +22,8 @@ class InMemoryAdminPermissionRepository implements IPermissionRepository {
             new Permission('admin', 'citizen', 'read'),
             new Permission('admin', 'citizen', 'write'),
             new Permission('admin', 'security', 'read'),
+            // F87 (L24) : rapports de sauvegarde et de vérification, administrateur principal seulement.
+            new Permission('admin', 'backup', 'read'),
             new Permission('admin', 'request', 'read'),
             new Permission('admin', 'request', 'write'),
             new Permission('admin', 'service', 'write'),

@@ -35,6 +35,8 @@ security:
         - { path: ^/api/citizen/register$, roles: PUBLIC_ACCESS, methods: [POST] }
         # Flux SSE : public pour les topics `public.*`, privé via un ticket vérifié par le contrôleur.
         - { path: ^/api/realtime/stream$, roles: PUBLIC_ACCESS, methods: [GET] }
+        # L24, L25 (ADR 012) : état de la plateforme (bandeau « mode allégé ») et jeton des formulaires protégés.
+        - { path: ^/api/(platform/status|forms/token)$, roles: PUBLIC_ACCESS, methods: [GET] }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
