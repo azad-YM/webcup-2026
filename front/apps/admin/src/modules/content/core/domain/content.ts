@@ -46,6 +46,8 @@ export type MunicipalService = {
   emergency?: EmergencyKind | null
   /** F27 : traductions du nom, du résumé et de la description (le français fait foi). */
   translations?: Partial<Record<TranslationLanguage, ServiceTranslation>> | Record<string, never>
+  /** F89 : version en langage clair, relue par l’agent ; l’enregistrer vaut validation. */
+  plainLanguage?: string
 }
 
 /** F63 : désactiver (motif obligatoire, 5 à 500 caractères) ou réactiver un service. */
@@ -88,7 +90,15 @@ export type Publication = {
   state: ContentState
   publishedAt?: string | null
   updatedAt?: string
+  /** F89 : version en langage clair, relue par l’agent ; l’enregistrer vaut validation. */
+  plainLanguage?: string
 }
+
+/** F89 : brouillon « En clair » proposé par l’API (modèle de langage ou repli local), jamais enregistré seul. */
+export type PlainLanguageDraft = { text: string; source: "model" | "local" }
+export type ServicePlainLanguageRequest = { name: string; summary: string; description: string }
+export type PublicationPlainLanguageRequest = { title: string; summary: string; body: string[] }
+export const PLAIN_LANGUAGE_MAX = 600
 
 export type AlertSeverity = "info" | "warning" | "critical"
 export type AlertAudience = "all" | "district" | "health"

@@ -2,7 +2,8 @@ import { useState } from "react"
 import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label, Textarea } from "@boilerplate/shared-ui/components"
 import { getErrorMessage } from "@boilerplate/shared-utils/error.utils"
 import { StatusBadge } from "@boilerplate/shared-ui/components/a11y"
-import { useListServicesQuery, useSaveServiceMutation, useSetServiceAvailabilityMutation } from "../../core/application/rtk-api/content"
+import { useListServicesQuery, useSaveServiceMutation, useSetServiceAvailabilityMutation, useSuggestServicePlainLanguageMutation } from "../../core/application/rtk-api/content"
+import { PlainLanguageField } from "../sections/plain-language-field"
 import {
   DISABLE_REASON_MAX,
   DISABLE_REASON_MIN,
@@ -28,6 +29,7 @@ function ServiceForm({ initial, isNew, onDone }: { initial: MunicipalService; is
   const [actions, setActions] = useState(fromLines(initial.actions))
   const [keywords, setKeywords] = useState(initial.keywords.join(", "))
   const [save, saving] = useSaveServiceMutation()
+  const [suggestPlain] = useSuggestServicePlainLanguageMutation()
   const [message, setMessage] = useState<string | null>(null)
   const disrupted = draft.status !== "available"
   const slugInvalid = isNew && draft.id !== "" && !SLUG.test(draft.id)
@@ -42,6 +44,7 @@ function ServiceForm({ initial, isNew, onDone }: { initial: MunicipalService; is
       location: draft.location ?? null,
       emergency: draft.emergency ?? null,
       translations: draft.translations ?? {},
+      plainLanguage: draft.plainLanguage ?? "",
     })
     if ("data" in result && result.data) {
       setDraft(result.data)
@@ -141,6 +144,15 @@ function ServiceForm({ initial, isNew, onDone }: { initial: MunicipalService; is
               </>
             )}
           </fieldset>
+
+          <PlainLanguageField
+            id="service-plain-language"
+            value={draft.plainLanguage ?? ""}
+            disabled={saving.isLoading}
+            canSuggest={draft.name.trim() !== "" && draft.summary.trim() !== ""}
+            onChange={(plainLanguage) => setDraft({ ...draft, plainLanguage })}
+            suggest={() => suggestPlain({ name: draft.name, summary: draft.summary, description: draft.description })}
+          />
 
           <ServicePlaceFields draft={draft} disabled={saving.isLoading} onChange={setDraft} />
           <ServiceTranslationFields draft={draft} disabled={saving.isLoading} onChange={setDraft} />
