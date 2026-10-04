@@ -51,7 +51,7 @@ final class AppointmentController extends AppController
     {
         $date = $request->query->get('date');
 
-        return $this->dispatchQuery(new ListAppointmentDayQuery(is_string($date) && $date !== '' ? $date : null));
+        return $this->dispatchQuery(new ListAppointmentDayQuery(is_string($date) && $date !== '' ? $date : null, $request->query->getBoolean('reveal')));
     }
 
     #[Route('/api/citizen/agent/appointment-slots', name: 'citizen_agent_open_slots', methods: ['POST'], format: 'json')]

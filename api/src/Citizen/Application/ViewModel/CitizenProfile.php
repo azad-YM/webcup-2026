@@ -21,6 +21,12 @@ final readonly class CitizenProfile
         public bool $profileCompleted,
     ) {}
 
+    /** F70 : vue des agents non habilités — téléphone et adresse retirés par l'API. */
+    public function masked(): self
+    {
+        return new self($this->id, $this->firstName, $this->lastName, null, null, $this->district, $this->preferredLanguage, $this->registeredAt, $this->profileCompleted);
+    }
+
     public static function fromCitizen(Citizen $citizen): self
     {
         return new self(

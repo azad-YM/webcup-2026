@@ -16,7 +16,7 @@ Le citoyen est prévenu, dans son espace et sans recharger la page, quand un fai
 | `MarkMyNotificationsRead` | `POST /api/citizen/notifications/read` `{ ids: string[] }` (vide = toutes) → `200 { read }` | citoyen connecté ; un identifiant d’un autre citoyen est ignoré |
 | `RecordCitizenNotification` | commande interne, sans route | listeners de Citizen, rappels de rendez-vous |
 
-Vue `CitizenNotification` : `{ id, kind, title, message, link, createdAt, readAt }` ; `kind` : `request.status_changed` | `appointment.reminder` | `concern.updated` ; `link` est un chemin du site (ex. `/espace/demandes?ref=NT-2026-0042`).
+Vue `CitizenNotification` : `{ id, kind, title, message, link, createdAt, readAt }` ; `kind` : `request.status_changed` | `appointment.reminder` | `concern.updated` | `idea.updated` (idée suivie par les agents, envoyée par le BC [Participation](../../Participation/doc/README.md) via l’adaptateur `Infrastructure/Adapter/Participation/CitizenParticipationNotifier`, lien `/espace/contributions#IDE-…`) ; `link` est un chemin du site (ex. `/espace/demandes?ref=NT-2026-0042`).
 
 ### Production des notifications
 

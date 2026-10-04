@@ -49,6 +49,12 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Pilotage/Infrastructure/Doctrine/Entity'
                 prefix: 'Pilotage\Domain\Entity'
                 alias: Pilotage
+            Participation:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Participation/Infrastructure/Doctrine/Entity'
+                prefix: 'Participation\Domain\Entity'
+                alias: Participation
             Audit:
                 type: xml
                 is_bundle: false

@@ -10,7 +10,7 @@ export type DaySlot = {
   instructions: string
   when: string
   booked: boolean
-  appointment: { id: string; reference: string; status: "confirmed" | "cancelled"; citizenName: string; citizenPhone: string | null } | null
+  appointment: { id: string; reference: string; status: "confirmed" | "cancelled"; citizenName: string; citizenPhone: string | null; maskedFields?: string[] } | null
 }
 
 export type AppointmentDay = {
@@ -21,7 +21,11 @@ export type AppointmentDay = {
   bookedCount: number
   canManage: boolean
   services: { id: string; name: string; place: string }[]
+  /** F70 : téléphone des citoyens masqué par l’API sauf affichage explicite (agent habilité, journalisé). */
+  sensitive?: { revealed: boolean; canReveal: boolean }
 }
+
+export type AppointmentDayQuery = { date: string; reveal: boolean }
 
 export type SlotSeries = {
   serviceId: string

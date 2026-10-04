@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useRef, useState, type FormEvent } from "react"
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react"
 import Link from "next/link"
 import type { Route } from "next"
 import { useSearchParams } from "next/navigation"
@@ -29,10 +29,19 @@ const TITLES: Record<RequestType, { title: string; lead: string }> = {
   report: { title: "Signaler un problème", lead: "Voirie, éclairage, propreté, inondation… Décrivez le problème et indiquez où il se trouve." }
 }
 
-/** Envoi d'une demande (D04, F25) puis confirmation immédiate avec la référence (D16). */
-export function NewServiceRequestPage() {
+/** `?service=` : identifiant du service visé (depuis sa fiche) ; l'API refuse si ce service est désactivé (F63, 409). */
+const SERVICE_ID = /^[a-z0-9][a-z0-9-]{0,79}$/
+
+/**
+ * Envoi d'une demande (D04, F25) puis confirmation immédiate avec la référence (D16).
+ * `serviceNotice` : état du service visé (F64), fourni par le module `public` via la page (slot).
+ */
+export function NewServiceRequestPage({ serviceNotice }: { serviceNotice?: ReactNode } = {}) {
   const access = useCitizenAccess()
-  const typeParam = useSearchParams().get("type")
+  const params = useSearchParams()
+  const typeParam = params.get("type")
+  const serviceParam = params.get("service")
+  const serviceId = serviceParam && SERVICE_ID.test(serviceParam) ? serviceParam : null
   const initialType: RequestType = isRequestType(typeParam) ? typeParam : "contact"
   const [sent, setSent] = useState<ServiceRequest | null>(null)
   const heading = sent ? "Demande envoyée" : TITLES[initialType].title
@@ -50,11 +59,12 @@ export function NewServiceRequestPage() {
           <Confirmation request={sent} onAnother={() => setSent(null)} />
         ) : (
           <>
+          {serviceNotice}
           <ContextualTip hintId="astuce-premiere-demande" title="Pour une réponse plus rapide" className="mb-6">
             Écrivez simplement ce qui se passe et, pour un problème, l’endroit exact. Vous pourrez suivre la réponse dans « Mes demandes ».
           </ContextualTip>
           <section aria-label="Formulaire de demande" className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-            <RequestForm key={initialType} initialType={initialType} onSent={setSent} />
+            <RequestForm key={`${initialType}-${serviceId ?? "aucun"}`} initialType={initialType} serviceId={serviceId} onSent={setSent} />
           </section>
           </>
         )}
@@ -63,8 +73,8 @@ export function NewServiceRequestPage() {
   )
 }
 
-function RequestForm({ initialType, onSent }: { initialType: RequestType; onSent: (request: ServiceRequest) => void }) {
-  const [draft, setDraft] = useState<RequestDraft>({ type: initialType, subject: "", description: "", location: "", serviceId: null })
+function RequestForm({ initialType, serviceId, onSent }: { initialType: RequestType; serviceId: string | null; onSent: (request: ServiceRequest) => void }) {
+  const [draft, setDraft] = useState<RequestDraft>({ type: initialType, subject: "", description: "", location: "", serviceId })
   const [errors, setErrors] = useState<DraftErrors>({})
   const [submit, { isLoading, error }] = useSubmitRequestMutation()
   const sending = useRef(false)

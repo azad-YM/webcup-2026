@@ -6,7 +6,9 @@ import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
 import { useSession } from "@/modules/shared/ui/store-provider"
 import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
 import { EmptyState, ErrorState, LoadingState } from "@/modules/shared/ui/components/states"
+import { StatusBadge } from "@boilerplate/shared-ui/components/a11y"
 import { CitizenAccessState, useCitizenAccess } from "../components/citizen-access"
+import { ServiceAvailabilityNotice } from "../components/service-availability-notice"
 import {
   APPOINTMENTS_POLLING_MS,
   useBookAppointmentMutation,
@@ -73,6 +75,8 @@ function BookingFlow({ moving, onDone }: { moving: Appointment | null; onDone: (
   if (offer.isLoading) return <LoadingState label="Chargement des créneaux disponibles…" />
   if (failure && !offer.data) return <ErrorState message={failure.data} onRetry={() => void offer.refetch()} retrying={offer.isFetching} />
   const services = offer.data?.services ?? []
+  const selectedName = services.find((service) => service.serviceId === serviceId)?.serviceName ?? moving?.serviceName ?? "ce service"
+  const selectedAvailability = serviceId ? offer.data?.selectedAvailability : null
   return (
     <div className="space-y-6">
       {!moving && (
@@ -88,6 +92,9 @@ function BookingFlow({ moving, onDone }: { moving: Appointment | null; onDone: (
                     <input type="radio" name="service" className="mt-1 size-4 accent-teal-700" checked={serviceId === service.serviceId} onChange={() => { setServiceId(service.serviceId); setSlot(null) }} />
                     <span>
                       <span className="block font-semibold text-slate-950">{service.serviceName}</span>
+                      {service.availability && service.availability.state !== "available" && (
+                        <span className="mb-1 block"><StatusBadge tone={service.availability.disabled || service.availability.status === "incident" ? "danger" : "warning"} label={service.availability.disabled ? "Service désactivé" : "Service perturbé"} srPrefix="État :" /></span>
+                      )}
                       <span className="block text-sm text-slate-700">{service.openSlots} créneau{service.openSlots > 1 ? "x" : ""} libre{service.openSlots > 1 ? "s" : ""} · prochain : {service.nextWhen}</span>
                     </span>
                   </label>
@@ -97,7 +104,8 @@ function BookingFlow({ moving, onDone }: { moving: Appointment | null; onDone: (
           )}
         </fieldset>
       )}
-      {serviceId && (
+      {serviceId && <ServiceAvailabilityNotice serviceName={selectedName} availability={selectedAvailability} />}
+      {serviceId && !selectedAvailability?.disabled && (
         <fieldset>
           <legend className="text-lg font-semibold">{moving ? "Choisissez votre nouveau créneau" : "2. Choisissez un créneau"}</legend>
           <p className="mt-1 text-sm text-slate-700">Horaires affichés en {offer.data?.timezoneLabel}.</p>

@@ -33,6 +33,8 @@ import { AlertsHttpGateway } from "@/modules/public/core/infrastructure/for-prod
 import { CITY_FEED_EVENTS } from "@/modules/public/core/application/ports/gateway/city-feed.gateway"
 import { RealtimeCityFeedAdapter } from "../core/infrastructure/adapter/public/realtime-city-feed.adapter"
 import { AuthPublicSessionAdapter } from "@/modules/auth/core/infrastructure/adapter/public/auth-public-session.adapter"
+import { CityParticipationHttpGateway } from "@/modules/participation/core/infrastructure/for-production/gateway/http/city-participation.http.gateway"
+import { AuthParticipationSessionAdapter } from "@/modules/auth/core/infrastructure/adapter/participation/auth-participation-session.adapter"
 
 type Session = {
   ready: boolean
@@ -73,7 +75,9 @@ function createDependencies(): Dependencies {
     serviceCatalogGateway: publicContent,
     publicationGateway: publicContent,
     alertsGateway: new AlertsHttpGateway(siteEnv.apiBaseUrl, publicSession),
-    cityFeedGateway: new RealtimeCityFeedAdapter(realtime)
+    cityFeedGateway: new RealtimeCityFeedAdapter(realtime),
+    cityParticipationGateway: new CityParticipationHttpGateway(siteEnv.apiBaseUrl),
+    participationSessionProvider: new AuthParticipationSessionAdapter(authSessionGateway)
   }
 }
 

@@ -2,7 +2,7 @@ import { ApiClient, ApiHttpError } from "@boilerplate/shared-utils/api-client"
 import { ContentError } from "../../../../application/errors/content.error"
 import type { ContentGateway } from "../../../../application/ports/gateway/content.gateway"
 import type { ContentSessionProvider } from "../../../../application/ports/provider/content-session.provider"
-import type { Alert, MunicipalService, Publication } from "../../../../domain/content"
+import type { Alert, MunicipalService, Publication, ServiceAvailabilityChange } from "../../../../domain/content"
 
 /** Adaptateur HTTP des contenus : services (Administration), publications et alertes (Communication). */
 export class ContentHttpGateway extends ApiClient implements ContentGateway {
@@ -16,6 +16,14 @@ export class ContentHttpGateway extends ApiClient implements ContentGateway {
 
   saveService(service: MunicipalService) {
     return this.call(() => this.putAuth<MunicipalService>("/administration/services", service), "le service", "admin.service.write")
+  }
+
+  setServiceAvailability(change: ServiceAvailabilityChange) {
+    return this.call(
+      () => this.postAuth<MunicipalService>("/administration/services/availability", change),
+      change.disabled ? "désactiver le service" : "réactiver le service",
+      "admin.service.disable"
+    )
   }
 
   listDistricts() {

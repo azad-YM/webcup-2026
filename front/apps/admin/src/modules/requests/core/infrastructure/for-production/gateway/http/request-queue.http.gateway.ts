@@ -13,6 +13,7 @@ export class RequestQueueHttpGateway extends ApiClient implements RequestQueueGa
   async listQueue(filter: RequestQueueFilter): Promise<RequestQueue> {
     const params = new URLSearchParams({ page: String(filter.page) })
     if (filter.status) params.set("status", filter.status)
+    if (filter.reveal) params.set("reveal", "1")
     try {
       return await this.getAuth<RequestQueue>(`/citizen/agent/requests?${params}`)
     } catch (error) {

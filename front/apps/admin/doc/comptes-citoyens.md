@@ -20,6 +20,10 @@ Page `/demandes/accueil` (espace « Demandes citoyennes », module `citizen-acco
 
 Règles et contrat : [Citizen — compte et sécurité](../../../../api/src/Citizen/doc/compte-et-securite.md).
 
+## Données sensibles masquées (L20/F70 — non testé, non vérifié dans un navigateur)
+
+Téléphone et adresse arrivent masqués (« Masqué — accès réservé »), l’e-mail partiellement (« adresse partielle — accès réservé ») ; la recherche porte sur le nom, l’e-mail et le quartier. Un agent habilité (`admin.sensitive-data.read`) clique sur « Afficher les données sensibles » : les valeurs complètes sont chargées et la consultation est journalisée. Voir [Citizen — compte et sécurité](../../../../api/src/Citizen/doc/compte-et-securite.md) et l’[ADR 007](../../../../doc/technique/decisions/007-protection-des-donnees.md).
+
 <!-- backlinks:start -->
 ---
 
@@ -29,4 +33,5 @@ Règles et contrat : [Citizen — compte et sécurité](../../../../api/src/Citi
 
 - [admin](README.md)
 - [Citizen — compte et sécurité](../../../../api/src/Citizen/doc/compte-et-securite.md)
+- [ADR 007](../../../../doc/technique/decisions/007-protection-des-donnees.md)
 <!-- backlinks:end -->

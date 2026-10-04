@@ -1,4 +1,5 @@
 import { ApiClient, ApiHttpError } from "@boilerplate/shared-utils/api-client"
+import { apiExplanation } from "./citizen-api"
 import { AppError } from "@/modules/shared/core/lib/use-cases.decorator"
 import {
   CitizenErrorCode,
@@ -44,6 +45,9 @@ export class CitizenHttpGateway extends ApiClient implements CitizenGateway {
   private translate(operation: Operation, error: ApiHttpError): AppError {
     const field = fieldFromPath(error.payload?.path)
     switch (error.status) {
+      case 429:
+        // F69 : limitation de débit (inscription, profil, suppression) ; l'API indique le délai d'attente.
+        return new AppError(429, apiExplanation(error) ?? UNAVAILABLE_MESSAGE)
       case 401:
         return new AppError(401, "Votre session a expiré. Veuillez vous reconnecter.")
       case 404:

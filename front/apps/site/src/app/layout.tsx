@@ -6,6 +6,7 @@ import type { Metadata } from "next"
 import "@boilerplate/shared-ui/global.css"
 import "./nova-terra.css"
 import { siteEnv } from "@/config/env"
+import { contentSecurityPolicy } from "@/config/content-security-policy"
 import { SkipLink, MAIN_CONTENT_ID } from "@/modules/shared/ui/layout/skip-link"
 import { SiteHeader } from "@/modules/shared/ui/layout/site-header"
 import { SiteFooter } from "@/modules/shared/ui/layout/site-footer"
@@ -26,9 +27,13 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const csp = contentSecurityPolicy()
   return (
     <html lang="fr" suppressHydrationWarning>
       <head>
+        {/* F69 : politique de sécurité du contenu (export statique : balise meta), voir ADR 007. */}
+        {csp && <meta httpEquiv="Content-Security-Policy" content={csp} />}
+        <meta name="referrer" content="strict-origin-when-cross-origin" />
         {/* Préférences d’affichage appliquées avant le premier rendu : pas de flash (L4). */}
         <script dangerouslySetInnerHTML={{ __html: displayPreferencesBootScript(DISPLAY_PREFERENCES_KEY) }} />
         {/* Langue mémorisée (D14) : `lang` et `dir` (arabe de droite à gauche) avant le premier rendu. */}

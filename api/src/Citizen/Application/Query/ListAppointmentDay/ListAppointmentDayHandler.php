@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Citizen\Application\Query\ListAppointmentDay;
 
+use Citizen\Application\Service\SensitiveDataDisclosure;
 use Citizen\Application\Ports\Provider\MunicipalServiceDirectory;
 use Citizen\Application\Ports\Provider\RequestAccessPolicy;
 use Citizen\Application\Ports\Repository\AppointmentRepository;
@@ -25,6 +26,7 @@ final readonly class ListAppointmentDayHandler
         private CitizenRepository $citizens,
         private MunicipalServiceDirectory $services,
         private IClock $clock,
+        private ?SensitiveDataDisclosure $disclosure = null,
     ) {}
 
     /** @return array<string, mixed> */
@@ -42,6 +44,8 @@ final readonly class ListAppointmentDayHandler
         }
         $slots = $this->appointments->findSlotsBetween($from, $to);
         $booked = $this->appointments->findByIds(array_values(array_filter(array_map(fn ($slot) => $slot->appointmentId(), $slots))));
+        // F70 : le téléphone du citoyen est masqué sauf affichage explicite par un agent habilité (journalisé).
+        $revealed = $query->reveal && $this->disclosure !== null && $this->disclosure->canReveal();
         $items = [];
         foreach ($slots as $slot) {
             $appointment = $slot->appointmentId() !== null ? ($booked[$slot->appointmentId()] ?? null) : null;
@@ -52,11 +56,17 @@ final readonly class ListAppointmentDayHandler
                 'reference' => $appointment->reference,
                 'status' => $appointment->status(),
                 'citizenName' => $name !== '' ? $name : 'Citoyen (nom non renseigné)',
-                'citizenPhone' => $citizen?->phone(),
+                'citizenPhone' => $revealed ? $citizen?->phone() : null,
+                'maskedFields' => $revealed || $citizen?->phone() === null ? [] : ['citizenPhone'],
             ]];
         }
 
+        if ($revealed) {
+            $this->disclosure?->reveal(true, 'appointment-day', count(array_filter($items, fn (array $item) => ($item['appointment']['citizenPhone'] ?? null) !== null)), $date);
+        }
+
         return [
+            'sensitive' => $this->disclosure?->meta($revealed) ?? ['revealed' => false, 'canReveal' => false],
             'date' => $date,
             'timezone' => CityTime::TIMEZONE,
             'timezoneLabel' => CityTime::TIMEZONE_LABEL,

@@ -48,6 +48,18 @@ export function createTestContext(overrides: Partial<Dependencies> = {}) {
     publicationGateway,
     alertsGateway: new InMemoryAlertsGateway(),
     cityFeedGateway: new InMemoryCityFeedGateway(),
+    cityParticipationGateway: {
+      listProjects: async () => [],
+      getProject: async () => { throw new Error("Not configured") },
+      listConsultations: async () => [],
+      getConsultation: async () => { throw new Error("Not configured") },
+      listIdeas: async () => [],
+      listDistricts: async () => [],
+      myParticipation: async () => ({ contributions: [], ideas: [] }),
+      contribute: async () => { throw new Error("Not configured") },
+      proposeIdea: async () => { throw new Error("Not configured") }
+    },
+    participationSessionProvider: { getToken: () => null },
     ...overrides
   }
   return {

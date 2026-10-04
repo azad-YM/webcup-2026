@@ -2,7 +2,7 @@
 import Link from "next/link"
 import type { Route } from "next"
 import type { ReactNode } from "react"
-import { ArrowRight, CalendarClock, ClipboardList, Compass, HandHeart, Megaphone, MessageSquare, Newspaper, Search } from "@boilerplate/shared-ui/components/icon"
+import { ArrowRight, CalendarClock, ClipboardList, Compass, HandHeart, ListChecks, Megaphone, MessageSquare, Newspaper, Search } from "@boilerplate/shared-ui/components/icon"
 import { useMessages } from "@/modules/shared/ui/i18n/i18n-provider"
 import { format } from "@/modules/shared/core/i18n/locales"
 import { CITIZEN_HOME_MESSAGES } from "../i18n/citizen-home-messages"
@@ -22,6 +22,7 @@ const SHORTCUTS: Shortcut[] = [
   { key: "requests", href: "/espace/demandes", icon: ClipboardList, notifications: "request.status_changed" },
   { key: "appointments", href: "/espace/rendez-vous" as Route, icon: CalendarClock, notifications: "appointment.reminder" },
   { key: "participate", href: "/espace/participation" as Route, icon: HandHeart, notifications: "concern.updated" },
+  { key: "contributions", href: "/espace/contributions" as Route, icon: ListChecks, notifications: "idea.updated" },
   { key: "newcomer", href: "/bienvenue" as Route, icon: Compass },
   { key: "services", href: "/services", icon: Search },
   { key: "news", href: "/actualites", icon: Newspaper },

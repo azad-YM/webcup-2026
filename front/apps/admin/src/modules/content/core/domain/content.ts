@@ -36,6 +36,10 @@ export type MunicipalService = {
   alternative: string
   transport: { route: string; timetable: string; information: string } | null
   updatedAt?: string
+  /** F63 : désactivation d’urgence (nouvelles demandes et rendez-vous refusés), motif montré aux habitants. */
+  disabled?: boolean
+  disabledReason?: string
+  disabledAt?: string | null
   /** F45 : adresse et coordonnées du lieu d’accueil (carte du site). */
   location?: ServiceLocation | null
   /** F46 : service d’urgence (page « Urgences » du site). */
@@ -43,6 +47,12 @@ export type MunicipalService = {
   /** F27 : traductions du nom, du résumé et de la description (le français fait foi). */
   translations?: Partial<Record<TranslationLanguage, ServiceTranslation>> | Record<string, never>
 }
+
+/** F63 : désactiver (motif obligatoire, 5 à 500 caractères) ou réactiver un service. */
+export type ServiceAvailabilityChange = { id: string; disabled: boolean; reason: string }
+
+export const DISABLE_REASON_MIN = 5
+export const DISABLE_REASON_MAX = 500
 
 export type ServiceLocation = { address: string; district: string | null; lat: number; lng: number }
 export type EmergencyKind = "hospital" | "emergency" | "fire" | "police" | "pharmacy"

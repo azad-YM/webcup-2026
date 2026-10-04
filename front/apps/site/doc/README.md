@@ -24,6 +24,7 @@ Le site réunit trois zones, chacune portée par un module `src/modules/<module>
 | Vitrine officielle | `public` | `/`, `/services` (`?service=…`, `?q=…&categorie=…`), `/actualites` (`?article=…`) ; bandeau d’alertes sur toutes les pages ; notifications dans `/espace` | Tout le monde | [Administration](../../../../api/src/Administration/doc/README.md) (services, quartiers) ; [Communication](../../../../api/src/Communication/doc/README.md) (publications et alertes) ; [Citizen](../../../../api/src/Citizen/doc/README.md) (préférences d’alerte) | D07, D05, D06, F28, F32, F36, F38, D18, F29, F30, F31 |
 | Connexion et inscription | `auth` | `/connexion` (`?retour=…`), `/inscription` (2 étapes, `?etape=informations`) ; `/login` redirige vers `/connexion` ; `/sso` | Visiteurs | [IAM](../../../../api/src/IAM/doc/README.md), [Citizen](../../../../api/src/Citizen/doc/README.md#contrat-http--inscription-et-profil-lot-l1) | D01, D03 |
 | Espace citoyen | `citizen` | `/espace`, `/espace/profil`, `/espace/demandes` (`?ref=…`), `/espace/demandes/nouvelle` (`?type=contact\|report`) | Citoyens connectés | [Citizen](../../../../api/src/Citizen/doc/README.md) | D03, D12, D04, D16, F25, D11, F26, F30 |
+| Participation | `participation` | `/projets`, `/projets/projet` (`?id=…`), `/participer`, `/participer/consultation` (`?id=…`), `/participer/idees`, `/espace/contributions` ; bloc dans `/espace/participation` | Tout le monde ; citoyens connectés pour répondre et proposer | [Participation](../../../../api/src/Participation/doc/README.md) ([détail](participation.md), non vérifié dans un navigateur) | F65, F66, F67, F68 |
 
 Socle commun (module `shared`) : en-tête et navigation, pied de page, fil d’Ariane, lien d’évitement, champs de formulaire accessibles, états chargement / vide / erreur, composition des dépendances (`StoreProvider`).
 
@@ -80,6 +81,7 @@ Export statique : pas de route dynamique ; les détails passent par des paramèt
 - [Citizen](../../../../api/src/Citizen/doc/README.md) : inscription citoyenne, profil, demandes.
 - [Administration](../../../../api/src/Administration/doc/README.md) : services municipaux, liste des quartiers.
 - [Communication](../../../../api/src/Communication/doc/README.md) ([ADR 005](../../../../doc/technique/decisions/005-bc-communication.md)) : publications et alertes, affichées sans rechargement ([ADR 004](../../../../doc/technique/decisions/004-temps-reel.md)).
+- [Participation](../../../../api/src/Participation/doc/README.md) ([ADR 008](../../../../doc/technique/decisions/008-bc-participation.md)) : projets, consultations et avis, boîte à idées ([parcours](participation.md)).
 
 [Installation et commandes](../README.md)
 
@@ -101,4 +103,6 @@ Export statique : pas de route dynamique ; les détails passent par des paramèt
 - [Vitrine et alertes](vitrine-et-alertes.md)
 - [Accessibilité](accessibilite.md)
 - [Communication](../../../../api/src/Communication/doc/README.md)
+- [Participation](../../../../api/src/Participation/doc/README.md)
+- [Participation (parcours)](participation.md)
 <!-- backlinks:end -->

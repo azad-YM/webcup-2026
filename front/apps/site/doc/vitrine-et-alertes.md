@@ -37,6 +37,20 @@ Chargement, erreur avec « Réessayer » et liste vide sont distincts sur chaque
 - Le début et la fin de validité d’une alerte n’émettent pas d’événement : l’affichage suit au plus tard 60 s après.
 - Le module `public` ouvre son propre flux ; le flux des demandes (lot L2) devra être fusionné avec lui pour garder un seul flux par onglet.
 
+## État du service avant la démarche (L18 : F63, F64 — non testé, non vérifié dans un navigateur)
+
+- La fiche `/services?service=…` commence par l’état du service (`public/ui/components/service-status-notice.tsx`, `StatusBadge`) : disponible, perturbé (maintenance, incident) ou **désactivé** par la mairie. Hors état normal : pourquoi, ce qui reste possible (alternative, quand revenir, accueil, « Contacter la mairie »). Les cartes du catalogue montrent aussi « Service désactivé ».
+- Liens « Faire une demande à ce service » (`/espace/demandes/nouvelle?service=…`) et « Prendre rendez-vous », masqués quand le service est désactivé.
+- Temps réel : l’événement `service.availability` (topic public `public.services`) recharge le catalogue sans rechargement de page, par le flux unique (`CityFeedGateway`).
+- Source : [Administration](../../../../api/src/Administration/doc/README.md).
+
+## Sécurité de vos données (L20/F69 — non testé, non vérifié dans un navigateur)
+
+- Page publique `/vos-donnees/securite` (`public/ui/pages/data-security.tsx`), reliée depuis `/vos-donnees` : chiffrement des coordonnées, accès des agents limité et journalisé, tentatives freinées, sessions courtes, contenus étrangers refusés — en langage clair, avec ce que l’habitant peut faire.
+- Politique de sécurité du contenu en `<meta>` (`src/config/content-security-policy.ts`), en production seulement : API et flux SSE autorisés vers l’origine de `NEXT_PUBLIC_API_BASE_URL`.
+- Les refus `429` (trop de tentatives) et `409 service_disabled` affichent le message rédigé par l’API.
+- Décision : [ADR 007](../../../../doc/technique/decisions/007-protection-des-donnees.md).
+
 <!-- backlinks:start -->
 ---
 
@@ -47,4 +61,5 @@ Chargement, erreur avec « Réessayer » et liste vide sont distincts sur chaque
 - [Site](README.md)
 - [Parcours citoyen](parcours-citoyen.md)
 - [Chantier](../../../../doc/chantier/README.md)
+- [ADR 007](../../../../doc/technique/decisions/007-protection-des-donnees.md)
 <!-- backlinks:end -->

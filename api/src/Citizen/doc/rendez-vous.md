@@ -40,6 +40,12 @@ Vue `Slot` : `{ id, serviceId, serviceName, startsAt, endsAt, durationMinutes, l
 
 Tables `citizen_appointment_slots` (unicité de `appointment_id` : une réservation par créneau ; verrou optimiste `version`) et `citizen_appointments` (unicité de `reference`), migration `Version20261003110100`. Suppression du compte : `DoctrineAppointmentRepository` (aussi `AccountDataEraser`) libère les créneaux puis efface les rendez-vous.
 
+### Service désactivé ou perturbé (L18 : F63, F64 — non testé, non vérifié dans un navigateur)
+
+- `GET /api/citizen/appointments/slots` : chaque service de l’offre porte `availability` `{state: available|disrupted|disabled, disabled, status, message, alternative, returnAt, place, hours, phone}`, lu dans le catalogue d’Administration par le port `MunicipalServiceDirectory` ; `selectedAvailability` donne l’état du service choisi (`?serviceId=`). Aucun créneau n’est proposé pour un service désactivé.
+- `POST /api/citizen/appointments` et `POST /api/citizen/appointments/change` (vers un nouveau créneau) refusent un service désactivé : `409`, `code: service_disabled`, message français avec le motif et l’accueil, `details.serviceId`. Annuler un rendez-vous reste toujours possible.
+- Le site affiche l’état en tête du formulaire ([parcours citoyen](../../../../front/apps/site/doc/parcours-citoyen.md)).
+
 ## Consommateurs
 
 - [Site — parcours citoyen](../../../../front/apps/site/doc/parcours-citoyen.md#rendez-vous-espacerendez-vous-f39-f40) : `/espace/rendez-vous`.

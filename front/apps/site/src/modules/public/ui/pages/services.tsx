@@ -13,10 +13,8 @@ import { CONTENT_POLLING_MS, useListServicesQuery } from "../../core/application
 import {
   filterServices,
   findService,
-  isDisrupted,
   isServiceCategory,
   SERVICE_CATEGORIES,
-  SERVICE_STATUS_LABELS,
   type MunicipalService,
   type ServiceCategory
 } from "../../core/domain/municipal-service"
@@ -28,6 +26,7 @@ import { directionsUrl, hasLocation, localizeService, openStreetMapUrl } from ".
 import { categoryLabel, PLACES_MESSAGES } from "../i18n/places-messages"
 import { OnDemandMap } from "../components/on-demand-map"
 import { PhoneLink } from "../components/place-card"
+import { ServiceStatusNotice } from "../components/service-status-notice"
 
 
 /** Garde la recherche dans l’adresse pour pouvoir la partager ou y revenir. */
@@ -92,25 +91,6 @@ function ServiceCatalog({ services }: { services: MunicipalService[] }) {
   )
 }
 
-const returnFormat = new Intl.DateTimeFormat("fr-FR", { dateStyle: "full", timeStyle: "short" })
-
-/** F38 : prévenir avant toute démarche qu’un service est perturbé, quand revenir et quoi faire. */
-function ServiceStatusNotice({ service }: { service: MunicipalService }) {
-  if (!isDisrupted(service)) {
-    return <p className="mt-4 inline-flex rounded-full bg-teal-50 px-3 py-1 text-sm font-medium text-teal-900">{SERVICE_STATUS_LABELS.available}</p>
-  }
-  return (
-    <div role="status" className="mt-6 rounded-xl border-l-4 border-amber-500 bg-amber-50 p-5 text-amber-950">
-      <h2 className="text-lg font-semibold">{SERVICE_STATUS_LABELS[service.status]}</h2>
-      <p className="mt-2 whitespace-pre-line">{service.statusMessage}</p>
-      {service.returnAt && (
-        <p className="mt-2"><strong>Retour prévu :</strong> <time dateTime={service.returnAt}>{returnFormat.format(new Date(service.returnAt))}</time></p>
-      )}
-      {service.alternative && <p className="mt-2 whitespace-pre-line"><strong>En attendant :</strong> {service.alternative}</p>}
-    </div>
-  )
-}
-
 /** F36 : horaires et informations des transports municipaux. */
 function TransportTimetable({ transport }: { transport: NonNullable<MunicipalService["transport"]> }) {
   return (
@@ -157,10 +137,21 @@ function ServiceDetail({ service }: { service: MunicipalService }) {
   return (
     <div className="grid gap-8 lg:grid-cols-[2fr_1fr]">
       <div>
+        {/* F64 : l’état du service vient en tête de fiche, avant toute démarche. */}
+        <div className="mb-6 [&>*]:mt-0"><ServiceStatusNotice service={service} context="fiche" /></div>
         <Icon className="size-10 text-teal-700" aria-hidden="true" />
         <p className="mt-4 text-lg leading-8 text-slate-800" lang={text.descriptionUntranslated ? "fr" : undefined}>{text.description}</p>
         <UntranslatedNote show={text.descriptionUntranslated} />
-        <ServiceStatusNotice service={service} />
+        {!service.disabled && (
+          <p className="mt-6 flex flex-wrap gap-3">
+            <Link href={`/espace/demandes/nouvelle?service=${encodeURIComponent(service.id)}` as Route} className="rounded-xl bg-teal-700 px-5 py-3 font-medium text-white hover:bg-teal-800">
+              Faire une demande à ce service
+            </Link>
+            <Link href={"/espace/rendez-vous" as Route} className="rounded-xl border border-slate-300 bg-white px-5 py-3 font-medium hover:bg-slate-50">
+              Prendre rendez-vous
+            </Link>
+          </p>
+        )}
         <ServiceLocation service={service} />
         {service.transport && <TransportTimetable transport={service.transport} />}
         <h2 className="mt-8 text-xl font-semibold">{t.whatYouCanDo}</h2>

@@ -44,6 +44,9 @@ export type MunicipalService = {
   emergency?: EmergencyKind | null
   /** F27 : traductions saisies par les agents (le français fait foi). */
   translations?: Partial<Record<"en" | "ar", ServiceTranslation>> | Record<string, never>
+  /** F63 : désactivé en urgence par la mairie — aucune nouvelle demande ni réservation ; `disabledReason` l’explique. */
+  disabled?: boolean
+  disabledReason?: string
 }
 
 export type ServiceLocation = { address: string; district: string | null; lat: number; lng: number }
@@ -57,6 +60,12 @@ export const SERVICE_STATUS_LABELS: Record<ServiceStatus, string> = {
 }
 
 export const isDisrupted = (service: Pick<MunicipalService, "status">) => service.status !== "available"
+
+/** F64 : état affiché avant toute démarche — désactivé (bloquant), perturbé (démarche possible, avec réserve) ou disponible. */
+export type ServiceAvailability = "disabled" | "disrupted" | "available"
+
+export const serviceAvailability = (service: Pick<MunicipalService, "status" | "disabled">): ServiceAvailability =>
+  service.disabled ? "disabled" : isDisrupted(service) ? "disrupted" : "available"
 
 export type ServiceFilter = { query?: string; category?: ServiceCategory | null }
 

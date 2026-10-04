@@ -13,6 +13,8 @@ import type { ParticipationGateway } from "@/modules/citizen/core/application/po
 import type { RealtimeSubscriber } from "../application/ports/realtime-subscriber"
 import type { AlertsGateway } from "@/modules/public/core/application/ports/gateway/alerts.gateway"
 import type { CityFeedGateway } from "@/modules/public/core/application/ports/gateway/city-feed.gateway"
+import type { CityParticipationGateway } from "@/modules/participation/core/application/ports/gateway/city-participation.gateway"
+import type { ParticipationSessionProvider } from "@/modules/participation/core/application/ports/provider/participation-session.provider"
 
 export type Dependencies = {
   // temps réel (un flux SSE par onglet)
@@ -35,4 +37,7 @@ export type Dependencies = {
   publicationGateway: PublicationGateway
   alertsGateway: AlertsGateway
   cityFeedGateway: CityFeedGateway
+  // participation (BC Participation) : projets, consultations, idées
+  cityParticipationGateway: CityParticipationGateway
+  participationSessionProvider: ParticipationSessionProvider
 }

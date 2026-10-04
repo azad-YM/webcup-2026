@@ -1,6 +1,7 @@
 "use client"
 import Link from "next/link"
 import type { Route } from "next"
+import { StatusBadge } from "@boilerplate/shared-ui/components/a11y"
 import {
   ArrowRight,
   Building2,
@@ -57,8 +58,10 @@ export function ServiceCard({ service, headingLevel = 3 }: { service: MunicipalS
       </Heading>
       <p className="mt-2 flex-1 text-slate-700">{text.summary}</p>
       {text.untranslated && <p className="mt-2 w-fit rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-700" title={common.notTranslatedHint}>{common.notTranslated}</p>}
-      {isDisrupted(service) && (
-        <p className="mt-3 rounded-lg bg-amber-100 px-3 py-1 text-sm font-semibold text-amber-950">{SERVICE_STATUS_LABELS[service.status]}</p>
+      {service.disabled ? (
+        <p className="mt-3"><StatusBadge tone="danger" label="Service désactivé" srPrefix="État :" /></p>
+      ) : isDisrupted(service) && (
+        <p className="mt-3"><StatusBadge tone={service.status === "incident" ? "danger" : "warning"} label={SERVICE_STATUS_LABELS[service.status]} srPrefix="État :" /></p>
       )}
       <span className="mt-4 inline-flex items-center gap-2 font-medium text-teal-800" aria-hidden="true">
         {t.seeService} <ArrowRight className="size-4 transition group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />

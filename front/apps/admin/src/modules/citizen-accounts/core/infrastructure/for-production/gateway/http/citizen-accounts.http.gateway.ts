@@ -1,7 +1,7 @@
 import { ApiClient, ApiHttpError } from "@boilerplate/shared-utils/api-client"
 import type { CitizenAccountsGateway } from "../../../../application/ports/gateway/citizen-accounts.gateway"
 import type { AccountSessionProvider } from "../../../../application/ports/provider/account-session.provider"
-import type { CitizenAccounts, WelcomedResident, WelcomeResidentInput } from "../../../../domain/citizen-account"
+import type { CitizenAccounts, CitizenAccountsQuery, WelcomedResident, WelcomeResidentInput } from "../../../../domain/citizen-account"
 export class CitizenAccountsHttpGateway extends ApiClient implements CitizenAccountsGateway {
   constructor(baseUrl: string, private readonly session: AccountSessionProvider) { super(baseUrl, () => session.getToken()) }
   private async execute<T>(request: () => Promise<T>): Promise<T> {
@@ -18,8 +18,11 @@ export class CitizenAccountsHttpGateway extends ApiClient implements CitizenAcco
       throw new Error("Impossible de joindre le service. Vérifiez votre connexion puis réessayez.")
     }
   }
-  list(search: string): Promise<CitizenAccounts> {
-    const query = search ? `?${new URLSearchParams({ q: search }).toString()}` : ""
+  list({ search, reveal }: CitizenAccountsQuery): Promise<CitizenAccounts> {
+    const params = new URLSearchParams()
+    if (search) params.set("q", search)
+    if (reveal) params.set("reveal", "1")
+    const query = params.size > 0 ? `?${params.toString()}` : ""
     return this.execute(() => this.getAuth<CitizenAccounts>(`/citizen/accounts${query}`))
   }
   setSuspension(input: { citizenId: string; suspended: boolean }): Promise<{ id: string; status: string }> {

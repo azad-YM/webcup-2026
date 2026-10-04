@@ -6,7 +6,7 @@ use InvalidArgumentException;
 
 class Permission
 {
-    private const ACTIONS = ['read', 'write', 'delete', 'approve', 'reject', 'execute'];
+    private const ACTIONS = ['read', 'write', 'delete', 'approve', 'reject', 'execute', 'disable'];
 
     public function __construct(
         public readonly string $context,

@@ -16,6 +16,7 @@ import type { SecurityJournalGateway } from "@/modules/security/core/application
 import type { AuditJournalGateway } from "@/modules/audit/core/application/ports/gateway/audit-journal.gateway"
 import type { ActivityDashboardGateway } from "@/modules/pilotage/core/application/ports/gateway/activity-dashboard.gateway"
 import type { ContentGateway } from "@/modules/content/core/application/ports/gateway/content.gateway"
+import type { ParticipationGateway } from "@/modules/participation/core/application/ports/gateway/participation.gateway"
 
 export type Dependencies = {
   citizenWorkspaceProvider: CitizenWorkspaceProvider
@@ -34,6 +35,7 @@ export type Dependencies = {
   /** One SSE stream per tab, shared by the screens (ADR 004). */
   realtime: RealtimeSubscriber
   contentGateway: ContentGateway
+  participationGateway: ParticipationGateway
   auditJournalGateway: AuditJournalGateway
   activityDashboardGateway: ActivityDashboardGateway
 }

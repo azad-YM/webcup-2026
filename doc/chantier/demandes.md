@@ -140,24 +140,24 @@ Les 15 suivis déjà faits sont conservés. F40 reste en cours (cron et récepti
 |---|---|---|---|---|---|---|
 | F61 | 3 | 1 080 | Rester rapide sur des appareils peu puissants | L17 | site, admin | ⬜ |
 | F62 | 2 | 720 | Version plus simple et plus rapide de certaines pages | L17 | site | ⬜ |
-| F63 | 3 | 1 080 | Les administrateurs désactivent rapidement un service défectueux | L18 | Administration, Citizen, admin | ⚠️ état maintenance/incident modifiable dans l’admin ; désactivation effective des démarches et réservations non implémentée |
-| F64 | 1 | 360 | Voir l’état actuel d’un service avant de commencer une démarche | L18 | Administration, site | 🟡 état, message, retour prévu et alternative déjà visibles sur les cartes et fiches des services (L9/F38) ; non vérifié dans le navigateur |
+| F63 | 3 | 1 080 | Les administrateurs désactivent rapidement un service défectueux | L18 | Administration, Citizen, admin | 🟡 bouton « Désactiver le service » avec motif obligatoire et réactivation ([admin](../../front/apps/admin/doc/contenus.md)) ; refus `409 service_disabled` des demandes et rendez-vous ([Citizen](../../api/src/Citizen/doc/rendez-vous.md)), temps réel, journal ([Administration](../../api/src/Administration/doc/README.md)) ; non testé, non vérifié dans un navigateur |
+| F64 | 1 | 360 | Voir l’état actuel d’un service avant de commencer une démarche | L18 | Administration, site | 🟡 bandeau d’état (`StatusBadge`) en tête de fiche, du formulaire de demande et des rendez-vous, avec alternative, retour prévu et contact ([site](../../front/apps/site/doc/vitrine-et-alertes.md)) ; non testé, non vérifié dans un navigateur |
 
 ## Vague 12 (H+13) — « Participation et nouveaux usages »
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
-| F65 | 3 | 1 110 | Soumettre certaines décisions à l’avis des habitants, avec trace de la contribution | L19 | Participation, site, admin | ⬜ |
-| F66 | 2 | 740 | Donner son avis sur un projet sans vote officiel, et savoir qu’il est enregistré | L19 | Participation, site | ⬜ |
-| F67 | 2 | 740 | Consulter les projets en cours dans la ville | L19 | Participation, site, admin | ⬜ |
-| F68 | 1 | 370 | Proposer des idées pour améliorer la colonie | L19 | Participation, site, admin | ⬜ |
+| F65 | 3 | 1 110 | Soumettre certaines décisions à l’avis des habitants, avec trace de la contribution | L19 | Participation, site, admin | 🟡 consultations (choix + commentaire), accusé de réception, « Mes contributions », résultats à la clôture, « Ce que la ville en a retenu » — [BC](../../api/src/Participation/doc/README.md) ; non testé, non vérifié dans un navigateur |
+| F66 | 2 | 740 | Donner son avis sur un projet sans vote officiel, et savoir qu’il est enregistré | L19 | Participation, site | 🟡 avis non officiel (appréciation et/ou texte) avec accusé de réception — [site](../../front/apps/site/doc/participation.md) ; non testé, non vérifié dans un navigateur |
+| F67 | 2 | 740 | Consulter les projets en cours dans la ville | L19 | Participation, site, admin | 🟡 `/projets` filtrable, détail avec étapes, gestion dans l’admin — [admin](../../front/apps/admin/doc/participation.md) ; non testé, non vérifié dans un navigateur |
+| F68 | 1 | 370 | Proposer des idées pour améliorer la colonie | L19 | Participation, site, admin | 🟡 boîte à idées, statuts suivis, non-publication motivée, notification de l’auteur ; non testé, non vérifié dans un navigateur |
 
 ## Vague 13 (H+14) — « Participation et nouveaux usages »
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
-| F69 | 4 | 1 520 | Protéger les données sensibles contre l’exploitation d’une faille, de façon perceptible sans compliquer l’usage | L20 | tous les BC, IAM | ⬜ |
-| F70 | 3 | 1 140 | Réserver strictement certaines données administratives aux agents autorisés | L20 | Administration, admin | ⬜ |
+| F69 | 4 | 1 520 | Protéger les données sensibles contre l’exploitation d’une faille, de façon perceptible sans compliquer l’usage | L20 | tous les BC, IAM | 🟡 en-têtes de sécurité, CSP des deux fronts, limitation de débit (`429` expliqué), chiffrement au repos du téléphone et de l’adresse, erreurs `500` sans détail, page « Sécurité de vos données », annonce d’expiration de session admin ([ADR 007](../technique/decisions/007-protection-des-donnees.md)) ; non testé, non vérifié dans un navigateur |
+| F70 | 3 | 1 140 | Réserver strictement certaines données administratives aux agents autorisés | L20 | Administration, admin | 🟡 données sensibles masquées par l’API (« Masqué — accès réservé »), affichage explicite journalisé pour `admin.sensitive-data.read`, inventaire des routes d’agent ([Administration](../../api/src/Administration/doc/README.md#inventaire-des-routes-dagent-f70)) ; non testé, non vérifié dans un navigateur |
 | F71 | 3 | 1 140 | Accueillir des habitants sans adresse e-mail et ne parlant pas tous la même langue | L21 | IAM, Citizen, site, admin | 🟡 compte créé à l’accueil (`/demandes/accueil`, `POST /api/citizen/accounts/welcome`), identifiant `NT-XXXX-XXXX` et code provisoire sur fiche imprimable fr/en/ar, connexion sans e-mail, code personnel obligatoire — [ADR 010](../technique/decisions/010-comptes-crees-a-l-accueil.md), [site](../../front/apps/site/doc/urgences-carte-langues.md) ; non testé, non vérifié dans un navigateur |
 | F72 | 1 | 380 | Nouvel arrivant : savoir par où commencer sans refaire l’inscription | L21 | site, Citizen | 🟡 `/bienvenue` : 3 questions sans inscription, check-list et services priorisés ; connecté, invitation à compléter le profil ; liens depuis l’accueil, l’espace et la fiche d’accueil — [site](../../front/apps/site/doc/urgences-carte-langues.md) ; non testé, non vérifié dans un navigateur |
 

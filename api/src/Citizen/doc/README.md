@@ -157,6 +157,10 @@ Payload : `{ "requestId", "reference", "status" }` (+ `previousStatus` pour un c
 | Référence lisible | `Application/Ports/Service/ServiceRequestReferenceGenerator` | `Infrastructure/Doctrine/Service/SqlServiceRequestReferenceGenerator` (propre infrastructure) |
 | Publication temps réel | `Shared\Application\Ports\Service\RealtimePublisher` (socle) | fabrique de `Shared` selon `REALTIME_TRANSPORT` |
 
+### Service visé désactivé (L18/F63 — non testé)
+
+`POST /api/citizen/requests` avec un `serviceId` (format `[a-z0-9-]`) désactivé par la mairie répond `409`, `code: service_disabled`, avec un message français (motif, accueil, quoi faire) ; une demande sans service (contacter la mairie) reste possible. Le site pré-remplit `serviceId` depuis la fiche du service (`/espace/demandes/nouvelle?service=…`). Données sensibles de la file des agents et chiffrement : voir [compte et sécurité](compte-et-securite.md#données-sensibles-masquées-et-chiffrées-l20--f69-f70--non-testé-non-vérifié-dans-un-navigateur).
+
 ### Contrat HTTP — demandes (lot L2)
 
 **Vue `ServiceRequest`** (réponse commune) :
@@ -310,4 +314,5 @@ Pas d’espace IAM « citoyen » : l’espace citoyen est une zone du site, qui 
 - [Notifications](notifications.md)
 - [Rendez-vous](rendez-vous.md)
 - [Participation](participation.md)
+- [Participation (BC)](../../Participation/doc/README.md)
 <!-- backlinks:end -->

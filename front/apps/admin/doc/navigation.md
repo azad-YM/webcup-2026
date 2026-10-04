@@ -8,7 +8,7 @@
 
 L’espace de travail adopte les fonds blancs et ardoise clair, les accents teal, les bordures discrètes et les arrondis du portail citoyen. Le thème est local à l’admin (`app/nova-terra.css`), y compris pour les composants partagés rendus dans un portail (menus, panneaux, modales). Les couleurs de danger et les préférences d’accessibilité restent distinctes.
 
-- Première barre : les modules Administration, Demandes citoyennes et Pilotage, avec l’état actif indiqué. Le logo ouvre `/espaces`, l’accueil des modules.
+- Première barre : les modules Administration, Demandes citoyennes, Pilotage et Participation ([détail](participation.md)), avec l’état actif indiqué. Le logo ouvre `/espaces`, l’accueil des modules.
 - Seconde barre : les rubriques du module actif. Administration regroupe configuration, contenus de la ville et journaux. Les routes `/contenus/*` conservent Administration actif. Le bouton de l’en-tête replie les rubriques sur ordinateur ; sur mobile et tablette, « Menu » ouvre un panneau réunissant les deux niveaux.
 - Zone principale : fil d’Ariane, réglages d’affichage et écran métier existant. Les URL, champs, confirmations, filtres, mutations et contrôles serveur ne changent pas.
 - Avatar en bas du rail : identité, espaces disponibles et déconnexion. Administration est l’espace actuel ; Citoyen apparaît uniquement si le compte dispose d’un profil citoyen.

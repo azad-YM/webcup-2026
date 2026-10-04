@@ -17,6 +17,8 @@ export type ServiceRequest = {
   allowedTransitions: RequestStatus[]
   createdAt: string
   updatedAt: string
+  /** F70 : champs retirés par l’API (lieu d’une demande de contact) pour un agent non habilité. */
+  maskedFields?: string[]
 }
 
 export type RequestQueue = {
@@ -27,9 +29,12 @@ export type RequestQueue = {
   page: number
   pageSize: number
   canProcess: boolean
+  /** F70 : données sensibles affichées (journalisé) et droit de les afficher. */
+  sensitive?: { revealed: boolean; canReveal: boolean }
 }
 
-export type RequestQueueFilter = { status: RequestStatus | null; page: number }
+/** `reveal` (F70) : demander l’affichage des données sensibles ; refusé côté API sans habilitation. */
+export type RequestQueueFilter = { status: RequestStatus | null; page: number; reveal?: boolean }
 
 export type StatusChange = {
   requestId: string
