@@ -1,5 +1,19 @@
 Options -MultiViews
 RewriteEngine On
+
+# Un fichier de assets/ absent répond 404 (jamais index.html, que le navigateur prendrait pour du JavaScript et garderait en cache).
+RewriteRule ^assets/ - [L]
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.html [L]
+
+<IfModule mod_headers.c>
+    # Fichiers versionnés par Vite : cache long ; index.html toujours revalidé pour pointer vers les modules du dernier build.
+    <If "%{REQUEST_URI} =~ m#^/assets/#">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </If>
+    <Else>
+        Header set Cache-Control "no-cache"
+    </Else>
+</IfModule>

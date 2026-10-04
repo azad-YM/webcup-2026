@@ -15,6 +15,21 @@ import { accessibilityGateways, applyStoredDisplayPreferences } from "@/modules/
 // Préférences d’affichage (taille du texte, contraste, animations) appliquées avant le premier rendu.
 applyStoredDisplayPreferences()
 
+// Après un déploiement, un onglet ouvert peut réclamer un module qui n’existe plus : recharger une fois la page.
+window.addEventListener("vite:preloadError", event => {
+  try {
+    if (sessionStorage.getItem("module-reload") === location.pathname) return
+    sessionStorage.setItem("module-reload", location.pathname)
+  } catch {
+    return
+  }
+  event.preventDefault()
+  location.reload()
+})
+window.addEventListener("load", () => {
+  try { sessionStorage.removeItem("module-reload") } catch { /* stockage indisponible */ }
+})
+
 window.addEventListener("storage", event => {
   if (event.key === SESSION_STORAGE_KEY || event.key === null) {
     app.store.dispatch(sessionCleared())

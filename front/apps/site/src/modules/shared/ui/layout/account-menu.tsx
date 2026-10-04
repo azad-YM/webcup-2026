@@ -25,13 +25,16 @@ export default function AccountMenu({ spaces }: { spaces: ReactNode }) {
         </button>
       </PopoverTrigger>
       <PopoverContent align="end" aria-label={t.account} className="max-h-[70dvh] w-80 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-3 text-slate-950" onClick={(event) => { if ((event.target as HTMLElement).closest("a")) setOpen(false) }}>
+        <p className="px-3 pb-2 pt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">{t.account}</p>
         <Link href="/espace/profil" className="flex items-center gap-2 rounded-lg px-3 py-2 font-medium text-slate-800 hover:bg-slate-100"><UserRound className="size-4" aria-hidden="true" /> {t.myProfile}</Link>
         <Link href="/espace/securite" className="flex items-center gap-2 rounded-lg px-3 py-2 font-medium text-slate-800 hover:bg-slate-100"><ShieldCheck className="size-4" aria-hidden="true" /> Sécurité du compte</Link>
         <Link href="/espace/mes-donnees" className="flex items-center gap-2 rounded-lg px-3 py-2 font-medium text-slate-800 hover:bg-slate-100"><FileDown className="size-4" aria-hidden="true" /> Mes données</Link>
         {spaces}
-        <button type="button" onClick={() => { setOpen(false); logout(); router.push("/") }} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 font-medium text-slate-800 hover:bg-slate-100">
-          <LogOut className="size-4" aria-hidden="true" /> {t.logout}
-        </button>
+        <div className="mt-2 border-t border-slate-200 pt-2">
+          <button type="button" onClick={() => { setOpen(false); logout(); router.push("/") }} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 font-medium text-red-800 hover:bg-red-50">
+            <LogOut className="size-4" aria-hidden="true" /> {t.logout}
+          </button>
+        </div>
       </PopoverContent>
     </Popover>
   )
