@@ -9,6 +9,8 @@ export const SERVICE_CATEGORIES = {
   mobilite: "Mobilité",
   habitat: "Habitat",
   famille: "Famille et éducation",
+  /** F74 (L26) : association partenaire (page `/partenaires` du site, carte). */
+  partenaires: "Association partenaire",
 } as const
 
 export type ServiceCategory = keyof typeof SERVICE_CATEGORIES
@@ -27,7 +29,7 @@ export type MunicipalService = {
   summary: string
   description: string
   actions: string[]
-  contact: { place: string; hours: string; phone: string | null }
+  contact: ServiceContact
   featured: boolean
   keywords: string[]
   status: ServiceStatus
@@ -197,3 +199,36 @@ export const newService = (): MunicipalService => ({
 
 export const isAlertActive = (alert: Alert, now = Date.now()) =>
   alert.state === "published" && Date.parse(alert.startsAt) <= now && now < Date.parse(alert.endsAt)
+
+/** F74 : horaires structurés (jour 1 = lundi … 7 = dimanche) et contact d’une association partenaire. */
+export type OpeningSlot = { day: number; opens: string; closes: string }
+export type ServiceContact = {
+  place: string
+  hours: string
+  phone: string | null
+  person?: string
+  email?: string
+  website?: string
+  openingHours?: OpeningSlot[]
+}
+
+export const DAY_LABELS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"] as const
+
+/** « 09:00-12:00, 14:00-18:00 » ↔ plages du jour. */
+export const formatDaySlots = (slots: OpeningSlot[] | undefined, day: number) =>
+  (slots ?? []).filter((slot) => slot.day === day).map((slot) => `${slot.opens}-${slot.closes}`).join(", ")
+
+export function parseDaySlots(text: string, day: number): OpeningSlot[] | null {
+  const ranges = text.split(",").map((part) => part.trim()).filter(Boolean)
+  const slots: OpeningSlot[] = []
+  for (const range of ranges) {
+    const match = /^(\d{1,2})[:h](\d{2})\s*-\s*(\d{1,2})[:h](\d{2})$/.exec(range)
+    if (!match) return null
+    const [, openHour = "", openMinute = "", closeHour = "", closeMinute = ""] = match
+    const opens = `${openHour.padStart(2, "0")}:${openMinute}`
+    const closes = `${closeHour.padStart(2, "0")}:${closeMinute}`
+    if (closes <= opens) return null
+    slots.push({ day, opens, closes })
+  }
+  return slots
+}

@@ -13,7 +13,9 @@ use Shared\Domain\Exception\DomainException;
  */
 final class MunicipalService
 {
-    public const CATEGORIES = ['demarches', 'cadre-de-vie', 'sante-solidarite', 'mobilite', 'habitat', 'famille'];
+    /** F74 (L26) : `partenaires` = association partenaire de la ville (lieu, horaires, contact, ce qu'elle propose). */
+    public const CATEGORIES = ['demarches', 'cadre-de-vie', 'sante-solidarite', 'mobilite', 'habitat', 'famille', 'partenaires'];
+    public const PARTNER_CATEGORY = 'partenaires';
     public const STATUSES = ['available', 'maintenance', 'incident'];
     /** F46: kind of emergency service (hospital, emergency department, fire brigade, police, on-duty pharmacy). */
     public const EMERGENCY_KINDS = ['hospital', 'emergency', 'fire', 'police', 'pharmacy'];
@@ -205,6 +207,7 @@ final class MunicipalService
             'place' => self::text($contact['place'] ?? '', 500, 'Lieu'),
             'hours' => self::text($contact['hours'] ?? '', 500, 'Horaires d’accueil'),
             'phone' => $phone === '' ? null : $phone,
+            ...self::partnerContact($contact),
         ];
         $this->featured = (bool) ($data['featured'] ?? false);
         $this->keywords = self::list($data['keywords'] ?? [], 'Mots-clés', false);
@@ -216,6 +219,57 @@ final class MunicipalService
         [$this->location, $this->emergency, $this->translations] = [$location, $emergency, $translations];
         $this->plainLanguage = self::text($data['plainLanguage'] ?? '', self::PLAIN_LANGUAGE_MAX, 'Version en clair', false);
         $this->updatedAt = $now;
+    }
+
+    /**
+     * F74 : coordonnées complémentaires (personne à contacter, e-mail, site) et horaires structurés
+     * (`openingHours` : jour 1 = lundi … 7 = dimanche, `HH:MM`), pour « Ouvert maintenant / ferme à 18 h ».
+     * Facultatifs pour tout lieu ; seules les clés renseignées sont gardées.
+     *
+     * @param array<string, mixed> $contact
+     * @return array<string, mixed>
+     */
+    private static function partnerContact(array $contact): array
+    {
+        $extra = [];
+        $person = self::text($contact['person'] ?? '', 160, 'Personne à contacter', false);
+        if ($person !== '') {
+            $extra['person'] = $person;
+        }
+        $email = self::text($contact['email'] ?? '', 200, 'E-mail', false);
+        if ($email !== '') {
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                throw new DomainException('Adresse e-mail invalide.');
+            }
+            $extra['email'] = $email;
+        }
+        $website = self::text($contact['website'] ?? '', 300, 'Site internet', false);
+        if ($website !== '') {
+            if (!preg_match('#^https?://#i', $website) || !filter_var($website, FILTER_VALIDATE_URL)) {
+                throw new DomainException('Adresse du site internet invalide (http ou https).');
+            }
+            $extra['website'] = $website;
+        }
+        $slots = $contact['openingHours'] ?? null;
+        if (is_array($slots) && $slots !== []) {
+            if (count($slots) > 21) {
+                throw new DomainException('Trois plages horaires au plus par jour.');
+            }
+            $hours = [];
+            foreach ($slots as $slot) {
+                $day = is_array($slot) ? ($slot['day'] ?? null) : null;
+                $opens = is_array($slot) ? (string) ($slot['opens'] ?? '') : '';
+                $closes = is_array($slot) ? (string) ($slot['closes'] ?? '') : '';
+                if (!is_int($day) || $day < 1 || $day > 7 || !preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', $opens) || !preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', $closes) || $closes <= $opens) {
+                    throw new DomainException('Horaires invalides : jour de 1 (lundi) à 7 (dimanche), ouverture avant fermeture au format HH:MM.');
+                }
+                $hours[] = ['day' => $day, 'opens' => $opens, 'closes' => $closes];
+            }
+            usort($hours, static fn (array $a, array $b): int => [$a['day'], $a['opens']] <=> [$b['day'], $b['opens']]);
+            $extra['openingHours'] = $hours;
+        }
+
+        return $extra;
     }
 
     /** @return array{address: string, district: ?string, lat: float, lng: float}|null */

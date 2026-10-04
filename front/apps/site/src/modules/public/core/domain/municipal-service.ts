@@ -9,8 +9,12 @@ export const SERVICE_CATEGORIES = {
   "sante-solidarite": "Santé et solidarité",
   mobilite: "Mobilité",
   habitat: "Habitat",
-  famille: "Famille et éducation"
+  famille: "Famille et éducation",
+  /** F74 (L26) : associations partenaires de la ville (page `/partenaires`). */
+  partenaires: "Associations partenaires"
 } as const
+
+export const PARTNER_CATEGORY = "partenaires"
 
 export type ServiceCategory = keyof typeof SERVICE_CATEGORIES
 
@@ -25,7 +29,7 @@ export type MunicipalService = {
   summary: string
   description: string
   actions: string[]
-  contact: { place: string; hours: string; phone?: string | null }
+  contact: ServiceContact
   /** Mis en avant sur l’accueil (service prioritaire ou très demandé). */
   featured: boolean
   keywords: string[]
@@ -49,6 +53,18 @@ export type MunicipalService = {
   disabledReason?: string
   /** F89 : version en langage clair, relue et validée par un agent (vide si absente). */
   plainLanguage?: string
+}
+
+/** F74 : horaires structurés (jour 1 = lundi … 7 = dimanche, `HH:MM`) et contact d’une association partenaire. */
+export type OpeningSlot = { day: number; opens: string; closes: string }
+export type ServiceContact = {
+  place: string
+  hours: string
+  phone?: string | null
+  person?: string
+  email?: string
+  website?: string
+  openingHours?: OpeningSlot[]
 }
 
 export type ServiceLocation = { address: string; district: string | null; lat: number; lng: number }
@@ -95,3 +111,41 @@ export const featuredServices = (services: MunicipalService[], limit = 4) =>
 
 export const findService = (services: MunicipalService[], id: string | null | undefined) =>
   services.find((service) => service.id === id) ?? null
+
+/** Fuseau de la ville (heure de La Réunion, comme les rendez-vous). */
+export const CITY_TIME_ZONE = "Indian/Reunion"
+
+/** Jour (1 = lundi … 7 = dimanche) et heure `HH:MM` dans le fuseau de la ville. */
+export function cityClock(now: Date): { day: number; time: string } {
+  const parts = new Intl.DateTimeFormat("en-GB", { timeZone: CITY_TIME_ZONE, weekday: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(now)
+  const get = (type: string) => parts.find((part) => part.type === type)?.value ?? ""
+  const day = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].indexOf(get("weekday")) + 1
+  return { day, time: `${get("hour")}:${get("minute")}` }
+}
+
+/**
+ * F74 : « Ouvert maintenant, ferme à 18 h » ou « Fermé, ouvre lundi à 9 h ».
+ * `null` quand les horaires structurés ne sont pas renseignés.
+ */
+export type OpeningState = { open: true; closes: string } | { open: false; opensDay: number; opens: string; sameDay: boolean } | null
+
+export function openingState(slots: OpeningSlot[] | undefined, now: Date): OpeningState {
+  if (!slots || slots.length === 0) return null
+  const { day, time } = cityClock(now)
+  const current = slots.find((slot) => slot.day === day && slot.opens <= time && time < slot.closes)
+  if (current) return { open: true, closes: current.closes }
+  for (let offset = 0; offset < 8; offset++) {
+    const target = ((day - 1 + offset) % 7) + 1
+    const next = slots
+      .filter((slot) => slot.day === target && (offset > 0 || slot.opens > time))
+      .sort((a, b) => a.opens.localeCompare(b.opens))[0]
+    if (next) return { open: false, opensDay: target, opens: next.opens, sameDay: offset === 0 }
+  }
+  return null
+}
+
+/** « 18 h », « 9 h 30 ». */
+export const spokenTime = (value: string) => {
+  const [hours, minutes] = value.split(":")
+  return `${Number(hours)} h${minutes && minutes !== "00" ? ` ${minutes}` : ""}`
+}

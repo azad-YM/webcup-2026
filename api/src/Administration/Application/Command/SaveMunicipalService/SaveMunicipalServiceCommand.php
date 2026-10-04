@@ -11,7 +11,7 @@ final readonly class SaveMunicipalServiceCommand
 {
     /**
      * @param list<string> $actions
-     * @param array{place?: string, hours?: string, phone?: ?string} $contact
+     * @param array{place?: string, hours?: string, phone?: ?string, person?: string, email?: string, website?: string, openingHours?: list<array{day: int, opens: string, closes: string}>} $contact
      * @param list<string> $keywords
      * @param array{route?: string, timetable?: string, information?: string}|null $transport
      * @param array{address?: string, district?: ?string, lat?: float, lng?: float}|null $location F45
@@ -24,7 +24,7 @@ final readonly class SaveMunicipalServiceCommand
         #[Assert\NotBlank] #[Assert\Length(max: 1000)] public string $summary,
         #[Assert\NotBlank] #[Assert\Length(max: 10000)] public string $description,
         #[Assert\Count(max: 50)] public array $actions = [],
-        #[Assert\Count(max: 3)] public array $contact = [],
+        #[Assert\Count(max: 7)] public array $contact = [],
         public bool $featured = false,
         #[Assert\Count(max: 50)] public array $keywords = [],
         #[Assert\Choice(['available', 'maintenance', 'incident'])] public string $status = 'available',

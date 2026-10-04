@@ -19,6 +19,7 @@ import {
   filterServices,
   findService,
   isServiceCategory,
+  PARTNER_CATEGORY,
   SERVICE_CATEGORIES,
   type MunicipalService,
   type ServiceCategory
@@ -226,7 +227,15 @@ function ServiceDetail({ service }: { service: MunicipalService }) {
         <p className="mt-4 text-lg leading-8 text-slate-800" lang={text.descriptionUntranslated ? "fr" : undefined}>{text.description}</p>
         <UntranslatedNote show={text.descriptionUntranslated} />
         <ExplainSimply text={text.description} plainVersion={service.plainLanguage} />
-        {!service.disabled && (
+        {/* F74 : une association partenaire a sa propre fiche (horaires, « Où nous trouver »). */}
+        {service.category === PARTNER_CATEGORY && (
+          <p className="mt-6">
+            <Link href={`/partenaires?id=${encodeURIComponent(service.id)}` as Route} className="rounded-xl bg-teal-700 px-5 py-3 font-medium text-white hover:bg-teal-800">
+              Horaires et accès de l’association
+            </Link>
+          </p>
+        )}
+        {!service.disabled && service.category !== PARTNER_CATEGORY && (
           <p className="mt-6 flex flex-wrap gap-3">
             <Link href={`/espace/demandes/nouvelle?service=${encodeURIComponent(service.id)}` as Route} className="rounded-xl bg-teal-700 px-5 py-3 font-medium text-white hover:bg-teal-800">
               Faire une demande à ce service
@@ -237,7 +246,7 @@ function ServiceDetail({ service }: { service: MunicipalService }) {
           </p>
         )}
         <ServiceLocation service={service} />
-        <ServiceRating serviceId={service.id} />
+        {service.category !== PARTNER_CATEGORY && <ServiceRating serviceId={service.id} />}
         {service.transport && <TransportTimetable transport={service.transport} />}
         <h2 className="mt-8 text-xl font-semibold">{t.whatYouCanDo}</h2>
         <ul className="mt-4 list-disc space-y-2 ps-6 text-slate-800" lang="fr">
