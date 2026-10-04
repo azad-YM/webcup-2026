@@ -57,9 +57,9 @@ final class Text
         return $paragraphs;
     }
 
-    /** Short public reference derived from the identifier, e.g. `IDE-1A2B3C4D`. */
+    /** Short public reference derived from the random end of the identifier (UUID v7 starts with the time), e.g. `IDE-1A2B3C4D5E`. */
     public static function reference(string $prefix, string $id): string
     {
-        return $prefix . '-' . strtoupper(substr(str_replace('-', '', $id), 0, 8));
+        return $prefix . '-' . strtoupper(substr(str_replace('-', '', $id), -10));
     }
 }

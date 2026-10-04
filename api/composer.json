@@ -58,6 +58,7 @@
       "Pilotage\\": "src/Pilotage/",
       "Communication\\": "src/Communication/",
       "Audit\\": "src/Audit/",
+      "Participation\\": "src/Participation/",
       "Shared\\": "src/Shared/"
     },
     "exclude-from-classmap": [

@@ -72,7 +72,7 @@ final class Consultation
         $title = Text::required($content['title'], 200, 'Titre');
         $question = Text::required($content['question'], 1000, 'Question');
         $description = Text::paragraphs($content['description'], 'Contexte', false);
-        $options = $content['kind'] === 'consultation' ? self::options($content['options']) : [];
+        $options = $content['kind'] === 'consultation' ? self::normalizeOptions($content['options']) : [];
         if ($hasContributions && ($content['kind'] !== $this->kind || $options !== $this->options)) {
             throw new DomainException('Des habitants ont déjà répondu : le type et les choix proposés ne peuvent plus changer.');
         }
@@ -222,7 +222,7 @@ final class Consultation
      * @param array<mixed> $labels
      * @return list<array{id: string, label: string}>
      */
-    private static function options(array $labels): array
+    private static function normalizeOptions(array $labels): array
     {
         $options = [];
         foreach ($labels as $label) {
