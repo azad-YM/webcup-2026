@@ -19,6 +19,7 @@ Permettre à un habitant de quitter la plateforme sans qu’une autre personne p
 
 | Cas d’usage | Route | Code |
 |---|---|---|
+| `WelcomeNewResident` (F71, non testé) | `POST /api/citizen/accounts/welcome` `{firstName, lastName, preferredLanguage: fr\|en\|ar, phone?, email?, district?}` → `{citizenId, residentId, accessCode, …}` ; `admin.citizen.write` ; journal `citizen.account.welcomed` (sans le code) ; port `ResidentAccountProvisioner` implémenté par IAM — [ADR 010](../../../../doc/technique/decisions/010-comptes-crees-a-l-accueil.md) | `Application/Command/WelcomeNewResident` |
 | `DeleteMyCitizenAccount` | `DELETE /api/citizen/me` `{password}` | `Application/Command/DeleteMyCitizenAccount` |
 | `ListCitizenAccounts` | `GET /api/citizen/accounts?q=&status=` | `Application/Query/ListCitizenAccounts` |
 | `SetCitizenSuspension` | `PUT /api/citizen/accounts/suspension` `{citizenId, suspended}` | `Application/Command/SetCitizenSuspension` |

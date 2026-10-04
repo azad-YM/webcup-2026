@@ -22,6 +22,7 @@ IAM ne sait pas ce qu’est un agent ou un citoyen. Les profils métier rattach�
 | POST | `/api/login_check` | Login, JWT d’audience `site` |
 | GET | `/api/iam/me`, `/api/iam/me/spaces` | Profil et espaces accessibles |
 | POST | `/api/iam/portal-codes`, `/api/iam/portal-sessions` | Passage site → admin (PKCE) |
+| POST | `/api/iam/me/password` | Changer son code (`{currentPassword, newPassword}`), lève l’obligation du code provisoire (F71) |
 | GET | `/api/iam/security/login-events` | Journal des verrouillages de connexion (permission `admin.security.read`, L8) |
 
 Lot L8 (🟡, non vérifié dans un navigateur) : statut du compte (`active`, `suspended`, `deleted`) avec révocation de toutes les sessions par version de session, suppression par anonymisation, message clair pour un compte suspendu, verrouillage progressif par compte, par IP et par couple compte+IP (429), journal des verrouillages. Détails : [comptes et sessions](comptes-et-sessions.md#protection-contre-les-tentatives-de-connexion-f37).
@@ -35,6 +36,8 @@ Adaptateurs fournis :
 | Citizen | `Infrastructure/Adapter/Citizen/IAMCitizenAccountProvisioner` | Création du compte à l’inscription (nom = partie locale de l’e-mail) |
 | Citizen | `Infrastructure/Adapter/Citizen/IAMCurrentAccountProvider` | Compte connecté |
 | Citizen | `Infrastructure/Adapter/Citizen/IAMCitizenAccountManager` | Reconfirmation du mot de passe, e-mails par lot, suspension et suppression (anonymisation) du compte |
+
+Lot L21 (F71, non testé) : comptes d’habitant créés à l’accueil ([ADR 010](../../../../doc/technique/decisions/010-comptes-crees-a-l-accueil.md)). `User` porte `residentId` (`NT-XXXX-XXXX`, unique) et `passwordChangeRequired` ; sans e-mail, une adresse technique `…@habitant.nova-terra.invalid` jamais affichée. `login_check` accepte l’identifiant d’habitant dans `email` ; `/api/iam/me` renvoie `residentId` et `passwordChangeRequired` ; `PasswordChangeRequiredListener` répond 403 `password_change_required` sur les routes privées tant que le code provisoire n’est pas remplacé. Adaptateur `Adapter/Citizen/IAMResidentAccountProvisioner` (cas d’usage `CreateResidentAccount`).
 
 Port consommé par IAM : `Application/Ports/Provider/SecurityJournalAccessPolicy`, implémenté par Administration (`Adapter/IAM/AdminSecurityJournalAccessPolicy`).
 

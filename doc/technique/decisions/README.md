@@ -14,6 +14,7 @@ Les décisions structurantes sont consignées sous forme d’ADR (*Architecture 
 - [ADR 004 — Temps réel derrière un port : SSE maison sur la base de données, fournisseur interchangeable](004-temps-reel.md)
 - [ADR 005 — Un BC Communication pour les publications et les alertes](005-bc-communication.md)
 - [ADR 006 — Journal des actions : un BC Audit alimenté par un port Shared `AuditTrail`](006-journal-des-actions.md)
+- [ADR 010 — Comptes d’habitant créés à l’accueil, sans e-mail obligatoire](010-comptes-crees-a-l-accueil.md)
 
 ## Format recommandé
 

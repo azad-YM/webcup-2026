@@ -6,6 +6,10 @@
 
 Les agents habilités consultent les comptes des habitants et peuvent suspendre ou réactiver un compte (F34, lot L8). Point d’entrée : `/admin/citizens`, lien « Comptes citoyens » de la barre latérale. Statut : 🟡 livré, non vérifié dans un navigateur.
 
+## Accueil des nouveaux arrivants (F71, non testé)
+
+Page `/demandes/accueil` (espace « Demandes citoyennes », module `citizen-accounts`, `ui/pages/newcomer-reception.tsx`) : l’agent saisit prénom, nom, langue (français, anglais, arabe), téléphone et e-mail facultatifs, puis `POST /api/citizen/accounts/welcome` (`admin.citizen.write`). La fiche imprimable (`ui/sections/welcome-sheet.tsx`, dans la langue choisie, `dir="rtl"` en arabe) affiche **une seule fois** l’identifiant d’habitant et le code provisoire, la marche à suivre sur `/connexion` et le lien `/bienvenue`. L’impression masque le reste de l’écran. Décision : [ADR 010](../../../../doc/technique/decisions/010-comptes-crees-a-l-accueil.md).
+
 ## Parcours livré
 
 1. La page charge `GET /api/citizen/accounts` (module `citizen-accounts`, chaîne RTK → use case → `CitizenAccountsGateway` → `CitizenAccountsHttpGateway`). Elle affiche le nombre de comptes ; les mots de passe ne sont jamais transmis ni affichés.

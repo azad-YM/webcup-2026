@@ -61,6 +61,16 @@ Règles :
 - Contenu initial : les huit services de la vitrine (dont les horaires des navettes) sont insérés par la migration `Version20261003003000` (table `municipal_service`).
 - Aucun test automatisé n’a été écrit pour ces cas d’usage (décision d’économie du chantier).
 
+### Lieux, urgences et traductions (L11, L5)
+
+Livré, non testé, non vérifié dans un navigateur. Champs facultatifs ajoutés à la fiche (`GET`/`PUT /api/administration/services`) :
+
+- `location` (F45) : `{address, district, lat, lng}` — adresse requise, quartier de la liste fermée ou `null`, latitude entre -90 et 90, longitude entre -180 et 180 ; `null` pour un service sans lieu physique.
+- `emergency` (F46) : `hospital`, `emergency`, `fire`, `police`, `pharmacy` ou `null` ; le site en fait sa page « Urgences ».
+- `translations` (F27) : `{en?: {name, summary, description}, ar?: {…}}` (vide : `{}`) ; le français fait foi, un texte vide n’est pas enregistré, la recherche `?q=` couvre aussi les noms et résumés traduits.
+- Données : migration `Version20261003123000` (lieux des huit services sur des coordonnées de démonstration autour de Saint-Denis de La Réunion, cinq services d’urgence : hôpital, urgences, pompiers, police, pharmacie de garde) et `Version20261003123100` (noms et résumés en anglais et en arabe). Une base créée par `doctrine:schema:update` n’a pas ces données.
+- Consommateurs : [site — urgences, carte, langues](../../../../front/apps/site/doc/urgences-carte-langues.md), [admin — contenus](../../../../front/apps/admin/doc/contenus.md).
+
 CLI : `php bin/console app:admin:bootstrap` ([initialisation de l’administrateur principal et des rôles de référence](initialisation-admin.md)).
 
 Interface : la page [Membres](../../../../front/apps/admin/doc/membres.md) de l’admin liste les membres et ajoute un membre ; la page [Rôles](../../../../front/apps/admin/doc/roles.md) crée les rôles.

@@ -56,6 +56,7 @@ Export statique : pas de route dynamique ; les détails passent par des paramèt
 - **Connexion** (IAM, livrée) : `/connexion`, retour vers la page demandée (liste fermée), `/login` conservé en redirection, liste des espaces, `/sso`.
 - **Inscription et espace citoyen** : code conforme au contrat Citizen L1, testé contre un double et un `fetch` simulé. Le bout en bout dépend de l’API Citizen (agent A) — voir [parcours citoyen](parcours-citoyen.md#dépendances-et-limites).
 - **Demandes citoyennes (L2)** : « Contacter la mairie », « Signaler un problème », confirmation avec la référence, « Mes demandes » (historique, détail et chronologie), mise à jour en temps réel ; code conforme au [contrat Citizen L2](../../../../api/src/Citizen/doc/README.md#contrat-http--demandes-lot-l2), **ni testé ni vérifié dans un navigateur** — voir [parcours citoyen](parcours-citoyen.md#4-demandes-citoyennes-lot-l2).
+- **Urgences, carte, nouveaux arrivants, langues (L11, L21, L5)** : `/urgences`, `/carte`, `/bienvenue`, connexion sans e-mail, `/espace/nouveau-code`, sélecteur de langue français / anglais / arabe et services traduits — voir [urgences, carte, nouveaux arrivants et langues](urgences-carte-langues.md) ; **non testé, non vérifié dans un navigateur**.
 - **Vitrine** : pages et recherche livrées, **sur contenu de démonstration local** (voir limites).
 
 ## Limites et questions ouvertes
