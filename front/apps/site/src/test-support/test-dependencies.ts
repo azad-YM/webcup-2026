@@ -23,6 +23,7 @@ export function createTestContext(overrides: Partial<Dependencies> = {}) {
     authGateway,
     authSessionGateway,
     accountRegistrationGateway: new CitizenAccountRegistrationAdapter(citizenGateway),
+    residentAccessGateway: { accountStatus: async () => ({ residentId: null, passwordChangeRequired: false }), changePassword: async () => undefined },
     citizenGateway,
     citizenSessionProvider: new AuthCitizenSessionAdapter(overrides.authSessionGateway ?? authSessionGateway),
     serviceRequestGateway: {

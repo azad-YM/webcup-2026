@@ -1,5 +1,6 @@
 import type { AuthGateway } from "@/modules/auth/core/application/ports/gateway/auth.gateway"
 import type { AuthSessionGateway } from "@/modules/auth/core/application/ports/gateway/auth-session.gateway"
+import type { ResidentAccessGateway } from "@/modules/auth/core/application/ports/gateway/resident-access.gateway"
 import type { AccountRegistrationGateway } from "@/modules/auth/core/application/ports/gateway/account-registration.gateway"
 import type { CitizenGateway } from "@/modules/citizen/core/application/ports/gateway/citizen.gateway"
 import type { CitizenSessionProvider } from "@/modules/citizen/core/application/ports/provider/citizen-session.provider"
@@ -20,6 +21,8 @@ export type Dependencies = {
   authGateway: AuthGateway
   authSessionGateway: AuthSessionGateway
   accountRegistrationGateway: AccountRegistrationGateway
+  /** F71 : comptes créés à l’accueil (identifiant d’habitant, code provisoire). */
+  residentAccessGateway: ResidentAccessGateway
   // citizen
   citizenGateway: CitizenGateway
   citizenSessionProvider: CitizenSessionProvider

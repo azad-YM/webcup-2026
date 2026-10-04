@@ -12,6 +12,7 @@ import { Provider } from "react-redux"
 import { createStore, resetAccountCaches } from "../core/config/store"
 import type { Dependencies } from "../core/config/dependencies"
 import { AuthHttpGateway } from "@/modules/auth/core/infrastructure/for-production/gateway/http/auth.http.gateway"
+import { ResidentAccessHttpGateway } from "@/modules/auth/core/infrastructure/for-production/gateway/http/resident-access.http.gateway"
 import {
   LocalStorageAuthSessionGateway,
   SESSION_KEY
@@ -60,6 +61,7 @@ function createDependencies(): Dependencies {
     realtime,
     authGateway: new AuthHttpGateway(siteEnv.apiBaseUrl),
     authSessionGateway,
+    residentAccessGateway: new ResidentAccessHttpGateway(siteEnv.apiBaseUrl),
     accountRegistrationGateway: new CitizenAccountRegistrationAdapter(citizenGateway),
     citizenGateway,
     citizenSessionProvider: new AuthCitizenSessionAdapter(authSessionGateway),

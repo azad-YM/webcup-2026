@@ -4,7 +4,7 @@
  */
 export const DEFAULT_RETURN_PATH = "/espace"
 
-const ALLOWED_RETURN_PATHS = ["/espace", "/espace/profil", "/espace/demandes", "/espace/demandes/nouvelle", "/espace/rendez-vous", "/espace/participation"] as const
+const ALLOWED_RETURN_PATHS = ["/espace", "/espace/profil", "/espace/demandes", "/espace/demandes/nouvelle", "/espace/rendez-vous", "/espace/participation", "/espace/nouveau-code", "/bienvenue"] as const
 
 export type ReturnPath = (typeof ALLOWED_RETURN_PATHS)[number]
 
