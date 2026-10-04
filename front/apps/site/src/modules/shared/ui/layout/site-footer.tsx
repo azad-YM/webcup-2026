@@ -8,7 +8,7 @@ import { COMMON_MESSAGES, navigationLabel } from "../i18n/common-messages"
 export function SiteFooter() {
   const t = useMessages(COMMON_MESSAGES)
   return (
-    <footer className="bg-slate-950 text-slate-300">
+    <footer className="site-footer bg-slate-950 text-slate-300">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-3 lg:px-8">
         <div>
           <NovaTerraWordmark inverted />
