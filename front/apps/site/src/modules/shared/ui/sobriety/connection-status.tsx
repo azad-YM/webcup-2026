@@ -1,13 +1,15 @@
 "use client"
 import { useEffect, useState } from "react"
 import { useAccessibilityPreferences } from "@boilerplate/shared-ui/components/a11y"
+import { DEGRADED_MODE_EVENT as PLATFORM_DEGRADED_EVENT, watchPlatformStatus } from "@boilerplate/shared-utils/platform-status"
+import { siteEnv } from "@/config/env"
 import { format } from "../../core/i18n/locales"
 import { useMessages } from "../i18n/i18n-provider"
 import { activateTemporaryLightMode, endTemporaryLightMode, useLightMode } from "./light-mode"
 import { formatCachedAt, SOBRIETY_MESSAGES } from "./sobriety-messages"
 
 /** Événement que tout adaptateur du site peut émettre quand l’API annonce un mode dégradé (surcharge). */
-export const DEGRADED_MODE_EVENT = "nova-terra:mode-degrade"
+export const DEGRADED_MODE_EVENT = PLATFORM_DEGRADED_EVENT
 const SUGGESTION_HINT = "mode-leger-propose"
 
 type NetworkInformation = EventTarget & { saveData?: boolean; effectiveType?: string; downlink?: number }
@@ -67,6 +69,8 @@ export function ConnectionStatus() {
       if (message.type === "degraded") activateTemporaryLightMode("degraded")
     }
     worker?.addEventListener("message", onMessage)
+    // L24 (F77) : l’API annonce son mode allégé (surcharge) ; l’événement active le mode léger pour la visite.
+    const stopWatching = watchPlatformStatus(siteEnv.apiBaseUrl, () => undefined, 180_000)
     if (worker && process.env.NODE_ENV === "production") {
       worker.register("/sw.js", { scope: "/" }).catch(() => undefined)
     }
@@ -76,6 +80,7 @@ export function ConnectionStatus() {
       window.removeEventListener(DEGRADED_MODE_EVENT, onDegraded)
       connection()?.removeEventListener?.("change", onConnectionChange)
       worker?.removeEventListener("message", onMessage)
+      stopWatching()
     }
   }, [])
 

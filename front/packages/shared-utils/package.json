@@ -14,6 +14,7 @@
     "./use-cases.decorator": "./src/use-cases.decorator.ts",
     "./rtk-query.decorator": "./src/rtk-query.decorator.ts",
     "./realtime": "./src/realtime.ts",
-    "./submission-guard": "./src/submission-guard.ts"
+    "./submission-guard": "./src/submission-guard.ts",
+    "./platform-status": "./src/platform-status.ts"
   }
 }

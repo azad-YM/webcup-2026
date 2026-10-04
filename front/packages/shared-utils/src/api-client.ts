@@ -1,3 +1,4 @@
+import { announceDegradedMode } from "./platform-status"
 import { activeSubmission, recordSubmissionResponse, type SubmissionContext } from "./submission-guard"
 
 export type ApiErrorPayload = {
@@ -172,6 +173,8 @@ export class ApiClient {
     const rawText = await response.text()
     const parsedData = this.safeJsonParse(rawText)
     if (submission) recordSubmissionResponse(submission, response, parsedData)
+    // F77 : l’API annonce le mode allégé sur chaque réponse (en-tête exposé par CORS).
+    if (response.headers.get("X-Platform-Mode") === "degraded") announceDegradedMode()
 
     if (!response.ok) {
       const payload = this.isApiErrorPayload(parsedData) ? parsedData : undefined
