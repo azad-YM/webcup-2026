@@ -1,0 +1,1 @@
+const n={data:"Données personnelles",service:"Service de la ville",security:"Sécurité du compte",other:"Autre"},t={received:"Reçue",in_review:"Prise en compte",answered:"Répondue"},o=e=>e.slice(11,16),a=()=>new Intl.DateTimeFormat("en-CA",{timeZone:"Indian/Reunion"}).format(new Date);export{t as C,n as a,a as c,o as l};
