@@ -1,5 +1,6 @@
 "use client"
 import Link from "next/link"
+import { polling } from "@/modules/shared/ui/sobriety/polling"
 import { ArrowRight, Building2, Lightbulb, ListChecks } from "@boilerplate/shared-ui/components/icon"
 import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
@@ -27,7 +28,7 @@ function ConsultationGroup({ id, title, items, empty }: { id: string; title: str
 /** « Participer » : consultations ouvertes, à venir et terminées (F65, F66), accès à la boîte à idées (F68). */
 export function ParticipatePage() {
   const { hasToken } = useSession()
-  const { data, error, isFetching, refetch } = useListConsultationsQuery(undefined, { pollingInterval: PARTICIPATION_POLLING_MS })
+  const { data, error, isFetching, refetch } = useListConsultationsQuery(undefined, polling(PARTICIPATION_POLLING_MS))
   const byPhase = (phase: ConsultationPhase) => (data ?? []).filter((item) => item.phase === phase)
   return (
     <>

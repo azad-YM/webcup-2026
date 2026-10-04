@@ -1,5 +1,6 @@
 "use client"
 import { useState } from "react"
+import { polling } from "@/modules/shared/ui/sobriety/polling"
 import Link from "next/link"
 import type { Route } from "next"
 import { useSearchParams } from "next/navigation"
@@ -180,7 +181,7 @@ function ServiceDetail({ service }: { service: MunicipalService }) {
 
 export function ServicesPage() {
   const serviceId = useSearchParams().get("service")
-  const { data, error, isFetching, refetch } = useListServicesQuery(undefined, { pollingInterval: CONTENT_POLLING_MS })
+  const { data, error, isFetching, refetch } = useListServicesQuery(undefined, polling(CONTENT_POLLING_MS))
   const service = data && serviceId ? findService(data, serviceId) : null
   const t = useMessages(PLACES_MESSAGES)
   const common = useMessages(COMMON_MESSAGES)

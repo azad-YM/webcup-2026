@@ -91,8 +91,8 @@ export function HomePage() {
   return (
     <>
       <section aria-labelledby="titre-accueil" className="relative overflow-hidden bg-slate-950 text-white">
-        <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-24 size-[28rem] rounded-full bg-gradient-to-br from-teal-400 to-teal-900 opacity-40" />
-        <div aria-hidden="true" className="pointer-events-none absolute -right-40 top-40 h-6 w-[40rem] -rotate-12 rounded-full border-2 border-amber-300/60" />
+        <div aria-hidden="true" data-decorative className="pointer-events-none absolute -right-24 -top-24 size-[28rem] rounded-full bg-gradient-to-br from-teal-400 to-teal-900 opacity-40" />
+        <div aria-hidden="true" data-decorative className="pointer-events-none absolute -right-40 top-40 h-6 w-[40rem] -rotate-12 rounded-full border-2 border-amber-300/60" />
         <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-amber-300">{t.kicker}</p>
           <h1 id="titre-accueil" className="mt-4 max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">{t.title}</h1>

@@ -1,5 +1,6 @@
 "use client"
 import { useEffect, useId, useRef, useState } from "react"
+import { polling } from "@/modules/shared/ui/sobriety/polling"
 import Link from "next/link"
 import type { Route } from "next"
 import { Bell } from "@boilerplate/shared-ui/components/icon"
@@ -33,7 +34,7 @@ function useFreshNotification(items: CitizenNotification[] | undefined) {
 export function NotificationCenter({ onNavigate }: { onNavigate?: () => void }) {
   const headingId = useId()
   const [filter, setFilter] = useState<"all" | "unread" | "read">("all")
-  const query = useListMyNotificationsQuery(undefined, { pollingInterval: NOTIFICATIONS_POLLING_MS })
+  const query = useListMyNotificationsQuery(undefined, polling(NOTIFICATIONS_POLLING_MS))
   const [markRead, marking] = useMarkNotificationsReadMutation()
   const [fresh, dismiss] = useFreshNotification(query.data?.items)
   const failure = toQueryError(query.error)

@@ -1,5 +1,6 @@
 "use client"
 import { Phone, Siren } from "@boilerplate/shared-ui/components/icon"
+import { polling } from "@/modules/shared/ui/sobriety/polling"
 import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
 import { format } from "@/modules/shared/core/i18n/locales"
 import { useMessages } from "@/modules/shared/ui/i18n/i18n-provider"
@@ -27,7 +28,7 @@ const NUMBERS = [
 export function EmergencyPage() {
   const t = useMessages(PLACES_MESSAGES)
   const nearMe = useNearMe()
-  const { data, error, isFetching, refetch } = useListServicesQuery(undefined, { pollingInterval: CONTENT_POLLING_MS })
+  const { data, error, isFetching, refetch } = useListServicesQuery(undefined, polling(CONTENT_POLLING_MS))
   const places = data ? sortByDistance(emergencyServices(data), nearMe.position) : []
   return (
     <>

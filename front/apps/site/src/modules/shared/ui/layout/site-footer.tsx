@@ -27,6 +27,7 @@ export function SiteFooter() {
             <li><Link href="/bienvenue" className="hover:text-white hover:underline">{t.footerNewcomer}</Link></li>
             <li><Link href="/aide/glossaire" className="hover:text-white hover:underline">{t.footerGlossary}</Link></li>
             <li><Link href="/vos-donnees" className="hover:text-white hover:underline">{t.footerData}</Link></li>
+            <li><Link href="/sobriete" className="hover:text-white hover:underline">{t.footerSobriety}</Link></li>
           </ul>
         </nav>
         <div>

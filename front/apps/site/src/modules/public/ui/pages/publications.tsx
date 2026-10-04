@@ -1,5 +1,6 @@
 "use client"
 import Link from "next/link"
+import { polling } from "@/modules/shared/ui/sobriety/polling"
 import { useSearchParams } from "next/navigation"
 import { ArrowLeft } from "@boilerplate/shared-ui/components/icon"
 import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
@@ -31,7 +32,7 @@ function PublicationDetail({ publication }: { publication: Publication }) {
 
 export function PublicationsPage() {
   const articleId = useSearchParams().get("article")
-  const { data, error, isFetching, refetch } = useListPublicationsQuery(undefined, { pollingInterval: CONTENT_POLLING_MS })
+  const { data, error, isFetching, refetch } = useListPublicationsQuery(undefined, polling(CONTENT_POLLING_MS))
   const publication = data && articleId ? findPublication(data, articleId) : null
   return (
     <>
