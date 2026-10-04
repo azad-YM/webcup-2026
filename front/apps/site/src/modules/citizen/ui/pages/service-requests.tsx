@@ -10,6 +10,7 @@ import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
 import { EmptyState, ErrorState, LoadingState, SkeletonCards } from "@/modules/shared/ui/components/states"
 import { CitizenAccessState, useCitizenAccess } from "../components/citizen-access"
 import { RequestTimeline, StatusBadge } from "../components/request-status"
+import { RequestConversation } from "../components/request-conversation"
 import { REQUESTS_POLLING_MS, useGetMyRequestQuery, useListMyRequestsQuery } from "../../core/application/rtk-api/service-requests"
 import { formatDateTime, REQUEST_TYPE_LABELS, type ServiceRequest } from "../../core/domain/service-request"
 import { useListMyNotificationsQuery, useMarkNotificationsReadMutation } from "../../core/application/rtk-api/notifications"
@@ -159,13 +160,22 @@ function RequestDetail({ reference }: { reference: string }) {
                 Signalement visible des autres habitants · <span className="font-semibold">{request.supportCount ?? 0} soutien{(request.supportCount ?? 0) > 1 ? "s" : ""}</span>
               </p>
             )}
+            {request.medicalEmergency && (
+              <p className="mt-4 rounded-xl border-2 border-red-700 bg-red-50 p-3 text-red-950">
+                Urgence médicale signalée{request.emergencyHandledAt ? <> — prise en charge par un agent le <time dateTime={request.emergencyHandledAt}>{formatDateTime(request.emergencyHandledAt)}</time></> : ""}. En cas de danger, appelez le <a href="tel:15" className="font-semibold underline"><span dir="ltr">15</span></a> ou le <a href="tel:112" className="font-semibold underline"><span dir="ltr">112</span></a>.
+              </p>
+            )}
             <h3 className="mt-6 font-semibold text-slate-950">Votre message</h3>
             <p className="mt-2 whitespace-pre-wrap text-slate-800">{request.description}</p>
           </article>
           <section aria-labelledby="titre-etapes" className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
             <h2 id="titre-etapes" className="text-lg font-semibold">Étapes du traitement</h2>
             <div className="mt-5" aria-live="polite"><RequestTimeline steps={request.steps} /></div>
+            <Link href={`/espace/demandes/accuse?ref=${encodeURIComponent(request.reference)}` as Route} className="mt-6 inline-flex items-center gap-2 font-medium text-teal-800 underline underline-offset-4">
+              <FileText className="size-4" aria-hidden="true" /> Accusé de réception
+            </Link>
           </section>
+          <div className="lg:col-span-2"><RequestConversation reference={request.reference} /></div>
         </div>
       ) : null}
     </div>
