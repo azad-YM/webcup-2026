@@ -36,6 +36,7 @@ parameters:
         participation_consultations: 60
         participation_consultation: 60
         participation_ideas: 60
+        participation_service_ratings: 60
 
     # --- F81 : protection des formulaires contre les robots (nom de route => formulaire, délai minimal en secondes) ---
     app.form_guard.enabled: true
@@ -46,6 +47,7 @@ parameters:
         citizen_raise_concern: { form: 'inquietude', min_seconds: 3 }
         participation_propose_idea: { form: 'idee', min_seconds: 4 }
         participation_contribute: { form: 'consultation', min_seconds: 3 }
+        participation_review_service: { form: 'avis-service', min_seconds: 3 }
 
     # --- F82 : envois multiples (Idempotency-Key) ---
     app.idempotency.enabled: true
@@ -74,7 +76,7 @@ parameters:
         Administration: [admin_members, roles, municipal_service]
         Citizen: [citizens, citizen_alert_preference, citizen_service_requests, citizen_request_supports, citizen_concerns, citizen_appointment_slots, citizen_appointments, citizen_notifications]
         Communication: [communication_publication, communication_alert]
-        Participation: [participation_projects, participation_consultations, participation_contributions, participation_ideas]
+        Participation: [participation_projects, participation_consultations, participation_contributions, participation_ideas, participation_service_reviews]
         Pilotage: [pilotage_request_tracking]
         Audit: [audit_entries, audit_anomalies]
 

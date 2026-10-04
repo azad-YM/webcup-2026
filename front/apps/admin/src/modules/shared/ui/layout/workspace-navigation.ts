@@ -1,4 +1,4 @@
-import { Activity, ArchiveRestore, Download, BookKey, Building2, CalendarClock, HandHeart, History, Inbox, LayoutDashboard, Lightbulb, MessageCircleWarning, MessagesSquare, Newspaper, ShieldAlert, ShieldQuestion, Siren, Users } from "@boilerplate/shared-ui/components/icon"
+import { Star, Activity, ArchiveRestore, Download, BookKey, Building2, CalendarClock, HandHeart, History, Inbox, LayoutDashboard, Lightbulb, MessageCircleWarning, MessagesSquare, Newspaper, ShieldAlert, ShieldQuestion, Siren, Users } from "@boilerplate/shared-ui/components/icon"
 import type { NavGroup } from "../components/sidebar/nav-main"
 
 export type ModuleCode = "admin" | "requests" | "pilotage" | "participation"
@@ -53,5 +53,6 @@ export const MODULE_NAVIGATION: Record<ModuleCode, NavGroup[]> = {
     { title: "Projets", url: "/participation", icon: Building2, description: "Projets en cours dans la ville" },
     { title: "Consultations et avis", url: "/participation/consultations", icon: MessagesSquare, description: "Questions posées aux habitants" },
     { title: "Boîte à idées", url: "/participation/idees", icon: Lightbulb, description: "Idées proposées par les habitants" },
+    { title: "Avis sur les services", url: "/participation/avis", icon: Star, description: "Notes et commentaires après un service" },
   ] }],
 }

@@ -3,7 +3,8 @@ import { withUseCase, type QueryError } from "@/modules/shared/core/lib/use-case
 import type { Dependencies } from "@/modules/shared/core/config/dependencies"
 import type { MunicipalService } from "../../domain/municipal-service"
 import type { Publication } from "../../domain/publication"
-import { listPublications, listServices } from "../usecases/public-content.usecase"
+import { getServiceRating, listPublications, listServices } from "../usecases/public-content.usecase"
+import type { ServiceRatingSummary } from "../ports/provider/service-ratings.provider"
 import type { Explanation, ExplainParams, ServiceSearchParams, ServiceSearchResult } from "../../domain/service-search"
 import { explainPassage, refineServiceSearch, searchServices } from "../usecases/assistance.usecase"
 
@@ -27,6 +28,8 @@ export const publicApi = createApi({
         unsubscribe()
       }
     }),
+    // F76 : note moyenne d’un service (Participation, par le port ServiceRatingsProvider).
+    getServiceRating: build.query<ServiceRatingSummary | null, string>({ queryFn: withUseCase(getServiceRating), keepUnusedDataFor: 300 }),
     // D10 : recherche tolérante (BC Assistance) ; F90 : explication simple d’un passage. Rien n’est stocké.
     searchServices: build.query<ServiceSearchResult, ServiceSearchParams>({ queryFn: withUseCase(searchServices), keepUnusedDataFor: 300 }),
     refineServiceSearch: build.query<ServiceSearchResult, ServiceSearchParams>({ queryFn: withUseCase(refineServiceSearch), keepUnusedDataFor: 600 }),
@@ -50,5 +53,4 @@ export const {
   useListPublicationsQuery,
   useSearchServicesQuery,
   useLazyRefineServiceSearchQuery,
-  useLazyExplainPassageQuery
-} = publicApi
+  useLazyExplainPassageQuery, useGetServiceRatingQuery } = publicApi

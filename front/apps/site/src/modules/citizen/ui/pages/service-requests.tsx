@@ -176,6 +176,14 @@ function RequestDetail({ reference }: { reference: string }) {
             )}
             <h3 className="mt-6 font-semibold text-slate-950">Votre message</h3>
             <p className="mt-2 whitespace-pre-wrap text-slate-800">{request.description}</p>
+            {/* F76 : une demande close propose de donner son avis sur le service concerné. */}
+            {request.serviceId && (request.status === "resolved" || request.status === "rejected") && (
+              <p className="mt-5">
+                <Link href={`/espace/avis?service=${encodeURIComponent(request.serviceId)}&demande=${encodeURIComponent(request.reference)}` as Route} className="inline-flex rounded-xl border border-teal-700 px-4 py-2 font-medium text-teal-800 hover:bg-teal-50">
+                  Donner mon avis sur ce service
+                </Link>
+              </p>
+            )}
           </article>
           <section aria-labelledby="titre-etapes" className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
             <h2 id="titre-etapes" className="text-lg font-semibold">Étapes du traitement</h2>

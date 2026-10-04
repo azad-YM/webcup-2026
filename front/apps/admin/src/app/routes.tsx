@@ -27,6 +27,7 @@ const AlertsPage = lazy(() => import("@/modules/content/ui/pages/alerts").then((
 const ServicesPage = lazy(() => import("@/modules/content/ui/pages/services").then((module) => ({ default: module.ServicesPage })))
 const ParticipationProjectsPage = lazy(() => import("@/modules/participation/ui/pages/projects").then((module) => ({ default: module.ParticipationProjectsPage })))
 const ParticipationConsultationsPage = lazy(() => import("@/modules/participation/ui/pages/consultations").then((module) => ({ default: module.ParticipationConsultationsPage })))
+const ServiceReviewsPage = lazy(() => import("@/modules/participation/ui/pages/service-reviews").then((module) => ({ default: module.ServiceReviewsPage })))
 const ParticipationIdeasPage = lazy(() => import("@/modules/participation/ui/pages/ideas").then((module) => ({ default: module.ParticipationIdeasPage })))
 
 /**
@@ -123,6 +124,7 @@ export const router = createBrowserRouter([
           { index: true, element: page(ParticipationProjectsPage) },
           { path: "consultations", element: page(ParticipationConsultationsPage) },
           { path: "idees", element: page(ParticipationIdeasPage) },
+          { path: "avis", element: page(ServiceReviewsPage) },
         ],
       },
     ],

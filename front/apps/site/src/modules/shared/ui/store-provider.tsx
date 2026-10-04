@@ -42,6 +42,7 @@ import { OrientationHttpGateway } from "@/modules/assistance/core/infrastructure
 import { CITY_FEED_EVENTS } from "@/modules/public/core/application/ports/gateway/city-feed.gateway"
 import { RealtimeCityFeedAdapter } from "../core/infrastructure/adapter/public/realtime-city-feed.adapter"
 import { AuthPublicSessionAdapter } from "@/modules/auth/core/infrastructure/adapter/public/auth-public-session.adapter"
+import { ParticipationServiceRatingsAdapter } from "@/modules/participation/core/infrastructure/adapter/public/participation-service-ratings.adapter"
 import { CityParticipationHttpGateway } from "@/modules/participation/core/infrastructure/for-production/gateway/http/city-participation.http.gateway"
 import { AuthParticipationSessionAdapter } from "@/modules/auth/core/infrastructure/adapter/participation/auth-participation-session.adapter"
 
@@ -69,6 +70,7 @@ function createDependencies(): Dependencies {
     ...CITY_FEED_EVENTS
   ], isLightModeActive)
   const authGateway = new AuthHttpGateway(siteEnv.apiBaseUrl)
+  const cityParticipation = new CityParticipationHttpGateway(siteEnv.apiBaseUrl)
   const assistance = new AssistanceHttpGateway(siteEnv.apiBaseUrl)
   return {
     realtime,
@@ -95,7 +97,8 @@ function createDependencies(): Dependencies {
     serviceFinderGateway: assistance,
     explanationGateway: assistance,
     orientationGateway: new OrientationHttpGateway(siteEnv.apiBaseUrl),
-    cityParticipationGateway: new CityParticipationHttpGateway(siteEnv.apiBaseUrl),
+    cityParticipationGateway: cityParticipation,
+    serviceRatingsProvider: new ParticipationServiceRatingsAdapter(cityParticipation),
     participationSessionProvider: new AuthParticipationSessionAdapter(authSessionGateway)
   }
 }

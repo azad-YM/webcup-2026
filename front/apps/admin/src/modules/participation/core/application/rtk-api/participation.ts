@@ -1,5 +1,6 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { withUseCase } from "@/modules/shared/core/config/use-cases"
+import type { ServiceReview, ServiceReviewAction, ServiceReviewQueue, ServiceReviewStatus } from "../../domain/participation"
 import type {
   Consultation,
   ConsultationDraft,
@@ -22,12 +23,14 @@ import {
   saveConsultation,
   saveProject,
   setIdeaVisibility,
+  listServiceReviews,
+  handleServiceReview,
 } from "../usecases/participation.usecase"
 
 export const participationApi = createApi({
   reducerPath: "participationApi",
   baseQuery: fakeBaseQuery(),
-  tagTypes: ["Projects", "Consultations", "Contributions", "Ideas"],
+  tagTypes: ["Projects", "Consultations", "Contributions", "Ideas", "ServiceReviews"],
   endpoints: (build) => ({
     listDistricts: build.query<string[], void>({ queryFn: withUseCase(listDistricts), keepUnusedDataFor: 3600 }),
     listProjects: build.query<Project[], void>({ queryFn: withUseCase(listProjects), providesTags: ["Projects"] }),
@@ -38,6 +41,8 @@ export const participationApi = createApi({
     listContributions: build.query<ContributionView[], string>({ queryFn: withUseCase(listContributions), providesTags: ["Contributions"] }),
     listIdeas: build.query<Idea[], IdeaStatus | null>({ queryFn: withUseCase(listIdeas), providesTags: ["Ideas"] }),
     followIdea: build.mutation<Idea, IdeaFollowUp>({ queryFn: withUseCase(followIdea), invalidatesTags: ["Ideas"] }),
+    listServiceReviews: build.query<ServiceReviewQueue, ServiceReviewStatus | null>({ queryFn: withUseCase(listServiceReviews), providesTags: ["ServiceReviews"] }),
+    handleServiceReview: build.mutation<ServiceReview, ServiceReviewAction>({ queryFn: withUseCase(handleServiceReview), invalidatesTags: ["ServiceReviews"] }),
     setIdeaVisibility: build.mutation<Idea, IdeaVisibility>({ queryFn: withUseCase(setIdeaVisibility), invalidatesTags: ["Ideas"] }),
   }),
 })
@@ -53,4 +58,6 @@ export const {
   useListIdeasQuery,
   useFollowIdeaMutation,
   useSetIdeaVisibilityMutation,
+  useListServiceReviewsQuery,
+  useHandleServiceReviewMutation,
 } = participationApi

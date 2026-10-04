@@ -8,6 +8,10 @@ import type {
   IdeaStatus,
   IdeaVisibility,
   Project,
+  ServiceReviewAction,
+  ServiceReview,
+  ServiceReviewQueue,
+  ServiceReviewStatus,
 } from "../../../domain/participation"
 
 /**
@@ -26,4 +30,7 @@ export interface ParticipationGateway {
   listIdeas(status: IdeaStatus | null): Promise<Idea[]>
   followIdea(change: IdeaFollowUp): Promise<Idea>
   setIdeaVisibility(change: IdeaVisibility): Promise<Idea>
+  /** F76 : avis sur les services (lecture : admin.participation.read ; lu / réponse : admin.participation.write). */
+  listServiceReviews(status: ServiceReviewStatus | null): Promise<ServiceReviewQueue>
+  handleServiceReview(action: ServiceReviewAction): Promise<ServiceReview>
 }

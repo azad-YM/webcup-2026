@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <!-- F76 (L26) : avis sur un service municipal, un par habitant, service et mois. -->
+    <entity name="Participation\Domain\Entity\ServiceReview" table="participation_service_reviews">
+        <indexes>
+            <index name="IDX_PARTICIPATION_REVIEW_CITIZEN" columns="citizen_id,created_at"/>
+            <index name="IDX_PARTICIPATION_REVIEW_SERVICE" columns="service_id"/>
+            <index name="IDX_PARTICIPATION_REVIEW_STATUS" columns="status,updated_at"/>
+        </indexes>
+        <unique-constraints>
+            <unique-constraint name="UNIQ_PARTICIPATION_REVIEW_REFERENCE" columns="reference"/>
+            <unique-constraint name="UNIQ_PARTICIPATION_REVIEW_PERIOD" columns="citizen_id,service_id,period"/>
+        </unique-constraints>
+        <id name="id" type="string" length="36"/>
+        <field name="reference" type="string" length="20"/>
+        <field name="citizenId" column="citizen_id" type="string" length="36"/>
+        <field name="serviceId" column="service_id" type="string" length="100"/>
+        <field name="serviceName" column="service_name" type="string" length="200"/>
+        <field name="period" type="string" length="7"/>
+        <field name="rating" type="smallint"/>
+        <field name="needMet" column="need_met" type="string" length="10"/>
+        <field name="comment" type="text" nullable="true"/>
+        <field name="context" type="string" length="20">
+            <options><option name="default">service</option></options>
+        </field>
+        <field name="contextReference" column="context_reference" type="string" length="40" nullable="true"/>
+        <field name="status" type="string" length="20">
+            <options><option name="default">received</option></options>
+        </field>
+        <field name="response" type="text" nullable="true"/>
+        <field name="respondedAt" column="responded_at" type="datetime_immutable" nullable="true"/>
+        <field name="createdAt" column="created_at" type="datetime_immutable"/>
+        <field name="updatedAt" column="updated_at" type="datetime_immutable"/>
+    </entity>
+</doctrine-mapping>

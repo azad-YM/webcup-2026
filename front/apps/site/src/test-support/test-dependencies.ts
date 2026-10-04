@@ -78,8 +78,12 @@ export function createTestContext(overrides: Partial<Dependencies> = {}) {
       listDistricts: async () => [],
       myParticipation: async () => ({ contributions: [], ideas: [] }),
       contribute: async () => { throw new Error("Not configured") },
-      proposeIdea: async () => { throw new Error("Not configured") }
+      proposeIdea: async () => { throw new Error("Not configured") },
+      reviewService: async () => { throw new Error("Not configured") },
+      listServiceRatings: async () => [],
+      serviceName: async () => null
     },
+    serviceRatingsProvider: { ratingOf: async () => null },
     participationSessionProvider: { getToken: () => null },
     ...overrides
   }

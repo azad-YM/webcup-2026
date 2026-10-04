@@ -24,10 +24,10 @@ security:
     access_control:
         # Vitrine : catalogue des services, quartiers, publications et alertes générales en lecture publique.
         - { path: ^/api/administration/(services(/[a-z0-9-]+)?|districts)$, roles: PUBLIC_ACCESS, methods: [GET] }
-        - { path: ^/api/communication/(publications(/[A-Za-z0-9-]+)?|alerts)$, roles: PUBLIC_ACCESS, methods: [GET] }
+        - { path: ^/api/communication/(publications(/[A-Za-z0-9-]+)?|alerts|official-messages)$, roles: PUBLIC_ACCESS, methods: [GET] }
         # Participation (L19) : projets, consultations (résultats après clôture) et idées publiques en lecture publique.
         - { path: ^/api/participation/(projects|consultations)(/[A-Za-z0-9-]+)?$, roles: PUBLIC_ACCESS, methods: [GET] }
-        - { path: ^/api/participation/ideas$, roles: PUBLIC_ACCESS, methods: [GET] }
+        - { path: ^/api/participation/(ideas|service-ratings)$, roles: PUBLIC_ACCESS, methods: [GET] }
         # Assistance (L22) : recherche tolérante, orientation et explications sans compte (POST limités par IP).
         - { path: ^/api/assistance/(services/search|orientation|explanations)$, roles: PUBLIC_ACCESS, methods: [GET, POST] }
         - { path: ^/api/iam/portal-sessions$, roles: PUBLIC_ACCESS, methods: [POST] }
