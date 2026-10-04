@@ -9,8 +9,9 @@
         <field name="registeredAt" column="registered_at" type="datetime_immutable"/>
         <field name="firstName" column="first_name" type="string" length="100" nullable="true"/>
         <field name="lastName" column="last_name" type="string" length="100" nullable="true"/>
-        <field name="phone" type="string" length="30" nullable="true"/>
-        <field name="address" type="string" length="255" nullable="true"/>
+        <!-- F69 : chiffrés au repos (ADR 007) -->
+        <field name="phone" type="encrypted_string" length="255" nullable="true"/>
+        <field name="address" type="encrypted_string" length="1024" nullable="true"/>
         <field name="district" type="string" length="100" nullable="true"/>
         <field name="preferredLanguage" column="preferred_language" type="string" length="5" nullable="true"/>
         <unique-constraints>

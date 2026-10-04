@@ -56,6 +56,8 @@ services:
             - '../src/Shared/**/Tests/'
             - '../src/Shared/Infrastructure/Kernel.php'
             - '../src/Shared/Infrastructure/Realtime/RealtimeEvent.php'
+            - '../src/Shared/Infrastructure/RateLimit/RateLimitCounter.php'
+            - '../src/Shared/Infrastructure/Doctrine/EncryptedStringType.php'
 
     # --- IAM : comptes et sessions ---
 
