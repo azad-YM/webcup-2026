@@ -27,6 +27,8 @@ import { NOTIFICATION_EVENTS } from "@/modules/citizen/core/application/rtk-api/
 import { AppointmentHttpGateway } from "@/modules/citizen/core/infrastructure/for-production/gateway/http/appointment.http.gateway"
 import { APPOINTMENT_EVENTS } from "@/modules/citizen/core/application/rtk-api/appointments"
 import { ParticipationHttpGateway } from "@/modules/citizen/core/infrastructure/for-production/gateway/http/participation.http.gateway"
+import { PersonalDataHttpGateway } from "@/modules/citizen/core/infrastructure/for-production/gateway/http/personal-data.http.gateway"
+import { AuthIdentityCodeAdapter } from "@/modules/auth/core/infrastructure/adapter/citizen/auth-identity-code.adapter"
 import { SseRealtimeSubscriber } from "../core/infrastructure/realtime/sse-realtime.subscriber"
 import { HttpPublicContentGateway } from "@/modules/public/core/infrastructure/for-production/gateway/http/public-content.http.gateway"
 import { AlertsHttpGateway } from "@/modules/public/core/infrastructure/for-production/gateway/http/alerts.http.gateway"
@@ -71,6 +73,8 @@ function createDependencies(): Dependencies {
     notificationGateway: new NotificationHttpGateway(siteEnv.apiBaseUrl),
     appointmentGateway: new AppointmentHttpGateway(siteEnv.apiBaseUrl),
     participationGateway: new ParticipationHttpGateway(siteEnv.apiBaseUrl),
+    personalDataGateway: new PersonalDataHttpGateway(siteEnv.apiBaseUrl),
+    identityCodeProvider: new AuthIdentityCodeAdapter(authSessionGateway, authGateway),
     // Contenus publiés par les BC propriétaires (Administration, Communication) et flux temps réel.
     serviceCatalogGateway: publicContent,
     publicationGateway: publicContent,

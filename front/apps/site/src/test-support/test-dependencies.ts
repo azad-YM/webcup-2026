@@ -30,6 +30,8 @@ export function createTestContext(overrides: Partial<Dependencies> = {}) {
       reportDevice: async () => { throw new Error("Not configured") },
       changePassword: async () => { throw new Error("Not configured") }
     },
+    personalDataGateway: { export: async () => { throw new Error("Not configured") } },
+    identityCodeProvider: { sendCode: async () => { throw new Error("Not configured") } },
     accountRegistrationGateway: new CitizenAccountRegistrationAdapter(citizenGateway),
     citizenGateway,
     citizenSessionProvider: new AuthCitizenSessionAdapter(overrides.authSessionGateway ?? authSessionGateway),
