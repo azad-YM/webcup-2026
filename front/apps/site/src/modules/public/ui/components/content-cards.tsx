@@ -1,3 +1,4 @@
+"use client"
 import Link from "next/link"
 import type { Route } from "next"
 import {
@@ -15,6 +16,10 @@ import {
 } from "@boilerplate/shared-ui/components/icon"
 import { isDisrupted, SERVICE_CATEGORIES, SERVICE_STATUS_LABELS, type MunicipalService } from "../../core/domain/municipal-service"
 import { formatPublicationDate, type Publication } from "../../core/domain/publication"
+import { localizeService } from "../../core/domain/service-places"
+import { useLocale, useMessages } from "@/modules/shared/ui/i18n/i18n-provider"
+import { COMMON_MESSAGES } from "@/modules/shared/ui/i18n/common-messages"
+import { categoryLabel, PLACES_MESSAGES } from "../i18n/places-messages"
 
 const SERVICE_ICONS: Record<string, LucideIcon> = {
   "etat-civil": FileText,
@@ -34,24 +39,29 @@ export const publicationHref = (id: string) => `/actualites?article=${encodeURIC
 export function ServiceCard({ service, headingLevel = 3 }: { service: MunicipalService; headingLevel?: 2 | 3 }) {
   const Icon = serviceIcon(service.id)
   const Heading = headingLevel === 2 ? "h2" : "h3"
+  const t = useMessages(PLACES_MESSAGES)
+  const common = useMessages(COMMON_MESSAGES)
+  const { locale } = useLocale()
+  const text = localizeService(service, locale)
   return (
     <article className="group relative flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-teal-600 hover:shadow-md">
       <span className="flex size-11 items-center justify-center rounded-xl bg-teal-50 text-teal-800">
         <Icon className="size-6" aria-hidden="true" />
       </span>
-      <p className="mt-4 text-sm font-medium text-slate-600">{SERVICE_CATEGORIES[service.category]}</p>
+      <p className="mt-4 text-sm font-medium text-slate-600">{locale === "fr" ? SERVICE_CATEGORIES[service.category] : categoryLabel(t, service.category)}</p>
       <Heading className="mt-1 text-lg font-semibold text-slate-950">
         {/* Le lien couvre toute la carte ; son nom accessible reste le titre du service. */}
         <Link href={serviceHref(service.id)} className="after:absolute after:inset-0 after:rounded-2xl">
-          {service.name}
+          {text.name}
         </Link>
       </Heading>
-      <p className="mt-2 flex-1 text-slate-700">{service.summary}</p>
+      <p className="mt-2 flex-1 text-slate-700">{text.summary}</p>
+      {text.untranslated && <p className="mt-2 w-fit rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-700" title={common.notTranslatedHint}>{common.notTranslated}</p>}
       {isDisrupted(service) && (
         <p className="mt-3 rounded-lg bg-amber-100 px-3 py-1 text-sm font-semibold text-amber-950">{SERVICE_STATUS_LABELS[service.status]}</p>
       )}
       <span className="mt-4 inline-flex items-center gap-2 font-medium text-teal-800" aria-hidden="true">
-        Voir le service <ArrowRight className="size-4 transition group-hover:translate-x-1" />
+        {t.seeService} <ArrowRight className="size-4 transition group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
       </span>
     </article>
   )

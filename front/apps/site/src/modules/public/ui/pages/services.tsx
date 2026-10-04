@@ -1,6 +1,7 @@
 "use client"
 import { useState } from "react"
 import Link from "next/link"
+import type { Route } from "next"
 import { useSearchParams } from "next/navigation"
 import { ArrowLeft, Clock, MapPin, Phone } from "@boilerplate/shared-ui/components/icon"
 import { ContextualTip } from "@boilerplate/shared-ui/components/a11y"
@@ -20,8 +21,14 @@ import {
   type ServiceCategory
 } from "../../core/domain/municipal-service"
 import { serviceIcon, ServiceCard } from "../components/content-cards"
+import { format } from "@/modules/shared/core/i18n/locales"
+import { useLocale, useMessages } from "@/modules/shared/ui/i18n/i18n-provider"
+import { COMMON_MESSAGES } from "@/modules/shared/ui/i18n/common-messages"
+import { directionsUrl, hasLocation, localizeService, openStreetMapUrl } from "../../core/domain/service-places"
+import { categoryLabel, PLACES_MESSAGES } from "../i18n/places-messages"
+import { OnDemandMap } from "../components/on-demand-map"
+import { PhoneLink } from "../components/place-card"
 
-const CATEGORY_OPTIONS = Object.entries(SERVICE_CATEGORIES).map(([value, label]) => ({ value, label }))
 
 /** Garde la recherche dans l’adresse pour pouvoir la partager ou y revenir. */
 function syncUrl(query: string, category: ServiceCategory | null) {
@@ -46,32 +53,34 @@ function ServiceCatalog({ services }: { services: MunicipalService[] }) {
     syncUrl(nextQuery, nextCategory)
   }
   const filtered = query.trim() !== "" || category !== null
+  const t = useMessages(PLACES_MESSAGES)
+  const categoryOptions = Object.keys(SERVICE_CATEGORIES).map((value) => ({ value, label: categoryLabel(t, value) }))
   return (
     <>
       <ContextualTip hintId="astuce-recherche-services" title="Trouver un service" className="mb-4">
         Tapez un mot simple, par exemple « papiers », « bus » ou « médecin ». Vous pouvez aussi choisir un thème.
       </ContextualTip>
-      <form role="search" aria-label="Filtrer les services" onSubmit={(event) => event.preventDefault()} className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 md:grid-cols-[2fr_1fr_auto] md:items-end">
-        <TextField id="recherche-service" label="Rechercher un service" type="search" value={query} hint="Exemple : naissance, médecin, navette, déchets…" onChange={(event) => update(event.target.value, category)} />
+      <form role="search" aria-label={t.searchForm} onSubmit={(event) => event.preventDefault()} className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 md:grid-cols-[2fr_1fr_auto] md:items-end">
+        <TextField id="recherche-service" label={t.searchLabel} type="search" value={query} hint={t.searchHint} onChange={(event) => update(event.target.value, category)} />
         <SelectField
           id="categorie-service"
-          label="Thème"
-          placeholder="Tous les thèmes"
-          options={CATEGORY_OPTIONS}
+          label={t.filterCategory}
+          placeholder={t.allCategories}
+          options={categoryOptions}
           value={category ?? ""}
           onChange={(event) => update(query, isServiceCategory(event.target.value) ? event.target.value : null)}
         />
         <button type="button" disabled={!filtered} onClick={() => update("", null)} className="h-12 rounded-xl border border-slate-300 px-4 font-medium hover:bg-slate-50 disabled:opacity-50">
-          Effacer
+          {t.clear}
         </button>
       </form>
       <p className="mt-6 font-medium text-slate-800" role="status" aria-live="polite">
-        {results.length === 0 ? "Aucun service trouvé." : results.length === 1 ? "1 service trouvé." : `${results.length} services trouvés.`}
+        {results.length === 0 ? t.noService : results.length === 1 ? t.oneService : format(t.manyServices, { count: results.length })}
       </p>
       {results.length === 0 ? (
         <div className="mt-4">
-          <EmptyState title="Aucun service ne correspond à votre recherche.">
-            <p>Essayez un autre mot ou <button type="button" onClick={() => update("", null)} className="font-medium text-teal-800 underline">affichez tous les services</button>.</p>
+          <EmptyState title={t.noServiceTitle}>
+            <p>{t.tryOther} <button type="button" onClick={() => update("", null)} className="font-medium text-teal-800 underline">{t.showAll}</button>.</p>
           </EmptyState>
         </div>
       ) : (
@@ -116,33 +125,62 @@ function TransportTimetable({ transport }: { transport: NonNullable<MunicipalSer
   )
 }
 
+/** F45 : mini-localisation sur la fiche (adresse, itinéraire, carte à la demande). */
+function ServiceLocation({ service }: { service: MunicipalService }) {
+  const t = useMessages(PLACES_MESSAGES)
+  if (!hasLocation(service)) return null
+  return (
+    <section aria-labelledby="titre-localisation" className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
+      <h2 id="titre-localisation" className="text-xl font-semibold">{t.location}</h2>
+      <p className="mt-3 text-slate-800" lang="fr">{service.location.address}{service.location.district ? ` — ${format(t.districtLabel, { district: service.location.district })}` : ""}</p>
+      <p className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
+        <a href={directionsUrl(service.location)} target="_blank" rel="noopener noreferrer" aria-label={format(t.directionsLabel, { name: service.name })} className="font-semibold text-teal-800 underline underline-offset-4">{t.directions}</a>
+        <a href={openStreetMapUrl(service.location)} target="_blank" rel="noopener noreferrer" className="font-medium text-teal-800 underline underline-offset-4">{t.openStreetMap}</a>
+        <Link href={`/carte?service=${encodeURIComponent(service.id)}` as Route} className="font-medium text-teal-800 underline underline-offset-4">{t.showOnMap}</Link>
+      </p>
+      <div className="mt-4"><OnDemandMap services={[service]} focusId={service.id} compact /></div>
+    </section>
+  )
+}
+
+function UntranslatedNote({ show }: { show: boolean }) {
+  const common = useMessages(COMMON_MESSAGES)
+  if (!show) return null
+  return <p className="mt-2 inline-flex rounded-full bg-slate-100 px-3 py-0.5 text-sm text-slate-700" title={common.notTranslatedHint}>{common.notTranslated} — <span className="ms-1">{common.notTranslatedHint}</span></p>
+}
+
 function ServiceDetail({ service }: { service: MunicipalService }) {
   const Icon = serviceIcon(service.id)
+  const t = useMessages(PLACES_MESSAGES)
+  const { locale } = useLocale()
+  const text = localizeService(service, locale)
   return (
     <div className="grid gap-8 lg:grid-cols-[2fr_1fr]">
       <div>
         <Icon className="size-10 text-teal-700" aria-hidden="true" />
-        <p className="mt-4 text-lg leading-8 text-slate-800">{service.description}</p>
+        <p className="mt-4 text-lg leading-8 text-slate-800" lang={text.descriptionUntranslated ? "fr" : undefined}>{text.description}</p>
+        <UntranslatedNote show={text.descriptionUntranslated} />
         <ServiceStatusNotice service={service} />
+        <ServiceLocation service={service} />
         {service.transport && <TransportTimetable transport={service.transport} />}
-        <h2 className="mt-8 text-xl font-semibold">Ce que vous pouvez faire</h2>
-        <ul className="mt-4 list-disc space-y-2 pl-6 text-slate-800">
+        <h2 className="mt-8 text-xl font-semibold">{t.whatYouCanDo}</h2>
+        <ul className="mt-4 list-disc space-y-2 ps-6 text-slate-800" lang="fr">
           {service.actions.map((action) => <li key={action}>{action}</li>)}
         </ul>
       </div>
       <aside aria-labelledby="titre-contact" className="h-fit rounded-2xl border border-slate-200 bg-white p-6">
-        <h2 id="titre-contact" className="text-lg font-semibold">Contact</h2>
+        <h2 id="titre-contact" className="text-lg font-semibold">{t.contact}</h2>
         <dl className="mt-4 space-y-4 text-slate-800">
-          <div className="flex gap-3"><MapPin className="mt-0.5 size-5 shrink-0 text-teal-700" aria-hidden="true" /><div><dt className="sr-only">Adresse</dt><dd>{service.contact.place}</dd></div></div>
-          <div className="flex gap-3"><Clock className="mt-0.5 size-5 shrink-0 text-teal-700" aria-hidden="true" /><div><dt className="sr-only">Horaires</dt><dd>{service.contact.hours}</dd></div></div>
+          <div className="flex gap-3"><MapPin className="mt-0.5 size-5 shrink-0 text-teal-700" aria-hidden="true" /><div><dt className="sr-only">{t.address}</dt><dd lang="fr">{service.contact.place}</dd></div></div>
+          <div className="flex gap-3"><Clock className="mt-0.5 size-5 shrink-0 text-teal-700" aria-hidden="true" /><div><dt className="sr-only">{t.hours}</dt><dd lang="fr">{service.contact.hours}</dd></div></div>
           {service.contact.phone && (
-            <div className="flex gap-3"><Phone className="mt-0.5 size-5 shrink-0 text-teal-700" aria-hidden="true" /><div><dt className="sr-only">Téléphone</dt><dd>{service.contact.phone}</dd></div></div>
+            <div className="flex gap-3"><Phone className="mt-0.5 size-5 shrink-0 text-teal-700" aria-hidden="true" /><div><dt className="sr-only">{t.phone}</dt><dd><PhoneLink phone={service.contact.phone} label="" /></dd></div></div>
           )}
         </dl>
       </aside>
       <p className="lg:col-span-2">
         <Link href="/services" className="inline-flex items-center gap-2 font-medium text-teal-800 underline underline-offset-4">
-          <ArrowLeft className="size-4" aria-hidden="true" /> Tous les services
+          <ArrowLeft className="size-4 rtl:rotate-180" aria-hidden="true" /> {t.allServices}
         </Link>
       </p>
     </div>
@@ -153,9 +191,13 @@ export function ServicesPage() {
   const serviceId = useSearchParams().get("service")
   const { data, error, isFetching, refetch } = useListServicesQuery(undefined, { pollingInterval: CONTENT_POLLING_MS })
   const service = data && serviceId ? findService(data, serviceId) : null
-  const header = service
-    ? <PageHeader trail={[{ label: "Services", href: "/services" }, { label: service.name }]} title={service.name} lead={service.summary} />
-    : <PageHeader trail={[{ label: "Services" }]} title="Services municipaux" lead="Tout ce que la ville de Nova Terra peut faire pour vous, classé par thème." />
+  const t = useMessages(PLACES_MESSAGES)
+  const common = useMessages(COMMON_MESSAGES)
+  const { locale } = useLocale()
+  const text = service ? localizeService(service, locale) : null
+  const header = service && text
+    ? <PageHeader trail={[{ label: common.services, href: "/services" }, { label: text.name }]} title={text.name} lead={<>{text.summary}{text.untranslated && <span className="ms-2 rounded-full bg-slate-100 px-2 py-0.5 text-sm text-slate-700" title={common.notTranslatedHint}>{common.notTranslated}</span>}</>} />
+    : <PageHeader trail={[{ label: common.services }]} title={t.catalogTitle} lead={t.catalogLead} />
   return (
     <>
       {header}

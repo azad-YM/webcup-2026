@@ -38,7 +38,17 @@ export type MunicipalService = {
   alternative: string
   /** Horaires et informations des transports municipaux (F36), pour un service de mobilité. */
   transport: TransportInformation | null
+  /** F45 : adresse et coordonnées du lieu d’accueil, si le service a un lieu physique. */
+  location?: ServiceLocation | null
+  /** F46 : type de service d’urgence (hôpital, urgences, pompiers, police, pharmacie de garde). */
+  emergency?: EmergencyKind | null
+  /** F27 : traductions saisies par les agents (le français fait foi). */
+  translations?: Partial<Record<"en" | "ar", ServiceTranslation>> | Record<string, never>
 }
+
+export type ServiceLocation = { address: string; district: string | null; lat: number; lng: number }
+export type EmergencyKind = "hospital" | "emergency" | "fire" | "police" | "pharmacy"
+export type ServiceTranslation = { name: string; summary: string; description: string }
 
 export const SERVICE_STATUS_LABELS: Record<ServiceStatus, string> = {
   available: "Service disponible",
