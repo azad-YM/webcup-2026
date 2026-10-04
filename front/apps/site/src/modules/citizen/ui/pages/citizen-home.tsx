@@ -1,5 +1,6 @@
 "use client"
 import Link from "next/link"
+import { polling } from "@/modules/shared/ui/sobriety/polling"
 import type { Route } from "next"
 import type { ReactNode } from "react"
 import { ArrowRight, CalendarClock, ClipboardList, Compass, HandHeart, ListChecks, Megaphone, MessageSquare, Newspaper, Search } from "@boilerplate/shared-ui/components/icon"
@@ -64,7 +65,7 @@ export function CitizenHomePage({ spacesForNonCitizen }: { spacesForNonCitizen: 
   const profile = access.profile
   const t = useMessages(CITIZEN_HOME_MESSAGES)
   // Pastilles des raccourcis : même cache que le centre de notifications (une seule requête).
-  const inbox = useListMyNotificationsQuery(undefined, { skip: !profile, pollingInterval: NOTIFICATIONS_POLLING_MS })
+  const inbox = useListMyNotificationsQuery(undefined, { skip: !profile, ...polling(NOTIFICATIONS_POLLING_MS) })
   return (
     <>
       <PageHeader

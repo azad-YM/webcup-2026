@@ -1,28 +1,43 @@
+import { lazy, Suspense, type ComponentType } from "react"
 import { BackofficeLayout } from "./backoffice-layout"
-import { AuditJournalPage } from "@/modules/audit/ui/pages/audit-journal"
-import { LoginSecurityPage } from "@/modules/security/ui/pages/login-security"
-import { CitizenAccountsPage } from "@/modules/citizen-accounts/ui/pages/citizen-accounts"
-import { NewcomerReceptionPage } from "@/modules/citizen-accounts/ui/pages/newcomer-reception"
 import { getErrorMessage } from "@boilerplate/shared-utils/error.utils"
 import { createBrowserRouter, Navigate, Outlet } from "react-router"
 import { useGetProfileQuery } from "@/modules/auth/core/application/rtk-api/auth"
 import { PortalLoginStart, PortalLoginCallback } from "@/modules/auth/ui/pages/portal-login"
 import { SiteLoginRedirect } from "@/modules/auth/ui/pages/site-login-redirect"
-import { SpacesPage } from "@/modules/auth/ui/pages/spaces"
-import { MembersPage } from "@/modules/admin/ui/pages/members"
-import { AdminDashboardPage } from "@/modules/admin/ui/pages/dashboard"
-import { RolesPage } from "@/modules/admin/ui/pages/roles"
-import { WebcupFeedPage } from "@/modules/pilotage/ui/pages/webcup-feed"
-import { ActivityDashboardPage } from "@/modules/pilotage/ui/pages/activity-dashboard"
-import { RequestQueuePage } from "@/modules/requests/ui/pages/request-queue"
-import { AppointmentsPage } from "@/modules/requests/ui/pages/appointments"
-import { ConcernsPage } from "@/modules/requests/ui/pages/concerns"
-import { PublicationsPage } from "@/modules/content/ui/pages/publications"
-import { AlertsPage } from "@/modules/content/ui/pages/alerts"
-import { ServicesPage } from "@/modules/content/ui/pages/services"
-import { ParticipationProjectsPage } from "@/modules/participation/ui/pages/projects"
-import { ParticipationConsultationsPage } from "@/modules/participation/ui/pages/consultations"
-import { ParticipationIdeasPage } from "@/modules/participation/ui/pages/ideas"
+
+const AuditJournalPage = lazy(() => import("@/modules/audit/ui/pages/audit-journal").then((module) => ({ default: module.AuditJournalPage })))
+const LoginSecurityPage = lazy(() => import("@/modules/security/ui/pages/login-security").then((module) => ({ default: module.LoginSecurityPage })))
+const CitizenAccountsPage = lazy(() => import("@/modules/citizen-accounts/ui/pages/citizen-accounts").then((module) => ({ default: module.CitizenAccountsPage })))
+const NewcomerReceptionPage = lazy(() => import("@/modules/citizen-accounts/ui/pages/newcomer-reception").then((module) => ({ default: module.NewcomerReceptionPage })))
+const SpacesPage = lazy(() => import("@/modules/auth/ui/pages/spaces").then((module) => ({ default: module.SpacesPage })))
+const MembersPage = lazy(() => import("@/modules/admin/ui/pages/members").then((module) => ({ default: module.MembersPage })))
+const AdminDashboardPage = lazy(() => import("@/modules/admin/ui/pages/dashboard").then((module) => ({ default: module.AdminDashboardPage })))
+const RolesPage = lazy(() => import("@/modules/admin/ui/pages/roles").then((module) => ({ default: module.RolesPage })))
+const WebcupFeedPage = lazy(() => import("@/modules/pilotage/ui/pages/webcup-feed").then((module) => ({ default: module.WebcupFeedPage })))
+const ActivityDashboardPage = lazy(() => import("@/modules/pilotage/ui/pages/activity-dashboard").then((module) => ({ default: module.ActivityDashboardPage })))
+const RequestQueuePage = lazy(() => import("@/modules/requests/ui/pages/request-queue").then((module) => ({ default: module.RequestQueuePage })))
+const AppointmentsPage = lazy(() => import("@/modules/requests/ui/pages/appointments").then((module) => ({ default: module.AppointmentsPage })))
+const ConcernsPage = lazy(() => import("@/modules/requests/ui/pages/concerns").then((module) => ({ default: module.ConcernsPage })))
+const PublicationsPage = lazy(() => import("@/modules/content/ui/pages/publications").then((module) => ({ default: module.PublicationsPage })))
+const AlertsPage = lazy(() => import("@/modules/content/ui/pages/alerts").then((module) => ({ default: module.AlertsPage })))
+const ServicesPage = lazy(() => import("@/modules/content/ui/pages/services").then((module) => ({ default: module.ServicesPage })))
+const ParticipationProjectsPage = lazy(() => import("@/modules/participation/ui/pages/projects").then((module) => ({ default: module.ParticipationProjectsPage })))
+const ParticipationConsultationsPage = lazy(() => import("@/modules/participation/ui/pages/consultations").then((module) => ({ default: module.ParticipationConsultationsPage })))
+const ParticipationIdeasPage = lazy(() => import("@/modules/participation/ui/pages/ideas").then((module) => ({ default: module.ParticipationIdeasPage })))
+
+/**
+ * L17 (F58/F61) : chaque page est un morceau chargé à la première visite de sa route ;
+ * l’enveloppe, la connexion et les gardes restent dans le paquet principal.
+ */
+function page(Page: ComponentType) {
+  return (
+    <Suspense fallback={<p role="status" className="p-6 text-sm text-muted-foreground">Chargement de la page…</p>}>
+      <Page />
+    </Suspense>
+  )
+}
+
 
 const ProtectedRoutes = () => {
   const profile = useGetProfileQuery()
@@ -55,53 +70,53 @@ export const router = createBrowserRouter([
   {
     element: <ProtectedRoutes />,
     children: [
-      { path: "/espaces", element: <SpacesPage /> },
+      { path: "/espaces", element: page(SpacesPage) },
       {
         path: "/admin",
         element: <Outlet />,
         children: [
-          { index: true, element: <AdminDashboardPage /> },
-          { path: "role", element: <RolesPage /> },
-          { path: "member", element: <MembersPage /> },
-          { path: "citizens", element: <CitizenAccountsPage /> },
-          { path: "security", element: <LoginSecurityPage /> },
-          { path: "journal", element: <AuditJournalPage /> },
+          { index: true, element: page(AdminDashboardPage) },
+          { path: "role", element: page(RolesPage) },
+          { path: "member", element: page(MembersPage) },
+          { path: "citizens", element: page(CitizenAccountsPage) },
+          { path: "security", element: page(LoginSecurityPage) },
+          { path: "journal", element: page(AuditJournalPage) },
         ],
       },
       {
         path: "/contenus",
         element: <Outlet />,
         children: [
-          { index: true, element: <PublicationsPage /> },
-          { path: "alertes", element: <AlertsPage /> },
-          { path: "services", element: <ServicesPage /> },
+          { index: true, element: page(PublicationsPage) },
+          { path: "alertes", element: page(AlertsPage) },
+          { path: "services", element: page(ServicesPage) },
         ],
       },
       {
         path: "/pilotage",
         element: <Outlet />,
         children: [
-          { index: true, element: <WebcupFeedPage /> },
-          { path: "tableau-de-bord", element: <ActivityDashboardPage /> },
+          { index: true, element: page(WebcupFeedPage) },
+          { path: "tableau-de-bord", element: page(ActivityDashboardPage) },
         ],
       },
       {
         path: "/demandes",
         element: <Outlet />,
         children: [
-          { index: true, element: <RequestQueuePage /> },
-          { path: "rendez-vous", element: <AppointmentsPage /> },
-          { path: "inquietudes", element: <ConcernsPage /> },
-          { path: "accueil", element: <NewcomerReceptionPage /> },
+          { index: true, element: page(RequestQueuePage) },
+          { path: "rendez-vous", element: page(AppointmentsPage) },
+          { path: "inquietudes", element: page(ConcernsPage) },
+          { path: "accueil", element: page(NewcomerReceptionPage) },
         ],
       },
       {
         path: "/participation",
         element: <Outlet />,
         children: [
-          { index: true, element: <ParticipationProjectsPage /> },
-          { path: "consultations", element: <ParticipationConsultationsPage /> },
-          { path: "idees", element: <ParticipationIdeasPage /> },
+          { index: true, element: page(ParticipationProjectsPage) },
+          { path: "consultations", element: page(ParticipationConsultationsPage) },
+          { path: "idees", element: page(ParticipationIdeasPage) },
         ],
       },
     ],

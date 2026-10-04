@@ -112,7 +112,7 @@ function RequestForm({ initialType, serviceId, onSent }: { initialType: RequestT
 
   const report = draft.type === "report"
   return (
-    <form onSubmit={send} noValidate className="space-y-6">
+    <form onSubmit={send} noValidate className="space-y-6" data-brouillon="demande">
       <SelectField
         id="demande-type"
         label="Type de demande"

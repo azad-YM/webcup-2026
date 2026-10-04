@@ -90,7 +90,7 @@ function ContributionForm({ consultation }: { consultation: Consultation }) {
   return (
     <div className="space-y-6">
       {shown && <Receipt receipt={shown} consultation={consultation} />}
-      <form onSubmit={(event) => void send(event)} noValidate className="space-y-5 rounded-2xl border border-slate-200 bg-white p-6" aria-labelledby="titre-repondre">
+      <form onSubmit={(event) => void send(event)} noValidate className="space-y-5 rounded-2xl border border-slate-200 bg-white p-6" aria-labelledby="titre-repondre" data-brouillon={`consultation-${consultation.id}`}>
         <h2 id="titre-repondre" className="text-xl font-semibold">{shown ? "Modifier ma participation" : "Ma participation"}</h2>
         {consultation.kind === "consultation" ? (
           <fieldset>

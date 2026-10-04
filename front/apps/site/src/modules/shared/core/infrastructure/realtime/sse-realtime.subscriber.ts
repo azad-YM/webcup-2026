@@ -8,6 +8,7 @@ type Listener = { eventTypes: readonly string[]; onEvent: (notification: Realtim
  * des types d'événements des modules (fournie par la composition), s'ouvre au premier abonné et se ferme au
  * dernier. Le ticket est demandé avec le jeton de la session courante (`POST /api/realtime/tickets`) ; sans
  * session, seuls les topics publics sont servis. `restart()` rouvre le flux après un changement de session.
+ * L17 (F62) : `isPaused` (mode léger) empêche l'ouverture ; les écrans gardent leur rafraîchissement de secours espacé.
  */
 export class SseRealtimeSubscriber implements RealtimeSubscriber {
   private readonly listeners = new Set<Listener>()
@@ -17,7 +18,8 @@ export class SseRealtimeSubscriber implements RealtimeSubscriber {
   constructor(
     private readonly apiBaseUrl: string,
     getToken: () => string | null,
-    private readonly eventTypes: readonly string[]
+    private readonly eventTypes: readonly string[],
+    private readonly isPaused: () => boolean = () => false
   ) {
     this.getTicket = createRealtimeTicketProvider(apiBaseUrl, () => {
       try {
@@ -39,13 +41,12 @@ export class SseRealtimeSubscriber implements RealtimeSubscriber {
   }
 
   restart(): void {
-    if (!this.stream) return
     this.close()
-    this.open()
+    if (this.listeners.size > 0) this.open()
   }
 
   private open() {
-    if (this.stream || typeof window === "undefined" || typeof EventSource === "undefined") return
+    if (this.stream || typeof window === "undefined" || typeof EventSource === "undefined" || this.isPaused()) return
     this.stream = openRealtimeStream({
       apiBaseUrl: this.apiBaseUrl,
       eventTypes: this.eventTypes,

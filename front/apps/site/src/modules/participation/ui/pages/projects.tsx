@@ -1,5 +1,6 @@
 "use client"
 import { useState } from "react"
+import { polling } from "@/modules/shared/ui/sobriety/polling"
 import Link from "next/link"
 import { ArrowRight, MapPin } from "@boilerplate/shared-ui/components/icon"
 import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
@@ -34,7 +35,7 @@ function ProjectCard({ project }: { project: Project }) {
 export function ProjectsPage() {
   const [filters, setFilters] = useState<ProjectFilters>({ district: "", status: "" })
   const districts = useListDistrictsQuery()
-  const { data, error, isFetching, refetch } = useListProjectsQuery(filters, { pollingInterval: PARTICIPATION_POLLING_MS })
+  const { data, error, isFetching, refetch } = useListProjectsQuery(filters, polling(PARTICIPATION_POLLING_MS))
   const districtOptions = [{ value: "city", label: "Toute la ville (projets communs)" }, ...(districts.data ?? []).map((value) => ({ value, label: value }))]
   return (
     <>

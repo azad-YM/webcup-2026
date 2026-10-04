@@ -53,6 +53,10 @@ Zone principale commune `AdminContent` (lien d’évitement, fil d’Ariane, bou
 
 Port `shared/core/ports/realtime-subscriber.ts` (`RealtimeSubscriber`), implémenté par `shared/core/infrastructure/sse-realtime.subscriber.ts` avec le client `@boilerplate/shared-utils/realtime` et injecté par le kernel : un seul flux SSE (`GET /api/realtime/stream`, ticket `POST /api/realtime/tickets`) par onglet, ouvert au premier écran abonné ([ADR 004](../../../../doc/technique/decisions/004-temps-reel.md)). Les écrans invalident leur cache RTK Query à réception et gardent un rafraîchissement de secours de 60 s.
 
+## Sobriété (L17)
+
+Pages chargées à la demande (`React.lazy` dans `app/routes.tsx`, fonction `page()`), bibliothèques séparées par `manualChunks` (`react`, `redux`, `ui`) dans `vite.config.ts`, fenêtre « Affichage » chargée à la première ouverture. Premier chargement : 238 → environ 179 Ko gzip. Détail et mesures : [sobriété du site](../../site/doc/sobriete.md) (🟡 non testé, non vérifié dans un navigateur).
+
 ## Limites
 
 La déconnexion volontaire est locale ; seuls la suspension et la suppression d’un compte révoquent ses sessions côté serveur. Les droits affichés ne remplacent pas les contrôles serveur.
@@ -83,4 +87,5 @@ La déconnexion volontaire est locale ; seuls la suspension et la suppression d�
 - [Demandes citoyennes](demandes.md)
 - [Journal des actions](journal-des-actions.md)
 - [Audit](../../../../api/src/Audit/doc/README.md)
+- [Sobriété du site](../../site/doc/sobriete.md)
 <!-- backlinks:end -->

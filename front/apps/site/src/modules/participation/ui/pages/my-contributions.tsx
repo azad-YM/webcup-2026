@@ -1,5 +1,6 @@
 "use client"
 import Link from "next/link"
+import { polling } from "@/modules/shared/ui/sobriety/polling"
 import { LogIn } from "@boilerplate/shared-ui/components/icon"
 import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
@@ -64,7 +65,7 @@ function IdeaItem({ idea }: { idea: MyIdea }) {
 /** « Mes contributions » (F65, F66, F68) : accusés de réception, réponses et suivi des idées. */
 export function MyContributionsPage() {
   const { ready, hasToken } = useSession()
-  const query = useMyParticipationQuery(undefined, { skip: !ready || !hasToken, pollingInterval: PARTICIPATION_POLLING_MS })
+  const query = useMyParticipationQuery(undefined, { skip: !ready || !hasToken, ...polling(PARTICIPATION_POLLING_MS) })
   useLogoutOnUnauthorized(query.error)
   const failure = toQueryError(query.error)
   return (

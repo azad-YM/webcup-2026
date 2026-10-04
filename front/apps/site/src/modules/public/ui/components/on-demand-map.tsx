@@ -6,6 +6,8 @@ import type { MunicipalService } from "../../core/domain/municipal-service"
 import { localizeService, type PlacedService } from "../../core/domain/service-places"
 import { usePlacesDependencies } from "../places-dependencies"
 import { PLACES_MESSAGES } from "../i18n/places-messages"
+import { useLightMode } from "@/modules/shared/ui/sobriety/light-mode"
+import { SOBRIETY_MESSAGES } from "@/modules/shared/ui/sobriety/sobriety-messages"
 import { serviceHref } from "./content-cards"
 
 /**
@@ -21,7 +23,13 @@ export function OnDemandMap({ services, focusId = null, compact = false, startOp
   const t = useMessages(PLACES_MESSAGES)
   const { locale } = useLocale()
   const { map } = usePlacesDependencies()
-  const [open, setOpen] = useState(startOpen)
+  const light = useMessages(SOBRIETY_MESSAGES)
+  const lightMode = useLightMode().active
+  // Mode léger (F62) : la carte n’est jamais ouverte d’office, la liste textuelle en tient lieu.
+  const [requested, setRequested] = useState(startOpen)
+  const [chosen, setChosen] = useState(false)
+  const open = requested && (!lightMode || chosen)
+  const show = () => { setState("loading"); setChosen(true); setRequested(true) }
   const [state, setState] = useState<"loading" | "ready" | "error">("loading")
   const container = useRef<HTMLDivElement>(null)
   // Clé stable : la carte n’est redessinée que si les lieux affichés changent vraiment.
@@ -41,10 +49,20 @@ export function OnDemandMap({ services, focusId = null, compact = false, startOp
       .catch(() => { if (!cancelled) setState("error") })
     return () => { cancelled = true; cleanup?.() }
   }, [open, markersKey, focusId, map, t.seeService])
+  if (!open && lightMode) {
+    return (
+      <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-5">
+        <p className="text-slate-800">{light.mapLight}</p>
+        <button type="button" onClick={show} className="mt-3 inline-flex h-11 items-center gap-2 rounded-xl border border-slate-300 px-4 font-medium hover:bg-slate-50">
+          <MapIcon className="size-5" aria-hidden="true" /> {light.mapAnyway}
+        </button>
+      </div>
+    )
+  }
   if (!open) {
     return (
       <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-5">
-        <button type="button" onClick={() => { setState("loading"); setOpen(true) }} aria-describedby="aide-carte" className="inline-flex h-12 items-center gap-2 rounded-xl bg-teal-700 px-5 font-semibold text-white hover:bg-teal-800">
+        <button type="button" onClick={show} aria-describedby="aide-carte" className="inline-flex h-12 items-center gap-2 rounded-xl bg-teal-700 px-5 font-semibold text-white hover:bg-teal-800">
           <MapIcon className="size-5" aria-hidden="true" /> {t.showMap}
         </button>
         <p id="aide-carte" className="mt-2 text-sm text-slate-600">{t.showMapHint}</p>
@@ -55,7 +73,7 @@ export function OnDemandMap({ services, focusId = null, compact = false, startOp
     <div>
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
         <p role="status" className="text-sm text-slate-700">{state === "loading" ? t.mapLoading : state === "error" ? t.mapError : ""}</p>
-        <button type="button" onClick={() => setOpen(false)} className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium hover:bg-slate-50">{t.hideMap}</button>
+        <button type="button" onClick={() => setRequested(false)} className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium hover:bg-slate-50">{t.hideMap}</button>
       </div>
       {/* La carte reste en sens gauche-droite : les coordonnées ne dépendent pas de la langue. */}
       <div

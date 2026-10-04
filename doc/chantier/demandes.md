@@ -129,17 +129,17 @@ Les 15 suivis déjà faits sont conservés. F40 reste en cours (cron et récepti
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
-| F57 | 2 | 700 | Évaluer la performance environnementale du site et l’alléger | L17 | site, admin | ⬜ |
-| F58 | 3 | 1 050 | Appliquer des choix de conception et de chargement sobres sur les principaux parcours | L17 | site, admin | ⬜ |
-| F59 | 2 | 700 | Rester utilisable avec une connexion très lente | L17 | site | ⬜ |
-| F60 | 1 | 350 | Images et médias qui n’alourdissent pas inutilement les pages | L17 | site, Communication | ⬜ |
+| F57 | 2 | 700 | Évaluer la performance environnementale du site et l’alléger | L17 | site, admin | 🟡 script `scripts/ecoindex.mjs` (poids, requêtes, DOM, EcoIndex), tableau avant/après, page `/sobriete` — [sobriété](../../front/apps/site/doc/sobriete.md#diagnostic-f57) ; non testé, non vérifié dans un navigateur |
+| F58 | 3 | 1 050 | Appliquer des choix de conception et de chargement sobres sur les principaux parcours | L17 | site, admin | 🟡 fenêtres, menu du compte, cloche et espaces à la demande, imports sans baril, police système, pas de rafraîchissement onglet caché ; admin en pages `React.lazy` + `manualChunks` — [sobriété](../../front/apps/site/doc/sobriete.md#conception-et-chargement-sobres-appareils-peu-puissants-f58-f61) ; non testé, non vérifié dans un navigateur |
+| F59 | 2 | 700 | Rester utilisable avec une connexion très lente | L17 | site | 🟡 service worker `public/sw.js` (pages essentielles et données publiques, délai, nouvelle tentative), bandeau « connexion lente » / « Hors ligne — informations du JJ/MM à HHhMM », brouillons de formulaire — [sobriété](../../front/apps/site/doc/sobriete.md#connexion-très-lente-ou-coupée-f59) ; non testé, non vérifié dans un navigateur |
+| F60 | 1 | 350 | Images et médias qui n’alourdissent pas inutilement les pages | L17 | site, Communication | 🟡 aucune image matricielle (SVG seulement), règles documentées, pas de téléversement Communication (question ouverte) — [sobriété](../../front/apps/site/doc/sobriete.md#images-et-médias-f60) ; non testé, non vérifié dans un navigateur |
 
 ## Vague 11 (H+12) — « Confiance et maîtrise des données »
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
-| F61 | 3 | 1 080 | Rester rapide sur des appareils peu puissants | L17 | site, admin | ⬜ |
-| F62 | 2 | 720 | Version plus simple et plus rapide de certaines pages | L17 | site | ⬜ |
+| F61 | 3 | 1 080 | Rester rapide sur des appareils peu puissants | L17 | site, admin | 🟡 moins de JS au premier chargement, pied de page en `content-visibility`, animations coupées, un seul flux temps réel, rafraîchissements suspendus onglet caché — [sobriété](../../front/apps/site/doc/sobriete.md#conception-et-chargement-sobres-appareils-peu-puissants-f58-f61) ; non testé, non vérifié dans un navigateur |
+| F62 | 2 | 720 | Version plus simple et plus rapide de certaines pages | L17 | site | 🟡 « Mode léger » dans « Affichage », proposé si économie de données ou réseau lent, activé pour la visite en mode dégradé serveur (503) : sans décor ni animation, liste au lieu de la carte, sans temps réel — [sobriété](../../front/apps/site/doc/sobriete.md#mode-léger-f62) ; non testé, non vérifié dans un navigateur |
 | F63 | 3 | 1 080 | Les administrateurs désactivent rapidement un service défectueux | L18 | Administration, Citizen, admin | 🟡 bouton « Désactiver le service » avec motif obligatoire et réactivation ([admin](../../front/apps/admin/doc/contenus.md)) ; refus `409 service_disabled` des demandes et rendez-vous ([Citizen](../../api/src/Citizen/doc/rendez-vous.md)), temps réel, journal ([Administration](../../api/src/Administration/doc/README.md)) ; non testé, non vérifié dans un navigateur |
 | F64 | 1 | 360 | Voir l’état actuel d’un service avant de commencer une démarche | L18 | Administration, site | 🟡 bandeau d’état (`StatusBadge`) en tête de fiche, du formulaire de demande et des rendez-vous, avec alternative, retour prévu et contact ([site](../../front/apps/site/doc/vitrine-et-alertes.md)) ; non testé, non vérifié dans un navigateur |
 

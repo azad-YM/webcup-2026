@@ -1,9 +1,8 @@
 "use client"
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
-import { useState, type ReactNode } from "react"
-import { FileDown, LogOut, Menu, ShieldCheck, Siren, UserRound, X } from "@boilerplate/shared-ui/components/icon"
-import { Popover, PopoverTrigger, PopoverContent } from "@boilerplate/shared-ui/components"
+import { usePathname } from "next/navigation"
+import { lazy, Suspense, useState, type ReactNode } from "react"
+import { Menu, Siren, UserRound, X } from "@boilerplate/shared-ui/components/icon"
 import { useSession } from "../store-provider"
 import { isCurrentSection, MAIN_NAVIGATION } from "../navigation"
 import { NovaTerraWordmark } from "./nova-terra-logo"
@@ -12,50 +11,37 @@ import { useMessages } from "../i18n/i18n-provider"
 import { COMMON_MESSAGES, navigationLabel } from "../i18n/common-messages"
 import { LanguageSwitcher } from "../i18n/language-switcher"
 
+// L17 : le menu du compte (fenêtre surgissante) n’est téléchargé que pour une personne connectée.
+const AccountMenu = lazy(() => import("./account-menu"))
+
 const navLink = (active: boolean) =>
   `rounded-lg px-3 py-2 text-base font-medium transition ${active ? "bg-teal-50 text-teal-900" : "text-slate-700 hover:bg-slate-100 hover:text-slate-950"}`
 
 function SessionActions({ notifications, spaces }: { notifications: ReactNode; spaces: ReactNode }) {
-  const [open, setOpen] = useState(false)
-  const { ready, hasToken, logout } = useSession()
-  const router = useRouter()
+  const { ready, hasToken } = useSession()
   const pathname = usePathname()
   const t = useMessages(COMMON_MESSAGES)
   if (!ready) return <span className="inline-block h-10 w-48" aria-hidden="true" />
   if (!hasToken)
     return (
       <>
-        <Link href="/connexion" onClick={() => setOpen(false)} className="rounded-lg px-3 py-2 font-medium text-slate-800 hover:bg-slate-100">{t.login}</Link>
-        <Link href="/inscription" onClick={() => setOpen(false)} className="rounded-lg bg-teal-700 px-4 py-2 font-medium text-white hover:bg-teal-800">{t.register}</Link>
+        <Link href="/connexion" className="rounded-lg px-3 py-2 font-medium text-slate-800 hover:bg-slate-100">{t.login}</Link>
+        <Link href="/inscription" className="rounded-lg bg-teal-700 px-4 py-2 font-medium text-white hover:bg-teal-800">{t.register}</Link>
       </>
     )
   return (
     <>
       <Link
         href="/espace"
-        onClick={() => setOpen(false)}
         aria-current={isCurrentSection(pathname, "/espace") ? "page" : undefined}
         className="inline-flex items-center gap-2 rounded-lg bg-teal-700 px-4 py-2 font-medium text-white hover:bg-teal-800"
       >
         <UserRound className="size-4" aria-hidden="true" /> {t.mySpace}
       </Link>
       {notifications}
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <button type="button" aria-label={t.accountMenu} className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-teal-200 bg-teal-50 text-teal-800 hover:bg-teal-100">
-            <UserRound className="size-5" aria-hidden="true" />
-          </button>
-        </PopoverTrigger>
-        <PopoverContent align="end" aria-label={t.account} className="max-h-[70dvh] w-80 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-3 text-slate-950" onClick={(event) => { if ((event.target as HTMLElement).closest("a")) setOpen(false) }}>
-          <Link href="/espace/profil" className="flex items-center gap-2 rounded-lg px-3 py-2 font-medium text-slate-800 hover:bg-slate-100"><UserRound className="size-4" aria-hidden="true" /> {t.myProfile}</Link>
-          <Link href="/espace/securite" className="flex items-center gap-2 rounded-lg px-3 py-2 font-medium text-slate-800 hover:bg-slate-100"><ShieldCheck className="size-4" aria-hidden="true" /> Sécurité du compte</Link>
-          <Link href="/espace/mes-donnees" className="flex items-center gap-2 rounded-lg px-3 py-2 font-medium text-slate-800 hover:bg-slate-100"><FileDown className="size-4" aria-hidden="true" /> Mes données</Link>
-          {spaces}
-          <button type="button" onClick={() => { setOpen(false); logout(); router.push("/") }} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 font-medium text-slate-800 hover:bg-slate-100">
-            <LogOut className="size-4" aria-hidden="true" /> {t.logout}
-          </button>
-        </PopoverContent>
-      </Popover>
+      <Suspense fallback={<span className="inline-block size-10 shrink-0 rounded-full border border-teal-200 bg-teal-50" aria-hidden="true" />}>
+        <AccountMenu spaces={spaces} />
+      </Suspense>
     </>
   )
 }
@@ -92,7 +78,7 @@ export function SiteHeader({ notifications, spaces }: { notifications: ReactNode
             <Siren className="size-4" aria-hidden="true" /> {t.emergency}
           </Link>
           <LanguageSwitcher />
-          <DisplayPreferencesButton showHintsReset className="text-slate-800 hover:bg-slate-100" />
+          <DisplayPreferencesButton showHintsReset showLightMode className="text-slate-800 hover:bg-slate-100" />
           <SessionActions key={pathname} notifications={notifications} spaces={spaces} />
         </div>
         <button

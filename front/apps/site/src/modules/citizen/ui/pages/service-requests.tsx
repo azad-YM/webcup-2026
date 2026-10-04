@@ -1,5 +1,6 @@
 "use client"
 import { useEffect } from "react"
+import { polling } from "@/modules/shared/ui/sobriety/polling"
 import Link from "next/link"
 import type { Route } from "next"
 import { useSearchParams } from "next/navigation"
@@ -74,7 +75,7 @@ function NewRequestLinks() {
 }
 
 function RequestHistory() {
-  const query = useListMyRequestsQuery(undefined, { pollingInterval: REQUESTS_POLLING_MS })
+  const query = useListMyRequestsQuery(undefined, polling(REQUESTS_POLLING_MS))
   useLogoutOnUnauthorized(query.error)
   const failure = toQueryError(query.error)
   const requests = query.data ?? []
@@ -129,7 +130,7 @@ function RequestCard({ request }: { request: ServiceRequest }) {
 }
 
 function RequestDetail({ reference }: { reference: string }) {
-  const query = useGetMyRequestQuery(reference, { pollingInterval: REQUESTS_POLLING_MS })
+  const query = useGetMyRequestQuery(reference, polling(REQUESTS_POLLING_MS))
   useLogoutOnUnauthorized(query.error)
   const failure = toQueryError(query.error)
   const request = query.data

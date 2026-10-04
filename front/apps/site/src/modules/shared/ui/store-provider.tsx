@@ -9,6 +9,9 @@ import {
 } from "react"
 import { siteEnv } from "@/config/env"
 import { Provider } from "react-redux"
+import { setupListeners } from "@reduxjs/toolkit/query"
+import { isLightModeActive } from "@boilerplate/shared-ui/a11y"
+import { useLightMode } from "./sobriety/light-mode"
 import { createStore, resetAccountCaches } from "../core/config/store"
 import type { Dependencies } from "../core/config/dependencies"
 import { AuthHttpGateway } from "@/modules/auth/core/infrastructure/for-production/gateway/http/auth.http.gateway"
@@ -61,7 +64,7 @@ function createDependencies(): Dependencies {
     ...NOTIFICATION_EVENTS,
     ...APPOINTMENT_EVENTS,
     ...CITY_FEED_EVENTS
-  ])
+  ], isLightModeActive)
   const authGateway = new AuthHttpGateway(siteEnv.apiBaseUrl)
   return {
     realtime,
@@ -125,10 +128,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       runtime.realtime.restart()
     }
   }, [runtime])
+  // L17 : suivi de la visibilité de l'onglet et du réseau (pas de rafraîchissement de secours onglet caché).
+  useEffect(() => setupListeners(runtime.store.dispatch), [runtime])
+  // Mode léger (F62) : pas de temps réel ; le flux rouvre quand le mode léger est désactivé.
+  const lightMode = useLightMode().active
   // Connexion ou déconnexion : l'unique flux temps réel rouvre avec (ou sans) les topics privés du citoyen.
   useEffect(() => {
     if (session.ready) runtime.realtime.restart()
-  }, [session.ready, session.hasToken, runtime])
+  }, [session.ready, session.hasToken, lightMode, runtime])
   useEffect(() => {
     refresh()
     const onStorage = (event: StorageEvent) => {

@@ -1,5 +1,6 @@
-import { NotificationBell } from "@/modules/citizen/ui/sections/notification-bell"
-import { SpacesList } from "@/modules/auth/ui/components/spaces-list"
+import { HeaderNotifications, HeaderSpaces } from "./header-slots"
+import { FormDraftsKeeper } from "@/modules/shared/ui/sobriety/form-drafts-keeper"
+import { ConnectionStatus } from "@/modules/shared/ui/sobriety/connection-status"
 import { AlertBanner } from "@/modules/public/ui/sections/alerts"
 import { StoreProvider } from "@/modules/shared/ui/store-provider"
 import type { Metadata } from "next"
@@ -44,12 +45,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <I18nProvider>
         <StoreProvider>
           <SkipLink />
-          <SiteHeader notifications={<NotificationBell />} spaces={<SpacesList variant="menu" />} />
+          <SiteHeader notifications={<HeaderNotifications />} spaces={<HeaderSpaces variant="menu" />} />
+          <ConnectionStatus />
           <AlertBanner />
           <main id={MAIN_CONTENT_ID} tabIndex={-1} className="flex-1">
             {children}
           </main>
           <SiteFooter />
+          <FormDraftsKeeper />
         </StoreProvider>
         </I18nProvider>
         </SiteAccessibilityProvider>
