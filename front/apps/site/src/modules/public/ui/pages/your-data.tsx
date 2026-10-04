@@ -14,11 +14,13 @@ const ROWS: DataRow[] = [
   { data: "Quartier et accord pour les alertes sanitaires (une simple case, aucune donnée de santé)", why: "Vous envoyer les alertes qui concernent votre quartier ou votre santé", duration: "Jusqu’à ce que vous les retiriez ou supprimiez votre compte", access: "Vous ; utilisé automatiquement pour cibler les alertes" },
   { data: "Demandes et signalements, et leurs étapes", why: "Traiter votre demande et vous informer de son avancement", duration: "Conservés pour le suivi du service ; à la suppression du compte, ils ne sont plus rattachés à votre identité", access: "Vous ; les agents habilités. Un signalement rendu public ne montre que son objet, son lieu et son état" },
   { data: "Rendez-vous, soutiens, inquiétudes et notifications", why: "Organiser vos rendez-vous, compter les soutiens, répondre à vos inquiétudes, vous prévenir", duration: "Tant que votre compte existe ; effacés à la suppression", access: "Vous ; les agents habilités (le nombre de soutiens est public, pas leurs auteurs)" },
+  { data: "Appareils reconnus et connexions réussies (navigateur et système, date, méthode, adresse IP)", why: "Vous prévenir d’une connexion depuis un nouvel appareil et vous laisser vérifier qui utilise votre compte", duration: "Connexions : 90 jours ; appareils : tant que votre compte existe, effacés à la suppression", access: "Vous, dans « Sécurité du compte »" },
   { data: "Journal des tentatives de connexion (adresse IP, e-mail saisi)", why: "Protéger votre compte contre les intrusions", duration: "90 jours", access: "Les administrateurs chargés de la sécurité" }
 ]
 
 const RIGHTS = [
   "Consulter et corriger votre profil à tout moment depuis « Mon profil ».",
+  "Récupérer toutes vos données, rubrique par rubrique et dans un fichier JSON, depuis « Mes données » de votre espace.",
   "Retirer votre accord aux alertes sanitaires d’un clic, depuis votre espace.",
   "Supprimer votre compte vous-même : vos données personnelles sont effacées.",
   "Poser une question ou contester l’usage de vos données : un agent vous répond, avec un suivi visible."
@@ -70,6 +72,7 @@ export function YourDataPage() {
             <div className="mt-6 flex flex-wrap gap-3">
               <Link href={"/espace/participation" as Route} className="rounded-xl bg-teal-700 px-5 py-3 font-medium text-white hover:bg-teal-800">Faire remonter une inquiétude</Link>
               <Link href="/espace/profil" className="rounded-xl border border-slate-300 bg-white px-5 py-3 font-medium hover:bg-slate-50">Gérer mon profil</Link>
+              <Link href={"/espace/mes-donnees" as Route} className="rounded-xl border border-slate-300 bg-white px-5 py-3 font-medium hover:bg-slate-50">Récupérer mes données</Link>
             </div>
           </section>
         </div>
