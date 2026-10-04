@@ -14,4 +14,6 @@ interface IUserRepository
     public function findByIds(array $ids): array;
     public function save(User $user): void;
     public function findByEmail(string $email): ?User;
+    /** F71: resident identifier `NT-XXXX-XXXX`. */
+    public function findByResidentId(string $residentId): ?User;
 }

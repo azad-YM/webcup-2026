@@ -18,7 +18,7 @@ final class MunicipalService
     /** F46: kind of emergency service (hospital, emergency department, fire brigade, police, on-duty pharmacy). */
     public const EMERGENCY_KINDS = ['hospital', 'emergency', 'fire', 'police', 'pharmacy'];
     /** F27: languages in which agents may translate the main texts; French stays the reference. */
-    public const TRANSLATION_LANGUAGES = ['en', 'es'];
+    public const TRANSLATION_LANGUAGES = ['en', 'ar'];
 
     private string $name;
     private string $category;
@@ -226,7 +226,7 @@ final class MunicipalService
         $translations = [];
         foreach ($value as $language => $texts) {
             if (!in_array($language, self::TRANSLATION_LANGUAGES, true) || !is_array($texts)) {
-                throw new DomainException('Langue de traduction inconnue (en, es).');
+                throw new DomainException('Langue de traduction inconnue (en, ar).');
             }
             $entry = [
                 'name' => self::text($texts['name'] ?? '', 200, 'Nom traduit', false),

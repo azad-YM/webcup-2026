@@ -28,6 +28,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->status = 'deleted';
         ++$this->sessionVersion;
         $this->email = $this->id.'@deleted.invalid';
+        $this->residentId = null;
         $this->name = null;
         $this->password = '!deleted';
     }
@@ -98,5 +99,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
         // nothing to do here
+    }
+
+    // --- F71 : compte d’habitant créé à l’accueil de la mairie, avec ou sans e-mail ---
+
+    private ?string $residentId = null;
+    private bool $passwordChangeRequired = false;
+
+    /** Domaine technique des comptes sans e-mail : l’identifiant de connexion reste unique, jamais affiché. */
+    public const NO_EMAIL_DOMAIN = 'habitant.nova-terra.invalid';
+
+    /** The initial access code is set with `setPassword` (hashed) and must be replaced at first login. */
+    public static function createResident(string $id, string $residentId, ?string $email, string $name): self
+    {
+        $user = new self($id, $email ?? strtolower($residentId).'@'.self::NO_EMAIL_DOMAIN, '', $name);
+        $user->residentId = $residentId;
+        $user->passwordChangeRequired = true;
+
+        return $user;
+    }
+
+    public function residentId(): ?string { return $this->residentId; }
+    public function passwordChangeRequired(): bool { return $this->passwordChangeRequired; }
+    /** False for a resident account created without e-mail (technical address) or an anonymised account. */
+    public function hasRealEmail(): bool { return !str_ends_with($this->email, '.invalid'); }
+
+    /** Replaces the secret (already hashed) and lifts the first-login obligation. */
+    public function changePassword(string $hashedPassword): void
+    {
+        $this->password = $hashedPassword;
+        $this->passwordChangeRequired = false;
     }
 }
