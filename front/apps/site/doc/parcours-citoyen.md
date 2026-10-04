@@ -72,6 +72,11 @@ Code : module `citizen` (`ui/pages/service-requests.tsx`, `ui/pages/new-service-
 - « Déplacer » (même service, nouveau créneau, confirmation) et « Annuler » (confirmation explicite). Créneau pris entre-temps : message clair et nouveau choix.
 - Rappels la veille et 2 h avant dans « Mes notifications » (temps réel). Données : port `AppointmentGateway` → `AppointmentHttpGateway`, RTK `appointmentsApi`, événement `appointment.changed` ; contrat dans [Citizen — rendez-vous](../../../../api/src/Citizen/doc/rendez-vous.md).
 
+### Service désactivé ou perturbé (L18 : F63, F64 — non testé, non vérifié dans un navigateur)
+
+- `/espace/demandes/nouvelle?service=…` : la page compose l’état du service (module `public`, slot `serviceNotice`) en tête du formulaire et envoie `serviceId`. Si le service est désactivé, l’API refuse (`409 service_disabled`) et le message dit quoi faire ; « Contacter la mairie » sans viser le service reste possible.
+- `/espace/rendez-vous` : chaque service de l’offre affiche son état ; pour le service choisi, un bandeau (`citizen/ui/components/service-availability-notice.tsx`) explique la perturbation ou la désactivation ; aucun créneau n’est proposé pour un service désactivé. Contrat : [Citizen — rendez-vous](../../../../api/src/Citizen/doc/rendez-vous.md).
+
 ## Participer (`/espace/participation`, F51, F52)
 
 - Raccourci « Participer » de `/espace` (pastille des réponses non lues). Page `citizen/ui/pages/participation.tsx`.

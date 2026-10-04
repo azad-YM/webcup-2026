@@ -43,4 +43,5 @@ F47 et F48 demandent de retrouver « qui a fait quoi, quand, sur quoi » dans l�
 - [Décisions](README.md)
 - [Architecture technique](../architecture.md)
 - [Audit](../../../api/src/Audit/doc/README.md)
+- [ADR 007](007-protection-des-donnees.md)
 <!-- backlinks:end -->

@@ -40,6 +40,14 @@ Permettre à un habitant de quitter la plateforme sans qu’une autre personne p
 - Suspension / réactivation : refusée pour un compte supprimé (409) ou partagé avec un membre actif de l’administration (409, `canSuspend: false`). La suspension invalide immédiatement toutes les sessions et codes de portail du compte ; à la connexion, le citoyen suspendu reçoit (après un mot de passe correct) « Votre compte est suspendu par la mairie… » (403 `account_suspended`). Après réactivation, il se reconnecte normalement.
 - Persistance : colonne `citizens.status` (`active`, `suspended`, `deleted`), migration `Version20261003008000`.
 
+### Données sensibles masquées et chiffrées (L20 : F69, F70 — non testé, non vérifié dans un navigateur)
+
+- **Masquage par l’API** (F70) : dans `GET /api/citizen/accounts`, le téléphone et l’adresse du profil valent `null`, l’e-mail est partiel (`j•••@domaine`) et `maskedFields` liste les champs retirés. La réponse porte `sensitive: {revealed, canReveal}`. Avec `?reveal=1`, un agent qui détient `admin.sensitive-data.read` (port `SensitiveDataAccessPolicy`, adaptateur Administration) reçoit les valeurs ; l’affichage est journalisé (`citizen.sensitive-data.viewed`, écran et nombre de fiches). La recherche par téléphone n’est possible qu’en affichage autorisé. Même mécanisme pour le téléphone de la journée des rendez-vous (`GET /api/citizen/agent/appointments?reveal=1`) et le lieu des demandes **de contact** dans la file (`GET /api/citizen/agent/requests?reveal=1`). Service applicatif : `Application/Service/SensitiveDataDisclosure`.
+- **Chiffrement au repos** (F69) : `phone` et `address` de `citizens` utilisent le type Doctrine `encrypted_string` (libsodium) ; migration `Version20261003120300` (colonnes élargies à 255 et 1024, chiffrement de l’existant, réversible). Aucune requête SQL ne doit filtrer sur ces colonnes.
+- **Validation** : le téléphone du profil n’accepte que chiffres, espaces, `+`, points, tirets et parenthèses (6 à 30 caractères).
+- **Limitation de débit** : inscription, mise à jour du profil, suppression du compte, demandes, inquiétudes, soutiens et rendez-vous répondent `429` au-delà des seuils de `config/packages/security_hardening.yaml`.
+- Décision : [ADR 007](../../../../doc/technique/decisions/007-protection-des-donnees.md).
+
 ## Ports
 
 | Besoin de Citizen | Port (Citizen) | Adaptateur (fournisseur) |
@@ -66,4 +74,5 @@ Permettre à un habitant de quitter la plateforme sans qu’une autre personne p
 - [Admin — comptes citoyens](../../../../front/apps/admin/doc/comptes-citoyens.md)
 - [Administration — membres et habilitations](../../Administration/doc/membres-et-habilitations.md)
 - [Registre des demandes](../../../../doc/chantier/demandes.md)
+- [ADR 007](../../../../doc/technique/decisions/007-protection-des-donnees.md)
 <!-- backlinks:end -->

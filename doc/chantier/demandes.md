@@ -140,8 +140,8 @@ Les 15 suivis déjà faits sont conservés. F40 reste en cours (cron et récepti
 |---|---|---|---|---|---|---|
 | F61 | 3 | 1 080 | Rester rapide sur des appareils peu puissants | L17 | site, admin | ⬜ |
 | F62 | 2 | 720 | Version plus simple et plus rapide de certaines pages | L17 | site | ⬜ |
-| F63 | 3 | 1 080 | Les administrateurs désactivent rapidement un service défectueux | L18 | Administration, Citizen, admin | ⚠️ état maintenance/incident modifiable dans l’admin ; désactivation effective des démarches et réservations non implémentée |
-| F64 | 1 | 360 | Voir l’état actuel d’un service avant de commencer une démarche | L18 | Administration, site | 🟡 état, message, retour prévu et alternative déjà visibles sur les cartes et fiches des services (L9/F38) ; non vérifié dans le navigateur |
+| F63 | 3 | 1 080 | Les administrateurs désactivent rapidement un service défectueux | L18 | Administration, Citizen, admin | 🟡 bouton « Désactiver le service » avec motif obligatoire et réactivation ([admin](../../front/apps/admin/doc/contenus.md)) ; refus `409 service_disabled` des demandes et rendez-vous ([Citizen](../../api/src/Citizen/doc/rendez-vous.md)), temps réel, journal ([Administration](../../api/src/Administration/doc/README.md)) ; non testé, non vérifié dans un navigateur |
+| F64 | 1 | 360 | Voir l’état actuel d’un service avant de commencer une démarche | L18 | Administration, site | 🟡 bandeau d’état (`StatusBadge`) en tête de fiche, du formulaire de demande et des rendez-vous, avec alternative, retour prévu et contact ([site](../../front/apps/site/doc/vitrine-et-alertes.md)) ; non testé, non vérifié dans un navigateur |
 
 ## Vague 12 (H+13) — « Participation et nouveaux usages »
 
@@ -156,8 +156,8 @@ Les 15 suivis déjà faits sont conservés. F40 reste en cours (cron et récepti
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
-| F69 | 4 | 1 520 | Protéger les données sensibles contre l’exploitation d’une faille, de façon perceptible sans compliquer l’usage | L20 | tous les BC, IAM | ⬜ |
-| F70 | 3 | 1 140 | Réserver strictement certaines données administratives aux agents autorisés | L20 | Administration, admin | ⬜ |
+| F69 | 4 | 1 520 | Protéger les données sensibles contre l’exploitation d’une faille, de façon perceptible sans compliquer l’usage | L20 | tous les BC, IAM | 🟡 en-têtes de sécurité, CSP des deux fronts, limitation de débit (`429` expliqué), chiffrement au repos du téléphone et de l’adresse, erreurs `500` sans détail, page « Sécurité de vos données », annonce d’expiration de session admin ([ADR 007](../technique/decisions/007-protection-des-donnees.md)) ; non testé, non vérifié dans un navigateur |
+| F70 | 3 | 1 140 | Réserver strictement certaines données administratives aux agents autorisés | L20 | Administration, admin | 🟡 données sensibles masquées par l’API (« Masqué — accès réservé »), affichage explicite journalisé pour `admin.sensitive-data.read`, inventaire des routes d’agent ([Administration](../../api/src/Administration/doc/README.md#inventaire-des-routes-dagent-f70)) ; non testé, non vérifié dans un navigateur |
 | F71 | 3 | 1 140 | Accueillir des habitants sans adresse e-mail et ne parlant pas tous la même langue | L21 | IAM, Citizen, site, admin | ⬜ |
 | F72 | 1 | 380 | Nouvel arrivant : savoir par où commencer sans refaire l’inscription | L21 | site, Citizen | ⚠️ guide « Par où commencer ? » et raccourcis déjà présents dans `/espace` (L4/D12), sans refaire l’inscription ; guide masquable, réouverture non proposée ; parcours nouvel arrivant à vérifier |
 

@@ -37,6 +37,10 @@ Module `requests` : `core/domain/service-request.ts`, `core/application/{rtk-api
 
 `/demandes/inquietudes` (entrée « Inquiétudes » du module) : badge « N à prendre en compte », filtre par état (par défaut « Reçue »), chaque inquiétude avec thème, message et trace des étapes. Avec `admin.request.write` : « Marquer comme prise en compte » (commentaire facultatif) et « Envoyer la réponse » (réponse obligatoire), visibles par l’habitant et notifiées dans son espace. L’identité de l’habitant n’est pas affichée. API : [Citizen — participation](../../../../api/src/Citizen/doc/participation.md). Code : `requests/ui/pages/concerns.tsx` et le port `AgentDeskGateway`.
 
+## Données sensibles (L20/F70 — non testé, non vérifié dans un navigateur)
+
+La file des demandes (lieu des demandes de contact) et la journée des rendez-vous (téléphone du citoyen) reçoivent ces données **masquées par l’API** : l’écran affiche « Masqué — accès réservé ». Un bandeau explique la règle ; un agent qui détient `admin.sensitive-data.read` peut cliquer sur « Afficher les données sensibles » (`?reveal=1`) : l’affichage est inscrit au journal des actions et le rafraîchissement automatique est suspendu tant que les données sont visibles. Composants : `shared/ui/components/custom/sensitive-data.tsx`. Voir [Citizen — compte et sécurité](../../../../api/src/Citizen/doc/compte-et-securite.md) et l’[ADR 007](../../../../doc/technique/decisions/007-protection-des-donnees.md).
+
 ## Limites
 
 - Aucun test automatisé ; parcours non vérifié dans un navigateur.
@@ -57,4 +61,5 @@ Module `requests` : `core/domain/service-request.ts`, `core/application/{rtk-api
 - [Registre des demandes](../../../../doc/chantier/demandes.md)
 - [Citizen — rendez-vous](../../../../api/src/Citizen/doc/rendez-vous.md)
 - [Citizen — participation](../../../../api/src/Citizen/doc/participation.md)
+- [ADR 007](../../../../doc/technique/decisions/007-protection-des-donnees.md)
 <!-- backlinks:end -->

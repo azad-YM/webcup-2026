@@ -81,12 +81,15 @@ Temps réel : Citizen projette ses événements de domaine de demande (`PublishS
 | `Communication` — `DistrictDirectory` | `Administration/Infrastructure/Adapter/Communication/AdminCommunicationDistrictDirectory` |
 | `Communication` — `AudienceProvider` | `Citizen/Infrastructure/Adapter/Communication/CitizenAudienceProvider` |
 | `Citizen` — `DistrictDirectory` | `Administration/Infrastructure/Adapter/Citizen/AdminCitizenDistrictDirectory` |
-| `Citizen` — `MunicipalServiceDirectory` (rendez-vous, L10) | `Administration/Infrastructure/Adapter/Citizen/AdminCitizenServiceDirectory` |
+| `Citizen` — `MunicipalServiceDirectory` (rendez-vous L10 ; désactivation et état du service L18) | `Administration/Infrastructure/Adapter/Citizen/AdminCitizenServiceDirectory` |
+| `Citizen` — `SensitiveDataAccessPolicy` (F70) | `Administration/Infrastructure/Adapter/Citizen/AdminSensitiveDataAccessPolicy` (`admin.sensitive-data.read`) |
 | `Shared` — `RealtimeAudienceProvider` (topics des alertes ciblées) | `Citizen/Infrastructure/Adapter/Shared/CitizenAlertRealtimeAudience` |
 
 Pilotage lit aussi l’API externe du concours par son port `WebcupFeedGateway`, implémenté dans sa propre infrastructure (`Infrastructure/Http/WebcupHttpFeedGateway`, cache de 20 s) ; voir [Pilotage](../../api/src/Pilotage/doc/README.md).
 
 Journal des actions : les handlers d’Administration, Communication, Citizen, Pilotage et le limiteur de connexion d’IAM appellent le port Shared `AuditTrail` dans leur transaction ; le BC [Audit](../../api/src/Audit/doc/README.md) stocke et sert le journal ; voir l’[ADR 006](decisions/006-journal-des-actions.md).
+
+Protection des données (L20) : en-têtes de sécurité, limitation de débit en base, chiffrement au repos (`encrypted_string`), erreurs `500` génériques, masquage par l’API des données sensibles des habitants ; voir l’[ADR 007](decisions/007-protection-des-donnees.md).
 
 Publications et alertes : BC [Communication](../../api/src/Communication/doc/README.md), qui consulte Administration (droit de publier, quartiers) et Citizen (audience) par ses ports et projette ses événements vers le temps réel (`public.alerts`, `public.publications`, `district.{quartier}`, `alerts.health`) ; voir l’[ADR 005](decisions/005-bc-communication.md).
 

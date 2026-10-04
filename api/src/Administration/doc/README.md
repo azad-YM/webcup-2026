@@ -40,6 +40,7 @@ Administration ne connaît pas les mots de passe ni les sessions : chaque membre
 | GET | `/api/administration/services` | public | Catalogue ; filtres facultatifs `?q=` (tous les termes, sans accents ni casse, dans le nom, le résumé, le thème et les mots-clés), `?category=`, `?featured=1`. Tri : mis en avant d’abord, puis par nom |
 | GET | `/api/administration/services/{id}` | public | Fiche d’un service, sinon `404` |
 | PUT | `/api/administration/services` | `admin.service.write` | Crée ou remplace un service (identifiant fourni) ; réponse : la fiche |
+| POST | `/api/administration/services/availability` | `admin.service.disable` | L18/F63 : `{id, disabled, reason}` — désactive immédiatement (motif de 5 à 500 caractères, obligatoire) ou réactive un service ; réponse : la fiche |
 | GET | `/api/administration/districts` | public | Liste fermée des quartiers : `["Nord","Sud","Est","Ouest","Centre","Port"]` |
 
 Fiche d’un service :
@@ -48,7 +49,8 @@ Fiche d’un service :
 { "id": "transports", "name": "Transports", "category": "mobilite", "summary": "…", "description": "…",
   "actions": ["…"], "contact": {"place": "…", "hours": "…", "phone": "…"}, "featured": true, "keywords": ["…"],
   "status": "available", "statusMessage": "", "returnAt": null, "alternative": "",
-  "transport": {"route": "…", "timetable": "…", "information": "…"}, "updatedAt": "…" }
+  "transport": {"route": "…", "timetable": "…", "information": "…"}, "updatedAt": "…",
+  "disabled": false, "disabledReason": "", "disabledAt": null }
 ```
 
 Règles :
@@ -56,6 +58,7 @@ Règles :
 - Identifiant : minuscules, chiffres et tirets (80 caractères), non modifiable. Thèmes : `demarches`, `cadre-de-vie`, `sante-solidarite`, `mobilite`, `habitat`, `famille`. Nom, thème, résumé, description, au moins une démarche, lieu et horaires d’accueil requis.
 - **Mise en avant** (F28) : `featured` affiche le service dans « Services les plus demandés » de l’accueil.
 - **État** (F38) : `available`, `maintenance` ou `incident`. Hors `available`, un message aux habitants est obligatoire ; une date de retour (`returnAt`) et une alternative sont facultatives. Revenir à `available` efface ces champs.
+- **Désactivation d’urgence** (L18/F63, non testé) : indépendante de l’état F38. Un service désactivé refuse, côté Citizen, les nouvelles demandes et les réservations ou déplacements de rendez-vous (erreur `409`, code `service_disabled`, message français indiquant quoi faire), via le port `MunicipalServiceDirectory`. Les demandes et rendez-vous existants sont conservés (l’annulation reste possible). Effet immédiat : la lecture se fait dans la transaction suivante, et l’événement `service.availability` `{id, disabled}` part sur le topic public `public.services` (ADR 004) pour mettre à jour le site sans rechargement. Journal : `administration.service.disabled` (avec le motif) et `administration.service.enabled`. Enregistrer la fiche (`PUT`) ne modifie pas la désactivation. Permission dédiée `admin.service.disable` (voir ci-dessous).
 - **Transports** (F36) : `transport` (lignes et trajets, horaires, informations pratiques) n’est accepté que pour un service du thème `mobilite`.
 - Une règle refusée répond `400` avec un message français ; rien n’est enregistré.
 - Contenu initial : les huit services de la vitrine (dont les horaires des navettes) sont insérés par la migration `Version20261003003000` (table `municipal_service`).
@@ -78,6 +81,8 @@ Interface : la page [Membres](../../../../front/apps/admin/doc/membres.md) de l�
 | Citizen consomme Administration (L8) | `Citizen\Application\Ports\Provider\CitizenAccountAccessPolicy` | `Infrastructure/Adapter/Citizen/AdminCitizenAccountAccessPolicy` (`admin.citizen.read`, `admin.citizen.write`) |
 | IAM consomme Administration (L8) | `IAM\Application\Ports\Provider\SecurityJournalAccessPolicy` | `Infrastructure/Adapter/IAM/AdminSecurityJournalAccessPolicy` (`admin.security.read`) |
 | Citizen consomme Administration | `Citizen\Application\Ports\Provider\RequestAccessPolicy` | `Infrastructure/Adapter/Citizen/AdminRequestAccessPolicy` (`admin.request.read` ; traitement : `admin.request.read` + `admin.request.write`) |
+| Citizen consomme Administration (L18) | `Citizen\Application\Ports\Provider\MunicipalServiceDirectory` | `Infrastructure/Adapter/Citizen/AdminCitizenServiceDirectory` : nom, accueil, état F38 et désactivation F63 du service |
+| Citizen consomme Administration (L20/F70) | `Citizen\Application\Ports\Provider\SensitiveDataAccessPolicy` | `Infrastructure/Adapter/Citizen/AdminSensitiveDataAccessPolicy` (`admin.sensitive-data.read`) |
 | Shared (flux temps réel) consomme Administration | `Shared\Application\Ports\Provider\RealtimeAudienceProvider` (tag automatique) | `Infrastructure/Adapter/Shared/AdminRequestsRealtimeAudience` : topic `administration.requests` pour `admin.request.read` |
 
 Les deux adaptateurs s’appuient sur les requêtes internes `CheckCurrentMemberPermissions` (compte connecté) et `CheckMemberPermissions` (compte donné, utilisé par le flux temps réel) : membre actif, union des permissions de ses rôles.
@@ -86,6 +91,36 @@ Les deux adaptateurs s’appuient sur les requêtes internes `CheckCurrentMember
 | Citizen consomme Administration | `Citizen\Application\Ports\Provider\DistrictDirectory` | `Infrastructure/Adapter/Citizen/AdminCitizenDistrictDirectory` |
 
 Permissions ajoutées au catalogue : `admin.service.write` (catalogue des services) et `admin.communication.write` (publications et alertes), données au rôle de référence « Agent municipal » par la CLI d’initialisation.
+
+L18/L20 (migrations `Version20261003120000` et `Version20261003120100`, CLI d’initialisation resynchronisée) :
+
+- `admin.service.disable` (action `disable` ajoutée à `Domain/VO/Permission`) : couper un service en urgence. **Permission dédiée** plutôt que `admin.service.write` : c’est un interrupteur à effet immédiat sur les habitants, qu’on veut pouvoir confier à un agent d’astreinte sans lui ouvrir la rédaction du catalogue, et inversement retirer à un rédacteur. Donnée à l’administrateur principal **et** à l’agent municipal (l’agent est le premier à constater la panne au guichet).
+- `admin.sensitive-data.read` (F70) : afficher les données personnelles sensibles des habitants dans l’admin (téléphone, adresse, e-mail complet, lieu d’une demande de contact). Donnée **au seul administrateur principal** ; à accorder par un rôle dédié aux agents qui en ont besoin. Voir l’[ADR 007](../../../../doc/technique/decisions/007-protection-des-donnees.md).
+
+### Inventaire des routes d’agent (F70)
+
+Toutes les routes `/api` exigent une session (`IS_AUTHENTICATED_FULLY`), sauf la vitrine en lecture (services, quartiers, publications, alertes générales), l’inscription, la connexion, l’échange du code de portail et le flux SSE (`security.yaml`). Chaque route d’agent vérifie en plus une permission **dans le cas d’usage du BC propriétaire** (vérifié le 2026-10-04 : aucune route oubliée).
+
+| Route | Permission vérifiée |
+|---|---|
+| `GET /api/administration/permissions`, `GET /api/administration/roles` | `admin.role.read` ou `admin.role.write` (politiques `PermissionCatalogAccessPolicy`, `RoleCreationPolicy`) |
+| `POST /api/administration/roles` | `admin.role.write` et droit de délégation |
+| `GET /api/administration/members` | `admin.member.read` ou `admin.member.write` |
+| `POST /api/administration/members` | `admin.member.write` et `admin.role-assignment.write` |
+| `PUT /api/administration/services` | `admin.service.write` |
+| `POST /api/administration/services/availability` | `admin.service.disable` |
+| `GET /api/citizen/accounts` | `admin.citizen.read` ou `admin.citizen.write` ; données sensibles : `admin.sensitive-data.read` + `?reveal=1` |
+| `PUT /api/citizen/accounts/suspension` | `admin.citizen.write` |
+| `GET /api/citizen/agent/requests` | `admin.request.read` ; lieu des demandes de contact : `admin.sensitive-data.read` + `?reveal=1` |
+| `POST /api/citizen/agent/requests/status` | `admin.request.read` + `admin.request.write` |
+| `GET /api/citizen/agent/appointments` | `admin.request.read` ; téléphone : `admin.sensitive-data.read` + `?reveal=1` |
+| `POST /api/citizen/agent/appointment-slots`, `…/remove` | `admin.request.read` + `admin.request.write` |
+| `GET /api/citizen/agent/concerns`, `POST …/handle` | `admin.request.read` (+ `admin.request.write` pour répondre) |
+| `GET /api/communication/manage/*`, `PUT /api/communication/manage/*` | `admin.communication.write` |
+| `GET /api/pilotage/webcup-feed`, `GET /api/pilotage/activity`, `PUT /api/pilotage/tracking/{code}` | `admin.pilotage.read` (+ `admin.pilotage.write` pour le suivi) |
+| `GET /api/audit/entries` | `admin.audit.read` (lignes de connexion : `admin.security.read`) |
+| `GET /api/iam/security/login-events` | `admin.security.read` |
+
 
 Les erreurs contractuelles `AccountAlreadyExists` et `AccountCreationRejected` appartiennent à Administration ; l’adaptateur IAM y traduit ses propres erreurs.
 
@@ -128,4 +163,5 @@ Les erreurs contractuelles `AccountAlreadyExists` et `AccountCreationRejected` a
 - [Admin — membres](../../../../front/apps/admin/doc/membres.md)
 - [ADR 005](../../../../doc/technique/decisions/005-bc-communication.md)
 - [Site — vitrine et alertes](../../../../front/apps/site/doc/vitrine-et-alertes.md)
+- [ADR 007](../../../../doc/technique/decisions/007-protection-des-donnees.md)
 <!-- backlinks:end -->
