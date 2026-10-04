@@ -13,7 +13,18 @@ export const publicApi = createApi({
   baseQuery: fakeBaseQuery<QueryError>(),
   tagTypes: ["Services", "Publications"],
   endpoints: (build) => ({
-    listServices: build.query<MunicipalService[], void>({ queryFn: withUseCase(listServices), providesTags: ["Services"] }),
+    listServices: build.query<MunicipalService[], void>({
+      queryFn: withUseCase(listServices),
+      providesTags: ["Services"],
+      // F63 : une désactivation (ou réactivation) apparaît sans rechargement sur les fiches et les formulaires.
+      async onCacheEntryAdded(_arg, { extra, dispatch, cacheEntryRemoved }) {
+        const unsubscribe = (extra as Dependencies).cityFeedGateway.subscribe((event) => {
+          if (event.type === "service.availability") dispatch(publicApi.util.invalidateTags(["Services"]))
+        })
+        await cacheEntryRemoved
+        unsubscribe()
+      }
+    }),
     listPublications: build.query<Publication[], void>({
       queryFn: withUseCase(listPublications),
       providesTags: ["Publications"],

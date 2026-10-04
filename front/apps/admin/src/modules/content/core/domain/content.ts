@@ -36,7 +36,17 @@ export type MunicipalService = {
   alternative: string
   transport: { route: string; timetable: string; information: string } | null
   updatedAt?: string
+  /** F63 : désactivation d’urgence (nouvelles demandes et rendez-vous refusés), motif montré aux habitants. */
+  disabled?: boolean
+  disabledReason?: string
+  disabledAt?: string | null
 }
+
+/** F63 : désactiver (motif obligatoire, 5 à 500 caractères) ou réactiver un service. */
+export type ServiceAvailabilityChange = { id: string; disabled: boolean; reason: string }
+
+export const DISABLE_REASON_MIN = 5
+export const DISABLE_REASON_MAX = 500
 
 export type ContentState = "draft" | "published" | "withdrawn"
 

@@ -23,6 +23,9 @@ export class ServiceRequestHttpGateway extends ApiClient implements ServiceReque
           throw new AppError(404, "Cette demande est introuvable dans votre espace.")
         case 422:
           throw new AppError(422, "Certaines informations ne sont pas acceptées. Vérifiez l’objet, la description et le lieu.")
+        case 409:
+          // F63 : service désactivé par la mairie — le message de l'API dit quoi faire à la place.
+          throw new AppError(409, error.payload?.message ?? error.payload?.error ?? "Ce service n’accepte pas de nouvelle demande pour le moment.")
         default:
           throw new AppError(error.status, UNAVAILABLE_MESSAGE)
       }

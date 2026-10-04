@@ -2,8 +2,10 @@ import { useState } from "react"
 import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label, Textarea } from "@boilerplate/shared-ui/components"
 import { getErrorMessage } from "@boilerplate/shared-utils/error.utils"
 import { StatusBadge } from "@boilerplate/shared-ui/components/a11y"
-import { useListServicesQuery, useSaveServiceMutation } from "../../core/application/rtk-api/content"
+import { useListServicesQuery, useSaveServiceMutation, useSetServiceAvailabilityMutation } from "../../core/application/rtk-api/content"
 import {
+  DISABLE_REASON_MAX,
+  DISABLE_REASON_MIN,
   fromLines,
   fromLocalInput,
   newService,
@@ -173,6 +175,89 @@ function ServiceForm({ initial, isNew, onDone }: { initial: MunicipalService; is
   )
 }
 
+const disabledSince = new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeStyle: "short" })
+
+/**
+ * F63 : interrupteur d’urgence. Désactiver coupe immédiatement les nouvelles demandes et réservations du service
+ * (contrôle côté API), prévient le site en temps réel et est inscrit au journal des actions. Motif obligatoire.
+ */
+function ServiceAvailabilityControl({ service }: { service: MunicipalService }) {
+  const [open, setOpen] = useState(false)
+  const [reason, setReason] = useState("")
+  const [touched, setTouched] = useState(false)
+  const [change, changing] = useSetServiceAvailabilityMutation()
+  const [message, setMessage] = useState<string | null>(null)
+  const length = reason.trim().length
+  const reasonError = touched && (length < DISABLE_REASON_MIN || length > DISABLE_REASON_MAX)
+    ? `Indiquez le motif en ${DISABLE_REASON_MIN} à ${DISABLE_REASON_MAX} caractères : il est affiché aux habitants.`
+    : null
+  const fieldId = `motif-${service.id}`
+  const submit = async (disabled: boolean) => {
+    setMessage(null)
+    if (disabled) {
+      setTouched(true)
+      if (length < DISABLE_REASON_MIN || length > DISABLE_REASON_MAX) {
+        document.getElementById(fieldId)?.focus()
+        return
+      }
+    }
+    const result = await change({ id: service.id, disabled, reason: disabled ? reason.trim() : "" })
+    if ("data" in result && result.data) {
+      setOpen(false)
+      setReason("")
+      setTouched(false)
+      setMessage(disabled
+        ? "Service désactivé : les nouvelles demandes et réservations sont refusées et le site affiche le motif."
+        : "Service réactivé : les habitants peuvent de nouveau faire leurs démarches.")
+    }
+  }
+  if (service.disabled) {
+    return (
+      <div className="mt-2 space-y-2 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-950">
+        <p><span className="font-medium">Motif affiché aux habitants :</span> {service.disabledReason}</p>
+        {service.disabledAt && <p className="text-xs">Désactivé le <time dateTime={service.disabledAt}>{disabledSince.format(new Date(service.disabledAt))}</time></p>}
+        <Button type="button" size="sm" variant="outline" disabled={changing.isLoading} onClick={() => void submit(false)}>
+          {changing.isLoading ? "Réactivation…" : "Réactiver le service"}
+        </Button>
+        {changing.error !== undefined && <p role="alert" className="text-destructive">{getErrorMessage(changing.error)}</p>}
+        {message && <p role="status">{message}</p>}
+      </div>
+    )
+  }
+  return (
+    <div className="mt-2">
+      {!open ? (
+        <Button type="button" size="sm" variant="outline" className="border-red-300 text-red-800 hover:bg-red-50" aria-expanded={false} onClick={() => setOpen(true)}>
+          Désactiver le service
+        </Button>
+      ) : (
+        <form className="space-y-2 rounded-md border border-red-300 bg-red-50 p-3" onSubmit={(event) => { event.preventDefault(); void submit(true) }}>
+          <p className="text-sm text-red-950">Effet immédiat : plus aucune nouvelle demande ni réservation de rendez-vous pour ce service. Les demandes et rendez-vous existants sont conservés.</p>
+          <Label htmlFor={fieldId}>Motif (obligatoire, affiché aux habitants)</Label>
+          <Textarea
+            id={fieldId}
+            rows={2}
+            maxLength={DISABLE_REASON_MAX}
+            value={reason}
+            aria-invalid={reasonError !== null}
+            aria-describedby={reasonError ? `${fieldId}-erreur` : undefined}
+            onChange={(event) => setReason(event.target.value)}
+            onBlur={() => setTouched(true)}
+            placeholder="Ex. Panne du logiciel d’état civil, intervention en cours."
+          />
+          {reasonError && <p id={`${fieldId}-erreur`} className="text-sm text-destructive">{reasonError}</p>}
+          {changing.error !== undefined && <p role="alert" className="text-sm text-destructive">{getErrorMessage(changing.error)}</p>}
+          <div className="flex flex-wrap gap-2">
+            <Button type="submit" size="sm" variant="destructive" disabled={changing.isLoading}>{changing.isLoading ? "Désactivation…" : "Confirmer la désactivation"}</Button>
+            <Button type="button" size="sm" variant="ghost" onClick={() => { setOpen(false); setTouched(false) }}>Annuler</Button>
+          </div>
+        </form>
+      )}
+      {message && <p role="status" className="mt-1 text-sm text-green-700">{message}</p>}
+    </div>
+  )
+}
+
 /** Catalogue des services municipaux (D05, F28, F32), état (F38) et transports (F36). */
 export function ServicesPage() {
   const services = useListServicesQuery()
@@ -193,10 +278,12 @@ export function ServicesPage() {
                   <p className="font-medium">{item.name}</p>
                   <p className="text-sm text-muted-foreground">{SERVICE_CATEGORIES[item.category] ?? item.category}</p>
                   <div className="mt-1 flex flex-wrap gap-2">
+                    {item.disabled && <StatusBadge tone="danger" label="Désactivé" srPrefix="Accès des habitants :" />}
                     <StatusBadge tone={item.status === "available" ? "success" : item.status === "maintenance" ? "warning" : "danger"} label={SERVICE_STATUS_LABELS[item.status]} srPrefix="État :" />
                     {item.featured && <Badge variant="outline">Mis en avant</Badge>}
                     {item.transport && <Badge variant="outline">Horaires</Badge>}
                   </div>
+                  <ServiceAvailabilityControl service={item} />
                 </div>
                 <Button type="button" variant="outline" size="sm" onClick={() => setEditing({ service: item, isNew: false })}>Modifier</Button>
               </li>
