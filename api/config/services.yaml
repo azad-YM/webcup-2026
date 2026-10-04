@@ -219,6 +219,9 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.exception, method: __invoke }
 
+    # Citizen consomme IAM (F55 : confirmation d'identité et données du compte pour « Mes données »).
+    Citizen\Application\Ports\Provider\PersonalAccountDataProvider:
+        alias: IAM\Infrastructure\Adapter\Citizen\IAMPersonalAccountDataProvider
     Citizen\Application\Ports\Provider\CitizenAccountManager:
         alias: IAM\Infrastructure\Adapter\Citizen\IAMCitizenAccountManager
     Citizen\Application\Ports\Provider\CitizenAccountAccessPolicy:
