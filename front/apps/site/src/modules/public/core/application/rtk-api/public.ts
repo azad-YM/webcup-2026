@@ -4,6 +4,8 @@ import type { Dependencies } from "@/modules/shared/core/config/dependencies"
 import type { MunicipalService } from "../../domain/municipal-service"
 import type { Publication } from "../../domain/publication"
 import { listPublications, listServices } from "../usecases/public-content.usecase"
+import type { Explanation, ExplainParams, ServiceSearchParams, ServiceSearchResult } from "../../domain/service-search"
+import { explainPassage, refineServiceSearch, searchServices } from "../usecases/assistance.usecase"
 
 /** Rafraîchissement de secours des contenus publiés. */
 export const CONTENT_POLLING_MS = 60_000
@@ -25,6 +27,10 @@ export const publicApi = createApi({
         unsubscribe()
       }
     }),
+    // D10 : recherche tolérante (BC Assistance) ; F90 : explication simple d’un passage. Rien n’est stocké.
+    searchServices: build.query<ServiceSearchResult, ServiceSearchParams>({ queryFn: withUseCase(searchServices), keepUnusedDataFor: 300 }),
+    refineServiceSearch: build.query<ServiceSearchResult, ServiceSearchParams>({ queryFn: withUseCase(refineServiceSearch), keepUnusedDataFor: 600 }),
+    explainPassage: build.query<Explanation, ExplainParams>({ queryFn: withUseCase(explainPassage), keepUnusedDataFor: 600 }),
     listPublications: build.query<Publication[], void>({
       queryFn: withUseCase(listPublications),
       providesTags: ["Publications"],
@@ -39,4 +45,10 @@ export const publicApi = createApi({
   })
 })
 
-export const { useListServicesQuery, useListPublicationsQuery } = publicApi
+export const {
+  useListServicesQuery,
+  useListPublicationsQuery,
+  useSearchServicesQuery,
+  useLazyRefineServiceSearchQuery,
+  useLazyExplainPassageQuery
+} = publicApi

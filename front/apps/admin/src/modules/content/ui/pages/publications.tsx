@@ -2,7 +2,8 @@ import { useState, type FormEvent } from "react"
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label, Textarea } from "@boilerplate/shared-ui/components"
 import { getErrorMessage } from "@boilerplate/shared-utils/error.utils"
 import { StatusBadge } from "@boilerplate/shared-ui/components/a11y"
-import { useListPublicationsQuery, useSavePublicationMutation } from "../../core/application/rtk-api/content"
+import { useListPublicationsQuery, useSavePublicationMutation, useSuggestPublicationPlainLanguageMutation } from "../../core/application/rtk-api/content"
+import { PlainLanguageField } from "../sections/plain-language-field"
 import { fromLines, newPublication, STATE_LABELS, toLines, type ContentState, type Publication } from "../../core/domain/content"
 import { ListState, selectClass } from "../components/content-states"
 
@@ -10,11 +11,12 @@ function PublicationForm({ initial, onDone }: { initial: Publication; onDone: ()
   const [draft, setDraft] = useState(initial)
   const [body, setBody] = useState(fromLines(initial.body))
   const [save, saving] = useSavePublicationMutation()
+  const [suggestPlain] = useSuggestPublicationPlainLanguageMutation()
   const [message, setMessage] = useState<string | null>(null)
   const submit = async (event: FormEvent, state: ContentState) => {
     event.preventDefault()
     setMessage(null)
-    const result = await save({ ...draft, body: toLines(body), state })
+    const result = await save({ ...draft, body: toLines(body), state, plainLanguage: draft.plainLanguage ?? "" })
     if ("data" in result && result.data) {
       setDraft(result.data)
       setMessage(state === "published" ? "Publication en ligne." : state === "withdrawn" ? "Publication retirée du site." : "Brouillon enregistré.")
@@ -46,6 +48,14 @@ function PublicationForm({ initial, onDone }: { initial: Publication; onDone: ()
               <Textarea id="publication-body" required rows={8} aria-describedby="publication-body-help" value={body} onChange={(event) => setBody(event.target.value)} />
               <p id="publication-body-help" className="text-sm text-muted-foreground">Un paragraphe par ligne.</p>
             </div>
+            <PlainLanguageField
+              id="publication-plain-language"
+              value={draft.plainLanguage ?? ""}
+              disabled={saving.isLoading}
+              canSuggest={draft.title.trim() !== "" && draft.summary.trim() !== ""}
+              onChange={(plainLanguage) => setDraft({ ...draft, plainLanguage })}
+              suggest={() => suggestPlain({ title: draft.title, summary: draft.summary, body: toLines(body) })}
+            />
             <label className="flex items-start gap-3">
               <input type="checkbox" className="mt-1 size-4 accent-primary" checked={draft.important} onChange={(event) => setDraft({ ...draft, important: event.target.checked })} />
               <span><span className="block font-medium">Annonce importante</span><span className="block text-sm text-muted-foreground">Prévient les citoyens dans leurs notifications, en temps réel, à la publication.</span></span>

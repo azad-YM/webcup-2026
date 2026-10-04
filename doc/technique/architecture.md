@@ -34,6 +34,7 @@ api/src/
 ├── Audit/                      BC journal des actions de l’administration (ADR 006)
 ├── Communication/              BC information aux habitants : publications, alertes, audiences (ADR 005)
 ├── Participation/              BC participation : projets, consultations et avis, contributions, boîte à idées (ADR 008)
+├── Assistance/                 BC assistance : recherche tolérante, orientation, explications simples (ADR 011, sans table)
 └── Shared/                     kernel, AppController, exceptions, AggregateRoot, ports techniques (dont temps réel)
 ```
 
@@ -88,6 +89,11 @@ Temps réel : Citizen projette ses événements de domaine de demande (`PublishS
 | `Citizen` — `MunicipalServiceDirectory` (rendez-vous L10 ; désactivation et état du service L18) | `Administration/Infrastructure/Adapter/Citizen/AdminCitizenServiceDirectory` |
 | `Citizen` — `SensitiveDataAccessPolicy` (F70) | `Administration/Infrastructure/Adapter/Citizen/AdminSensitiveDataAccessPolicy` (`admin.sensitive-data.read`) |
 | `Shared` — `RealtimeAudienceProvider` (topics des alertes ciblées) | `Citizen/Infrastructure/Adapter/Shared/CitizenAlertRealtimeAudience` |
+| `Assistance` — `ServiceCatalog` (L22) | `Administration/Infrastructure/Adapter/Assistance/AdminAssistanceServiceCatalog` |
+| `Administration` — `PlainLanguageDrafter` (F89) | `Assistance/Infrastructure/Adapter/Administration/AssistancePlainLanguageDrafter` |
+| `Communication` — `PlainLanguageDrafter` (F89) | `Assistance/Infrastructure/Adapter/Communication/AssistancePublicationPlainLanguageDrafter` |
+
+Assistance aux habitants : BC [Assistance](../../api/src/Assistance/doc/README.md), modèle de langage facultatif par le port Shared `LanguageModel`, repli local, garde-fous et limites par IP ; voir l’[ADR 011](decisions/011-bc-assistance.md).
 
 Pilotage lit aussi l’API externe du concours par son port `WebcupFeedGateway`, implémenté dans sa propre infrastructure (`Infrastructure/Http/WebcupHttpFeedGateway`, cache de 20 s) ; voir [Pilotage](../../api/src/Pilotage/doc/README.md).
 
@@ -158,6 +164,8 @@ Les `AGENTS.md` sont répartis par périmètre : racine, `api/`, chaque BC/SD, `
 - [Documentation — Shared](../../api/src/Shared/doc/README.md)
 - [Documentation — Pilotage](../../api/src/Pilotage/doc/README.md)
 - [Documentation — Audit](../../api/src/Audit/doc/README.md)
+- [Documentation — Assistance](../../api/src/Assistance/doc/README.md)
+- [ADR 011](decisions/011-bc-assistance.md)
 - [Contexte produit](../contexte/README.md)
 - [ADR 003](decisions/003-identite-et-habilitations.md)
 <!-- backlinks:end -->

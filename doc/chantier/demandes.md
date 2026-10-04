@@ -201,11 +201,11 @@ Les 15 suivis déjà faits sont conservés. F40 reste en cours (cron et récepti
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
-| D10 (IA) | 3 | 1 290 | Trouver le bon service même avec une demande mal formulée | L22 | Assistance, site | ⬜ |
-| F89 | 2 | 860 | Version en langage clair des informations essentielles, sans perte de sens | L22 | Administration, site | ⬜ |
-| F90 (IA) | 1 | 430 | Demander une explication plus simple d’un passage, uniquement au besoin | L22 | Assistance, site | ⬜ |
-| F91 (IA) | 4 | 1 720 | Assistance automatisée qui oriente les habitants vers une réponse ou un service pertinent | L22 | Assistance, site | ⬜ |
-| F92 (IA) | 2 | 860 | Décrire son besoin simplement et être orienté vers le bon service ou la bonne démarche | L22 | Assistance, site | ⬜ |
+| D10 (IA) | 3 | 1 290 | Trouver le bon service même avec une demande mal formulée — recherche tolérante (fautes, accents, pluriels, mots du quotidien) sur `/services`, « Vous vouliez dire… », reformulation par l’IA si disponible, issues mairie / urgences / bienvenue ([Assistance](../../api/src/Assistance/doc/README.md)) ; non testé, non vérifié dans un navigateur | L22 | Assistance, site | 🟡 |
+| F89 | 2 | 860 | Version en langage clair des informations essentielles, sans perte de sens — champ « En clair » des services et publications, « Proposer une version en clair » dans l’admin (IA ou brouillon local, validé à l’enregistrement), interrupteur sur le site ; non testé, non vérifié dans un navigateur | L22 | Administration, site | 🟡 |
+| F90 (IA) | 1 | 430 | Demander une explication plus simple d’un passage, uniquement au besoin — bouton « Expliquer simplement » (fiches services, actualités), repli : version en clair et mots difficiles (lexique + glossaire) ; non testé, non vérifié dans un navigateur | L22 | Assistance, site | 🟡 |
+| F91 (IA) | 4 | 1 720 | Assistance automatisée qui oriente les habitants vers une réponse ou un service pertinent — assistant `/aide/assistant` et bouton flottant, 1 à 3 actions, services validés contre le catalogue, urgences 15/17/18/112 par règles, repli local sans clé, limite par IP ; non testé, non vérifié dans un navigateur | L22 | Assistance, site | 🟡 |
+| F92 (IA) | 2 | 860 | Décrire son besoin simplement et être orienté vers le bon service ou la bonne démarche — description libre, questions de précision, demande préremplie `/espace/demandes/nouvelle?service=…` (voir F91) ; non testé, non vérifié dans un navigateur | L22 | Assistance, site | 🟡 |
 
 ## Vagues suivantes
 

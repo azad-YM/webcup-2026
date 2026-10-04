@@ -19,6 +19,8 @@ final class MunicipalService
     public const EMERGENCY_KINDS = ['hospital', 'emergency', 'fire', 'police', 'pharmacy'];
     /** F27: languages in which agents may translate the main texts; French stays the reference. */
     public const TRANSLATION_LANGUAGES = ['en', 'ar'];
+    /** F89 : longueur maximale de la version « En clair ». */
+    public const PLAIN_LANGUAGE_MAX = 600;
 
     private string $name;
     private string $category;
@@ -47,6 +49,8 @@ final class MunicipalService
     private bool $disabled = false;
     private string $disabledReason = '';
     private ?\DateTimeImmutable $disabledAt = null;
+    /** F89 : version en langage clair (texte court) relue et validée par l'agent qui enregistre la fiche. */
+    private string $plainLanguage = '';
 
     /** @param array<string, mixed> $data */
     private function __construct(public readonly string $id, array $data, \DateTimeImmutable $now)
@@ -117,6 +121,7 @@ final class MunicipalService
             'location' => $this->location,
             'emergency' => $this->emergency,
             'translations' => $this->translations ?? (object) [],
+            'plainLanguage' => $this->plainLanguage,
             ...$this->disablementView(),
         ];
     }
@@ -209,6 +214,7 @@ final class MunicipalService
         $this->alternative = $status === 'available' ? '' : self::text($data['alternative'] ?? '', 2000, 'Alternative', false);
         $this->transport = $transport;
         [$this->location, $this->emergency, $this->translations] = [$location, $emergency, $translations];
+        $this->plainLanguage = self::text($data['plainLanguage'] ?? '', self::PLAIN_LANGUAGE_MAX, 'Version en clair', false);
         $this->updatedAt = $now;
     }
 

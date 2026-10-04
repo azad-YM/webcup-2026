@@ -7,6 +7,8 @@ import type { CitizenGateway } from "@/modules/citizen/core/application/ports/ga
 import type { CitizenSessionProvider } from "@/modules/citizen/core/application/ports/provider/citizen-session.provider"
 import type { ServiceCatalogGateway } from "@/modules/public/core/application/ports/gateway/service-catalog.gateway"
 import type { PublicationGateway } from "@/modules/public/core/application/ports/gateway/publication.gateway"
+import type { ExplanationGateway, ServiceFinderGateway } from "@/modules/public/core/application/ports/gateway/assistance.gateway"
+import type { OrientationGateway } from "@/modules/assistance/core/application/ports/gateway/orientation.gateway"
 import type { ServiceRequestGateway } from "@/modules/citizen/core/application/ports/gateway/service-request.gateway"
 import type { NotificationGateway } from "@/modules/citizen/core/application/ports/gateway/notification.gateway"
 import type { AppointmentGateway } from "@/modules/citizen/core/application/ports/gateway/appointment.gateway"
@@ -46,6 +48,10 @@ export type Dependencies = {
   publicationGateway: PublicationGateway
   alertsGateway: AlertsGateway
   cityFeedGateway: CityFeedGateway
+  // assistance (BC Assistance, L22) : recherche tolérante, explications simples, assistant d’orientation
+  serviceFinderGateway: ServiceFinderGateway
+  explanationGateway: ExplanationGateway
+  orientationGateway: OrientationGateway
   // participation (BC Participation) : projets, consultations, idées
   cityParticipationGateway: CityParticipationGateway
   participationSessionProvider: ParticipationSessionProvider

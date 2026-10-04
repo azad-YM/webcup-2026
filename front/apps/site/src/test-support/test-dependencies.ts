@@ -58,6 +58,12 @@ export function createTestContext(overrides: Partial<Dependencies> = {}) {
     publicationGateway,
     alertsGateway: new InMemoryAlertsGateway(),
     cityFeedGateway: new InMemoryCityFeedGateway(),
+    serviceFinderGateway: {
+      search: async ({ query }) => ({ query, results: [], suggestion: null, reformulation: null, source: "local", modelAvailable: false }),
+      refine: async ({ query }) => ({ query, results: [], suggestion: null, reformulation: null, source: "local", modelAvailable: false })
+    },
+    explanationGateway: { explain: async () => ({ explanation: null, terms: [], source: "local", modelAvailable: false }) },
+    orientationGateway: { orient: async () => { throw new Error("Not configured") } },
     cityParticipationGateway: {
       listProjects: async () => [],
       getProject: async () => { throw new Error("Not configured") },

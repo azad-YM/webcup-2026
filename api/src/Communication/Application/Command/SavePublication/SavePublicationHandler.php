@@ -34,11 +34,11 @@ final readonly class SavePublicationHandler
         $now = $this->clock->now();
         if ($cmd->id === null || $cmd->id === '') {
             $previousState = null;
-            $publication = Publication::draft($this->ids->getId(), $cmd->title, $cmd->category, $cmd->summary, $cmd->body, $cmd->important, $now);
+            $publication = Publication::draft($this->ids->getId(), $cmd->title, $cmd->category, $cmd->summary, $cmd->body, $cmd->important, $now, $cmd->plainLanguage);
         } else {
             $publication = $this->publications->find($cmd->id) ?? throw new NotFoundException('Publication introuvable.');
             $previousState = $publication->managementView()['state'] ?? null;
-            $publication->revise($cmd->title, $cmd->category, $cmd->summary, $cmd->body, $cmd->important, $now);
+            $publication->revise($cmd->title, $cmd->category, $cmd->summary, $cmd->body, $cmd->important, $now, $cmd->plainLanguage);
         }
         $publication->moveTo($cmd->state, $now);
         $this->publications->save($publication);

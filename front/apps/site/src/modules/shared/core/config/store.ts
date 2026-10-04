@@ -9,6 +9,7 @@ import { participationApi } from "@/modules/citizen/core/application/rtk-api/par
 import { personalDataApi } from "@/modules/citizen/core/application/rtk-api/personal-data"
 import { publicApi } from "@/modules/public/core/application/rtk-api/public"
 import { cityParticipationApi } from "@/modules/participation/core/application/rtk-api/city-participation"
+import { assistanceApi } from "@/modules/assistance/core/application/rtk-api/assistance"
 import type { Dependencies } from "./dependencies"
 
 export const createStore = (dependencies: Dependencies) =>
@@ -23,7 +24,8 @@ export const createStore = (dependencies: Dependencies) =>
       [appointmentsApi.reducerPath]: appointmentsApi.reducer,
       [participationApi.reducerPath]: participationApi.reducer,
       [cityParticipationApi.reducerPath]: cityParticipationApi.reducer,
-      [personalDataApi.reducerPath]: personalDataApi.reducer
+      [personalDataApi.reducerPath]: personalDataApi.reducer,
+      [assistanceApi.reducerPath]: assistanceApi.reducer
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({ thunk: { extraArgument: dependencies } }).concat(
@@ -36,7 +38,8 @@ export const createStore = (dependencies: Dependencies) =>
         appointmentsApi.middleware,
         participationApi.middleware,
         cityParticipationApi.middleware,
-        personalDataApi.middleware
+        personalDataApi.middleware,
+        assistanceApi.middleware
       ),
     devTools: false
   })

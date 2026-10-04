@@ -43,6 +43,10 @@ Participation ───── projets, consultations et avis, contributions, id�
    │ port (citoyen connecté, notifications) → Citizen
    └ adaptateur d’effacement à la suppression du compte ← Citizen
 
+Assistance ──────── recherche tolérante, assistant d’orientation, explications simples (livré L22, ADR 011, sans table)
+   │ port (catalogue des services) → Administration
+   └ adaptateurs « En clair » (F89) ← Administration, Communication
+
 Pilotage ────────── flux de l’API du concours pour les agents
    │ port (droit admin.pilotage.read) → Administration
    └ port (lecture de l’API Webcup, cache 20 s) → API du concours
@@ -50,6 +54,7 @@ Pilotage ────────── flux de l’API du concours pour les age
 
 Communication est décidé par l’[ADR 005](../technique/decisions/005-bc-communication.md) ; ses mises à jour sans rechargement passent par le port temps réel de l’[ADR 004](../technique/decisions/004-temps-reel.md).
 Participation est décidé par l’[ADR 008](../technique/decisions/008-bc-participation.md).
+Assistance est décidé par l’[ADR 011](../technique/decisions/011-bc-assistance.md) : modèle de langage facultatif (API Claude), repli local sans clé.
 
 - [IAM](../../api/src/IAM/doc/README.md) · [Administration](../../api/src/Administration/doc/README.md) · [Citizen](../../api/src/Citizen/doc/README.md) · [Communication](../../api/src/Communication/doc/README.md) · [Participation](../../api/src/Participation/doc/README.md) · [Pilotage](../../api/src/Pilotage/doc/README.md)
 - Applications : [site](../../front/apps/site/doc/README.md) (portail citoyen) · [admin](../../front/apps/admin/doc/README.md) (espace des agents)

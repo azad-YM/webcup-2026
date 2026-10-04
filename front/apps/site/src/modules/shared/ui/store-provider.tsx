@@ -36,6 +36,8 @@ import { AuthIdentityCodeAdapter } from "@/modules/auth/core/infrastructure/adap
 import { SseRealtimeSubscriber } from "../core/infrastructure/realtime/sse-realtime.subscriber"
 import { HttpPublicContentGateway } from "@/modules/public/core/infrastructure/for-production/gateway/http/public-content.http.gateway"
 import { AlertsHttpGateway } from "@/modules/public/core/infrastructure/for-production/gateway/http/alerts.http.gateway"
+import { AssistanceHttpGateway } from "@/modules/public/core/infrastructure/for-production/gateway/http/assistance.http.gateway"
+import { OrientationHttpGateway } from "@/modules/assistance/core/infrastructure/for-production/gateway/http/orientation.http.gateway"
 import { CITY_FEED_EVENTS } from "@/modules/public/core/application/ports/gateway/city-feed.gateway"
 import { RealtimeCityFeedAdapter } from "../core/infrastructure/adapter/public/realtime-city-feed.adapter"
 import { AuthPublicSessionAdapter } from "@/modules/auth/core/infrastructure/adapter/public/auth-public-session.adapter"
@@ -66,6 +68,7 @@ function createDependencies(): Dependencies {
     ...CITY_FEED_EVENTS
   ], isLightModeActive)
   const authGateway = new AuthHttpGateway(siteEnv.apiBaseUrl)
+  const assistance = new AssistanceHttpGateway(siteEnv.apiBaseUrl)
   return {
     realtime,
     authGateway,
@@ -87,6 +90,9 @@ function createDependencies(): Dependencies {
     publicationGateway: publicContent,
     alertsGateway: new AlertsHttpGateway(siteEnv.apiBaseUrl, publicSession),
     cityFeedGateway: new RealtimeCityFeedAdapter(realtime),
+    serviceFinderGateway: assistance,
+    explanationGateway: assistance,
+    orientationGateway: new OrientationHttpGateway(siteEnv.apiBaseUrl),
     cityParticipationGateway: new CityParticipationHttpGateway(siteEnv.apiBaseUrl),
     participationSessionProvider: new AuthParticipationSessionAdapter(authSessionGateway)
   }

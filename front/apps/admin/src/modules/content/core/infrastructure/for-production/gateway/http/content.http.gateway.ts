@@ -2,7 +2,7 @@ import { ApiClient, ApiHttpError } from "@boilerplate/shared-utils/api-client"
 import { ContentError } from "../../../../application/errors/content.error"
 import type { ContentGateway } from "../../../../application/ports/gateway/content.gateway"
 import type { ContentSessionProvider } from "../../../../application/ports/provider/content-session.provider"
-import type { Alert, MunicipalService, Publication, ServiceAvailabilityChange } from "../../../../domain/content"
+import type { Alert, MunicipalService, PlainLanguageDraft, Publication, PublicationPlainLanguageRequest, ServiceAvailabilityChange, ServicePlainLanguageRequest } from "../../../../domain/content"
 
 /** Adaptateur HTTP des contenus : services (Administration), publications et alertes (Communication). */
 export class ContentHttpGateway extends ApiClient implements ContentGateway {
@@ -46,6 +46,14 @@ export class ContentHttpGateway extends ApiClient implements ContentGateway {
     return this.call(() => this.putAuth<Alert>("/communication/manage/alerts", alert), "l’alerte", "admin.communication.write")
   }
 
+  suggestServicePlainLanguage(request: ServicePlainLanguageRequest) {
+    return this.call(() => this.postAuth<PlainLanguageDraft>("/administration/services/plain-language", request), "la proposition de version en clair", "admin.service.write")
+  }
+
+  suggestPublicationPlainLanguage(request: PublicationPlainLanguageRequest) {
+    return this.call(() => this.postAuth<PlainLanguageDraft>("/communication/manage/publications/plain-language", request), "la proposition de version en clair", "admin.communication.write")
+  }
+
   private async call<T>(request: () => Promise<T>, what: string, permission?: string): Promise<T> {
     try {
       return await request()
@@ -70,6 +78,8 @@ export class ContentHttpGateway extends ApiClient implements ContentGateway {
       case 400:
         // Règle métier refusée : le message de l’API est rédigé en français pour l’agent.
         return new ContentError("invalid", error.payload?.message ?? error.payload?.error ?? `${what} : saisie refusée.`)
+      case 429:
+        return new ContentError("unavailable", error.payload?.message ?? error.payload?.error ?? "Trop de demandes en peu de temps. Patientez une minute.")
       case 422:
         return new ContentError("invalid", `Certains champs obligatoires sont vides ou trop longs pour ${what}. Vérifiez la saisie.`)
       default:

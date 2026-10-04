@@ -7,7 +7,7 @@
 L’admin est l’espace de travail des agents et des administrateurs de Nova Terra, distinct du portail des habitants. Les administrateurs y gèrent les rôles et les membres. Les agents y traitent les demandes citoyennes, publieront les informations de la ville et consulteront le flux de l’API du concours (voir le [chantier](../../../../doc/chantier/README.md)). Elle s’ouvre depuis l’accès « Administration » du menu du compte du [site](../../site/doc/README.md), sans nouvelle saisie des identifiants.
 
 Livré : création des rôles, liste et ajout des membres ([membres](membres.md)), flux Nova Terra pour les agents ([pilotage](pilotage.md)), file des demandes citoyennes ([demandes](demandes.md)), comptes citoyens ([détail](comptes-citoyens.md)) et journal de sécurité des connexions ([détail](securite.md)) — 🟡 non vérifiés dans un navigateur.
-Livré : création des rôles, liste et ajout des membres ([membres](membres.md)), flux Nova Terra pour les agents ([pilotage](pilotage.md)), contenus de la ville — publications, alertes, services et transports ([contenus](contenus.md), non vérifié dans un navigateur).
+Livré : création des rôles, liste et ajout des membres ([membres](membres.md)), flux Nova Terra pour les agents ([pilotage](pilotage.md)), contenus de la ville — publications, alertes, services et transports ([contenus](contenus.md), non vérifié dans un navigateur) ; champ « Version en clair » des services et publications avec « Proposer une version en clair » (F89, [BC Assistance](../../../../api/src/Assistance/doc/README.md) : IA si disponible, brouillon local sinon ; l’agent relit et valide en enregistrant — non testé).
 
 ## Parcours
 

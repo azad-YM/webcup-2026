@@ -24,5 +24,6 @@
         <field name="disabled" type="boolean"><options><option name="default">0</option></options></field>
         <field name="disabledReason" column="disabled_reason" type="string" length="500"><options><option name="default"></option></options></field>
         <field name="disabledAt" column="disabled_at" type="datetime_immutable" nullable="true"/>
+        <field name="plainLanguage" column="plain_language" type="string" length="600"><options><option name="default"></option></options></field>
     </entity>
 </doctrine-mapping>

@@ -9,6 +9,8 @@ import { EmptyState, ErrorState, LoadingState, SkeletonCards } from "@/modules/s
 import { CONTENT_POLLING_MS, useListPublicationsQuery } from "../../core/application/rtk-api/public"
 import { findPublication, formatPublicationDate, type Publication } from "../../core/domain/publication"
 import { PublicationCard } from "../components/content-cards"
+import { ExplainSimply } from "../components/explain-simply"
+import { PlainLanguageSwitch } from "../components/plain-language"
 
 function PublicationDetail({ publication }: { publication: Publication }) {
   return (
@@ -18,8 +20,10 @@ function PublicationDetail({ publication }: { publication: Publication }) {
         {publication.important && <span className="rounded-full bg-red-100 px-3 py-0.5 font-semibold text-red-900">Annonce importante</span>}
         <span className="text-slate-700">Publié le <time dateTime={publication.publishedAt}>{formatPublicationDate(publication.publishedAt)}</time></span>
       </p>
-      <div className="mt-6 space-y-4 text-lg leading-8 text-slate-800">
-        {publication.body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+      <div className="mt-6"><PlainLanguageSwitch text={publication.plainLanguage} /></div>
+      <div className="space-y-4 text-lg leading-8 text-slate-800">
+        {/* F90 : explication simple à la demande, paragraphe par paragraphe. */}
+        {publication.body.map((paragraph) => <div key={paragraph}><p>{paragraph}</p><ExplainSimply text={paragraph} plainVersion={publication.plainLanguage} /></div>)}
       </div>
       <p className="mt-10">
         <Link href="/actualites" className="inline-flex items-center gap-2 font-medium text-teal-800 underline underline-offset-4">

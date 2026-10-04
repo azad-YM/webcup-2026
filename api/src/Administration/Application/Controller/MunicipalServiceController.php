@@ -9,6 +9,7 @@ use Administration\Application\Command\SetMunicipalServiceAvailability\SetMunici
 use Administration\Application\Query\GetMunicipalService\GetMunicipalServiceQuery;
 use Administration\Application\Query\ListDistricts\ListDistrictsQuery;
 use Administration\Application\Query\ListMunicipalServices\ListMunicipalServicesQuery;
+use Administration\Application\Query\SuggestServicePlainLanguage\SuggestServicePlainLanguageQuery;
 use Shared\Application\Lib\AppController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -45,6 +46,13 @@ final class MunicipalServiceController extends AppController
     public function availability(#[MapRequestPayload] SetMunicipalServiceAvailabilityCommand $cmd): JsonResponse
     {
         return $this->dispatch($cmd);
+    }
+
+    /** F89 : brouillon de version « En clair » (modèle de langage ou repli local), rien n'est enregistré. */
+    #[Route('/api/administration/services/plain-language', name: 'administration_suggest_plain_language', methods: ['POST'], format: 'json')]
+    public function suggestPlainLanguage(#[MapRequestPayload] SuggestServicePlainLanguageQuery $query): JsonResponse
+    {
+        return $this->dispatchQuery($query);
     }
 
     #[Route('/api/administration/districts', methods: ['GET'], format: 'json')]

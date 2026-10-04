@@ -59,6 +59,7 @@
       "Communication\\": "src/Communication/",
       "Audit\\": "src/Audit/",
       "Participation\\": "src/Participation/",
+      "Assistance\\": "src/Assistance/",
       "Shared\\": "src/Shared/"
     },
     "exclude-from-classmap": [

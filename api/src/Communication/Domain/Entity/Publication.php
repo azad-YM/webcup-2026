@@ -29,6 +29,8 @@ final class Publication
     private string $state = 'draft';
     private ?\DateTimeImmutable $publishedAt = null;
     private \DateTimeImmutable $updatedAt;
+    /** F89 : version en langage clair (texte court) relue et validée par l'agent qui enregistre. */
+    private string $plainLanguage = '';
 
     /** @param list<string> $body */
     private function __construct(public readonly string $id, string $title, string $category, string $summary, array $body, bool $important, \DateTimeImmutable $now)
@@ -37,14 +39,20 @@ final class Publication
     }
 
     /** @param list<string> $body */
-    public static function draft(string $id, string $title, string $category, string $summary, array $body, bool $important, \DateTimeImmutable $now): self
+    public static function draft(string $id, string $title, string $category, string $summary, array $body, bool $important, \DateTimeImmutable $now, string $plainLanguage = ''): self
     {
-        return new self($id, $title, $category, $summary, $body, $important, $now);
+        $publication = new self($id, $title, $category, $summary, $body, $important, $now);
+        $publication->plainLanguage = Text::optional($plainLanguage, 600, 'Version en clair');
+
+        return $publication;
     }
 
     /** @param list<string> $body */
-    public function revise(string $title, string $category, string $summary, array $body, bool $important, \DateTimeImmutable $now): void
+    public function revise(string $title, string $category, string $summary, array $body, bool $important, \DateTimeImmutable $now, ?string $plainLanguage = null): void
     {
+        if ($plainLanguage !== null) {
+            $this->plainLanguage = Text::optional($plainLanguage, 600, 'Version en clair');
+        }
         $this->title = Text::required($title, 200, 'Titre');
         $this->category = Text::required($category, 80, 'Catégorie');
         $this->summary = Text::required($summary, 1000, 'Résumé');
@@ -86,6 +94,7 @@ final class Publication
             'body' => $this->body,
             'important' => $this->important,
             'publishedAt' => $this->publishedAt?->format(DATE_ATOM),
+            'plainLanguage' => $this->plainLanguage,
         ];
     }
 

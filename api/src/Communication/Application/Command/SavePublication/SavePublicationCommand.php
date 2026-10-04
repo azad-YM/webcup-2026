@@ -18,5 +18,7 @@ final readonly class SavePublicationCommand
         public bool $important = false,
         #[Assert\Choice(['draft', 'published', 'withdrawn'])] public string $state = 'draft',
         #[Assert\Length(max: 80)] public ?string $id = null,
+        /** F89 : version « En clair » relue par l'agent ; l'enregistrer vaut validation. */
+        #[Assert\Length(max: 600)] public string $plainLanguage = '',
     ) {}
 }

@@ -1,6 +1,6 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { withUseCase } from "@/modules/shared/core/config/use-cases"
-import type { Alert, MunicipalService, Publication, ServiceAvailabilityChange } from "../../domain/content"
+import type { Alert, MunicipalService, PlainLanguageDraft, Publication, PublicationPlainLanguageRequest, ServiceAvailabilityChange, ServicePlainLanguageRequest } from "../../domain/content"
 import {
   listAlerts,
   listDistricts,
@@ -10,6 +10,8 @@ import {
   savePublication,
   saveService,
   setServiceAvailability,
+  suggestPublicationPlainLanguage,
+  suggestServicePlainLanguage,
 } from "../usecases/content.usecase"
 
 export const contentApi = createApi({
@@ -25,6 +27,9 @@ export const contentApi = createApi({
     savePublication: build.mutation<Publication, Publication>({ queryFn: withUseCase(savePublication), invalidatesTags: ["Publications"] }),
     listAlerts: build.query<Alert[], void>({ queryFn: withUseCase(listAlerts), providesTags: ["Alerts"] }),
     saveAlert: build.mutation<Alert, Alert>({ queryFn: withUseCase(saveAlert), invalidatesTags: ["Alerts"] }),
+    // F89 : brouillon « En clair », rien n’est enregistré tant que l’agent n’enregistre pas la fiche.
+    suggestServicePlainLanguage: build.mutation<PlainLanguageDraft, ServicePlainLanguageRequest>({ queryFn: withUseCase(suggestServicePlainLanguage) }),
+    suggestPublicationPlainLanguage: build.mutation<PlainLanguageDraft, PublicationPlainLanguageRequest>({ queryFn: withUseCase(suggestPublicationPlainLanguage) }),
   }),
 })
 
@@ -37,4 +42,6 @@ export const {
   useSavePublicationMutation,
   useListAlertsQuery,
   useSaveAlertMutation,
+  useSuggestServicePlainLanguageMutation,
+  useSuggestPublicationPlainLanguageMutation,
 } = contentApi

@@ -19,6 +19,16 @@ final class Text
         return $value;
     }
 
+    public static function optional(string $value, int $max, string $label): string
+    {
+        $value = trim($value);
+        if (mb_strlen($value) > $max) {
+            throw new DomainException(sprintf('%s : %d caractères maximum.', $label, $max));
+        }
+
+        return $value;
+    }
+
     /**
      * @param array<mixed> $values
      * @return list<string>

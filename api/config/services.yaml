@@ -55,6 +55,10 @@ services:
         resource: '../src/Participation/'
         exclude: ['../src/Participation/Tests/']
 
+    Assistance\:
+        resource: '../src/Assistance/'
+        exclude: ['../src/Assistance/Tests/']
+
     Audit\:
         resource: '../src/Audit/'
         exclude:
@@ -291,3 +295,12 @@ services:
         alias: Citizen\Infrastructure\Adapter\Participation\CitizenParticipantProvider
     Participation\Application\Ports\Provider\CitizenNotifier:
         alias: Citizen\Infrastructure\Adapter\Participation\CitizenParticipationNotifier
+
+    # Assistance (L22, ADR 011) consomme Administration (catalogue des services : textes publics, état, traductions,
+    # version « En clair ») ; Administration et Communication consomment Assistance (brouillon « En clair », F89).
+    Assistance\Application\Ports\Provider\ServiceCatalog:
+        alias: Administration\Infrastructure\Adapter\Assistance\AdminAssistanceServiceCatalog
+    Administration\Application\Ports\Provider\PlainLanguageDrafter:
+        alias: Assistance\Infrastructure\Adapter\Administration\AssistancePlainLanguageDrafter
+    Communication\Application\Ports\Provider\PlainLanguageDrafter:
+        alias: Assistance\Infrastructure\Adapter\Communication\AssistancePublicationPlainLanguageDrafter
