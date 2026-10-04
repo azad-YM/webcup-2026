@@ -29,6 +29,16 @@ Primitives techniques communes, décrites par l’[ADR 007](../../../../doc/tech
 | `Infrastructure/Doctrine/EncryptedStringType` (`encrypted_string`) | Chiffrement au repos libsodium ; clé `DATA_ENCRYPTION_KEY`, sinon dérivée d’`APP_SECRET`, fournie au démarrage par `Kernel::boot()` | Citizen (téléphone, adresse) |
 | `Application/Listener/ExceptionListener` | Hors debug, `500` sans détail technique | Toute l’API |
 
+## Modèle de langage (demandes « IA » — non testé)
+
+Port `Shared\Application\Ports\Service\LanguageModel` : `isAvailable()` et `complete(system, user, maxTokens): ?string`. Adaptateur `Shared\Infrastructure\LanguageModel\AnthropicLanguageModel` (API Claude, modèle `ANTHROPIC_MODEL`, par défaut Claude Haiku 4.5). La clé `ANTHROPIC_API_KEY` reste côté serveur dans `api/.env.local` ; elle n'est jamais envoyée au front.
+
+- Sans clé, en cas d'erreur, de délai dépassé ou de réponse vide, `complete()` renvoie `null` : chaque consommateur applique **son propre repli local** (mots-clés, synonymes, règles) et reste utilisable.
+- Réponses identiques mises en cache une heure (coût et charge), échecs mis en cache 30 s.
+- Les journaux ne contiennent ni le prompt ni la réponse. Les consommateurs n'envoient que les données nécessaires à la tâche, sans identité du citoyen.
+
+Consommateurs prévus : BC Assistance (D10, F90, F91, F92), Citizen (F75, demandes similaires), Audit/Shared (F85, activité inhabituelle).
+
 ## Architecture commune
 
 [Architecture](../../../../doc/technique/architecture.md) · [Frontières et accès inter-BC](../../../../doc/technique/decisions/002-frontieres-et-acces.md)

@@ -17,6 +17,9 @@ parameters:
     env(PUSHER_CLUSTER): 'eu'
     # L15 : adresse publique du site (liens de connexion et d'alerte dans les e-mails) et expéditeur des e-mails.
     env(SITE_URL): 'http://localhost:5178'
+    # IA (D10, F75, F85, F90, F91, F92) : sans clé, le port LanguageModel renvoie null et chaque usage applique son repli local.
+    env(ANTHROPIC_API_KEY): ''
+    env(ANTHROPIC_MODEL): 'claude-haiku-4-5-20251001'
     env(MAILER_FROM): 'Mairie de Nova Terra <no-reply@nova-terra.local>'
 
 services:
@@ -186,6 +189,13 @@ services:
 
     # Temps réel : le port est fourni par la fabrique selon REALTIME_TRANSPORT ; chaque adaptateur
     # est le seul endroit qui connaît son fournisseur. Ajouter un fournisseur = un adaptateur + une entrée du locator.
+    # --- Shared : modèle de langage (API Claude, repli local sans clé) ---
+    Shared\Infrastructure\LanguageModel\AnthropicLanguageModel:
+        arguments:
+            $apiKey: '%env(ANTHROPIC_API_KEY)%'
+            $model: '%env(ANTHROPIC_MODEL)%'
+    Shared\Application\Ports\Service\LanguageModel: '@Shared\Infrastructure\LanguageModel\AnthropicLanguageModel'
+
     Shared\Infrastructure\Realtime\MercureRealtimePublisher:
         arguments:
             $hubUrl: '%env(MERCURE_URL)%'
