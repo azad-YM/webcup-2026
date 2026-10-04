@@ -162,6 +162,10 @@ services:
     Citizen\Application\Ports\Provider\RequestAccessPolicy:
         alias: Administration\Infrastructure\Adapter\Citizen\AdminRequestAccessPolicy
 
+    # F70 : données personnelles sensibles des habitants (admin.sensitive-data.read).
+    Citizen\Application\Ports\Provider\SensitiveDataAccessPolicy:
+        alias: Administration\Infrastructure\Adapter\Citizen\AdminSensitiveDataAccessPolicy
+
     # --- Socle ---
 
     Symfony\Component\Messenger\MessageBusInterface $commandBus: '@command.bus'
