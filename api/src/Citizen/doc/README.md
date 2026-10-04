@@ -109,6 +109,10 @@ Le raccordement IAM est aussi testé côté fournisseur : `IAM/Tests/Suites/Unit
 
 🟡 Non testé, non vérifié dans un navigateur : export des données personnelles après confirmation d’identité (`POST /api/citizen/me/personal-data`, F55, données du compte via le port `PersonalAccountDataProvider` implémenté par IAM) et récapitulatif imprimable/CSV des demandes côté site (F56). Détails et format JSON : [mes données](mes-donnees.md). Notification `security.new_device` (F54) : [notifications](notifications.md).
 
+## Livré — demandes à grande échelle (lot L23)
+
+🟡 Non testé, non vérifié dans un navigateur : priorité des dossiers et file triée (F80), urgence médicale traitée à part avec alerte immédiate des agents et prise en charge horodatée (F86), demandes similaires avec repli local et IA facultative, liaison et traitement groupé (F75), messages agent ↔ habitant (F84), accusé de réception avec empreinte vérifiable et e-mail (F83), catégorie et quartier pour les filtres (F79). Règles, routes et contrat : [demandes à grande échelle](demandes-a-grande-echelle.md).
+
 ## Livré — demandes citoyennes (lot L2)
 
 Consommé par « Mes demandes » du [site](../../../../front/apps/site/doc/parcours-citoyen.md#4-demandes-citoyennes-lot-l2) et par le module « Demandes citoyennes » de l’[admin](../../../../front/apps/admin/doc/demandes.md). Demandes Webcup : D04, D16, F25, D11, F26, F22, D17. **Aucun test automatisé n’a été écrit pour ce lot** et le parcours n’a pas encore été vérifié dans un navigateur.
@@ -286,6 +290,7 @@ Pas d’espace IAM « citoyen » : l’espace citoyen est une zone du site, qui 
 
 ## Référence
 
+- [Demandes à grande échelle (L23 : F75, F79, F80, F83, F84, F86)](demandes-a-grande-echelle.md)
 - [Notifications de l’espace citoyen (F49)](notifications.md)
 - [Rendez-vous avec un agent et rappels (L10 : F39, F40)](rendez-vous.md)
 - [Participation : vos données, inquiétudes, soutien d’une demande (L14 : F51, F52)](participation.md)
@@ -320,4 +325,5 @@ Pas d’espace IAM « citoyen » : l’espace citoyen est une zone du site, qui 
 - [Participation](participation.md)
 - [Participation (BC)](../../Participation/doc/README.md)
 - [Mes données (L16)](mes-donnees.md)
+- [Demandes à grande échelle (L23)](demandes-a-grande-echelle.md)
 <!-- backlinks:end -->

@@ -167,7 +167,7 @@ Les 15 suivis déjà faits sont conservés. F40 reste en cours (cron et récepti
 |---|---|---|---|---|---|---|
 | F73 | 2 | 780 | Publier un message officiel du Haut Conseil, visible par tous immédiatement | L26 | Communication, site, admin | ⬜ |
 | F74 | 1 | 390 | Voir facilement les horaires et l’adresse des associations partenaires | L26 | Administration, site | ⬜ |
-| F75 (IA) | 3 | 1 170 | Aider les agents à repérer les demandes similaires qui parlent du même problème | L23 | Citizen, admin | ⬜ |
+| F75 (IA) | 3 | 1 170 | Aider les agents à repérer les demandes similaires qui parlent du même problème | L23 | Citizen, admin | 🟡 L23 — panneau « Même problème ? », repli local (similarité de texte) et IA facultative, liaison et traitement groupé — [Citizen](../../api/src/Citizen/doc/demandes-a-grande-echelle.md) ; non testé, non vérifié dans un navigateur |
 | F76 | 2 | 780 | Laisser un commentaire après avoir utilisé un service, avec trace de prise en compte | L26 | Participation, site, admin | ⬜ |
 
 ## Vague 15 (H+16) — « Montée en charge et incidents »
@@ -176,8 +176,8 @@ Les 15 suivis déjà faits sont conservés. F40 reste en cours (cron et récepti
 |---|---|---|---|---|---|---|
 | F77 | 3 | 1 200 | Rester utilisable pendant une surcharge des serveurs, sans perdre l’essentiel | L24 | API, site, admin | ⬜ |
 | F78 | 4 | 1 600 | Rester stable quand beaucoup d’habitants se connectent en même temps | L24 | API, site | ⬜ |
-| F79 | 1 | 400 | Trier et filtrer par sujet les demandes et signalements consultés | L23 | Citizen, site | ⬜ |
-| F80 | 2 | 800 | Identifier et classer les dossiers prioritaires dans l’espace des agents | L23 | Citizen, admin | ⬜ |
+| F79 | 1 | 400 | Trier et filtrer par sujet les demandes et signalements consultés | L23 | Citizen, site | 🟡 L23 — filtres et tri par l’adresse dans « Mes demandes » et les signalements publics — [Citizen](../../api/src/Citizen/doc/demandes-a-grande-echelle.md) ; non testé, non vérifié dans un navigateur |
+| F80 | 2 | 800 | Identifier et classer les dossiers prioritaires dans l’espace des agents | L23 | Citizen, admin | 🟡 L23 — priorité automatique modifiable, file triée, filtre, compteur des urgents — [Citizen](../../api/src/Citizen/doc/demandes-a-grande-echelle.md) ; non testé, non vérifié dans un navigateur |
 
 ## Vague 16 (H+17) — « Montée en charge et incidents »
 
@@ -185,15 +185,15 @@ Les 15 suivis déjà faits sont conservés. F40 reste en cours (cron et récepti
 |---|---|---|---|---|---|---|
 | F81 | 3 | 1 230 | Protéger les formulaires contre les envois automatiques de robots, sans gêner l’usage normal | L25 | Shared, site | ⬜ |
 | F82 | 2 | 820 | Empêcher l’envoi multiple d’un même formulaire | L25 | Shared, Citizen, site | ⬜ |
-| F83 | 1 | 410 | Accusé de réception avec une référence identifiable, à conserver comme preuve | L23 | Citizen, site | ⬜ |
-| F84 | 2 | 820 | Les agents répondent directement à certaines demandes depuis leur interface | L23 | Citizen, admin, site | ⬜ |
+| F83 | 1 | 410 | Accusé de réception avec une référence identifiable, à conserver comme preuve | L23 | Citizen, site | 🟡 L23 — accusé imprimable et téléchargeable, e-mail, vérification publique — [Citizen](../../api/src/Citizen/doc/demandes-a-grande-echelle.md) ; non testé, non vérifié dans un navigateur |
+| F84 | 2 | 820 | Les agents répondent directement à certaines demandes depuis leur interface | L23 | Citizen, admin, site | 🟡 L23 — fil de messages agent ↔ habitant, réponses types, notification et temps réel — [Citizen](../../api/src/Citizen/doc/demandes-a-grande-echelle.md) ; non testé, non vérifié dans un navigateur |
 
 ## Vague 17 (H+18) — « Montée en charge et incidents »
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
 | F85 (IA) | 4 | 1 680 | Détecter une activité inhabituelle et des informations incohérentes, protection perceptible | L25 | Audit, IAM, Shared, admin | ⬜ |
-| F86 | 4 | 1 680 | Signalement d’une urgence médicale : traitement distinct d’une demande ordinaire, repérable immédiatement | L23 | Citizen, site, admin | ⬜ |
+| F86 | 4 | 1 680 | Signalement d’une urgence médicale : traitement distinct d’une demande ordinaire, repérable immédiatement | L23 | Citizen, site, admin | 🟡 L23 — 15/112 immédiat sur le site, priorité urgente, alerte temps réel, bandeau et prise en charge horodatée — [Citizen](../../api/src/Citizen/doc/demandes-a-grande-echelle.md) ; non testé, non vérifié dans un navigateur |
 | F87 | 3 | 1 260 | Vérifier que les données importantes peuvent être sauvegardées et restaurées, avec un rapport clair | L24 | API, admin | ⬜ |
 | F88 | 2 | 840 | Sélectionner des données de suivi et les exporter dans un format simple à réutiliser | L26 | Pilotage, Citizen, admin | ⬜ |
 

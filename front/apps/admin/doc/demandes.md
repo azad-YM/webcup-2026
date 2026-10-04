@@ -29,6 +29,17 @@ Tant que la file est affichée, l’admin écoute `request.submitted` et `reques
 
 Module `requests` : `core/domain/service-request.ts`, `core/application/{rtk-api/requests.ts, usecases/request-queue.usecase.ts, ports/gateway/request-queue.gateway.ts, ports/provider/request-session.provider.ts, errors/requests.error.ts}`, `core/infrastructure/for-production/gateway/http/request-queue.http.gateway.ts`, `ui/{pages/request-queue.tsx, sections/request-detail.tsx}`. Session fournie par `auth/core/infrastructure/adapter/requests/AuthRequestSessionProvider`. Composition : `shared/core/config/{kernel,dependencies,store}.ts`, route `/demandes` dans `app/routes.tsx`.
 
+## Lot L23 — priorités, urgences médicales, demandes similaires, réponses
+
+🟡 Non testé, non vérifié dans un navigateur. API : [Citizen — demandes à grande échelle](../../../../api/src/Citizen/doc/demandes-a-grande-echelle.md).
+
+- **Priorités (F80)** : la file est triée par priorité puis ancienneté ; filtre « Priorité » ; badge « N urgentes » à côté de « N en attente » ; chaque carte porte `PriorityBadge` (icône + libellé). Dans le détail, panneau « Priorité » : priorité, origine (automatique ou agent), motif, et changement avec motif facultatif (journalisé).
+- **Urgence médicale (F86)** : bandeau rouge persistant (`role="alert"`, bordure double, icône) tant qu’une urgence n’est pas prise en charge, avec « Voir la demande » et « Prise en charge » (horodatée, journalisée, disparaît pour tous les agents en temps réel). Badge « Urgence médicale » sur la carte et dans le détail.
+- **Demandes similaires (F75)** : panneau « Même problème ? » du détail : origine affichée (« Regroupement proposé par l’IA » ou « Repli : similarité de texte »), sujet, demandes proches avec ressemblance et raisons ; cases à cocher pour « Lier comme un même problème » ; demandes déjà liées, « Retirer cette demande du groupe » et « Traiter tout le groupe » (nouvel état + commentaire ; les demandes pour lesquelles l’étape est impossible sont listées).
+- **Réponses (F84)** : panneau « Échanges avec l’habitant » : fil des messages, réponses types facultatives, envoi d’une réponse visible par l’habitant (notifiée). Distinct du commentaire d’étape.
+- Temps réel : `request.medical_emergency`, `request.updated`, `request.message_posted` rechargent la file et les panneaux ouverts.
+- Code : `requests/ui/sections/{emergency-banner,priority-panel,similar-requests-panel,request-messages}.tsx`, badges dans `request-status-badge.tsx`, endpoints dans `core/application/rtk-api/requests.ts`, port `RequestQueueGateway` étendu.
+
 ## Guichet des rendez-vous (L10)
 
 `/demandes/rendez-vous` (entrée « Rendez-vous » du module) : choix du jour (aujourd’hui par défaut, dans le fuseau de la ville), tableau des créneaux (heure, service, lieu, citoyen et référence `RDV-…` s’il est réservé, sinon « Libre »), badge « N réservé(s) ». Avec `admin.request.write` : formulaire « Ouvrir des créneaux » (service du catalogue, premier créneau, durée, nombre, lieu, pièces à apporter) et bouton « Retirer » sur un créneau libre (`409` si un habitant vient de le réserver). Temps réel : `appointment.changed` sur `administration.requests` ; polling de 60 s. API : [Citizen — rendez-vous](../../../../api/src/Citizen/doc/rendez-vous.md). Code : `requests/core/{domain/agent-desk.ts, application/ports/gateway/agent-desk.gateway.ts, application/rtk-api/agent-desk.ts, infrastructure/for-production/gateway/http/agent-desk.http.gateway.ts}`, `requests/ui/pages/appointments.tsx`.
@@ -44,7 +55,7 @@ La file des demandes (lieu des demandes de contact) et la journée des rendez-vo
 ## Limites
 
 - Aucun test automatisé ; parcours non vérifié dans un navigateur.
-- Pas d’attribution d’une demande à un agent ni de recherche texte ; l’identité du citoyen n’est pas affichée (la file ne transporte que l’identifiant interne).
+- Pas d’attribution d’une demande à un agent ni de recherche texte dans la file ; l’identité du citoyen n’est pas affichée (la file ne transporte que l’identifiant interne).
 - Le temps réel dépend du worker Messenger (projection asynchrone) ; sans lui, rafraîchissement toutes les 60 s.
 
 <!-- backlinks:start -->
@@ -62,4 +73,5 @@ La file des demandes (lieu des demandes de contact) et la journée des rendez-vo
 - [Citizen — rendez-vous](../../../../api/src/Citizen/doc/rendez-vous.md)
 - [Citizen — participation](../../../../api/src/Citizen/doc/participation.md)
 - [ADR 007](../../../../doc/technique/decisions/007-protection-des-donnees.md)
+- [Citizen — demandes à grande échelle](../../../../api/src/Citizen/doc/demandes-a-grande-echelle.md)
 <!-- backlinks:end -->
