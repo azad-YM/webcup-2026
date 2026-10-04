@@ -10,8 +10,8 @@ export class AgentDeskHttpGateway extends ApiClient implements AgentDeskGateway 
     super(baseUrl, () => session.getToken())
   }
 
-  appointmentDay(date: string): Promise<AppointmentDay> {
-    return this.call(() => this.getAuth<AppointmentDay>(`/citizen/agent/appointments?date=${encodeURIComponent(date)}`))
+  appointmentDay(date: string, reveal = false): Promise<AppointmentDay> {
+    return this.call(() => this.getAuth<AppointmentDay>(`/citizen/agent/appointments?date=${encodeURIComponent(date)}${reveal ? "&reveal=1" : ""}`))
   }
 
   async openSlots(series: SlotSeries): Promise<void> {

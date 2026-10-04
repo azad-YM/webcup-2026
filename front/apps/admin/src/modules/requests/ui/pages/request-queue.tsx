@@ -7,6 +7,7 @@ import { REQUEST_QUEUE_POLLING_MS, useListRequestQueueQuery } from "../../core/a
 import { REQUEST_STATUSES, STATUS_LABELS, TYPE_LABELS, type RequestStatus } from "../../core/domain/service-request"
 import { RequestQueueSkeleton } from "../sections/request-queue-skeleton"
 import { RequestDetail } from "../sections/request-detail"
+import { SensitiveDataBar } from "@/modules/shared/ui/components/custom/sensitive-data"
 import { RequestStatusBadge } from "../sections/request-status-badge"
 
 const selectClass = "flex h-9 w-full rounded-lg border border-input bg-background px-3 text-sm focus-visible:outline-2 focus-visible:outline-ring"
@@ -18,7 +19,9 @@ export function RequestQueuePage() {
   const [status, setStatus] = useState<RequestStatus | null>(null)
   const [page, setPage] = useState(1)
   const [selectedId, setSelectedId] = useState<string | null>(null)
-  const queue = useListRequestQueueQuery({ status, page }, { pollingInterval: REQUEST_QUEUE_POLLING_MS })
+  const [reveal, setReveal] = useState(false)
+  // F70 : chaque affichage des données sensibles est journalisé ; pas de rafraîchissement périodique dans ce mode.
+  const queue = useListRequestQueueQuery({ status, page, reveal }, { pollingInterval: reveal ? 0 : REQUEST_QUEUE_POLLING_MS })
   const data = queue.currentData
   const showSkeleton = queue.isFetching && (!data || data.items.length === 0)
   const selected = data?.items.find(item => item.id === selectedId) ?? null
@@ -66,6 +69,8 @@ export function RequestQueuePage() {
         </div>
         {data && <p className="pb-2 text-sm text-muted-foreground" role="status">{data.total} demande(s)</p>}
       </div>
+
+      <SensitiveDataBar meta={data?.sensitive} revealed={reveal} onChange={setReveal} busy={queue.isFetching} />
 
       {queue.error ? (
         <div role="alert" className="space-y-2 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">

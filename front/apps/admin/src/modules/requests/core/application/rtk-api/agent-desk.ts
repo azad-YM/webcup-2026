@@ -1,6 +1,6 @@
 import { withUseCase, type UseCase } from "@/modules/shared/core/config/use-cases"
 import type { Dependencies } from "@/modules/shared/core/config/dependencies"
-import type { AppointmentDay, ConcernHandling, ConcernQueue, ConcernStatus, SlotSeries } from "../../domain/agent-desk"
+import type { AppointmentDay, AppointmentDayQuery, ConcernHandling, ConcernQueue, ConcernStatus, SlotSeries } from "../../domain/agent-desk"
 import { requestsApi } from "./requests"
 
 /** Événements Citizen sur `administration.requests` qui changent le guichet. */
@@ -8,8 +8,8 @@ export const DESK_EVENTS = ["appointment.changed"] as const
 
 export const DESK_POLLING_MS = 60_000
 
-const appointmentDay: UseCase<string, AppointmentDay> = async (_dispatch, _getState, dependencies, date) =>
-  dependencies.agentDeskGateway.appointmentDay(date)
+const appointmentDay: UseCase<AppointmentDayQuery, AppointmentDay> = async (_dispatch, _getState, dependencies, query) =>
+  dependencies.agentDeskGateway.appointmentDay(query.date, query.reveal)
 
 const openSlots: UseCase<SlotSeries, null> = async (_dispatch, _getState, dependencies, series) => {
   await dependencies.agentDeskGateway.openSlots(series)
@@ -32,7 +32,7 @@ const handleConcern: UseCase<ConcernHandling, null> = async (_dispatch, _getStat
 /** Endpoints du guichet injectés dans l'API RTK du module (même cache et même nettoyage de session). */
 export const agentDeskApi = requestsApi.enhanceEndpoints({ addTagTypes: ["AppointmentDay", "Concerns"] }).injectEndpoints({
   endpoints: (build) => ({
-    appointmentDay: build.query<AppointmentDay, string>({
+    appointmentDay: build.query<AppointmentDay, AppointmentDayQuery>({
       queryFn: withUseCase(appointmentDay),
       providesTags: ["AppointmentDay"],
       async onCacheEntryAdded(_date, { extra, dispatch, cacheDataLoaded, cacheEntryRemoved }) {

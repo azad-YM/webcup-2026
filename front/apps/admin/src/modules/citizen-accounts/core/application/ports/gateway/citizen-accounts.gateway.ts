@@ -1,5 +1,6 @@
-import type { CitizenAccounts } from "../../../domain/citizen-account"
+import type { CitizenAccounts, CitizenAccountsQuery } from "../../../domain/citizen-account"
 export interface CitizenAccountsGateway {
-  list(search: string): Promise<CitizenAccounts>
+  /** `GET /citizen/accounts?q=&reveal=1` — `reveal` : données sensibles, agent habilité, consultation journalisée (F70). */
+  list(query: CitizenAccountsQuery): Promise<CitizenAccounts>
   setSuspension(input: { citizenId: string; suspended: boolean }): Promise<{ id: string; status: string }>
 }
