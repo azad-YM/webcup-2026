@@ -18,6 +18,8 @@ class InMemoryAdminPermissionRepository implements IPermissionRepository {
             new Permission('admin', 'role-assignment', 'write'),
             new Permission('admin', 'pilotage', 'read'),
             new Permission('admin', 'pilotage', 'write'),
+            // F88 (L26) : exports de données de suivi (CSV / JSON), agent municipal et administrateur principal.
+            new Permission('admin', 'export', 'read'),
             new Permission('admin', 'audit', 'read'),
             new Permission('admin', 'citizen', 'read'),
             new Permission('admin', 'citizen', 'write'),

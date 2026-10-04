@@ -19,6 +19,7 @@ export const BREADCRUMB_LABELS: Record<string, string> = {
   "/contenus/services": "Services et transports",
   "/pilotage": "Pilotage",
   "/pilotage/tableau-de-bord": "Tableau de bord",
+  "/pilotage/exports": "Exports",
   "/demandes": "Demandes des habitants",
   "/demandes/rendez-vous": "Rendez-vous",
   "/demandes/inquietudes": "Inquiétudes",

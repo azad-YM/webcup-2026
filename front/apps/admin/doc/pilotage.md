@@ -29,6 +29,10 @@ Tests : `webcup-feed.test.ts` (filtres, nouveautés, compte à rebours) et `webc
 
 `/pilotage/tableau-de-bord` (entrée « Tableau de bord » de la barre latérale du module et carte sur l’accueil de `/admin`) affiche les chiffres clés, actualisés toutes les 60 s (`pollingInterval`, sans temps réel) : demandes citoyennes en attente de prise en charge (et âge de la plus ancienne), ouvertes, nouvelles sur 24 h, répartition par état ; citoyens actifs et nouvelles inscriptions ; alertes en cours (critiques, programmées) ; publications en ligne et brouillons ; services perturbés ; comptes suspendus ; connexions bloquées sur 24 h ; membres actifs. Les tuiles mènent aux écrans de traitement. Route : `GET /api/pilotage/activity` ([Pilotage](../../../../api/src/Pilotage/doc/README.md#tableau-de-bord-de-lactivité-f50), `admin.pilotage.read`). Chaîne : `ActivityDashboardPage` → `getActivityDashboard` → port `ActivityDashboardGateway` → `ActivityDashboardHttpGateway`.
 
+## Exports de données (F88, non testé)
+
+Page `/pilotage/exports` (`ui/pages/data-exports.tsx`, chargée à la demande) : jeu de données (demandes citoyennes, rendez-vous, inquiétudes, suivi Webcup, activité), période, statut, colonnes à cocher (les colonnes de données personnelles sont verrouillées sans `admin.sensitive-data.read`), aperçu des 10 premières lignes, puis téléchargement CSV (tableur) ou JSON. Chaîne : endpoints `getExportCatalog`, `previewExport`, `downloadExport` → use cases `data-export.usecase.ts` → `DataExportGateway` (`DataExportHttpGateway`, contrat [Pilotage](../../../../api/src/Pilotage/doc/README.md#exports-de-données-de-suivi-f88-l26--non-testé)) et `FileDownloader` (Blob, rien dans l’URL). Modèles d’export (sélections de colonnes nommées) : `ExportTemplateGateway`, mémorisés dans ce navigateur (`ExportTemplateLocalStorageGateway`).
+
 ## Limites
 
 La mémoire des demandes vues est propre au navigateur (pas partagée entre agents ni entre appareils). Le compte à rebours dépend de l’annonce de l’API, qui ne garantit pas l’intervalle entre vagues.

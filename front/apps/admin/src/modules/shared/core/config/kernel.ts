@@ -11,6 +11,8 @@ import { ParticipationHttpGateway } from "@/modules/participation/core/infrastru
 import { AuthParticipationSessionProvider } from "@/modules/auth/core/infrastructure/adapter/participation/auth-participation-session.provider"
 import { AuditJournalHttpGateway } from "@/modules/audit/core/infrastructure/for-production/gateway/http/audit-journal.http.gateway"
 import { AuthAuditSessionProvider } from "@/modules/auth/core/infrastructure/adapter/audit/auth-audit-session.provider"
+import { DataExportHttpGateway } from "@/modules/pilotage/core/infrastructure/for-production/gateway/http/data-export.http.gateway"
+import { BrowserFileDownloader, ExportTemplateLocalStorageGateway } from "@/modules/pilotage/core/infrastructure/for-production/gateway/local/export-template.local-storage.gateway"
 import { ActivityDashboardHttpGateway } from "@/modules/pilotage/core/infrastructure/for-production/gateway/http/activity-dashboard.http.gateway"
 import { sessionCleared } from "./session"
 import { AuthAccessSessionProvider } from "@/modules/auth/core/infrastructure/adapter/admin/auth-access-session.provider"
@@ -65,6 +67,9 @@ export class App {
       memberGateway: new MemberHttpGateway(apiBaseUrl, adminSession),
       webcupFeedGateway: new WebcupFeedHttpGateway(apiBaseUrl, pilotageSession),
       activityDashboardGateway: new ActivityDashboardHttpGateway(apiBaseUrl, pilotageSession),
+      dataExportGateway: new DataExportHttpGateway(apiBaseUrl, pilotageSession),
+      exportTemplateGateway: new ExportTemplateLocalStorageGateway(),
+      fileDownloader: new BrowserFileDownloader(),
       seenRequestsGateway: new SeenRequestsLocalStorageGateway(),
       requestQueueGateway: new RequestQueueHttpGateway(apiBaseUrl, requestSession),
       agentDeskGateway: new AgentDeskHttpGateway(apiBaseUrl, requestSession),

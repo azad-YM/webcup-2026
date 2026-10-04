@@ -18,6 +18,7 @@ const AdminDashboardPage = lazy(() => import("@/modules/admin/ui/pages/dashboard
 const RolesPage = lazy(() => import("@/modules/admin/ui/pages/roles").then((module) => ({ default: module.RolesPage })))
 const WebcupFeedPage = lazy(() => import("@/modules/pilotage/ui/pages/webcup-feed").then((module) => ({ default: module.WebcupFeedPage })))
 const ActivityDashboardPage = lazy(() => import("@/modules/pilotage/ui/pages/activity-dashboard").then((module) => ({ default: module.ActivityDashboardPage })))
+const DataExportsPage = lazy(() => import("@/modules/pilotage/ui/pages/data-exports").then((module) => ({ default: module.DataExportsPage })))
 const RequestQueuePage = lazy(() => import("@/modules/requests/ui/pages/request-queue").then((module) => ({ default: module.RequestQueuePage })))
 const AppointmentsPage = lazy(() => import("@/modules/requests/ui/pages/appointments").then((module) => ({ default: module.AppointmentsPage })))
 const ConcernsPage = lazy(() => import("@/modules/requests/ui/pages/concerns").then((module) => ({ default: module.ConcernsPage })))
@@ -102,6 +103,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: page(WebcupFeedPage) },
           { path: "tableau-de-bord", element: page(ActivityDashboardPage) },
+          { path: "exports", element: page(DataExportsPage) },
         ],
       },
       {

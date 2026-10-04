@@ -13,6 +13,8 @@ final readonly class AdminPilotageAccessPolicy implements PilotageAccessPolicy
 {
     public const PERMISSION = 'admin.pilotage.read';
     public const WRITE_PERMISSION = 'admin.pilotage.write';
+    public const EXPORT_PERMISSION = 'admin.export.read';
+    public const SENSITIVE_PERMISSION = 'admin.sensitive-data.read';
 
     public function __construct(private CheckCurrentMemberPermissionsHandler $permissions) {}
 
@@ -29,5 +31,15 @@ final readonly class AdminPilotageAccessPolicy implements PilotageAccessPolicy
     public function canReadActivityDashboard(): bool
     {
         return ($this->permissions)(new CheckCurrentMemberPermissionsQuery([self::PERMISSION]));
+    }
+
+    public function canExportData(): bool
+    {
+        return ($this->permissions)(new CheckCurrentMemberPermissionsQuery([self::EXPORT_PERMISSION]));
+    }
+
+    public function canExportSensitiveData(): bool
+    {
+        return ($this->permissions)(new CheckCurrentMemberPermissionsQuery([self::EXPORT_PERMISSION, self::SENSITIVE_PERMISSION]));
     }
 }
