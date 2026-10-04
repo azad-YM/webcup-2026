@@ -111,6 +111,47 @@ final readonly class DbalAuditEntryRepository implements AuditEntryRepository
         return [$where, $params, []];
     }
 
+    public function actorBursts(\DateTimeImmutable $since, array $excludedActionPrefixes, int $threshold): array
+    {
+        $where = ['occurred_at >= :since', 'actor_id IS NOT NULL'];
+        $params = ['since' => $since->format('Y-m-d H:i:s'), 'threshold' => max(1, $threshold)];
+        foreach (array_values($excludedActionPrefixes) as $i => $prefix) {
+            $where[] = sprintf('action NOT LIKE :p%d', $i);
+            $params['p'.$i] = addcslashes($prefix, '%_\\').'%';
+        }
+        $rows = $this->db()->fetchAllAssociative(
+            'SELECT actor_id, MAX(actor_label) AS actor_label, COUNT(*) AS hits, COUNT(DISTINCT action) AS actions FROM audit_entries WHERE '
+            .implode(' AND ', $where).' GROUP BY actor_id HAVING COUNT(*) >= :threshold ORDER BY hits DESC LIMIT 20',
+            $params,
+        );
+
+        return array_map(static fn (array $row): array => [
+            'actorId' => $row['actor_id'],
+            'actorLabel' => (string) $row['actor_label'],
+            'count' => (int) $row['hits'],
+            'actions' => (int) $row['actions'],
+        ], $rows);
+    }
+
+    public function actionBursts(string $action, \DateTimeImmutable $since, int $threshold, ?string $countDetail = null): array
+    {
+        $total = $countDetail !== null && preg_match('/^[a-zA-Z]+$/', $countDetail) === 1
+            ? sprintf("SUM(COALESCE(CAST(JSON_UNQUOTE(JSON_EXTRACT(details, '$.%s')) AS UNSIGNED), 1))", $countDetail)
+            : 'COUNT(*)';
+        $rows = $this->db()->fetchAllAssociative(
+            sprintf('SELECT actor_id, MAX(actor_label) AS actor_label, COUNT(*) AS hits, %s AS total FROM audit_entries
+                 WHERE action = :action AND occurred_at >= :since GROUP BY actor_id HAVING COUNT(*) >= :threshold ORDER BY hits DESC LIMIT 20', $total),
+            ['action' => $action, 'since' => $since->format('Y-m-d H:i:s'), 'threshold' => max(1, $threshold)],
+        );
+
+        return array_map(static fn (array $row): array => [
+            'actorId' => $row['actor_id'],
+            'actorLabel' => (string) $row['actor_label'],
+            'count' => (int) $row['hits'],
+            'total' => (int) $row['total'],
+        ], $rows);
+    }
+
     private function db(): Connection
     {
         return $this->manager->getConnection();
