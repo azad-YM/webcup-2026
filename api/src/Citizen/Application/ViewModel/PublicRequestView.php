@@ -19,6 +19,10 @@ final readonly class PublicRequestView
         public int $supportCount,
         public bool $supportedByMe,
         public bool $mine,
+        /** F79 : filtres par sujet (service, catégorie) et quartier. */
+        public ?string $serviceId = null,
+        public string $category = 'other',
+        public ?string $district = null,
     ) {}
 
     public static function from(ServiceRequest $request, int $supportCount, bool $supportedByMe, string $viewerCitizenId): self
@@ -33,6 +37,10 @@ final readonly class PublicRequestView
             $supportCount,
             $supportedByMe,
             $request->citizenId === $viewerCitizenId,
+            $request->serviceId,
+            // Une urgence médicale n'est jamais publique (message privé) ; par prudence, la catégorie n'est pas exposée.
+            $request->isMedicalEmergency() ? 'other' : $request->category(),
+            $request->district(),
         );
     }
 }

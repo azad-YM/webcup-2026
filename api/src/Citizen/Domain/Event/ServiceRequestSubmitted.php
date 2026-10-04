@@ -12,5 +12,8 @@ final readonly class ServiceRequestSubmitted implements DomainEvent
         public string $requestId,
         public string $citizenId,
         public string $reference,
+        /** F86 : urgence médicale cochée ou détectée — alerte immédiate des agents. */
+        public bool $medicalEmergency = false,
+        public string $priority = 'normal',
     ) {}
 }

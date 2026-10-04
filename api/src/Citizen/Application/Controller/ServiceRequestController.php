@@ -39,11 +39,13 @@ final class ServiceRequestController extends AppController
     public function queue(Request $request): JsonResponse
     {
         $status = $request->query->get('status');
+        $priority = $request->query->get('priority');
 
         return $this->dispatchQuery(new ListRequestQueueQuery(
             is_string($status) && $status !== '' ? $status : null,
             max(1, $request->query->getInt('page', 1)),
             $request->query->getBoolean('reveal'),
+            is_string($priority) && $priority !== '' ? $priority : null,
         ));
     }
 

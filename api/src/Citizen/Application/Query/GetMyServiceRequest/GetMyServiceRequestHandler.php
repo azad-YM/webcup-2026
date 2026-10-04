@@ -6,6 +6,7 @@ namespace Citizen\Application\Query\GetMyServiceRequest;
 
 use Citizen\Application\Ports\Provider\CurrentAccountProvider;
 use Citizen\Application\Ports\Repository\CitizenRepository;
+use Citizen\Application\Ports\Repository\RequestMessageRepository;
 use Citizen\Application\Ports\Repository\RequestSupportRepository;
 use Citizen\Application\Ports\Repository\ServiceRequestRepository;
 use Citizen\Application\ViewModel\ServiceRequestView;
@@ -20,6 +21,7 @@ final readonly class GetMyServiceRequestHandler
         private CurrentAccountProvider $identity,
         private ServiceRequestRepository $requests,
         private RequestSupportRepository $supports,
+        private ?RequestMessageRepository $messages = null,
     ) {}
 
     /** La demande d'un autre citoyen répond 404, comme une référence inconnue. */
@@ -32,6 +34,7 @@ final readonly class GetMyServiceRequestHandler
             throw new NotFoundException('Request not found.');
         }
 
-        return ServiceRequestView::fromRequest($request, $this->supports->countByRequests([$request->id])[$request->id] ?? 0);
+        return ServiceRequestView::fromRequest($request, $this->supports->countByRequests([$request->id])[$request->id] ?? 0)
+            ->withMessageCount($this->messages?->countByRequests([$request->id])[$request->id] ?? 0)->forCitizen();
     }
 }
