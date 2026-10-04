@@ -4,7 +4,7 @@
 [Accueil du projet](../../../../README.md) › [Documentation](../../../../doc/README.md) › admin
 <!-- navigation:end -->
 
-L’admin est l’espace de travail des agents et des administrateurs de Nova Terra, distinct du portail des habitants. Les administrateurs y gèrent les rôles et les membres. Les agents y traitent les demandes citoyennes, publieront les informations de la ville et consulteront le flux de l’API du concours (voir le [chantier](../../../../doc/chantier/README.md)). Elle s’ouvre depuis la carte « Administration » du [site](../../site/doc/README.md), sans nouvelle saisie des identifiants.
+L’admin est l’espace de travail des agents et des administrateurs de Nova Terra, distinct du portail des habitants. Les administrateurs y gèrent les rôles et les membres. Les agents y traitent les demandes citoyennes, publieront les informations de la ville et consulteront le flux de l’API du concours (voir le [chantier](../../../../doc/chantier/README.md)). Elle s’ouvre depuis l’accès « Administration » du menu du compte du [site](../../site/doc/README.md), sans nouvelle saisie des identifiants.
 
 Livré : création des rôles, liste et ajout des membres ([membres](membres.md)), flux Nova Terra pour les agents ([pilotage](pilotage.md)), file des demandes citoyennes ([demandes](demandes.md)), comptes citoyens ([détail](comptes-citoyens.md)) et journal de sécurité des connexions ([détail](securite.md)) — 🟡 non vérifiés dans un navigateur.
 Livré : création des rôles, liste et ajout des membres ([membres](membres.md)), flux Nova Terra pour les agents ([pilotage](pilotage.md)), contenus de la ville — publications, alertes, services et transports ([contenus](contenus.md), non vérifié dans un navigateur).
@@ -13,7 +13,7 @@ Livré : création des rôles, liste et ajout des membres ([membres](membres.md)
 
 1. Depuis le site, la personne ouvre l’espace Administration : l’admin échange un code PKCE contre sa session (voir le [parcours de connexion](../../site/doc/parcours-connexion.md)).
 2. `AuthHttpGateway` charge le profil (`/api/iam/me`) et vérifie la présence de l’espace `admin` ; sinon, un message propose de revenir au site.
-3. `/espaces` liste les modules internes (Administration, Demandes citoyennes, Pilotage) ; le sélecteur de la barre latérale permet d’en changer. L’accès à chaque opération reste contrôlé par l’API (un agent sans droit sur les membres voit un refus explicite).
+3. `/espaces` liste les modules internes (Administration, Demandes citoyennes, Pilotage) ; la première barre latérale permet d’en changer, la seconde affiche leurs rubriques. Le menu du compte, en bas de la première barre, sépare les espaces Administration et Citoyen. Voir [navigation et habillage](navigation.md). L’accès à chaque opération reste contrôlé par l’API (un agent sans droit sur les membres voit un refus explicite).
 
 ## Modules
 
@@ -26,6 +26,10 @@ Livré : création des rôles, liste et ajout des membres ([membres](membres.md)
 | Sécurité | `/admin/security` | [IAM](../../../../api/src/IAM/doc/comptes-et-sessions.md) | Journal des verrouillages de connexion ([détail](securite.md)) |
 | Pilotage | `/pilotage`, `/pilotage/tableau-de-bord` | [Pilotage](../../../../api/src/Pilotage/doc/README.md) | Flux Nova Terra et suivi de l’équipe, tableau de bord de l’activité ([détail](pilotage.md)) |
 | Contenus (`content`) | `/contenus`, `/contenus/alertes`, `/contenus/services` (entrée « Contenus de la ville » de la barre latérale d’Administration) | [Communication](../../../../api/src/Communication/doc/README.md), [Administration](../../../../api/src/Administration/doc/README.md) | Publications, alertes, services et transports livrés ([détail](contenus.md)) |
+
+## Navigation livrée
+
+Habillage aligné sur le citoyen : fonds clairs, teal, ardoise, cartes et boutons arrondis. Les contenus de la ville restent dans le module Administration. Rubriques repliables sur ordinateur ; panneau de navigation sur mobile. Les routes, opérations et contrôles serveur sont conservés. Le menu du compte vérifie l’existence du profil citoyen avant de proposer son espace. Détails et limites : [navigation et habillage](navigation.md).
 
 ## Organisation cible
 
@@ -67,6 +71,7 @@ La déconnexion volontaire est locale ; seuls la suspension et la suppression d�
 - [Citizen](../../../../api/src/Citizen/doc/README.md)
 - [Pilotage](../../../../api/src/Pilotage/doc/README.md)
 - [Communication](../../../../api/src/Communication/doc/README.md)
+- [Navigation et habillage](navigation.md)
 - [Contenus](contenus.md)
 - [Accessibilité](accessibilite.md)
 - [Contexte produit](../../../../doc/contexte/README.md)

@@ -4,7 +4,7 @@
 [Accueil du projet](../../../../README.md) › [admin](README.md) › Flux Nova Terra
 <!-- navigation:end -->
 
-Les agents suivent, depuis leur espace, les demandes que la ville transmet par l’API du concours (D19). Point d’entrée : `/pilotage`, accessible par la carte « Pilotage » de `/espaces` et par le sélecteur de modules de la barre latérale.
+Les agents suivent, depuis leur espace, les demandes que la ville transmet par l’API du concours (D19). Point d’entrée : `/pilotage`, accessible par la carte « Pilotage » de `/espaces` et par la première barre des modules.
 
 ## Parcours livré
 

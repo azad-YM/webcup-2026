@@ -8,7 +8,7 @@ Les contrats et contrôles serveur appartiennent à [IAM](../../../../api/src/IA
 
 ## 1. Arriver sur le site
 
-L’accueil `/` est public. L’en-tête propose « Connexion » et « Créer un compte » aux visiteurs, « Mon espace » et « Déconnexion » aux personnes connectées. La présence d’un jeton ne prouve pas les accès : ce sont les appels à l’API (espaces, profil citoyen) qui valident la session.
+L’accueil `/` est public. L’en-tête propose « Connexion » et « Créer un compte » aux visiteurs, « Mon espace », une cloche de notifications personnelles pour les citoyens et un avatar aux personnes connectées. Le popover de l’avatar regroupe « Mon profil », les espaces de travail autorisés et « Déconnexion ». La présence d’un jeton ne prouve pas les accès : ce sont les appels à l’API (espaces, profil citoyen) qui valident la session.
 
 ## 2. Se connecter
 
@@ -20,10 +20,11 @@ Protection des connexions (F37, lot L8, 🟡 non vérifié dans un navigateur) :
 
 ## 3. Choisir un espace
 
-Les espaces IAM s’affichent dans `/espace` : section « Vos espaces de travail » pour un citoyen qui en possède, ou sous le message « ce compte n’est pas un compte citoyen » pour un compte d’agent.
+Les espaces IAM s’affichent dans le popover de l’avatar, sous « Changer d’espace », uniquement lorsque le compte en possède. L’espace `admin` (« Administration ») est commun aux agents et administrateurs : les rôles renvoyés par IAM sont affichés, sans inventer de destination distincte. Le passage conserve le parcours PKCE existant. Pour un compte non citoyen, les cartes restent aussi accessibles dans `/espace`, sous la proposition d’activation citoyenne.
 
 | Résultat | Comportement |
 |---|---|
+| Chargement dans le menu du profil | Skeleton uniquement sur les espaces à vérifier, y compris lors d’une actualisation ; le reste du menu reste accessible. |
 | Un ou plusieurs espaces | Afficher uniquement les cartes autorisées, avec les rôles. Une carte unique reste sélectionnable, sans redirection automatique. |
 | Aucun espace | Compte non citoyen : état « aucun espace de travail disponible », session conservée. Citoyen : rien n’est affiché. |
 | 401 | Nettoyer la session et les caches, puis proposer de se reconnecter. |

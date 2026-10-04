@@ -29,5 +29,7 @@ export const useListSpaces = () => {
     isLoading: query.isLoading,
     isError: query.isError,
     openSpace,
+    refetch: query.refetch,
+    isFetching: query.isFetching,
   }
 }

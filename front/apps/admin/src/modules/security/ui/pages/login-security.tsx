@@ -28,7 +28,7 @@ export function LoginSecurityPage() {
     {query.isError && <div role="alert"><p>{getErrorMessage(query.error)}</p><Button onClick={() => void query.refetch()} className="mt-3">Réessayer</Button></div>}
     {query.data && !query.isError && (query.data.items.length === 0
       ? <p role="status">Aucune tentative suspecte{appliedSearch ? ` pour « ${appliedSearch} »` : ""} sur les 90 derniers jours.</p>
-      : <div className="overflow-x-auto rounded-xl border"><table className="w-full text-left text-sm">
+      : <div className="nt-data-table overflow-x-auto"><table className="w-full text-left text-sm">
         <caption className="sr-only">Verrouillages temporaires de connexion, du plus récent au plus ancien</caption>
         <thead className="bg-muted/50"><tr><th scope="col" className="p-3">Date</th><th scope="col" className="p-3">Motif</th><th scope="col" className="p-3">Compte visé</th><th scope="col" className="p-3">Adresse IP</th><th scope="col" className="p-3">Échecs</th><th scope="col" className="p-3">Verrouillage</th></tr></thead>
         <tbody>{query.data.items.map((event) => <tr key={event.id} className="border-t">
