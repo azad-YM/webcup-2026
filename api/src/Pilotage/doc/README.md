@@ -77,6 +77,31 @@ Un suivi par `requestCode` (table `pilotage_request_tracking`) : `status` (`todo
 - Pré-remplissage : la migration `Version20261003009000` insère le statut de chaque code depuis le [registre du chantier](../../../../doc/chantier/demandes.md) (🟡/⚠️ → `in_progress`, ✅ → `done`, ⬜ → `todo`). La base de développement créée par `doctrine:schema:update` n’a pas ce pré-remplissage.
 - Synchronisation du 2026-10-03 : `Version20261003110400` couvre les 71 codes du registre, avec statut et note explicative. Elle complète les suivis absents et actualise uniquement les lignes du préremplissage initial restées intactes ; tout suivi manuel (statut, note, liens, auteur) est conservé. Les fonctionnalités non vérifiées restent `in_progress`. Le snapshot est figé dans la migration, sans lecture du Markdown à l’exécution.
 
+### Synchroniser le suivi en production
+
+Les changements effectués dans la base locale ne sont pas transférés par un déploiement. La commande `app:pilotage:sync-tracking` applique le snapshot versionné `Application/Service/TrackingSnapshot.php` du 2026-10-04 : 71 demandes, 46 faites, 3 en cours, 22 à faire, notes courtes et 49 liens. Elle ne lit ni la base locale, ni le Markdown, ni l’API Webcup.
+
+Depuis `api/` sur le serveur, après déploiement du code et des migrations, remplacer les deux URL d’exemple par les adresses publiques réelles :
+
+```bash
+# Prévisualiser les différences, sans écriture
+php bin/console app:pilotage:sync-tracking --env=prod --no-debug --site-url=https://ville.example --admin-url=https://admin.ville.example
+
+# Appliquer le même lot dans la base configurée en production
+php bin/console app:pilotage:sync-tracking --env=prod --no-debug --site-url=https://ville.example --admin-url=https://admin.ville.example --apply
+```
+
+Avec Docker Compose, préfixer par `docker compose -f <compose-production.yaml> exec -T api` et exécuter `php bin/console …` dans le conteneur API.
+
+- Prévisualisation par défaut ; `--apply` enregistre via `command.bus`, dans une transaction unique.
+- Les deux URL HTTP(S) sont obligatoires ; aucun lien localhost n’est inclus dans le snapshot. Identifiants, paramètres et fragments sont refusés dans les URL de base.
+- Les lignes absentes sont créées. Les lignes au même statut ou à un statut moins avancé reçoivent le statut, la note et les liens du snapshot : cela remplace aussi les notes et liens manuels de ces lignes, visibles dans la prévisualisation comme valeurs cibles.
+- Un statut plus avancé en production est conservé avec sa note et ses liens (`todo` < `in_progress` < `done`). Les codes absents du snapshot restent intacts.
+- Une seconde exécution avec les mêmes URL ne modifie pas les lignes identiques, ni leur date/auteur. Auteur des lignes modifiées : « Synchronisation chantier CLI ». Cet import technique ne passe pas par l’authentification HTTP et ne crée pas les événements d’audit des modifications individuelles de l’interface ; son accès est celui de la console serveur.
+- Pour une prochaine livraison, actualiser explicitement le snapshot après validation des nouvelles fonctionnalités. Les anciennes migrations restent inchangées.
+
+Validation : tests unitaires du lot, des URL, de la prévisualisation, de l’idempotence et de la conservation des avancées ; test applicatif CLI via le bus et Doctrine sur base isolée.
+
 ### Tableau de bord de l’activité (F50)
 
 `GET /api/pilotage/activity` (`admin.pilotage.read`, agents compris) : `{generatedAt, recentHours: 24, requests: {byStatus, waiting, open, recent, oldestWaitingSince}, citizens: {active, suspended, recent}, communication: {activeAlerts, criticalAlerts, scheduledAlerts, publishedPublications, draftPublications}, security: {suspendedAccounts, blockedLogins}, administration: {activeMembers, services, disruptedServices}}`. Comptages seulement, aucune donnée personnelle. Chaque bloc vient de son propriétaire par un port de Pilotage ; « récent » = 24 dernières heures. Pas de temps réel : l’admin relit toutes les 60 s.
