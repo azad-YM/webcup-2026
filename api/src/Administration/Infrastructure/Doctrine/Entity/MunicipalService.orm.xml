@@ -18,6 +18,9 @@
         <field name="alternative" type="text"/>
         <field name="transport" type="json" nullable="true"/>
         <field name="updatedAt" column="updated_at" type="datetime_immutable"/>
+        <field name="location" type="json" nullable="true"/>
+        <field name="emergency" type="string" length="20" nullable="true"/>
+        <field name="translations" type="json" nullable="true"/>
         <field name="disabled" type="boolean"><options><option name="default">0</option></options></field>
         <field name="disabledReason" column="disabled_reason" type="string" length="500"><options><option name="default"></option></options></field>
         <field name="disabledAt" column="disabled_at" type="datetime_immutable" nullable="true"/>

@@ -16,6 +16,7 @@ Les décisions structurantes sont consignées sous forme d’ADR (*Architecture 
 - [ADR 006 — Journal des actions : un BC Audit alimenté par un port Shared `AuditTrail`](006-journal-des-actions.md)
 - [ADR 007 — Protection des données : durcissement transverse et accès fins aux données sensibles](007-protection-des-donnees.md)
 - [ADR 008 — Un BC Participation pour les projets, les consultations et la boîte à idées](008-bc-participation.md)
+- [ADR 010 — Comptes d’habitant créés à l’accueil, sans e-mail obligatoire](010-comptes-crees-a-l-accueil.md)
 
 ## Format recommandé
 

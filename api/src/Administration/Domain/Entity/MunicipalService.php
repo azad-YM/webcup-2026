@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Administration\Domain\Entity;
 
+use Administration\Domain\VO\District;
 use Shared\Domain\Exception\DomainException;
 
 /**
@@ -14,6 +15,10 @@ final class MunicipalService
 {
     public const CATEGORIES = ['demarches', 'cadre-de-vie', 'sante-solidarite', 'mobilite', 'habitat', 'famille'];
     public const STATUSES = ['available', 'maintenance', 'incident'];
+    /** F46: kind of emergency service (hospital, emergency department, fire brigade, police, on-duty pharmacy). */
+    public const EMERGENCY_KINDS = ['hospital', 'emergency', 'fire', 'police', 'pharmacy'];
+    /** F27: languages in which agents may translate the main texts; French stays the reference. */
+    public const TRANSLATION_LANGUAGES = ['en', 'ar'];
 
     private string $name;
     private string $category;
@@ -33,6 +38,11 @@ final class MunicipalService
     /** @var array{route: string, timetable: string, information: string}|null */
     private ?array $transport;
     private \DateTimeImmutable $updatedAt;
+    /** @var array{address: string, district: ?string, lat: float, lng: float}|null F45 */
+    private ?array $location = null;
+    private ?string $emergency = null;
+    /** @var array<string, array{name: string, summary: string, description: string}>|null F27 */
+    private ?array $translations = null;
     /** F63 : désactivation immédiate d'un service défectueux (indépendante de l'état F38), avec motif. */
     private bool $disabled = false;
     private string $disabledReason = '';
@@ -66,11 +76,16 @@ final class MunicipalService
 
     public function featured(): bool { return $this->featured; }
 
+    public function emergency(): ?string { return $this->emergency; }
+
+    public function hasLocation(): bool { return $this->location !== null; }
+
     /** Every term must appear (accent and case insensitive) in the name, summary or keywords. */
     public function matches(string $search): bool
     {
         $terms = preg_split('/\s+/', self::fold($search), -1, PREG_SPLIT_NO_EMPTY) ?: [];
-        $haystack = self::fold(implode(' ', [$this->name, $this->summary, $this->category, ...$this->keywords]));
+        $translated = array_map(fn (array $texts) => $texts['name'].' '.$texts['summary'], $this->translations ?? []);
+        $haystack = self::fold(implode(' ', [$this->name, $this->summary, $this->category, ...$this->keywords, ...array_values($translated)]));
         foreach ($terms as $term) {
             if (!str_contains($haystack, $term)) {
                 return false;
@@ -99,6 +114,9 @@ final class MunicipalService
             'alternative' => $this->alternative,
             'transport' => $this->transport,
             'updatedAt' => $this->updatedAt->format(DATE_ATOM),
+            'location' => $this->location,
+            'emergency' => $this->emergency,
+            'translations' => $this->translations ?? (object) [],
             ...$this->disablementView(),
         ];
     }
@@ -158,6 +176,7 @@ final class MunicipalService
                 throw new DomainException('Date de retour invalide.');
             }
         }
+        [$location, $emergency, $translations] = [self::location($data['location'] ?? null), self::emergencyKind($data['emergency'] ?? null), self::translations($data['translations'] ?? null)];
         $contact = is_array($data['contact'] ?? null) ? $data['contact'] : [];
         $phone = self::text($contact['phone'] ?? '', 100, 'Téléphone', false);
         $transport = null;
@@ -189,7 +208,74 @@ final class MunicipalService
         $this->returnAt = $returnAt;
         $this->alternative = $status === 'available' ? '' : self::text($data['alternative'] ?? '', 2000, 'Alternative', false);
         $this->transport = $transport;
+        [$this->location, $this->emergency, $this->translations] = [$location, $emergency, $translations];
         $this->updatedAt = $now;
+    }
+
+    /** @return array{address: string, district: ?string, lat: float, lng: float}|null */
+    private static function location(mixed $value): ?array
+    {
+        if ($value === null) {
+            return null;
+        }
+        if (!is_array($value)) {
+            throw new DomainException('Localisation invalide.');
+        }
+        $lat = $value['lat'] ?? null;
+        $lng = $value['lng'] ?? null;
+        if (!is_numeric($lat) || !is_numeric($lng) || abs((float) $lat) > 90 || abs((float) $lng) > 180) {
+            throw new DomainException('Coordonnées invalides : latitude entre -90 et 90, longitude entre -180 et 180.');
+        }
+        $district = self::text($value['district'] ?? '', 40, 'Quartier', false);
+        if ($district !== '' && !District::exists($district)) {
+            throw new DomainException('Quartier inconnu.');
+        }
+
+        return [
+            'address' => self::text($value['address'] ?? '', 500, 'Adresse'),
+            'district' => $district === '' ? null : $district,
+            'lat' => round((float) $lat, 6),
+            'lng' => round((float) $lng, 6),
+        ];
+    }
+
+    private static function emergencyKind(mixed $value): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+        if (!in_array($value, self::EMERGENCY_KINDS, true)) {
+            throw new DomainException('Type d’urgence inconnu (hospital, emergency, fire, police, pharmacy).');
+        }
+
+        return $value;
+    }
+
+    /** @return array<string, array{name: string, summary: string, description: string}>|null */
+    private static function translations(mixed $value): ?array
+    {
+        if ($value === null || $value === []) {
+            return null;
+        }
+        if (!is_array($value)) {
+            throw new DomainException('Traductions invalides.');
+        }
+        $translations = [];
+        foreach ($value as $language => $texts) {
+            if (!in_array($language, self::TRANSLATION_LANGUAGES, true) || !is_array($texts)) {
+                throw new DomainException('Langue de traduction inconnue (en, ar).');
+            }
+            $entry = [
+                'name' => self::text($texts['name'] ?? '', 200, 'Nom traduit', false),
+                'summary' => self::text($texts['summary'] ?? '', 1000, 'Résumé traduit', false),
+                'description' => self::text($texts['description'] ?? '', 10000, 'Description traduite', false),
+            ];
+            if ($entry['name'] !== '' || $entry['summary'] !== '' || $entry['description'] !== '') {
+                $translations[$language] = $entry;
+            }
+        }
+
+        return $translations === [] ? null : $translations;
     }
 
     private static function text(mixed $value, int $max, string $label, bool $required = true): string

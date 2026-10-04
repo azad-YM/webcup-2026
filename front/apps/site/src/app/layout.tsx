@@ -13,6 +13,8 @@ import { SiteFooter } from "@/modules/shared/ui/layout/site-footer"
 import { displayPreferencesBootScript } from "@boilerplate/shared-ui/a11y"
 import { SiteAccessibilityProvider } from "@/modules/shared/ui/accessibility-provider"
 import { DISPLAY_PREFERENCES_KEY } from "@/modules/shared/ui/accessibility-keys"
+import { I18nProvider } from "@/modules/shared/ui/i18n/i18n-provider"
+import { LOCALE_STORAGE_KEY, localeBootScript } from "@/modules/shared/core/i18n/locales"
 
 const description = "Le portail officiel de Nova Terra, première ville humaine sur une autre planète : services municipaux, actualités et espace citoyen."
 
@@ -34,9 +36,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <meta name="referrer" content="strict-origin-when-cross-origin" />
         {/* Préférences d’affichage appliquées avant le premier rendu : pas de flash (L4). */}
         <script dangerouslySetInnerHTML={{ __html: displayPreferencesBootScript(DISPLAY_PREFERENCES_KEY) }} />
+        {/* Langue mémorisée (D14) : `lang` et `dir` (arabe de droite à gauche) avant le premier rendu. */}
+        <script dangerouslySetInnerHTML={{ __html: localeBootScript(LOCALE_STORAGE_KEY) }} />
       </head>
       <body className="flex min-h-screen flex-col">
         <SiteAccessibilityProvider>
+        <I18nProvider>
         <StoreProvider>
           <SkipLink />
           <SiteHeader notifications={<NotificationBell />} spaces={<SpacesList variant="menu" />} />
@@ -46,6 +51,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           </main>
           <SiteFooter />
         </StoreProvider>
+        </I18nProvider>
         </SiteAccessibilityProvider>
       </body>
     </html>

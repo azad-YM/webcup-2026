@@ -15,7 +15,8 @@ final readonly class IAMCitizenAccountManager implements CitizenAccountManager
     public function emails(array $userIds): array
     {
         $emails = [];
-        foreach ($this->users->findByIds($userIds) as $user) $emails[$user->getId()] = $user->getUserIdentifier();
+        // F71 : un compte d'habitant sans e-mail n'expose pas son adresse technique.
+        foreach ($this->users->findByIds($userIds) as $user) if ($user->hasRealEmail()) $emails[$user->getId()] = $user->getUserIdentifier();
         return $emails;
     }
     public function verifyPassword(string $userId, string $password): bool

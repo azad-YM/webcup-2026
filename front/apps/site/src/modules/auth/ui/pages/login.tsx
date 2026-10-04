@@ -13,6 +13,9 @@ import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
 import { FormAnnouncement, TextField } from "@/modules/shared/ui/components/form-field"
 import { LoadingState } from "@/modules/shared/ui/components/states"
 import { SignInVerificationStep } from "../sections/sign-in-verification"
+import { ResidentLogin } from "../sections/resident-login"
+import { useMessages } from "@/modules/shared/ui/i18n/i18n-provider"
+import { AUTH_MESSAGES } from "../i18n/auth-messages"
 
 type Mode = "password" | "link"
 
@@ -24,6 +27,7 @@ export function LoginPage() {
   const session = useSession()
   const params = useSearchParams()
   const returnPath = safeReturnPath(params.get("retour"))
+  const t = useMessages(AUTH_MESSAGES)
   const accountDeleted = params.get("compte") === "supprime"
   const signedOutEverywhere = params.get("securite") === "deconnecte"
   const [mode, setMode] = useState<Mode>("password")
@@ -41,7 +45,7 @@ export function LoginPage() {
 
   return (
     <>
-      <PageHeader trail={[{ label: "Connexion" }]} title="Connexion" lead="Connectez-vous pour retrouver votre espace citoyen et suivre vos demandes." />
+      <PageHeader trail={[{ label: t.loginTitle }]} title={t.loginTitle} lead={t.loginLead} />
       <PageBody narrow>
         {!session.ready || (session.hasToken && !verification) ? (
           <LoadingState label="Vérification de votre session…" />
@@ -64,9 +68,11 @@ export function LoginPage() {
               ? <PasswordForm onVerification={(next) => { verifying.current = true; setVerification(next) }} onSignedIn={signedIn} storageError={session.storageError} />
               : <LoginLinkForm />}
             <p className="mt-6 text-slate-700">
-              Pas encore de compte ?{" "}
-              <Link href="/inscription" className="font-medium text-teal-800 underline underline-offset-4">Créer mon compte citoyen</Link>
+              {t.noAccount}{" "}
+              <Link href="/inscription" className="font-medium text-teal-800 underline underline-offset-4">{t.createAccount}</Link>
             </p>
+            {/* F71 : habitants accueillis à la mairie, sans adresse e-mail. */}
+            <ResidentLogin />
           </section>
         )}
       </PageBody>

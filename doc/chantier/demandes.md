@@ -49,13 +49,13 @@ Les 15 suivis déjà faits sont conservés. F40 reste en cours (cron et récepti
 |---|---|---|---|---|---|---|
 | D11 | 2 | 540 | Retrouver ses demandes, leur état et les étapes déjà réalisées | L2 | Citizen, site | 🟡 « Mes demandes » : état et chronologie des étapes horodatées (`/espace/demandes?ref=…`) ; ni testé ni vérifié dans le navigateur |
 | D12 | 2 | 540 | Première connexion guidée : profil, trouver un service, lancer une démarche | L4 | site, Citizen | 🟡 guide de première visite en 3 étapes sur `/espace`, masquable et mémorisé — [site](../../front/apps/site/doc/accessibilite.md) ; non vérifié |
-| D14 | 2 | 540 | Choisir une autre langue pour l’interface | L5 | site | ⬜ |
+| D14 | 2 | 540 | Choisir une autre langue pour l’interface | L5 | site | 🟡 sélecteur français / anglais / arabe (RTL) dans l’en-tête, choix mémorisé, `lang`/`dir` à jour ; couverture partielle documentée — [site](../../front/apps/site/doc/urgences-carte-langues.md) ; non testé, non vérifié dans un navigateur |
 | D15 | 1 | 270 | Repère de navigation (fil d’Ariane) et retour aux niveaux précédents | L4 | site, admin | 🟡 site : toutes les pages hors accueil ; admin : fil calculé depuis l’adresse — [site](../../front/apps/site/doc/accessibilite.md), [admin](../../front/apps/admin/doc/accessibilite.md) ; non vérifié |
 | D16 | 1 | 270 | Confirmation claire immédiatement après l’envoi d’une demande | L2 | Citizen, site | 🟡 écran de confirmation avec la référence `NT-AAAA-NNNN` juste après l’envoi ; ni testé ni vérifié dans le navigateur |
 | D17 | 1 | 270 | Nombre de demandes en attente de prise en charge, d’un coup d’œil | L2 | Citizen, admin | 🟡 badge « N en attente » (`pendingCount`) dans la file de l’admin, mis à jour en temps réel ; ni testé ni vérifié dans le navigateur |
 | F25 | 2 | 540 | Signaler un problème sur la voie publique avec description et lieu | L2 | Citizen, site | 🟡 « Signaler un problème » avec description et lieu obligatoire ; ni testé ni vérifié dans le navigateur |
 | F26 | 1 | 270 | Historique des demandes dans l’espace personnel | L2 | Citizen, site | 🟡 historique des demandes dans `/espace/demandes` ; ni testé ni vérifié dans le navigateur |
-| F27 | 2 | 540 | Contenus des services et démarches proposés en plusieurs langues | L5 | Administration, site | ⬜ |
+| F27 | 2 | 540 | Contenus des services et démarches proposés en plusieurs langues | L5 | Administration, site | 🟡 traductions anglais/arabe des services saisies dans l’admin, affichées avec repli et « Non traduit » ; publications et alertes non traduites — [site](../../front/apps/site/doc/urgences-carte-langues.md) ; non testé, non vérifié dans un navigateur |
 | F28 | 1 | 270 | Mettre en avant les services prioritaires ou les plus utilisés | L3 | Administration, site | 🟡 « Services les plus demandés » selon la mise en avant gérée par les agents ; non vérifié dans un navigateur |
 
 ## Vague 3 (H+4) — « Informer et servir »
@@ -101,8 +101,8 @@ Les 15 suivis déjà faits sont conservés. F40 reste en cours (cron et récepti
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
-| F45 | 3 | 960 | Localiser les services physiques de la ville (carte, adresse, itinéraire) | L11 | Administration, site | ⬜ |
-| F46 | 1 | 320 | Trouver rapidement hôpitaux et services d’urgence | L11 | Administration, site | ⬜ |
+| F45 | 3 | 960 | Localiser les services physiques de la ville (carte, adresse, itinéraire) | L11 | Administration, site | 🟡 `/carte` (Leaflet/OSM chargé à la demande, liste filtrable, près de moi), itinéraire OSM, mini-localisation sur la fiche — [site](../../front/apps/site/doc/urgences-carte-langues.md) ; non testé, non vérifié dans un navigateur |
+| F46 | 1 | 320 | Trouver rapidement hôpitaux et services d’urgence | L11 | Administration, site | 🟡 `/urgences` (15, 17, 18, 112, 114 cliquables ; hôpital, urgences, pharmacie, police, pompiers) en un clic depuis l’en-tête et l’accueil — [site](../../front/apps/site/doc/urgences-carte-langues.md) ; non testé, non vérifié dans un navigateur |
 | F47 | 3 | 960 | Justifier les actions réalisées : opérations consultables et traçables dans le temps, faciles à retrouver par les agents | L12 | Audit, admin | 🟡 journal des actions (BC Audit, `GET /api/audit/entries`, écran `/admin/journal`, filtres acteur/action/période/recherche) ; non testé, non vérifié dans un navigateur |
 | F48 | 2 | 640 | Savoir qui a modifié quoi dans l’administration | L12 | Audit, admin | 🟡 acteur, date, cible et détail de chaque action de l’administration ([journal](../../front/apps/admin/doc/journal-des-actions.md)) ; non testé |
 
@@ -158,8 +158,8 @@ Les 15 suivis déjà faits sont conservés. F40 reste en cours (cron et récepti
 |---|---|---|---|---|---|---|
 | F69 | 4 | 1 520 | Protéger les données sensibles contre l’exploitation d’une faille, de façon perceptible sans compliquer l’usage | L20 | tous les BC, IAM | 🟡 en-têtes de sécurité, CSP des deux fronts, limitation de débit (`429` expliqué), chiffrement au repos du téléphone et de l’adresse, erreurs `500` sans détail, page « Sécurité de vos données », annonce d’expiration de session admin ([ADR 007](../technique/decisions/007-protection-des-donnees.md)) ; non testé, non vérifié dans un navigateur |
 | F70 | 3 | 1 140 | Réserver strictement certaines données administratives aux agents autorisés | L20 | Administration, admin | 🟡 données sensibles masquées par l’API (« Masqué — accès réservé »), affichage explicite journalisé pour `admin.sensitive-data.read`, inventaire des routes d’agent ([Administration](../../api/src/Administration/doc/README.md#inventaire-des-routes-dagent-f70)) ; non testé, non vérifié dans un navigateur |
-| F71 | 3 | 1 140 | Accueillir des habitants sans adresse e-mail et ne parlant pas tous la même langue | L21 | IAM, Citizen, site, admin | ⬜ |
-| F72 | 1 | 380 | Nouvel arrivant : savoir par où commencer sans refaire l’inscription | L21 | site, Citizen | ⚠️ guide « Par où commencer ? » et raccourcis déjà présents dans `/espace` (L4/D12), sans refaire l’inscription ; guide masquable, réouverture non proposée ; parcours nouvel arrivant à vérifier |
+| F71 | 3 | 1 140 | Accueillir des habitants sans adresse e-mail et ne parlant pas tous la même langue | L21 | IAM, Citizen, site, admin | 🟡 compte créé à l’accueil (`/demandes/accueil`, `POST /api/citizen/accounts/welcome`), identifiant `NT-XXXX-XXXX` et code provisoire sur fiche imprimable fr/en/ar, connexion sans e-mail, code personnel obligatoire — [ADR 010](../technique/decisions/010-comptes-crees-a-l-accueil.md), [site](../../front/apps/site/doc/urgences-carte-langues.md) ; non testé, non vérifié dans un navigateur |
+| F72 | 1 | 380 | Nouvel arrivant : savoir par où commencer sans refaire l’inscription | L21 | site, Citizen | 🟡 `/bienvenue` : 3 questions sans inscription, check-list et services priorisés ; connecté, invitation à compléter le profil ; liens depuis l’accueil, l’espace et la fiche d’accueil — [site](../../front/apps/site/doc/urgences-carte-langues.md) ; non testé, non vérifié dans un navigateur |
 
 ## Vagues suivantes
 

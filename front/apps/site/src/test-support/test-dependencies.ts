@@ -33,6 +33,7 @@ export function createTestContext(overrides: Partial<Dependencies> = {}) {
     personalDataGateway: { export: async () => { throw new Error("Not configured") } },
     identityCodeProvider: { sendCode: async () => { throw new Error("Not configured") } },
     accountRegistrationGateway: new CitizenAccountRegistrationAdapter(citizenGateway),
+    residentAccessGateway: { accountStatus: async () => ({ residentId: null, passwordChangeRequired: false }) },
     citizenGateway,
     citizenSessionProvider: new AuthCitizenSessionAdapter(overrides.authSessionGateway ?? authSessionGateway),
     serviceRequestGateway: {

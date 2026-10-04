@@ -62,6 +62,15 @@ export function CitizenAccessState({ access, returnTo, nonCitizenFallback }: {
         {nonCitizenFallback}
       </div>
     )
+  // F71 : compte créé à l’accueil, code provisoire pas encore remplacé (403 de l’API tant qu’il ne l’est pas).
+  if (error?.status === 403)
+    return (
+      <div className="rounded-3xl border border-amber-200 bg-amber-50 p-6 sm:p-8" role="status">
+        <h2 className="text-xl font-semibold text-slate-950">Choisissez d’abord votre code personnel</h2>
+        <p className="mt-2 text-slate-800">Votre compte a été créé à l’accueil de la mairie avec un code provisoire. Remplacez-le pour accéder à votre espace.</p>
+        <Link href="/espace/nouveau-code" className="mt-6 inline-flex rounded-xl bg-teal-700 px-5 py-3 font-medium text-white hover:bg-teal-800">Choisir mon code</Link>
+      </div>
+    )
   if (error && !access.unauthorized)
     return <ErrorState message={error.data} onRetry={() => void query.refetch()} retrying={query.isFetching} />
   return (

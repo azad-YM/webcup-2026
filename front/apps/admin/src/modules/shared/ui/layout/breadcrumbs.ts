@@ -20,6 +20,7 @@ export const BREADCRUMB_LABELS: Record<string, string> = {
   "/demandes": "Demandes des habitants",
   "/demandes/rendez-vous": "Rendez-vous",
   "/demandes/inquietudes": "Inquiétudes",
+  "/demandes/accueil": "Accueil des nouveaux arrivants",
   "/participation": "Participation des habitants",
   "/participation/consultations": "Consultations et avis",
   "/participation/idees": "Boîte à idées",

@@ -14,6 +14,8 @@ final readonly class SaveMunicipalServiceCommand
      * @param array{place?: string, hours?: string, phone?: ?string} $contact
      * @param list<string> $keywords
      * @param array{route?: string, timetable?: string, information?: string}|null $transport
+     * @param array{address?: string, district?: ?string, lat?: float, lng?: float}|null $location F45
+     * @param array<string, array{name?: string, summary?: string, description?: string}>|null $translations F27
      */
     public function __construct(
         #[Assert\NotBlank] #[Assert\Length(max: 80)] public string $id,
@@ -30,5 +32,8 @@ final readonly class SaveMunicipalServiceCommand
         #[Assert\Length(max: 40)] public ?string $returnAt = null,
         #[Assert\Length(max: 2000)] public string $alternative = '',
         public ?array $transport = null,
+        public ?array $location = null,
+        #[Assert\Choice(['hospital', 'emergency', 'fire', 'police', 'pharmacy'])] public ?string $emergency = null,
+        public ?array $translations = null,
     ) {}
 }

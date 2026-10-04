@@ -40,6 +40,12 @@ export type MunicipalService = {
   disabled?: boolean
   disabledReason?: string
   disabledAt?: string | null
+  /** F45 : adresse et coordonnées du lieu d’accueil (carte du site). */
+  location?: ServiceLocation | null
+  /** F46 : service d’urgence (page « Urgences » du site). */
+  emergency?: EmergencyKind | null
+  /** F27 : traductions du nom, du résumé et de la description (le français fait foi). */
+  translations?: Partial<Record<TranslationLanguage, ServiceTranslation>> | Record<string, never>
 }
 
 /** F63 : désactiver (motif obligatoire, 5 à 500 caractères) ou réactiver un service. */
@@ -47,6 +53,22 @@ export type ServiceAvailabilityChange = { id: string; disabled: boolean; reason:
 
 export const DISABLE_REASON_MIN = 5
 export const DISABLE_REASON_MAX = 500
+
+export type ServiceLocation = { address: string; district: string | null; lat: number; lng: number }
+export type EmergencyKind = "hospital" | "emergency" | "fire" | "police" | "pharmacy"
+export const EMERGENCY_LABELS: Record<EmergencyKind, string> = {
+  hospital: "Hôpital",
+  emergency: "Urgences",
+  fire: "Pompiers",
+  police: "Police",
+  pharmacy: "Pharmacie de garde",
+}
+export type TranslationLanguage = "en" | "ar"
+export const TRANSLATION_LANGUAGES: Record<TranslationLanguage, { label: string; dir: "ltr" | "rtl" }> = {
+  en: { label: "Anglais", dir: "ltr" },
+  ar: { label: "Arabe", dir: "rtl" },
+}
+export type ServiceTranslation = { name: string; summary: string; description: string }
 
 export type ContentState = "draft" | "published" | "withdrawn"
 

@@ -42,6 +42,9 @@ Adaptateurs fournis :
 | Citizen | `Infrastructure/Adapter/Citizen/IAMPersonalAccountDataProvider` | « Mes données » (F55) : confirmation d’identité (mot de passe ou code) et données du compte, des appareils et des connexions |
 | Citizen | `Infrastructure/Adapter/Citizen/IAMCitizenAccountManager` | Reconfirmation du mot de passe, e-mails par lot, suspension et suppression (anonymisation) du compte |
 
+Lot L21 (F71, non testé) : comptes d’habitant créés à l’accueil ([ADR 010](../../../../doc/technique/decisions/010-comptes-crees-a-l-accueil.md)). `User` porte `residentId` (`NT-XXXX-XXXX`, unique) et `passwordChangeRequired` ; sans e-mail, une adresse technique `…@habitant.nova-terra.invalid` jamais affichée. `login_check` accepte l’identifiant d’habitant dans `email` ; `/api/iam/me` renvoie `residentId` et `passwordChangeRequired` ; `PasswordChangeRequiredListener` répond 403 `password_change_required` sur les routes privées tant que le code provisoire n’est pas remplacé. Adaptateur `Adapter/Citizen/IAMResidentAccountProvisioner` (cas d’usage `CreateResidentAccount`).
+
+Port consommé par IAM : `Application/Ports/Provider/SecurityJournalAccessPolicy`, implémenté par Administration (`Adapter/IAM/AdminSecurityJournalAccessPolicy`).
 Ports consommés par IAM : `Application/Ports/Provider/SecurityJournalAccessPolicy`, implémenté par Administration (`Adapter/IAM/AdminSecurityJournalAccessPolicy`) ; `Application/Ports/Provider/AccountSecurityNotifier` (F54), implémenté par Citizen (`Adapter/IAM/CitizenAccountSecurityNotifier`).
 
 L’inscription publique est portée par Citizen (`POST /api/citizen/register`) ; l’ancienne route `POST /api/auth/register` d’IAM (hors bus, protégée par le firewall) a été retirée.

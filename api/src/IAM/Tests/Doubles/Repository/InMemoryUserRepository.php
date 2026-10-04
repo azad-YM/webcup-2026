@@ -15,4 +15,5 @@ final class InMemoryUserRepository implements IUserRepository
     public function findByIds(array $ids): array { return array_values(array_filter($this->users, fn(User $user) => in_array($user->getId(), $ids, true))); }
     public function save(User $user): void { $this->users[$user->getUserIdentifier()] = $user; }
     public function findByEmail(string $email): ?User { return $this->users[strtolower($email)] ?? null; }
+    public function findByResidentId(string $residentId): ?User { foreach ($this->users as $user) { if ($user->residentId() === $residentId) return $user; } return null; }
 }

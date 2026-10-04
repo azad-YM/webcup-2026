@@ -30,6 +30,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->status = 'deleted';
         ++$this->sessionVersion;
         $this->email = $this->id.'@deleted.invalid';
+        $this->residentId = null;
         $this->name = null;
         $this->password = '!deleted';
     }
@@ -102,13 +103,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // nothing to do here
     }
 
+    // --- F71 : compte d’habitant créé à l’accueil de la mairie, avec ou sans e-mail ---
+
+    private ?string $residentId = null;
+    private bool $passwordChangeRequired = false;
+
+    /** Domaine technique des comptes sans e-mail : l’identifiant de connexion reste unique, jamais affiché. */
+    public const NO_EMAIL_DOMAIN = 'habitant.nova-terra.invalid';
+
+    /** The initial access code is set with `setPassword` (hashed) and must be replaced at first login. */
+    public static function createResident(string $id, string $residentId, ?string $email, string $name): self
+    {
+        $user = new self($id, $email ?? strtolower($residentId).'@'.self::NO_EMAIL_DOMAIN, '', $name);
+        $user->residentId = $residentId;
+        $user->passwordChangeRequired = true;
+
+        return $user;
+    }
+
+    public function residentId(): ?string { return $this->residentId; }
+    public function passwordChangeRequired(): bool { return $this->passwordChangeRequired; }
+    /** False for a resident account created without e-mail (technical address) or an anonymised account. */
+    public function hasRealEmail(): bool { return !str_ends_with($this->email, '.invalid'); }
     // --- L15 : connexion renforcée (D02, F53, F54) ---
 
     /** Adresse à laquelle envoyer un lien ou un code ; null si le compte n'a pas d'e-mail utilisable. */
     public function contactEmail(): ?string
     {
         $email = trim((string) $this->email);
-        if ($this->status === 'deleted' || !str_contains($email, '@') || str_ends_with($email, '@deleted.invalid')) return null;
+        if ($this->status === 'deleted' || !str_contains($email, '@') || str_ends_with($email, '.invalid')) return null; // anonymised or resident without e-mail (F71)
         return $email;
     }
 
@@ -129,5 +152,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->password = $hash;
         ++$this->sessionVersion;
+        // F71 : le code provisoire d’un habitant est remplacé.
+        $this->passwordChangeRequired = false;
     }
 }

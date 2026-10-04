@@ -10,6 +10,8 @@ use Symfony\Component\Security\Core\Exception\CustomUserMessageAccountStatusExce
 
 final class LoginWithCredentialsHandler
 {
+    public const RESIDENT_ID = '/^NT-[A-Z0-9]{4}-[A-Z0-9]{4}$/i';
+
     public function __construct(
         private readonly IUserRepository $repository,
         private readonly UserPasswordHasherInterface $passwordHasher,
@@ -21,7 +23,10 @@ final class LoginWithCredentialsHandler
             throw new BadCredentialsException('Invalid credentials');
         }
 
-        $user = $this->repository->findByEmail(strtolower(trim($email)));
+        // F71 : un habitant sans e-mail se connecte avec son identifiant d’habitant.
+        $user = preg_match(self::RESIDENT_ID, trim($email))
+            ? $this->repository->findByResidentId(strtoupper(trim($email)))
+            : $this->repository->findByEmail(strtolower(trim($email)));
 
         if ($user === null || $user->status() === 'deleted' || !$this->passwordHasher->isPasswordValid($user, $password)) {
             throw new BadCredentialsException('Invalid credentials');
