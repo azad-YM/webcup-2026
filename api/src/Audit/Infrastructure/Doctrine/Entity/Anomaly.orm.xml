@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                   http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <!-- F85 : activités inhabituelles et informations incohérentes repérées par le détecteur. -->
+    <entity name="Audit\Domain\Entity\Anomaly" table="audit_anomalies">
+        <unique-constraints>
+            <unique-constraint name="UNIQ_AUDIT_ANOMALY_FINGERPRINT" columns="fingerprint"/>
+        </unique-constraints>
+        <indexes>
+            <index name="IDX_AUDIT_ANOMALY_STATUS" columns="status,last_seen_at"/>
+            <index name="IDX_AUDIT_ANOMALY_SEEN" columns="last_seen_at"/>
+        </indexes>
+        <id name="id" type="string" column="id" length="36" />
+        <field name="fingerprint" type="string" length="64" />
+        <field name="rule" type="string" length="60" />
+        <field name="category" type="string" length="20" />
+        <field name="severity" type="string" length="10" />
+        <field name="title" type="string" length="200" />
+        <field name="explanation" type="text" />
+        <field name="related" type="json" />
+        <field name="status" type="string" length="10">
+            <options><option name="default">new</option></options>
+        </field>
+        <field name="occurrences" type="integer">
+            <options><option name="default">1</option></options>
+        </field>
+        <field name="reaction" type="string" length="500" nullable="true" />
+        <field name="handledBy" column="handled_by" type="string" length="180" nullable="true" />
+        <field name="handledAt" column="handled_at" type="datetime_immutable" nullable="true" />
+        <field name="detectedAt" column="detected_at" type="datetime_immutable" />
+        <field name="lastSeenAt" column="last_seen_at" type="datetime_immutable" />
+    </entity>
+</doctrine-mapping>

@@ -15,8 +15,9 @@ nelmio_cors:
                 - '^https?://adumillion\.lescomores\.webcup\.hodi\.cloud$'
                 - '^https?://api\.adumillion\.lescomores\.webcup\.hodi\.cloud$'
             allow_methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE']
-            allow_headers: ['Content-Type', 'Authorization']
-            expose_headers: ['Link']
+            # L25 (ADR 012) : clé d'idempotence (F82) et protection des formulaires (F81) ; état de la plateforme (F77).
+            allow_headers: ['Content-Type', 'Authorization', 'Last-Event-ID', 'Idempotency-Key', 'X-Form-Token', 'X-Form-Trap', 'X-Form-Challenge']
+            expose_headers: ['Link', 'Retry-After', 'Idempotent-Replayed', 'X-Platform-Mode', 'ETag']
             max_age: 3600
         '^/': # Apply to all other paths if needed, but configure carefully
             allow_origin: [] 

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="Shared\Infrastructure\AbuseSignal\AbuseSignal" table="abuse_signals">
+        <indexes>
+            <index name="IDX_ABUSE_SIGNAL_OCCURRED" columns="occurred_at"/>
+            <index name="IDX_ABUSE_SIGNAL_KIND" columns="kind,occurred_at"/>
+        </indexes>
+        <id name="id" type="bigint">
+            <generator strategy="IDENTITY"/>
+        </id>
+        <field name="kind" type="string" length="30"/>
+        <field name="rule" type="string" length="60"/>
+        <field name="client" type="string" length="16"/>
+        <field name="occurredAt" column="occurred_at" type="datetime_immutable"/>
+    </entity>
+</doctrine-mapping>

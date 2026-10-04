@@ -1,0 +1,122 @@
+# L24, L25 — montée en charge, sauvegardes et anti-abus (ADR 012 : doc/technique/decisions/012-montee-en-charge-integrite-anti-abus.md).
+# Shared ne connaît aucun BC : les routes et tables concernées sont déclarées ici, par composition.
+parameters:
+    # --- F77 : mode allégé (dégradé) ---
+    # PLATFORM_DEGRADED : auto (défaut, détection automatique) | on (forcé) | off (détection automatique coupée).
+    env(PLATFORM_DEGRADED): 'auto'
+    # Une réponse plus lente que PLATFORM_SLOW_MS (ou une erreur 5xx) compte comme « tension » ;
+    # PLATFORM_SLOW_THRESHOLD tensions dans la même minute activent le mode allégé pendant PLATFORM_AUTO_MINUTES.
+    env(PLATFORM_SLOW_MS): '2500'
+    env(PLATFORM_SLOW_THRESHOLD): '40'
+    env(PLATFORM_AUTO_MINUTES): '5'
+    # Fonctions non essentielles suspendues en mode allégé (préfixes de chemin) : temps réel, statistiques, assistant IA.
+    # L'essentiel (alertes, services, demandes, connexion) n'est jamais listé ici.
+    app.platform.non_essential:
+        - '/api/realtime/stream'
+        - '/api/pilotage/'
+        - '/api/assistance/'
+        - '/api/audit/anomalies/summary'
+
+    # --- F78 : flux temps réel ---
+    # Nombre maximal de flux SSE ouverts par fenêtre de connexion (≈ connexions simultanées) ; 0 = sans plafond.
+    env(REALTIME_MAX_STREAMS): '200'
+
+    # --- F78 : lectures publiques mises en cache (nom de route => durée en secondes) ---
+    app.public_cache.enabled: true
+    app.public_cache.routes:
+        administration_application_municipalservice_list: 60
+        administration_application_municipalservice_show: 60
+        administration_application_municipalservice_districts: 3600
+        communication_application_communication_publications: 60
+        communication_application_communication_publication: 60
+        communication_application_communication_alerts: 15
+        participation_projects: 60
+        participation_project: 60
+        participation_consultations: 60
+        participation_consultation: 60
+        participation_ideas: 60
+
+    # --- F81 : protection des formulaires contre les robots (nom de route => formulaire, délai minimal en secondes) ---
+    app.form_guard.enabled: true
+    app.form_guard.forms:
+        citizen_register: { form: 'inscription', min_seconds: 4 }
+        iam_login_link_request: { form: 'lien-connexion', min_seconds: 2 }
+        citizen_submit_request: { form: 'demande', min_seconds: 4 }
+        citizen_raise_concern: { form: 'inquietude', min_seconds: 3 }
+        participation_propose_idea: { form: 'idee', min_seconds: 4 }
+        participation_contribute: { form: 'consultation', min_seconds: 3 }
+
+    # --- F82 : envois multiples (Idempotency-Key) ---
+    app.idempotency.enabled: true
+    # Routes dont la réponse contient un jeton de session : jamais conservées ni rejouées.
+    app.idempotency.excluded_routes:
+        - api_login_check
+        - iam_login_link_consume
+        - iam_sign_in_verify
+        - iam_application_portalsession_issue
+        - iam_application_portalsession_exchange
+        - realtime_issue_ticket
+        - iam_my_device_report
+        - iam_my_password
+        # Fiche d'accueil (F71) : la réponse contient le code provisoire, jamais conservé en base.
+        - citizen_account_welcome
+
+    # --- F87 : sauvegardes ---
+    # Dossier hors du dossier public, jamais commité ; rétention en nombre de sauvegardes.
+    env(BACKUP_DIR): '%kernel.project_dir%/var/backups'
+    env(BACKUP_RETENTION): '7'
+    env(BACKUP_RESTORE_MAX_ROWS): '200000'
+    env(BACKUP_MAX_AGE_HOURS): '36'
+    # Tables importantes par BC (les tables techniques éphémères — compteurs, codes, liens, tampons — sont exclues).
+    app.backup.tables:
+        IAM: [auth_users, iam_known_devices, iam_sign_ins, iam_login_security_events]
+        Administration: [admin_members, roles, municipal_service]
+        Citizen: [citizens, citizen_alert_preference, citizen_service_requests, citizen_request_supports, citizen_concerns, citizen_appointment_slots, citizen_appointments, citizen_notifications]
+        Communication: [communication_publication, communication_alert]
+        Participation: [participation_projects, participation_consultations, participation_contributions, participation_ideas]
+        Pilotage: [pilotage_request_tracking]
+        Audit: [audit_entries, audit_anomalies]
+
+framework:
+    cache:
+        pools:
+            # F77 : état du mode allégé et mesure de la tension (fichiers, partagés par les processus PHP du serveur).
+            platform.state.cache:
+                adapter: cache.app
+                default_lifetime: 3600
+            # F78 : lectures publiques anonymes, invalidées par étiquette à chaque écriture du même segment d'API.
+            public_read.cache:
+                adapter: cache.app
+                tags: true
+                default_lifetime: 60
+
+doctrine:
+    orm:
+        mappings:
+            SharedAbuseSignal:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Shared/Infrastructure/AbuseSignal/Doctrine'
+                prefix: 'Shared\Infrastructure\AbuseSignal'
+                alias: SharedAbuseSignal
+            SharedIdempotency:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Shared/Infrastructure/Idempotency/Doctrine'
+                prefix: 'Shared\Infrastructure\Idempotency'
+                alias: SharedIdempotency
+
+when@test:
+    parameters:
+        app.form_guard.enabled: false
+        app.idempotency.enabled: false
+        app.public_cache.enabled: false
+        env(REALTIME_MAX_STREAMS): '0'
+    framework:
+        cache:
+            pools:
+                platform.state.cache:
+                    adapter: cache.adapter.array
+                public_read.cache:
+                    adapter: cache.adapter.array
+                    tags: true

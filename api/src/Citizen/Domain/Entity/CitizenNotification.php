@@ -27,7 +27,9 @@ class CitizenNotification
     public const KIND_REQUEST_MESSAGE = 'request.message';
     /** F86 : accusé spécifique d'une urgence médicale (rappel du 15 et du 112). */
     public const KIND_REQUEST_EMERGENCY = 'request.medical_emergency';
-    public const KINDS = [self::KIND_REQUEST_STATUS, self::KIND_REQUEST_MESSAGE, self::KIND_REQUEST_EMERGENCY, self::KIND_APPOINTMENT_REMINDER, self::KIND_CONCERN_UPDATED, self::KIND_IDEA_UPDATED, self::KIND_SECURITY_NEW_DEVICE];
+    /** F85 : protection appliquée après une activité suspecte (verrouillage, code exigé). */
+    public const KIND_SECURITY_UNUSUAL_ACTIVITY = 'security.unusual_activity';
+    public const KINDS = [self::KIND_REQUEST_STATUS, self::KIND_REQUEST_MESSAGE, self::KIND_REQUEST_EMERGENCY, self::KIND_APPOINTMENT_REMINDER, self::KIND_CONCERN_UPDATED, self::KIND_IDEA_UPDATED, self::KIND_SECURITY_NEW_DEVICE, self::KIND_SECURITY_UNUSUAL_ACTIVITY];
 
     private ?\DateTimeImmutable $readAt = null;
 

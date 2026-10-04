@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label, Textarea } from "@boilerplate/shared-ui/components"
 import { getErrorMessage } from "@boilerplate/shared-utils/error.utils"
-import { StatusBadge } from "@boilerplate/shared-ui/components/a11y"
+import { StatusBadge, useProtectedSubmit } from "@boilerplate/shared-ui/components/a11y"
 import { useListAlertsQuery, useListDistrictsQuery, useSaveAlertMutation } from "../../core/application/rtk-api/content"
 import {
   AUDIENCE_LABELS,
@@ -26,10 +26,13 @@ function AlertForm({ initial, onDone }: { initial: Alert; onDone: () => void }) 
   const districts = useListDistrictsQuery()
   const [save, saving] = useSaveAlertMutation()
   const [message, setMessage] = useState<string | null>(null)
+  // F82 (L25) : un double clic sur « Diffuser » n’enregistre la même alerte qu’une fois.
+  const guard = useProtectedSubmit({})
   const submit = async (state: ContentState) => {
     setMessage(null)
-    const result = await save({ ...draft, district: draft.audience === "district" ? draft.district : null, recommendations: toLines(recommendations), state })
-    if ("data" in result && result.data) {
+    const payload = { ...draft, district: draft.audience === "district" ? draft.district : null, recommendations: toLines(recommendations), state }
+    const result = await guard.submit(payload, () => save(payload))
+    if (result && "data" in result && result.data) {
       setDraft(result.data)
       setMessage(state === "published" ? "Alerte diffusée : elle apparaît en temps réel chez les habitants concernés pendant sa validité." : state === "withdrawn" ? "Alerte retirée." : "Brouillon enregistré.")
     }

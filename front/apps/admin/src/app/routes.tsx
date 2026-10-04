@@ -7,6 +7,8 @@ import { PortalLoginStart, PortalLoginCallback } from "@/modules/auth/ui/pages/p
 import { SiteLoginRedirect } from "@/modules/auth/ui/pages/site-login-redirect"
 
 const AuditJournalPage = lazy(() => import("@/modules/audit/ui/pages/audit-journal").then((module) => ({ default: module.AuditJournalPage })))
+const UnusualActivityPage = lazy(() => import("@/modules/security/ui/pages/unusual-activity").then((module) => ({ default: module.UnusualActivityPage })))
+const BackupsPage = lazy(() => import("@/modules/security/ui/pages/backups").then((module) => ({ default: module.BackupsPage })))
 const LoginSecurityPage = lazy(() => import("@/modules/security/ui/pages/login-security").then((module) => ({ default: module.LoginSecurityPage })))
 const CitizenAccountsPage = lazy(() => import("@/modules/citizen-accounts/ui/pages/citizen-accounts").then((module) => ({ default: module.CitizenAccountsPage })))
 const NewcomerReceptionPage = lazy(() => import("@/modules/citizen-accounts/ui/pages/newcomer-reception").then((module) => ({ default: module.NewcomerReceptionPage })))
@@ -81,6 +83,8 @@ export const router = createBrowserRouter([
           { path: "citizens", element: page(CitizenAccountsPage) },
           { path: "security", element: page(LoginSecurityPage) },
           { path: "journal", element: page(AuditJournalPage) },
+          { path: "activite-inhabituelle", element: page(UnusualActivityPage) },
+          { path: "sauvegardes", element: page(BackupsPage) },
         ],
       },
       {

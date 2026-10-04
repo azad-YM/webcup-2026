@@ -3,6 +3,8 @@
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
     <entity name="Communication\Domain\Entity\Alert" table="communication_alert">
+        <!-- F78 (L24) : alertes en cours par état. -->
+        <indexes><index name="IDX_COMMUNICATION_ALERT_STATE" columns="state,ends_at"/></indexes>
         <id name="id" type="string" length="80"/>
         <field name="title" type="string" length="200"/>
         <field name="message" type="text"/>

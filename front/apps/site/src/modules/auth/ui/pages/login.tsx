@@ -11,6 +11,8 @@ import { useSession } from "@/modules/shared/ui/store-provider"
 import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
 import { FormAnnouncement, TextField } from "@/modules/shared/ui/components/form-field"
+import { FormProtection, useProtectedSubmit } from "@boilerplate/shared-ui/components/a11y"
+import { siteEnv } from "@/config/env"
 import { LoadingState } from "@/modules/shared/ui/components/states"
 import { SignInVerificationStep } from "../sections/sign-in-verification"
 import { ResidentLogin } from "../sections/resident-login"
@@ -121,12 +123,14 @@ function LoginLinkForm() {
   const [email, setEmail] = useState("")
   const [sentTo, setSentTo] = useState<string | null>(null)
   const submitting = useRef(false)
+  // L25 (F81, F82) : protection contre les robots et les envois multiples.
+  const guard = useProtectedSubmit({ apiBaseUrl: siteEnv.apiBaseUrl, form: "lien-connexion" })
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (submitting.current || !email.trim()) return
     submitting.current = true
     try {
-      await requestLink(email.trim()).unwrap()
+      await guard.submit({ email: email.trim() }, () => requestLink(email.trim()).unwrap())
       setSentTo(email.trim())
     } catch {
       /* message affiché dans le formulaire */
@@ -158,8 +162,9 @@ function LoginLinkForm() {
         Il est valable 10 minutes et doit être ouvert dans ce navigateur.
       </p>
       <p className="text-sm text-slate-600">Votre compte a été créé à l’accueil de la mairie sans adresse e-mail ? Le lien n’est pas disponible : connectez-vous avec votre mot de passe.</p>
-      <TextField id="email-lien" label="Adresse e-mail" type="email" autoComplete="username" required value={email} onChange={(event) => setEmail(event.target.value)} error={failure?.data} />
-      <button disabled={isLoading || !email.trim()} className="w-full rounded-xl bg-teal-700 px-4 py-3 font-medium text-white hover:bg-teal-800 disabled:opacity-60">
+      <TextField id="email-lien" label="Adresse e-mail" type="email" autoComplete="username" required value={email} onChange={(event) => setEmail(event.target.value)} error={guard.refusal ?? failure?.data} />
+      <FormProtection guard={guard} />
+      <button disabled={isLoading || guard.submitting || !email.trim()} className="w-full rounded-xl bg-teal-700 px-4 py-3 font-medium text-white hover:bg-teal-800 disabled:opacity-60">
         {isLoading ? "Envoi en cours…" : "Recevoir un lien de connexion par e-mail"}
       </button>
     </form>

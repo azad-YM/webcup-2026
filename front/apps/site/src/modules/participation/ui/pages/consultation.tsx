@@ -7,6 +7,8 @@ import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
 import { EmptyState, ErrorState, LoadingState } from "@/modules/shared/ui/components/states"
 import { FormAnnouncement, TextAreaField } from "@/modules/shared/ui/components/form-field"
+import { FormProtection, useProtectedSubmit } from "@boilerplate/shared-ui/components/a11y"
+import { siteEnv } from "@/config/env"
 import { useSession } from "@/modules/shared/ui/store-provider"
 import { useContributeMutation, useGetConsultationQuery, useMyParticipationQuery } from "../../core/application/rtk-api/city-participation"
 import { NOT_CITIZEN } from "../../core/domain/participation"
@@ -50,6 +52,8 @@ function ContributionForm({ consultation }: { consultation: Consultation }) {
   const [draft, setDraft] = useState<ContributionDraft | null>(null)
   const [receipt, setReceipt] = useState<ContributionReceipt | null>(null)
   const [contribute, state] = useContributeMutation()
+  // L25 (F81, F82) : protection contre les robots et les envois multiples.
+  const guard = useProtectedSubmit({ apiBaseUrl: siteEnv.apiBaseUrl, form: "consultation" })
   useLogoutOnUnauthorized(state.error)
   const sending = useRef(false)
   const current: ContributionDraft = draft ?? {
@@ -72,7 +76,9 @@ function ContributionForm({ consultation }: { consultation: Consultation }) {
     if (sending.current) return
     sending.current = true
     try {
-      setReceipt(await contribute({ consultation, draft: current }).unwrap())
+      const receipt = await guard.submit({ consultation, draft: current }, () => contribute({ consultation, draft: current }).unwrap())
+      if (receipt === undefined) return
+      setReceipt(receipt)
       setDraft(null)
     } catch {
       /* Message affiché par FormAnnouncement. */
@@ -122,8 +128,9 @@ function ContributionForm({ consultation }: { consultation: Consultation }) {
           value={current.comment}
           onChange={(event) => setDraft({ ...current, comment: event.target.value })}
         />
-        <FormAnnouncement tone="error">{failure && failure.status !== 401 ? failure.data : null}</FormAnnouncement>
-        <button type="submit" disabled={state.isLoading} className="rounded-xl bg-teal-700 px-5 py-3 font-medium text-white hover:bg-teal-800 disabled:opacity-60">
+        <FormProtection guard={guard} duplicateMessage="Votre participation a déjà été envoyée : elle n’a pas été enregistrée une seconde fois." />
+        <FormAnnouncement tone="error">{guard.refusal ?? (failure && failure.status !== 401 ? failure.data : null)}</FormAnnouncement>
+        <button type="submit" disabled={state.isLoading || guard.submitting} className="rounded-xl bg-teal-700 px-5 py-3 font-medium text-white hover:bg-teal-800 disabled:opacity-60">
           {state.isLoading ? "Envoi…" : shown ? "Enregistrer la modification" : "Envoyer ma participation"}
         </button>
       </form>

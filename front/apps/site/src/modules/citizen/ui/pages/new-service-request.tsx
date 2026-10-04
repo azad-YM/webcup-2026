@@ -4,7 +4,8 @@ import Link from "next/link"
 import type { Route } from "next"
 import { useSearchParams } from "next/navigation"
 import { CheckCircle2, Send } from "@boilerplate/shared-ui/components/icon"
-import { ContextualTip } from "@boilerplate/shared-ui/components/a11y"
+import { ContextualTip, FormProtection, useProtectedSubmit } from "@boilerplate/shared-ui/components/a11y"
+import { siteEnv } from "@/config/env"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
 import { useSession } from "@/modules/shared/ui/store-provider"
 import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
@@ -47,6 +48,7 @@ export function NewServiceRequestPage({ serviceNotice }: { serviceNotice?: React
   const serviceId = serviceParam && SERVICE_ID.test(serviceParam) ? serviceParam : null
   const initialType: RequestType = isRequestType(typeParam) ? typeParam : "contact"
   const [sent, setSent] = useState<ServiceRequest | null>(null)
+  const [alreadySent, setAlreadySent] = useState(false)
   const heading = sent ? "Demande envoyée" : TITLES[initialType].title
   return (
     <>
@@ -59,7 +61,7 @@ export function NewServiceRequestPage({ serviceNotice }: { serviceNotice?: React
         {!access.profile ? (
           <CitizenAccessState access={access} returnTo="/espace/demandes/nouvelle" />
         ) : sent ? (
-          <Confirmation request={sent} onAnother={() => setSent(null)} />
+          <Confirmation request={sent} duplicate={alreadySent} onAnother={() => setSent(null)} />
         ) : (
           <>
           {serviceNotice}
@@ -67,7 +69,7 @@ export function NewServiceRequestPage({ serviceNotice }: { serviceNotice?: React
             Écrivez simplement ce qui se passe et, pour un problème, l’endroit exact. Vous pourrez suivre la réponse dans « Mes demandes ».
           </ContextualTip>
           <section aria-label="Formulaire de demande" className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-            <RequestForm key={`${initialType}-${serviceId ?? "aucun"}`} initialType={initialType} serviceId={serviceId} onSent={setSent} />
+            <RequestForm key={`${initialType}-${serviceId ?? "aucun"}`} initialType={initialType} serviceId={serviceId} onSent={(request, duplicate) => { setAlreadySent(duplicate); setSent(request) }} />
           </section>
           </>
         )}
@@ -76,7 +78,7 @@ export function NewServiceRequestPage({ serviceNotice }: { serviceNotice?: React
   )
 }
 
-function RequestForm({ initialType, serviceId, onSent }: { initialType: RequestType; serviceId: string | null; onSent: (request: ServiceRequest) => void }) {
+function RequestForm({ initialType, serviceId, onSent }: { initialType: RequestType; serviceId: string | null; onSent: (request: ServiceRequest, duplicate: boolean) => void }) {
   const [draft, setDraft] = useState<RequestDraft>({ type: initialType, subject: "", description: "", location: "", serviceId, district: "", medicalEmergency: false })
   const districts = useListDistrictsQuery()
   // F86 : repérage local à la saisie ; le message s'affiche tout de suite, sans bloquer l'envoi.
@@ -85,6 +87,8 @@ function RequestForm({ initialType, serviceId, onSent }: { initialType: RequestT
   const [errors, setErrors] = useState<DraftErrors>({})
   const [submit, { isLoading, error }] = useSubmitRequestMutation()
   const sending = useRef(false)
+  // L25 (F81, F82) : protection contre les robots et les envois multiples.
+  const guard = useProtectedSubmit({ apiBaseUrl: siteEnv.apiBaseUrl, form: "demande" })
   const { logout } = useSession()
   const failure = toQueryError(error)
   useEffect(() => {
@@ -104,7 +108,8 @@ function RequestForm({ initialType, serviceId, onSent }: { initialType: RequestT
     }
     sending.current = true
     try {
-      onSent(await submit(draft).unwrap())
+      const request = await guard.submit(draft, () => submit(draft).unwrap())
+      if (request) onSent(request, guard.wasReplay())
     } catch {
       /* L'erreur est annoncée sous le formulaire. */
     } finally {
@@ -196,10 +201,11 @@ function RequestForm({ initialType, serviceId, onSent }: { initialType: RequestT
         </div>
       )}
       <NotAnEmergencyServiceNote />
-      <FormAnnouncement tone="error">{failure && failure.status !== 401 ? failure.data : null}</FormAnnouncement>
+      <FormProtection guard={guard} />
+      <FormAnnouncement tone="error">{guard.refusal ?? (failure && failure.status !== 401 ? failure.data : null)}</FormAnnouncement>
       <button
         type="submit"
-        disabled={isLoading}
+        disabled={isLoading || guard.submitting}
         className="inline-flex items-center gap-2 rounded-xl bg-teal-700 px-5 py-3 font-medium text-white hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-70"
       >
         <Send className="size-5" aria-hidden="true" /> {isLoading ? "Envoi en cours…" : "Envoyer ma demande"}
@@ -208,15 +214,16 @@ function RequestForm({ initialType, serviceId, onSent }: { initialType: RequestT
   )
 }
 
-function Confirmation({ request, onAnother }: { request: ServiceRequest; onAnother: () => void }) {
+function Confirmation({ request, duplicate = false, onAnother }: { request: ServiceRequest; duplicate?: boolean; onAnother: () => void }) {
   const titleRef = useRef<HTMLHeadingElement>(null)
   useEffect(() => titleRef.current?.focus(), [])
   return (
     <section aria-labelledby="titre-confirmation" className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6 sm:p-8">
       <CheckCircle2 className="size-10 text-emerald-700" aria-hidden="true" />
       <h2 id="titre-confirmation" ref={titleRef} tabIndex={-1} className="mt-4 text-2xl font-semibold text-slate-950 focus:outline-none">
-        Votre demande a bien été envoyée
+        {duplicate ? `Votre demande a déjà été envoyée (référence ${request.reference})` : "Votre demande a bien été envoyée"}
       </h2>
+      {duplicate ? <p className="mt-2 text-slate-800">Le second envoi n’a pas créé de nouvelle demande.</p> : null}
       <p className="mt-3 text-slate-800">La mairie l’a reçue le <time dateTime={request.createdAt}>{formatDateTime(request.createdAt)}</time>. Notez son <Link href={"/aide/glossaire#numero-de-suivi" as Route} className="underline underline-offset-4">numéro de suivi</Link> :</p>
       <p className="mt-3 inline-block rounded-xl border border-emerald-300 bg-white px-4 py-2 font-mono text-2xl font-semibold tracking-wide text-slate-950">{request.reference}</p>
       <dl className="mt-5 grid gap-3 sm:grid-cols-2">

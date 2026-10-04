@@ -1,4 +1,4 @@
-import { Activity, BookKey, Building2, CalendarClock, HandHeart, History, Inbox, LayoutDashboard, Lightbulb, MessageCircleWarning, MessagesSquare, Newspaper, ShieldAlert, Siren, Users } from "@boilerplate/shared-ui/components/icon"
+import { Activity, ArchiveRestore, BookKey, Building2, CalendarClock, HandHeart, History, Inbox, LayoutDashboard, Lightbulb, MessageCircleWarning, MessagesSquare, Newspaper, ShieldAlert, ShieldQuestion, Siren, Users } from "@boilerplate/shared-ui/components/icon"
 import type { NavGroup } from "../components/sidebar/nav-main"
 
 export type ModuleCode = "admin" | "requests" | "pilotage" | "participation"
@@ -34,6 +34,8 @@ export const MODULE_NAVIGATION: Record<ModuleCode, NavGroup[]> = {
     { title: "Suivi et sécurité", items: [
       { title: "Journal des actions", url: "/admin/journal", icon: History },
       { title: "Journal de sécurité", url: "/admin/security", icon: ShieldAlert },
+      { title: "Activité inhabituelle", url: "/admin/activite-inhabituelle", icon: ShieldQuestion, description: "Anomalies, robots, données incohérentes" },
+      { title: "Sauvegardes", url: "/admin/sauvegardes", icon: ArchiveRestore, description: "Rapports de sauvegarde et de restauration" },
     ] },
   ],
   requests: [{ title: "Relation citoyenne", items: [

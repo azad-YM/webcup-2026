@@ -174,8 +174,8 @@ Les 15 suivis déjà faits sont conservés. F40 reste en cours (cron et récepti
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
-| F77 | 3 | 1 200 | Rester utilisable pendant une surcharge des serveurs, sans perdre l’essentiel | L24 | API, site, admin | ⬜ |
-| F78 | 4 | 1 600 | Rester stable quand beaucoup d’habitants se connectent en même temps | L24 | API, site | ⬜ |
+| F77 | 3 | 1 200 | Rester utilisable pendant une surcharge des serveurs, sans perdre l’essentiel | L24 | API, site, admin | 🟡 mode allégé (env, `app:platform:degraded`, détection auto), `503` + `Retry-After` sur le non essentiel, bandeau du site, état dans l’admin — [ADR 012](../technique/decisions/012-montee-en-charge-integrite-anti-abus.md) ; non testé, non vérifié dans un navigateur |
+| F78 | 4 | 1 600 | Rester stable quand beaucoup d’habitants se connectent en même temps | L24 | API, site | 🟡 cache public `ETag`/`304`, index, plafond et gigue SSE, `scripts/load/charge.sh`, [réglages](../technique/montee-en-charge.md) ; non testé, non vérifié dans un navigateur |
 | F79 | 1 | 400 | Trier et filtrer par sujet les demandes et signalements consultés | L23 | Citizen, site | 🟡 L23 — filtres et tri par l’adresse dans « Mes demandes » et les signalements publics — [Citizen](../../api/src/Citizen/doc/demandes-a-grande-echelle.md) ; non testé, non vérifié dans un navigateur |
 | F80 | 2 | 800 | Identifier et classer les dossiers prioritaires dans l’espace des agents | L23 | Citizen, admin | 🟡 L23 — priorité automatique modifiable, file triée, filtre, compteur des urgents — [Citizen](../../api/src/Citizen/doc/demandes-a-grande-echelle.md) ; non testé, non vérifié dans un navigateur |
 
@@ -183,8 +183,8 @@ Les 15 suivis déjà faits sont conservés. F40 reste en cours (cron et récepti
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
-| F81 | 3 | 1 230 | Protéger les formulaires contre les envois automatiques de robots, sans gêner l’usage normal | L25 | Shared, site | ⬜ |
-| F82 | 2 | 820 | Empêcher l’envoi multiple d’un même formulaire | L25 | Shared, Citizen, site | ⬜ |
+| F81 | 3 | 1 230 | Protéger les formulaires contre les envois automatiques de robots, sans gêner l’usage normal | L25 | Shared, site | 🟡 jeton HMAC horodaté, champ piège, question en langage clair en cas de doute, refus comptés — [ADR 012](../technique/decisions/012-montee-en-charge-integrite-anti-abus.md) ; non testé, non vérifié dans un navigateur |
+| F82 | 2 | 820 | Empêcher l’envoi multiple d’un même formulaire | L25 | Shared, Citizen, site | 🟡 `Idempotency-Key` (réponse rejouée), `useProtectedSubmit` sur le site et l’admin — [ADR 012](../technique/decisions/012-montee-en-charge-integrite-anti-abus.md) ; non testé, non vérifié dans un navigateur |
 | F83 | 1 | 410 | Accusé de réception avec une référence identifiable, à conserver comme preuve | L23 | Citizen, site | 🟡 L23 — accusé imprimable et téléchargeable, e-mail, vérification publique — [Citizen](../../api/src/Citizen/doc/demandes-a-grande-echelle.md) ; non testé, non vérifié dans un navigateur |
 | F84 | 2 | 820 | Les agents répondent directement à certaines demandes depuis leur interface | L23 | Citizen, admin, site | 🟡 L23 — fil de messages agent ↔ habitant, réponses types, notification et temps réel — [Citizen](../../api/src/Citizen/doc/demandes-a-grande-echelle.md) ; non testé, non vérifié dans un navigateur |
 
@@ -192,9 +192,9 @@ Les 15 suivis déjà faits sont conservés. F40 reste en cours (cron et récepti
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
-| F85 (IA) | 4 | 1 680 | Détecter une activité inhabituelle et des informations incohérentes, protection perceptible | L25 | Audit, IAM, Shared, admin | ⬜ |
+| F85 (IA) | 4 | 1 680 | Détecter une activité inhabituelle et des informations incohérentes, protection perceptible | L25 | Audit, IAM, Shared, admin | 🟡 `app:security:scan`, écran « Activité inhabituelle », alerte en direct, protection automatique du compte, résumé IA avec repli — [Audit](../../api/src/Audit/doc/README.md) ; non testé, non vérifié dans un navigateur |
 | F86 | 4 | 1 680 | Signalement d’une urgence médicale : traitement distinct d’une demande ordinaire, repérable immédiatement | L23 | Citizen, site, admin | 🟡 L23 — 15/112 immédiat sur le site, priorité urgente, alerte temps réel, bandeau et prise en charge horodatée — [Citizen](../../api/src/Citizen/doc/demandes-a-grande-echelle.md) ; non testé, non vérifié dans un navigateur |
-| F87 | 3 | 1 260 | Vérifier que les données importantes peuvent être sauvegardées et restaurées, avec un rapport clair | L24 | API, admin | ⬜ |
+| F87 | 3 | 1 260 | Vérifier que les données importantes peuvent être sauvegardées et restaurées, avec un rapport clair | L24 | API, admin | 🟡 `app:backup:run` / `app:backup:verify` (restauration d’essai, verdict), écran « Sauvegardes » (`admin.backup.read`), [procédure](../technique/montee-en-charge.md#sauvegarde-et-restauration-f87) ; non testé, non vérifié dans un navigateur |
 | F88 | 2 | 840 | Sélectionner des données de suivi et les exporter dans un format simple à réutiliser | L26 | Pilotage, Citizen, admin | ⬜ |
 
 ## Vague 18 (H+19) — « Assistance et résilience »

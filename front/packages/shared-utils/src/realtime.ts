@@ -20,6 +20,7 @@ export type RealtimeMessage = {
 type EventSourceLike = {
   readyState: number
   onerror: ((event: Event) => void) | null
+  onopen?: ((event: Event) => void) | null
   addEventListener(type: string, listener: (event: MessageEvent) => void): void
   close(): void
 }
@@ -53,6 +54,9 @@ export function openRealtimeStream(options: RealtimeStreamOptions): RealtimeStre
   let lastEventId: string | null = null
   let timer: ReturnType<typeof setTimeout> | null = null
   let closed = false
+  // F78 (ADR 012) : après un refus (serveur saturé : 503, ticket expiré), la réouverture s’espace (doublement,
+  // plafonné à 2 minutes) avec un délai aléatoire, pour que les onglets ne se reconnectent pas tous ensemble.
+  let failures = 0
 
   const buildUrl = (ticket: string | null) => {
     const params = new URLSearchParams()
@@ -64,10 +68,12 @@ export function openRealtimeStream(options: RealtimeStreamOptions): RealtimeStre
 
   const scheduleReopen = () => {
     if (closed || timer) return
+    const base = Math.min(120_000, reopenDelayMs * 2 ** Math.min(failures, 6))
+    failures += 1
     timer = setTimeout(() => {
       timer = null
       void open()
-    }, reopenDelayMs)
+    }, base + Math.round(Math.random() * base * 0.5))
   }
 
   const open = async () => {
@@ -82,6 +88,9 @@ export function openRealtimeStream(options: RealtimeStreamOptions): RealtimeStre
     if (closed) return
     const current = createEventSource(buildUrl(ticket))
     source = current
+    current.onopen = () => {
+      failures = 0
+    }
     for (const type of options.eventTypes) {
       current.addEventListener(type, (event: MessageEvent) => {
         if (event.lastEventId) lastEventId = event.lastEventId

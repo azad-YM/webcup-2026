@@ -2,6 +2,8 @@ import { HttpCitizenWorkspaceProvider } from "@/modules/citizen-accounts/core/in
 import { CitizenAccountsHttpGateway } from "@/modules/citizen-accounts/core/infrastructure/for-production/gateway/http/citizen-accounts.http.gateway"
 import { AuthAccountSessionProvider } from "@/modules/auth/core/infrastructure/adapter/citizen-accounts/auth-account-session.provider"
 import { SecurityJournalHttpGateway } from "@/modules/security/core/infrastructure/for-production/gateway/http/security-journal.http.gateway"
+import { OperationsHttpGateway } from "@/modules/security/core/infrastructure/for-production/gateway/http/operations.http.gateway"
+import { SECURITY_EVENTS } from "@/modules/security/core/domain/operations"
 import { AuthSecuritySessionProvider } from "@/modules/auth/core/infrastructure/adapter/security/auth-security-session.provider"
 import { ContentHttpGateway } from "@/modules/content/core/infrastructure/for-production/gateway/http/content.http.gateway"
 import { AuthContentSessionProvider } from "@/modules/auth/core/infrastructure/adapter/content/auth-content-session.provider"
@@ -54,6 +56,7 @@ export class App {
       citizenWorkspaceProvider: new HttpCitizenWorkspaceProvider(apiBaseUrl, new AuthAccountSessionProvider(authSessionGateway, onSessionInvalidated)),
       citizenAccountsGateway: new CitizenAccountsHttpGateway(apiBaseUrl, new AuthAccountSessionProvider(authSessionGateway, onSessionInvalidated)),
       securityJournalGateway: new SecurityJournalHttpGateway(apiBaseUrl, new AuthSecuritySessionProvider(authSessionGateway, onSessionInvalidated)),
+      operationsGateway: new OperationsHttpGateway(apiBaseUrl, new AuthSecuritySessionProvider(authSessionGateway, onSessionInvalidated)),
       authSessionGateway,
       authGateway: new AuthHttpGateway(apiBaseUrl, authSessionGateway, onSessionInvalidated),
       portalLoginGateway: new PortalLoginHttpGateway(apiBaseUrl, siteUrl, authSessionGateway),
@@ -66,7 +69,7 @@ export class App {
       requestQueueGateway: new RequestQueueHttpGateway(apiBaseUrl, requestSession),
       agentDeskGateway: new AgentDeskHttpGateway(apiBaseUrl, requestSession),
       // One stream per tab; the list gathers the events listened to by the admin screens.
-      realtime: new SseRealtimeSubscriber(apiBaseUrl, () => authSessionGateway.getToken(), [...REQUEST_EVENTS, ...DESK_EVENTS]),
+      realtime: new SseRealtimeSubscriber(apiBaseUrl, () => authSessionGateway.getToken(), [...REQUEST_EVENTS, ...DESK_EVENTS, ...SECURITY_EVENTS]),
       contentGateway: new ContentHttpGateway(apiBaseUrl, contentSession),
       participationGateway: new ParticipationHttpGateway(apiBaseUrl, new AuthParticipationSessionProvider(authSessionGateway, onSessionInvalidated)),
       auditJournalGateway: new AuditJournalHttpGateway(apiBaseUrl, new AuthAuditSessionProvider(authSessionGateway, onSessionInvalidated)),

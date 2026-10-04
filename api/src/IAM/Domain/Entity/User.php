@@ -145,6 +145,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function disableEmailVerification(): void { $this->emailVerification = false; }
 
+    // --- F85 (L25) : vérification par code exigée après une activité suspecte ---
+    private ?\DateTimeImmutable $codeRequiredUntil = null;
+
+    /** Le code par e-mail (F53) est exigé à chaque connexion jusqu'à `$until`, même sur un appareil de confiance. */
+    public function requireCodeUntil(\DateTimeImmutable $until): void
+    {
+        if ($this->codeRequiredUntil === null || $until > $this->codeRequiredUntil) {
+            $this->codeRequiredUntil = $until;
+        }
+    }
+
+    public function codeRequiredAt(\DateTimeImmutable $now): bool
+    {
+        return $this->codeRequiredUntil !== null && $this->codeRequiredUntil > $now && $this->contactEmail() !== null;
+    }
+
     /** « Ce n'était pas moi » ou changement de mot de passe : tous les JWT émis jusque-là deviennent invalides. */
     public function revokeAllSessions(): void { ++$this->sessionVersion; }
 

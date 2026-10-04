@@ -1,4 +1,6 @@
 import { useRef, useState, type FormEvent } from "react"
+import { SubmissionRefusedError, useProtectedSubmit } from "@boilerplate/shared-ui/components/a11y"
+import { siteEnv } from "@/config/env"
 import { useRegisterAccountMutation } from "../../../core/application/rtk-api/auth"
 import { RegistrationErrorCode } from "../../../core/application/dto/auth.dto"
 import { hasErrors, validateRegistration, type RegistrationDraft, type RegistrationErrors, type RegistrationField } from "../../../core/domain/registration"
@@ -20,6 +22,8 @@ export function useRegistrationForm(onRegistered: () => void) {
   const [errors, setErrors] = useState<RegistrationErrors>({})
   const [failure, setFailure] = useState<RegistrationFailure | null>(null)
   const submitting = useRef(false)
+  // L25 (F81, F82) : protection contre les robots et les envois multiples.
+  const guard = useProtectedSubmit({ apiBaseUrl: siteEnv.apiBaseUrl, form: "inscription" })
 
   const update = (field: RegistrationField, value: string) => {
     setDraft((current) => ({ ...current, [field]: value }))
@@ -39,10 +43,15 @@ export function useRegistrationForm(onRegistered: () => void) {
     }
     submitting.current = true
     try {
-      await register({ email: draft.email, password: draft.password }).unwrap()
+      const payload = { email: draft.email, password: draft.password }
+      await guard.submit(payload, () => register(payload).unwrap())
       setDraft((current) => ({ ...current, password: "", confirmation: "" }))
       onRegistered()
     } catch (reason) {
+      if (reason instanceof SubmissionRefusedError) {
+        setFailure({ message: reason.message, suggestLogin: false })
+        return
+      }
       const error = toQueryError(reason)
       if (error?.code === RegistrationErrorCode.invalidRegistration && (error.field === "email" || error.field === "password")) {
         setErrors({ [error.field]: error.data })
@@ -60,5 +69,5 @@ export function useRegistrationForm(onRegistered: () => void) {
     }
   }
 
-  return { draft, errors, failure, isLoading, update, submit }
+  return { draft, errors, failure, isLoading: isLoading || guard.submitting, update, submit, guard }
 }

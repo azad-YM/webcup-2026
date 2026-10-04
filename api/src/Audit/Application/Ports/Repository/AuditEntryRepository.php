@@ -27,4 +27,20 @@ interface AuditEntryRepository
      * @return array{actions: list<string>, actors: list<array{id: string|null, label: string}>}
      */
     public function facets(array $hiddenActionPrefixes): array;
+
+    /**
+     * F85 : nombre d'actions par acteur depuis `$since` (hors préfixes exclus), au-delà de `$threshold`.
+     *
+     * @param list<string> $excludedActionPrefixes
+     * @return list<array{actorId: ?string, actorLabel: string, count: int, actions: int}>
+     */
+    public function actorBursts(\DateTimeImmutable $since, array $excludedActionPrefixes, int $threshold): array;
+
+    /**
+     * F85 : nombre d'entrées d'une action donnée par acteur depuis `$since`, avec la somme du détail `$countDetail`
+     * (ex. nombre de fiches affichées), au-delà de `$threshold` entrées.
+     *
+     * @return list<array{actorId: ?string, actorLabel: string, count: int, total: int}>
+     */
+    public function actionBursts(string $action, \DateTimeImmutable $since, int $threshold, ?string $countDetail = null): array;
 }

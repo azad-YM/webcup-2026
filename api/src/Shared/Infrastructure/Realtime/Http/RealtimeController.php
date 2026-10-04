@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Infrastructure\Realtime\Http;
 
 use Shared\Application\Ports\Provider\RealtimeAccountProvider;
+use Shared\Infrastructure\RateLimit\DatabaseRateLimiter;
 use Shared\Infrastructure\Realtime\RealtimeAudience;
 use Shared\Infrastructure\Realtime\RealtimeEventRepository;
 use Shared\Infrastructure\Realtime\RealtimeTicketSigner;
@@ -20,10 +21,16 @@ use Symfony\Component\Routing\Attribute\Route;
  *
  * Connections are short (REALTIME_STREAM_SECONDS, 20 s by default) because each open stream holds a PHP
  * worker on shared hosting; `EventSource` reconnects by itself and resumes from `Last-Event-ID`.
+ *
+ * F78 (ADR 012): the number of streams opened per connection window is capped (`REALTIME_MAX_STREAMS`, counted
+ * with the database rate limiter): beyond it the stream answers `503` with a random `Retry-After`, and screens
+ * keep their periodic refresh. The reconnection delay sent to browsers (`retry:`) is randomized (jitter) so
+ * that thousands of tabs do not reconnect in the same second.
  */
 final readonly class RealtimeController
 {
     private const RETRY_MS = 1000;
+    private const RETRY_JITTER_MS = 4000;
     private const POLL_MICROSECONDS = 1_000_000;
     private const KEEP_ALIVE_SECONDS = 5;
 
@@ -33,6 +40,8 @@ final readonly class RealtimeController
         private RealtimeTicketSigner $tickets,
         private RealtimeAccountProvider $accounts,
         private int $streamSeconds,
+        private ?DatabaseRateLimiter $limiter = null,
+        private int $maxStreams = 0,
     ) {}
 
     /** Exchanges the JWT (Authorization header) for a short-lived ticket usable in the stream URL. */
@@ -59,6 +68,16 @@ final readonly class RealtimeController
                 // The client fetches a new ticket and reopens the stream.
                 return new JsonResponse(['message' => 'Invalid or expired realtime ticket.'], 401);
             }
+        }
+        if ($this->limiter !== null && $this->maxStreams > 0
+            && $this->limiter->consume('realtime_stream', 'all', $this->maxStreams, max(5, $this->streamSeconds)) !== null) {
+            $retryAfter = random_int(15, 60);
+
+            return new JsonResponse(
+                ['code' => 'realtime_busy', 'error' => 'Trop de connexions en direct en ce moment : la page se met à jour régulièrement à la place.', 'retryAfter' => $retryAfter],
+                503,
+                ['Retry-After' => (string) $retryAfter],
+            );
         }
         $topics = $this->audience->topicsFor($userId);
         $resume = $request->headers->get('Last-Event-ID') ?? $request->query->get('lastEventId');
@@ -91,7 +110,7 @@ final readonly class RealtimeController
                 } while (microtime(true) < $deadline);
             },
             headers: ['Cache-Control' => 'no-cache, no-transform', 'X-Accel-Buffering' => 'no'],
-            retry: self::RETRY_MS,
+            retry: self::RETRY_MS + random_int(0, self::RETRY_JITTER_MS),
         );
     }
 }

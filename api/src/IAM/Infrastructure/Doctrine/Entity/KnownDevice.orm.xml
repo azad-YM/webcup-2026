@@ -4,6 +4,9 @@
     <unique-constraints>
       <unique-constraint name="UNIQ_IAM_DEVICE_USER_HASH" columns="user_id,device_hash"/>
     </unique-constraints>
+    <indexes>
+      <index name="IDX_IAM_DEVICE_FIRST_SEEN" columns="first_seen_at"/>
+    </indexes>
     <id name="id" type="string" length="36"/>
     <field name="userId" column="user_id" type="string" length="36"/>
     <field name="deviceHash" column="device_hash" type="string" length="64"/>

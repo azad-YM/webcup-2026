@@ -7,6 +7,8 @@ import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
 import { EmptyState, ErrorState, LoadingState, SkeletonCards } from "@/modules/shared/ui/components/states"
 import { FormAnnouncement, SelectField, TextAreaField, TextField } from "@/modules/shared/ui/components/form-field"
+import { FormProtection, useProtectedSubmit } from "@boilerplate/shared-ui/components/a11y"
+import { siteEnv } from "@/config/env"
 import { useSession } from "@/modules/shared/ui/store-provider"
 import { PARTICIPATION_POLLING_MS, useListDistrictsQuery, useListIdeasQuery, useProposeIdeaMutation } from "../../core/application/rtk-api/city-participation"
 import { NOT_CITIZEN } from "../../core/domain/participation"
@@ -21,6 +23,8 @@ function IdeaForm() {
   const [sent, setSent] = useState<MyIdea | null>(null)
   const districts = useListDistrictsQuery()
   const [propose, { isLoading, error }] = useProposeIdeaMutation()
+  // L25 (F81, F82) : protection contre les robots et les envois multiples.
+  const guard = useProtectedSubmit({ apiBaseUrl: siteEnv.apiBaseUrl, form: "idee" })
   useLogoutOnUnauthorized(error)
   const sending = useRef(false)
   const receipt = useRef<HTMLHeadingElement>(null)
@@ -35,7 +39,9 @@ function IdeaForm() {
     if (Object.keys(found).length > 0) return
     sending.current = true
     try {
-      setSent(await propose(draft).unwrap())
+      const idea = await guard.submit(draft, () => propose(draft).unwrap())
+      if (idea === undefined) return
+      setSent(idea)
       setDraft(EMPTY)
     } catch {
       /* Message affiché par FormAnnouncement. */
@@ -61,8 +67,9 @@ function IdeaForm() {
           <TextField id="idee-titre" label="Titre de votre idée" required maxLength={IDEA_LIMITS.title} error={errors.title} value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} />
           <TextAreaField id="idee-description" label="Description" hint="Expliquez ce que vous proposez et pourquoi. N’indiquez pas de données personnelles : les idées sont visibles par tous les habitants." required rows={6} maxLength={IDEA_LIMITS.description} error={errors.description} value={draft.description} onChange={(event) => setDraft({ ...draft, description: event.target.value })} />
           <SelectField id="idee-quartier" label="Quartier concerné" optional placeholder="Toute la ville" options={(districts.data ?? []).map((value) => ({ value, label: value }))} value={draft.district} onChange={(event) => setDraft({ ...draft, district: event.target.value })} />
-          <FormAnnouncement tone="error">{failure && failure.status !== 401 ? failure.data : null}</FormAnnouncement>
-          <button type="submit" disabled={isLoading} className="rounded-xl bg-teal-700 px-5 py-3 font-medium text-white hover:bg-teal-800 disabled:opacity-60">{isLoading ? "Envoi…" : "Envoyer mon idée"}</button>
+          <FormProtection guard={guard} duplicateMessage="Votre idée a déjà été envoyée : elle n’a pas été enregistrée une seconde fois." />
+          <FormAnnouncement tone="error">{guard.refusal ?? (failure && failure.status !== 401 ? failure.data : null)}</FormAnnouncement>
+          <button type="submit" disabled={isLoading || guard.submitting} className="rounded-xl bg-teal-700 px-5 py-3 font-medium text-white hover:bg-teal-800 disabled:opacity-60">{isLoading ? "Envoi…" : "Envoyer mon idée"}</button>
         </form>
       )}
     </div>

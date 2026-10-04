@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Infrastructure\RateLimit;
 
+use Shared\Application\Ports\Service\AbuseSignals;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -24,6 +25,7 @@ final readonly class RateLimitListener
         private DatabaseRateLimiter $limiter,
         #[Autowire('%app.rate_limits%')] private array $rules,
         #[Autowire('%app.rate_limit_enabled%')] private bool $enabled = true,
+        private ?AbuseSignals $signals = null,
     ) {}
 
     public function __invoke(RequestEvent $event): void
@@ -37,10 +39,13 @@ final readonly class RateLimitListener
             return;
         }
         $rule = $this->rules[$route];
-        $retryAfter = $this->limiter->consume($route, (string) ($request->getClientIp() ?? 'inconnu'), (int) $rule['limit'], (int) $rule['window']);
+        $client = (string) ($request->getClientIp() ?? 'inconnu');
+        $retryAfter = $this->limiter->consume($route, $client, (int) $rule['limit'], (int) $rule['window']);
         if ($retryAfter === null) {
             return;
         }
+        // F85 (ADR 012) : une rafale refusée devient un signal lu par le détecteur d'activité inhabituelle.
+        $this->signals?->record(AbuseSignals::RATE_LIMITED, $route, $client);
         $minutes = (int) ceil($retryAfter / 60);
         throw new TooManyRequestsHttpException($retryAfter, sprintf(
             'Trop de tentatives pour %s en peu de temps. Pour protéger vos données, patientez %s avant de réessayer.',
