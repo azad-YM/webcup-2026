@@ -1,4 +1,7 @@
+import { activeSubmission, recordSubmissionResponse, type SubmissionContext } from "./submission-guard"
+
 export type ApiErrorPayload = {
+  code?: string
   error?: string
   message?: string
   path?: string
@@ -147,7 +150,9 @@ export class ApiClient {
     path: string,
     options: { headers?: Record<string, string>; body?: unknown }
   ): Promise<TResponse> {
-    const headers = { ...(options.headers ?? {}) }
+    // L25 (ADR 012) : pendant un envoi protégé, la première écriture porte la clé d’idempotence et la preuve anti-robot.
+    const submission = method !== "GET" ? activeSubmission() : null
+    const headers = { ...(options.headers ?? {}), ...(submission?.headers ?? {}) }
     const hasBody = options.body !== undefined
 
     if (hasBody && !headers["Content-Type"]) {
@@ -160,12 +165,13 @@ export class ApiClient {
       body: hasBody ? JSON.stringify(options.body) : undefined,
     })
 
-    return this.parseResponse<TResponse>(response)
+    return this.parseResponse<TResponse>(response, submission)
   }
 
-  private async parseResponse<TResponse>(response: Response): Promise<TResponse> {
+  private async parseResponse<TResponse>(response: Response, submission?: SubmissionContext | null): Promise<TResponse> {
     const rawText = await response.text()
     const parsedData = this.safeJsonParse(rawText)
+    if (submission) recordSubmissionResponse(submission, response, parsedData)
 
     if (!response.ok) {
       const payload = this.isApiErrorPayload(parsedData) ? parsedData : undefined
