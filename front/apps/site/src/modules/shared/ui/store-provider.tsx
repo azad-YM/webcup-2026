@@ -36,6 +36,8 @@ import { AuthIdentityCodeAdapter } from "@/modules/auth/core/infrastructure/adap
 import { SseRealtimeSubscriber } from "../core/infrastructure/realtime/sse-realtime.subscriber"
 import { HttpPublicContentGateway } from "@/modules/public/core/infrastructure/for-production/gateway/http/public-content.http.gateway"
 import { OfficialMessageReadLocalStorageGateway } from "@/modules/public/core/infrastructure/for-production/gateway/local/official-message-read.local-storage.gateway"
+import { SafetyKitLocalStorageGateway } from "@/modules/public/core/infrastructure/for-production/gateway/local/safety-kit.local-storage.gateway"
+import { TransportHttpGateway } from "@/modules/public/core/infrastructure/for-production/gateway/http/transport.http.gateway"
 import { AlertsHttpGateway } from "@/modules/public/core/infrastructure/for-production/gateway/http/alerts.http.gateway"
 import { AssistanceHttpGateway } from "@/modules/public/core/infrastructure/for-production/gateway/http/assistance.http.gateway"
 import { OrientationHttpGateway } from "@/modules/assistance/core/infrastructure/for-production/gateway/http/orientation.http.gateway"
@@ -93,6 +95,8 @@ function createDependencies(): Dependencies {
     publicationGateway: publicContent,
     alertsGateway: new AlertsHttpGateway(siteEnv.apiBaseUrl, publicSession),
     officialMessageReadGateway: new OfficialMessageReadLocalStorageGateway(),
+    safetyKitGateway: new SafetyKitLocalStorageGateway(),
+    transportGateway: new TransportHttpGateway(siteEnv.apiBaseUrl),
     cityFeedGateway: new RealtimeCityFeedAdapter(realtime),
     serviceFinderGateway: assistance,
     explanationGateway: assistance,

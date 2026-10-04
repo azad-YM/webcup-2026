@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import type { Route } from "next"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
 

@@ -1,6 +1,6 @@
 "use client"
 import { useEffect } from "react"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import { ArrowLeft, FileDown, Printer } from "@boilerplate/shared-ui/components/icon"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
 import { useSession } from "@/modules/shared/ui/store-provider"

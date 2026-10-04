@@ -1,5 +1,5 @@
 "use client"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import { polling } from "@/modules/shared/ui/sobriety/polling"
 import { LogIn } from "@boilerplate/shared-ui/components/icon"
 import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"

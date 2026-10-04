@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Assistance\Application\Controller;
 
 use Assistance\Application\Query\Explain\ExplainPassageQuery;
+use Assistance\Application\Query\FindTransportAlternative\FindTransportAlternativeQuery;
 use Assistance\Application\Query\Orient\OrientQuery;
 use Assistance\Application\Query\RefineServiceSearch\RefineServiceSearchQuery;
 use Assistance\Application\Query\SearchServices\SearchServicesQuery;
@@ -47,6 +48,13 @@ final class AssistanceController extends AppController
     /** F90 : explication plus simple d'un passage, à la demande. */
     #[Route('/api/assistance/explanations', name: 'assistance_explain', methods: ['POST'], format: 'json')]
     public function explain(#[MapRequestPayload] ExplainPassageQuery $query): JsonResponse
+    {
+        return $this->dispatchQuery($query);
+    }
+
+    /** F97 (IA) : solution de remplacement quand des lignes de transport sont interrompues (règles + rédaction par le modèle). */
+    #[Route('/api/assistance/transport', name: 'assistance_transport', methods: ['POST'], format: 'json')]
+    public function transport(#[MapRequestPayload] FindTransportAlternativeQuery $query): JsonResponse
     {
         return $this->dispatchQuery($query);
     }

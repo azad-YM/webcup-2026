@@ -12,18 +12,22 @@ const BackupsPage = lazy(() => import("@/modules/security/ui/pages/backups").the
 const LoginSecurityPage = lazy(() => import("@/modules/security/ui/pages/login-security").then((module) => ({ default: module.LoginSecurityPage })))
 const CitizenAccountsPage = lazy(() => import("@/modules/citizen-accounts/ui/pages/citizen-accounts").then((module) => ({ default: module.CitizenAccountsPage })))
 const NewcomerReceptionPage = lazy(() => import("@/modules/citizen-accounts/ui/pages/newcomer-reception").then((module) => ({ default: module.NewcomerReceptionPage })))
-const SpacesPage = lazy(() => import("@/modules/auth/ui/pages/spaces").then((module) => ({ default: module.SpacesPage })))
+const SpacesPage = lazy(() => import("./workspace-home").then((module) => ({ default: module.WorkspaceHomePage })))
+const SecurityEventsPage = lazy(() => import("@/modules/security/ui/pages/security-events").then((module) => ({ default: module.SecurityEventsPage })))
 const MembersPage = lazy(() => import("@/modules/admin/ui/pages/members").then((module) => ({ default: module.MembersPage })))
 const AdminDashboardPage = lazy(() => import("@/modules/admin/ui/pages/dashboard").then((module) => ({ default: module.AdminDashboardPage })))
 const RolesPage = lazy(() => import("@/modules/admin/ui/pages/roles").then((module) => ({ default: module.RolesPage })))
 const WebcupFeedPage = lazy(() => import("@/modules/pilotage/ui/pages/webcup-feed").then((module) => ({ default: module.WebcupFeedPage })))
 const ActivityDashboardPage = lazy(() => import("@/modules/pilotage/ui/pages/activity-dashboard").then((module) => ({ default: module.ActivityDashboardPage })))
+const ServiceUsagePage = lazy(() => import("@/modules/pilotage/ui/pages/service-usage").then((module) => ({ default: module.ServiceUsagePage })))
+const ActivityReportPage = lazy(() => import("@/modules/pilotage/ui/pages/activity-report").then((module) => ({ default: module.ActivityReportPage })))
 const DataExportsPage = lazy(() => import("@/modules/pilotage/ui/pages/data-exports").then((module) => ({ default: module.DataExportsPage })))
 const RequestQueuePage = lazy(() => import("@/modules/requests/ui/pages/request-queue").then((module) => ({ default: module.RequestQueuePage })))
 const AppointmentsPage = lazy(() => import("@/modules/requests/ui/pages/appointments").then((module) => ({ default: module.AppointmentsPage })))
 const ConcernsPage = lazy(() => import("@/modules/requests/ui/pages/concerns").then((module) => ({ default: module.ConcernsPage })))
 const PublicationsPage = lazy(() => import("@/modules/content/ui/pages/publications").then((module) => ({ default: module.PublicationsPage })))
 const AlertsPage = lazy(() => import("@/modules/content/ui/pages/alerts").then((module) => ({ default: module.AlertsPage })))
+const TransportLinesPage = lazy(() => import("@/modules/content/ui/pages/transport-lines").then((module) => ({ default: module.TransportLinesPage })))
 const ServicesPage = lazy(() => import("@/modules/content/ui/pages/services").then((module) => ({ default: module.ServicesPage })))
 const ParticipationProjectsPage = lazy(() => import("@/modules/participation/ui/pages/projects").then((module) => ({ default: module.ParticipationProjectsPage })))
 const ParticipationConsultationsPage = lazy(() => import("@/modules/participation/ui/pages/consultations").then((module) => ({ default: module.ParticipationConsultationsPage })))
@@ -75,6 +79,7 @@ export const router = createBrowserRouter([
     element: <ProtectedRoutes />,
     children: [
       { path: "/espaces", element: page(SpacesPage) },
+      { path: "/securite", element: page(SecurityEventsPage) },
       {
         path: "/admin",
         element: <Outlet />,
@@ -96,6 +101,7 @@ export const router = createBrowserRouter([
           { index: true, element: page(PublicationsPage) },
           { path: "alertes", element: page(AlertsPage) },
           { path: "services", element: page(ServicesPage) },
+          { path: "transports", element: page(TransportLinesPage) },
         ],
       },
       {
@@ -105,6 +111,8 @@ export const router = createBrowserRouter([
           { index: true, element: page(WebcupFeedPage) },
           { path: "tableau-de-bord", element: page(ActivityDashboardPage) },
           { path: "exports", element: page(DataExportsPage) },
+          { path: "services", element: page(ServiceUsagePage) },
+          { path: "rapport", element: page(ActivityReportPage) },
         ],
       },
       {

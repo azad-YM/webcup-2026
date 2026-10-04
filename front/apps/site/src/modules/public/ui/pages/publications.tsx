@@ -1,5 +1,5 @@
 "use client"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import { polling } from "@/modules/shared/ui/sobriety/polling"
 import { useSearchParams } from "next/navigation"
 import { ArrowLeft } from "@boilerplate/shared-ui/components/icon"

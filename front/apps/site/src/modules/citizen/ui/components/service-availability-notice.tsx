@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import type { Route } from "next"
 import { StatusBadge } from "@boilerplate/shared-ui/components/a11y"
 import type { ServiceAvailability } from "../../core/domain/appointment"

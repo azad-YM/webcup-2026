@@ -1,5 +1,6 @@
 "use client"
 import { useEffect, useState } from "react"
+import Link from "@/modules/shared/ui/link"
 import { useAccessibilityPreferences } from "@boilerplate/shared-ui/components/a11y"
 import { DEGRADED_MODE_EVENT as PLATFORM_DEGRADED_EVENT, watchPlatformStatus } from "@boilerplate/shared-utils/platform-status"
 import { siteEnv } from "@/config/env"
@@ -16,6 +17,20 @@ type NetworkInformation = EventTarget & { saveData?: boolean; effectiveType?: st
 type WorkerMessage = { source?: string; type?: "slow" | "fresh" | "cached" | "degraded"; at?: number | null; offline?: boolean }
 
 const connection = () => (typeof navigator !== "undefined" ? (navigator as Navigator & { connection?: NetworkInformation }).connection : undefined)
+
+/** F96 : l’appareil demande explicitement d’économiser les données (réglage du téléphone ou du navigateur). */
+const savesData = () => connection()?.saveData === true
+
+/**
+ * F93 : données publiques vitales gardées par le service worker dès la première visite (alertes, quartiers,
+ * coordonnées des services), pour que « L’essentiel » reste complet si le réseau tombe ensuite.
+ * Le service worker ne les télécharge que s’il ne les a pas déjà.
+ */
+function warmEssentialData(worker: ServiceWorkerContainer) {
+  const api = siteEnv.apiBaseUrl.replace(/\/$/, "")
+  const urls = ["/communication/alerts", "/administration/districts", "/administration/services", "/administration/transport-lines"].map((path) => `${api}${path}`)
+  void worker.ready.then((registration) => registration.active?.postMessage({ type: "warm", urls })).catch(() => undefined)
+}
 
 /** Économie de données demandée ou réseau très lent (2G, débit inférieur à 0,5 Mb/s). */
 function looksSlow() {
@@ -72,8 +87,10 @@ export function ConnectionStatus() {
     // L24 (F77) : l’API annonce son mode allégé (surcharge) ; l’événement active le mode léger pour la visite.
     const stopWatching = watchPlatformStatus(siteEnv.apiBaseUrl, () => undefined, 180_000)
     if (worker && process.env.NODE_ENV === "production") {
-      worker.register("/sw.js", { scope: "/" }).catch(() => undefined)
+      worker.register("/sw.js", { scope: "/" }).then(() => warmEssentialData(worker)).catch(() => undefined)
     }
+    // F96 : économie de données demandée par l’appareil → mode léger pour la visite, sans attendre de clic.
+    if (savesData()) activateTemporaryLightMode("save-data")
     return () => {
       window.removeEventListener("online", onOnline)
       window.removeEventListener("offline", onOffline)
@@ -100,13 +117,27 @@ export function ConnectionStatus() {
   else if (recovered) notice = { tone: "info", text: t.back }
 
   const suggest = prefs.ready && slowNetwork && !lightMode.active && !prefs.isHintSeen(SUGGESTION_HINT)
+  // F93/F94 : pendant une panne ou une surcharge, l’essentiel est à un clic.
+  const incident = !online || slow || lightMode.temporaryReason === "degraded"
 
   return (
     <div role="status" aria-live="polite" className="empty:hidden">
       {notice && (
         <p className={`px-4 py-2 text-center text-sm font-medium sm:px-6 lg:px-8 ${notice.tone === "warn" ? "bg-amber-100 text-amber-950" : "bg-teal-50 text-teal-950"}`}>
           {notice.text}
+          {incident && <> <Link href="/essentiel" className="underline underline-offset-4">{t.essentialsLink}</Link></>}
         </p>
+      )}
+      {!notice && incident && (
+        <p className="bg-slate-100 px-4 py-2 text-center text-sm font-medium text-slate-900">
+          <Link href="/essentiel" className="underline underline-offset-4">{t.essentialsLink}</Link>
+        </p>
+      )}
+      {lightMode.temporaryReason === "save-data" && (
+        <div className="flex flex-wrap items-center justify-center gap-3 bg-slate-100 px-4 py-2 text-sm text-slate-900">
+          <span>{t.saveDataOn}</span>
+          <button type="button" onClick={() => endTemporaryLightMode(lightMode.chosen)} className="rounded-lg border border-slate-400 bg-white px-3 py-1 font-medium hover:bg-slate-50">{t.degradedRestore}</button>
+        </div>
       )}
       {lightMode.temporaryReason === "degraded" && (
         <div className="flex flex-wrap items-center justify-center gap-3 bg-slate-100 px-4 py-2 text-sm text-slate-900">

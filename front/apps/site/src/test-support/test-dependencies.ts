@@ -62,6 +62,8 @@ export function createTestContext(overrides: Partial<Dependencies> = {}) {
     publicationGateway,
     alertsGateway: new InMemoryAlertsGateway(),
     officialMessageReadGateway: { readIds: async () => [], markRead: async (id: string) => [id] },
+    safetyKitGateway: { district: async () => null, chooseDistrict: async (district: string | null) => district, savedAlerts: async () => null, saveAlerts: async (alerts, savedAt) => ({ alerts, savedAt }) },
+    transportGateway: { listLines: async () => [], findTrip: async () => ({ answer: "", from: null, to: null, options: [], source: "local" as const, emergency: null }) },
     cityFeedGateway: new InMemoryCityFeedGateway(),
     serviceFinderGateway: {
       search: async ({ query }) => ({ query, results: [], suggestion: null, reformulation: null, source: "local", modelAvailable: false }),

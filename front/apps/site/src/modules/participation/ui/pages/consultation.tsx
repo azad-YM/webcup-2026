@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useRef, useState, type FormEvent } from "react"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import { useSearchParams } from "next/navigation"
 import { ArrowLeft, CalendarClock, LogIn } from "@boilerplate/shared-ui/components/icon"
 import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"

@@ -53,6 +53,51 @@ export type MunicipalService = {
   disabledReason?: string
   /** F89 : version en langage clair, relue et validée par un agent (vide si absente). */
   plainLanguage?: string
+  /** F99 : services proposés par un partenaire, avec leur disponibilité et la prochaine action. */
+  offers?: PartnerOffer[]
+}
+
+/**
+ * F99 : un service proposé par un partenaire. `available` disponible, `limited` places limitées,
+ * `full` complet, `paused` suspendu, `soon` bientôt ; l’action est la prochaine étape pour l’habitant.
+ */
+export type OfferStatus = "available" | "limited" | "full" | "paused" | "soon"
+export type OfferActionKind = "call" | "visit" | "book" | "register" | "website" | "email"
+export type PartnerOffer = {
+  id: string
+  title: string
+  description: string
+  audience: string
+  status: OfferStatus
+  statusNote: string
+  nextAvailableAt: string | null
+  action: { kind: OfferActionKind; label: string; target: string }
+}
+
+export const isOfferAvailable = (offer: Pick<PartnerOffer, "status">) => offer.status === "available" || offer.status === "limited"
+
+/** Lien de la prochaine action : la cible de l’offre, sinon les coordonnées du partenaire. `null` si rien d’exploitable. */
+export function offerActionHref(offer: PartnerOffer, partner: Pick<MunicipalService, "contact" | "location">): { href: string; external: boolean } | null {
+  const target = offer.action.target.trim()
+  switch (offer.action.kind) {
+    case "call": {
+      const phone = target || partner.contact.phone || ""
+      return phone ? { href: `tel:${phone.replace(/[^\d+]/g, "")}`, external: false } : null
+    }
+    case "email": {
+      const email = target || partner.contact.email || ""
+      return email ? { href: `mailto:${email}`, external: false } : null
+    }
+    case "visit": {
+      // Même itinéraire OpenStreetMap que `directionsUrl` (service-places).
+      if (partner.location) return { href: `https://www.openstreetmap.org/directions?route=%3B${partner.location.lat}%2C${partner.location.lng}`, external: true }
+      return null
+    }
+    default: {
+      const url = target || partner.contact.website || ""
+      return /^https?:\/\//i.test(url) ? { href: url, external: true } : null
+    }
+  }
 }
 
 /** F74 : horaires structurés (jour 1 = lundi … 7 = dimanche, `HH:MM`) et contact d’une association partenaire. */

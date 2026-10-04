@@ -1,6 +1,6 @@
 "use client"
 import { lazy, Suspense, useEffect, useId, useRef, useState } from "react"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import type { Route } from "next"
 import { usePathname } from "next/navigation"
 import { MessageCircleQuestion, X } from "@boilerplate/shared-ui/components/icon"

@@ -29,7 +29,7 @@ La commande refuse de s’exécuter si l’administrateur n’existe pas et ne f
 | 3 agents | `agent.accueil@`, `agent.communication@`, `agent.technique@` — mot de passe `password` |
 | 20 citoyens | `citoyen01@` … `citoyen20@` — mot de passe `password`, profil complet (nom, téléphone, adresse, quartier) |
 | 13 services | catalogue de la ville avec horaires, carte, 1 service en maintenance, 4 services d’urgence, 1 partenaire, horaires de navettes |
-| Communication | 6 publications (dont 1 brouillon), 2 alertes (quartier Port, ville), 1 message officiel du Haut Conseil |
+| Communication | 6 publications (dont 1 brouillon), 4 alertes (vents forts quartier Port, maintenance du réseau, coupure d’électricité du secteur nord F101, tempête solaire annoncée dans 30 min F104), 1 message officiel du Haut Conseil |
 | Demandes | 22 demandes et signalements : statuts variés, commentaires et réponses d’agents, priorités, 1 urgence médicale non prise en charge, soutiens (dont un signalement à 12 soutiens), 2 signalements liés |
 | Inquiétudes | 4, dont 2 répondues |
 | Participation | 3 projets, 3 consultations (choix, avis, à venir) avec réponses de 14 citoyens, 6 idées suivies, 10 avis sur les services dont 3 avec réponse |

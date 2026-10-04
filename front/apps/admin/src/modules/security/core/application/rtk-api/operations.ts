@@ -1,7 +1,7 @@
 import { withUseCase, type UseCase } from "@/modules/shared/core/config/use-cases"
 import type { Dependencies } from "@/modules/shared/core/config/dependencies"
 import { securityApi } from "./security"
-import { SECURITY_EVENTS, type Anomaly, type AnomalyBoard, type AnomalyFilters, type AnomalyStatus, type AnomalySummary, type BackupBoard, type PlatformStatus, type ScanResult } from "../../domain/operations"
+import { SECURITY_EVENTS, type Anomaly, type AnomalyBoard, type AnomalyFilters, type AnomalyStatus, type AnomalySummary, type BackupBoard, type PlatformStatus, type ScanResult, type SecurityEventFeed } from "../../domain/operations"
 
 const anomalies: UseCase<AnomalyFilters, AnomalyBoard> = async (_d, _g, dependencies, filters) => dependencies.operationsGateway.anomalies(filters)
 const scan: UseCase<void, ScanResult> = async (_d, _g, dependencies) => dependencies.operationsGateway.scan()
@@ -9,9 +9,10 @@ const changeStatus: UseCase<{ id: string; status: AnomalyStatus }, Anomaly> = as
 const summary: UseCase<void, AnomalySummary> = async (_d, _g, dependencies) => dependencies.operationsGateway.summary()
 const backups: UseCase<void, BackupBoard> = async (_d, _g, dependencies) => dependencies.operationsGateway.backups()
 const platformStatus: UseCase<void, PlatformStatus> = async (_d, _g, dependencies) => dependencies.operationsGateway.platformStatus()
+const securityEvents: UseCase<number, SecurityEventFeed> = async (_d, _g, dependencies, limit) => dependencies.operationsGateway.securityEvents(limit)
 
 /** F85, F87, F77 : endpoints injectés dans l'API RTK du module sécurité (même cache, même nettoyage de session). */
-export const operationsApi = securityApi.enhanceEndpoints({ addTagTypes: ["Anomalies", "AnomalySummary", "Backups", "Platform"] }).injectEndpoints({
+export const operationsApi = securityApi.enhanceEndpoints({ addTagTypes: ["Anomalies", "AnomalySummary", "Backups", "Platform", "SecurityEvents"] }).injectEndpoints({
   endpoints: (build) => ({
     anomalies: build.query<AnomalyBoard, AnomalyFilters>({
       queryFn: withUseCase(anomalies),
@@ -31,10 +32,26 @@ export const operationsApi = securityApi.enhanceEndpoints({ addTagTypes: ["Anoma
       },
     }),
     scanAnomalies: build.mutation<ScanResult, void>({ queryFn: withUseCase(scan), invalidatesTags: ["Anomalies", "AnomalySummary"] }),
-    changeAnomalyStatus: build.mutation<Anomaly, { id: string; status: AnomalyStatus }>({ queryFn: withUseCase(changeStatus), invalidatesTags: ["Anomalies", "AnomalySummary"] }),
+    changeAnomalyStatus: build.mutation<Anomaly, { id: string; status: AnomalyStatus }>({ queryFn: withUseCase(changeStatus), invalidatesTags: ["Anomalies", "AnomalySummary", "SecurityEvents"] }),
     anomalySummary: build.query<AnomalySummary, void>({ queryFn: withUseCase(summary), providesTags: ["AnomalySummary"] }),
     backups: build.query<BackupBoard, void>({ queryFn: withUseCase(backups), providesTags: ["Backups"] }),
     platformStatus: build.query<PlatformStatus, void>({ queryFn: withUseCase(platformStatus), providesTags: ["Platform"] }),
+    // F100 : une anomalie grave détectée en direct recharge le fil des événements.
+    securityEvents: build.query<SecurityEventFeed, number>({
+      queryFn: withUseCase(securityEvents),
+      providesTags: ["SecurityEvents"],
+      async onCacheEntryAdded(_limit, { extra, dispatch, cacheDataLoaded, cacheEntryRemoved }) {
+        let unsubscribe: () => void = () => undefined
+        try {
+          await cacheDataLoaded
+          unsubscribe = (extra as Dependencies).realtime.subscribe(SECURITY_EVENTS, () => dispatch(operationsApi.util.invalidateTags(["SecurityEvents"])))
+        } catch {
+          /* L’actualisation périodique prend le relais. */
+        }
+        await cacheEntryRemoved
+        unsubscribe()
+      },
+    }),
   }),
 })
 
@@ -45,4 +62,5 @@ export const {
   useAnomalySummaryQuery,
   useBackupsQuery,
   usePlatformStatusQuery,
+  useSecurityEventsQuery,
 } = operationsApi

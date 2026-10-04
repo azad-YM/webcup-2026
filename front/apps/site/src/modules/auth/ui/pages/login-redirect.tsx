@@ -1,6 +1,6 @@
 "use client"
 import { useEffect } from "react"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 
 /**
  * Ancienne adresse de connexion, encore utilisée par l’admin : on conserve

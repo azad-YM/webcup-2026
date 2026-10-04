@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState } from "react"
 import { polling } from "@/modules/shared/ui/sobriety/polling"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import type { Route } from "next"
 import { useSearchParams } from "next/navigation"
 import { ArrowLeft, Clock, MapPin, Phone } from "@boilerplate/shared-ui/components/icon"
@@ -166,6 +166,8 @@ function TransportTimetable({ transport }: { transport: NonNullable<MunicipalSer
         <div><dt className="font-semibold">Horaires</dt><dd className="mt-1 whitespace-pre-line">{transport.timetable}</dd></div>
         {transport.information && <div><dt className="font-semibold">Informations pratiques</dt><dd className="mt-1 whitespace-pre-line">{transport.information}</dd></div>}
       </dl>
+      {/* F97 : état des lignes en temps réel et solutions de remplacement. */}
+      <p className="mt-4"><Link href="/transports" className="font-medium text-teal-800 underline underline-offset-4">État des lignes et solutions de remplacement</Link></p>
     </section>
   )
 }

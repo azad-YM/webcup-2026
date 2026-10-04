@@ -1,7 +1,7 @@
 import { ApiClient, ApiHttpError } from "@boilerplate/shared-utils/api-client"
 import type { OperationsGateway } from "../../../../application/ports/gateway/operations.gateway"
 import type { SecuritySessionProvider } from "../../../../application/ports/provider/security-session.provider"
-import type { Anomaly, AnomalyBoard, AnomalyFilters, AnomalyStatus, AnomalySummary, BackupBoard, PlatformStatus, ScanResult } from "../../../../domain/operations"
+import type { Anomaly, AnomalyBoard, AnomalyFilters, AnomalyStatus, AnomalySummary, BackupBoard, PlatformStatus, ScanResult, SecurityEventFeed } from "../../../../domain/operations"
 
 /** `GET/POST/PUT /api/audit/anomalies…` (F85), `GET /api/platform/backups` (F87), `GET /api/platform/status` (F77). */
 export class OperationsHttpGateway extends ApiClient implements OperationsGateway {
@@ -45,5 +45,9 @@ export class OperationsHttpGateway extends ApiClient implements OperationsGatewa
 
   platformStatus(): Promise<PlatformStatus> {
     return this.run(() => this.get<PlatformStatus>("/platform/status"), "État de la plateforme indisponible.")
+  }
+
+  securityEvents(limit: number): Promise<SecurityEventFeed> {
+    return this.run(() => this.getAuth<SecurityEventFeed>(`/audit/security-events?limit=${limit}`), "Les événements de sécurité sont réservés aux membres de l’administration.")
   }
 }

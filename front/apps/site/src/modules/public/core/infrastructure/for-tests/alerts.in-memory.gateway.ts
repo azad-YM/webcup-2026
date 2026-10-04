@@ -13,6 +13,10 @@ export class InMemoryAlertsGateway implements AlertsGateway {
     return this.alerts
   }
 
+  async listDistricts() {
+    return ["Nord", "Sud", "Est", "Ouest", "Centre", "Port"]
+  }
+
   async listOfficialMessages() {
     return this.alerts.filter((alert) => alert.category === "official")
   }

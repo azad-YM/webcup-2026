@@ -1,5 +1,5 @@
 "use client"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import { ArrowRight, Building2, Lightbulb, ListChecks, MessagesSquare } from "@boilerplate/shared-ui/components/icon"
 import { useListConsultationsQuery } from "../../core/application/rtk-api/city-participation"
 

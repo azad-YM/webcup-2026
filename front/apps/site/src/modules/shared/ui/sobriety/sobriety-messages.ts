@@ -21,7 +21,9 @@ export const SOBRIETY_MESSAGES = defineMessages({
     draftCleared: "Brouillon effacé.",
     close: "Fermer",
     mapLight: "Mode léger : la carte n’est pas chargée. La liste ci-dessous présente les mêmes lieux, avec leur adresse.",
-    mapAnyway: "Afficher la carte quand même"
+    mapAnyway: "Afficher la carte quand même",
+    essentialsLink: "Voir l’essentiel : alertes, consignes et numéros utiles",
+    saveDataOn: "Mode léger activé automatiquement : votre appareil demande d’économiser les données. L’essentiel reste affiché."
   },
   en: {
     offline: "Offline",
@@ -42,7 +44,9 @@ export const SOBRIETY_MESSAGES = defineMessages({
     draftCleared: "Draft deleted.",
     close: "Close",
     mapLight: "Light mode: the map is not loaded. The list below shows the same places, with their address.",
-    mapAnyway: "Show the map anyway"
+    mapAnyway: "Show the map anyway",
+    essentialsLink: "See the essentials: alerts, instructions and useful numbers",
+    saveDataOn: "Light mode turned on automatically: your device asks to save data. Essential information stays available."
   },
   ar: {
     offline: "غير متصل",
@@ -63,7 +67,9 @@ export const SOBRIETY_MESSAGES = defineMessages({
     draftCleared: "تم حذف المسودة.",
     close: "إغلاق",
     mapLight: "الوضع الخفيف: لم يتم تحميل الخريطة. تعرض القائمة أدناه الأماكن نفسها مع عناوينها.",
-    mapAnyway: "عرض الخريطة رغم ذلك"
+    mapAnyway: "عرض الخريطة رغم ذلك",
+    essentialsLink: "الأساسيات: التنبيهات والتعليمات والأرقام المفيدة",
+    saveDataOn: "تم تفعيل الوضع الخفيف تلقائيًا لأن جهازك يطلب توفير البيانات."
   }
 })
 

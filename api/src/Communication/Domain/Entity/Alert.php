@@ -24,6 +24,13 @@ final class Alert
     public const STATES = ['draft', 'published', 'withdrawn'];
     /** F73 (L26) : `official` = message officiel du Haut Conseil, signé, toujours adressé à tous les habitants. */
     public const CATEGORIES = ['standard', 'official'];
+    /**
+     * F101/F104 : nature de l'événement, pour un pictogramme, des consignes de repli et des modèles côté admin
+     * (`power` coupure d'électricité, `network` panne des télécommunications, `solar-storm` tempête solaire…).
+     */
+    public const KINDS = ['general', 'power', 'network', 'solar-storm', 'transport', 'weather', 'water', 'health'];
+    /** F101 : une alerte programmée est annoncée au public jusqu'à 12 h avant son début (« à partir de 14 h »). */
+    public const UPCOMING_HOURS = 12;
 
     private string $title;
     private string $message;
@@ -37,6 +44,9 @@ final class Alert
     private string $state = 'draft';
     private string $category = 'standard';
     private ?string $signatory = null;
+    private string $kind = 'general';
+    /** F101 : zone touchée en clair (« secteur nord : rues du Port à la Corniche »), en plus du quartier ciblé. */
+    private string $area = '';
     private ?\DateTimeImmutable $publishedAt = null;
     private \DateTimeImmutable $updatedAt;
 
@@ -87,6 +97,14 @@ final class Alert
         $title = Text::required($content['title'], 200, 'Titre');
         $message = Text::required($content['message'], 5000, 'Message');
         $recommendations = Text::paragraphs($content['recommendations'], 'Recommandations', false);
+        $kind = $content['kind'] ?? 'general';
+        if (!in_array($kind, self::KINDS, true)) {
+            throw new DomainException('Nature d’alerte inconnue.');
+        }
+        $area = trim((string) ($content['area'] ?? ''));
+        if (mb_strlen($area) > 300) {
+            throw new DomainException('Zone touchée : 300 caractères au plus.');
+        }
 
         $this->title = $title;
         $this->message = $message;
@@ -98,6 +116,8 @@ final class Alert
         $this->recommendations = $recommendations;
         $this->category = $category;
         $this->signatory = $signatory;
+        $this->kind = $kind;
+        $this->area = $area;
         $this->updatedAt = $now;
     }
 
@@ -140,6 +160,12 @@ final class Alert
         return $this->state === 'published' && $this->startsAt <= $now && $now < $this->endsAt;
     }
 
+    /** F101 : publiée, pas encore commencée, et début dans les `UPCOMING_HOURS` prochaines heures. */
+    public function isUpcoming(\DateTimeImmutable $now): bool
+    {
+        return $this->state === 'published' && $now < $this->startsAt && $this->startsAt <= $now->modify(sprintf('+%d hours', self::UPCOMING_HOURS));
+    }
+
     /** Whether the alert concerns a reader: everyone, the reader's district, or a reader who consented to health alerts. */
     public function concerns(?string $district, bool $healthConsent): bool
     {
@@ -167,6 +193,8 @@ final class Alert
             'publishedAt' => $this->publishedAt?->format(DATE_ATOM),
             'category' => $this->category,
             'signatory' => $this->signatory,
+            'kind' => $this->kind,
+            'area' => $this->area,
         ];
     }
 

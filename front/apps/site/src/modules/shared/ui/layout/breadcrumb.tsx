@@ -1,5 +1,5 @@
 "use client"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import type { Route } from "next"
 import { BreadcrumbTrail } from "@boilerplate/shared-ui/components/a11y"
 import { useMessages } from "../i18n/i18n-provider"

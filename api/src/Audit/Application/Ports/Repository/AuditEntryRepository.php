@@ -43,4 +43,12 @@ interface AuditEntryRepository
      * @return list<array{actorId: ?string, actorLabel: string, count: int, total: int}>
      */
     public function actionBursts(string $action, \DateTimeImmutable $since, int $threshold, ?string $countDetail = null): array;
+
+    /**
+     * F100 : dernières entrées dont l'action commence par l'un des préfixes, depuis `$since`, les plus récentes d'abord.
+     *
+     * @param list<string> $actionPrefixes
+     * @return list<array<string, mixed>> même forme que `search`
+     */
+    public function latestOfActions(array $actionPrefixes, \DateTimeImmutable $since, int $limit): array;
 }

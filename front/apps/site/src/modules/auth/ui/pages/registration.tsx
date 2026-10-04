@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useState, type ReactNode } from "react"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useSession } from "@/modules/shared/ui/store-provider"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"

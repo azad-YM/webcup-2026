@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
 import { SOBRIETY_FIGURES, SOBRIETY_MEASURED_ON } from "./sobriety-figures"
 

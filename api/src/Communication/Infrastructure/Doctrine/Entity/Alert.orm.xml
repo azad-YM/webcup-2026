@@ -18,6 +18,9 @@
         <!-- F73 (L26) : message officiel du Haut Conseil (catégorie `official`) et son signataire. -->
         <field name="category" type="string" length="20"><options><option name="default">standard</option></options></field>
         <field name="signatory" type="string" length="160" nullable="true"/>
+        <!-- F101/F104 : nature de l'événement et zone touchée en clair. -->
+        <field name="kind" type="string" length="20"><options><option name="default">general</option></options></field>
+        <field name="area" type="string" length="300"><options><option name="default"></option></options></field>
         <field name="publishedAt" column="published_at" type="datetime_immutable" nullable="true"/>
         <field name="updatedAt" column="updated_at" type="datetime_immutable"/>
     </entity>

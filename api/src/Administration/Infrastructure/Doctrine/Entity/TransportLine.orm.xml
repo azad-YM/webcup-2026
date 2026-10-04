@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <!-- F97 (L28) : lignes de transport municipal, état et solutions de remplacement. -->
+    <entity name="Administration\Domain\Entity\TransportLine" table="transport_line">
+        <id name="id" type="string" length="40"/>
+        <field name="code" type="string" length="10"/>
+        <field name="name" type="string" length="160"/>
+        <field name="mode" type="string" length="20"/>
+        <field name="stops" type="json"/>
+        <field name="districts" type="json"/>
+        <field name="frequency" type="string" length="200"/>
+        <field name="status" type="string" length="20"/>
+        <field name="statusMessage" column="status_message" type="text"/>
+        <field name="disruptedSince" column="disrupted_since" type="datetime_immutable" nullable="true"/>
+        <field name="returnAt" column="return_at" type="datetime_immutable" nullable="true"/>
+        <field name="replacements" type="json"/>
+        <field name="updatedAt" column="updated_at" type="datetime_immutable"/>
+    </entity>
+</doctrine-mapping>

@@ -5,7 +5,8 @@ import type { RequestTracking, TrackingInput, WebcupFeed } from "../../domain/we
 import { getWebcupFeed } from "../usecases/get-webcup-feed.usecase"
 import { getSeenRequestCodes, markRequestsSeen } from "../usecases/seen-requests.usecase"
 import { updateTracking } from "../usecases/update-tracking.usecase"
-import { getActivityDashboard } from "../usecases/get-activity-dashboard.usecase"
+import { downloadReportFile, getActivityDashboard, getActivityReport, getServiceUsage } from "../usecases/get-activity-dashboard.usecase"
+import type { ActivityReport, ReportPeriodChoice, ServiceUsageReport } from "../../domain/activity-report"
 import type { ActivityDashboard } from "../../domain/activity-dashboard"
 import type { ExportCatalog, ExportPreview, ExportRequest, ExportTemplate } from "../../domain/data-export"
 import { deleteExportTemplate, downloadExport, getExportCatalog, getExportTemplates, previewExport, saveExportTemplate } from "../usecases/data-export.usecase"
@@ -26,6 +27,10 @@ export const pilotageApi = createApi({
     getActivityDashboard: build.query<ActivityDashboard, void>({
       queryFn: withUseCase(getActivityDashboard),
     }),
+    // F98 : services les plus utilisés ; F103 : rapport synthétique.
+    getServiceUsage: build.query<ServiceUsageReport, ReportPeriodChoice>({ queryFn: withUseCase(getServiceUsage) }),
+    getActivityReport: build.query<ActivityReport, ReportPeriodChoice>({ queryFn: withUseCase(getActivityReport) }),
+    downloadReportFile: build.mutation<null, { fileName: string; mimeType: string; content: string }>({ queryFn: withUseCase(downloadReportFile) }),
     // F88 : écran « Exports ».
     getExportCatalog: build.query<ExportCatalog, void>({
       queryFn: withUseCase(getExportCatalog),
@@ -69,4 +74,5 @@ export const pilotageApi = createApi({
 })
 
 export const { useGetWebcupFeedQuery, useGetSeenRequestCodesQuery, useMarkRequestsSeenMutation, useUpdateTrackingMutation, useGetActivityDashboardQuery,
-  useGetExportCatalogQuery, usePreviewExportMutation, useDownloadExportMutation, useGetExportTemplatesQuery, useSaveExportTemplateMutation, useDeleteExportTemplateMutation } = pilotageApi
+  useGetExportCatalogQuery, usePreviewExportMutation, useDownloadExportMutation, useGetExportTemplatesQuery, useSaveExportTemplateMutation, useDeleteExportTemplateMutation,
+  useGetServiceUsageQuery, useGetActivityReportQuery, useDownloadReportFileMutation } = pilotageApi

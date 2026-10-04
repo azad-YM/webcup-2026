@@ -183,14 +183,14 @@ final class SeedDemoDataCommand extends Command
             severity: 'warning', audience: 'district', district: 'Port',
             startsAt: $now->modify('-1 hour')->format(DATE_ATOM), endsAt: $now->modify('+1 day')->format(DATE_ATOM),
             recommendations: ['Fermez les sas extérieurs', 'Reportez les trajets en rover', 'Suivez les consignes des agents'],
-            state: 'published',
+            state: 'published', kind: 'weather',
         ));
         $this->send(new SaveAlertCommand(
             title: 'Maintenance du réseau solaire',
             message: 'Des coupures d’électricité courtes sont possibles cette semaine entre 9 h et 12 h pendant la maintenance du réseau.',
             severity: 'info', audience: 'all',
             startsAt: $now->format(DATE_ATOM), endsAt: $now->modify('+3 days')->format(DATE_ATOM),
-            state: 'published',
+            state: 'published', kind: 'power',
         ));
         $this->send(new SaveAlertCommand(
             title: 'Journée de recensement des nouveaux arrivants',
@@ -199,7 +199,35 @@ final class SeedDemoDataCommand extends Command
             startsAt: $now->format(DATE_ATOM), endsAt: $now->modify('+7 days')->format(DATE_ATOM),
             state: 'published', category: 'official', signatory: 'Le Haut Conseil de Nova Terra', confirmOfficial: true,
         ));
-        $this->io->writeln('✔ publications, 2 alertes et 1 message officiel');
+        // F101 : coupure d'électricité du secteur nord, adressée au quartier, consignes immédiates.
+        $this->send(new SaveAlertCommand(
+            title: 'Coupure d’électricité dans le secteur nord',
+            message: 'Une panne du réseau électrique prive d’électricité le secteur nord depuis 20 minutes. Les équipes techniques sont sur place ; retour du courant estimé dans 4 heures.',
+            severity: 'critical', audience: 'district', district: 'Nord',
+            startsAt: $now->modify('-20 minutes')->format(DATE_ATOM), endsAt: $now->modify('+4 hours')->format(DATE_ATOM),
+            recommendations: [
+                'Débranchez les appareils sensibles pour éviter une surtension au retour du courant.',
+                'Utilisez une lampe torche plutôt que des bougies.',
+                'Gardez le réfrigérateur fermé : il conserve le froid environ 4 heures.',
+                'Personne dépendante d’un appareil médical électrique : rendez-vous à la maison de quartier du Port (groupe électrogène) ou appelez le 15.',
+            ],
+            state: 'published', kind: 'power', area: 'Secteur nord : du dôme des Pionniers à la Corniche, y compris l’école du Nord',
+        ));
+        // F104 : tempête solaire annoncée dans les prochaines minutes, consignes avant la coupure des communications.
+        $this->send(new SaveAlertCommand(
+            title: 'Tempête solaire : communications perturbées',
+            message: 'Une tempête solaire atteindra Nova Terra dans une trentaine de minutes. Les réseaux mobiles, Internet et la navigation pourront être coupés pendant environ 3 heures.',
+            severity: 'critical', audience: 'all',
+            startsAt: $now->modify('+30 minutes')->format(DATE_ATOM), endsAt: $now->modify('+4 hours')->format(DATE_ATOM),
+            recommendations: [
+                'Notez dès maintenant les numéros utiles : secours 112, médecin 15, pompiers 18.',
+                'Restez à l’intérieur des dômes et reportez les sorties en surface.',
+                'Chargez vos téléphones et lampes ; gardez une radio à piles allumée sur 98.4 FM.',
+                'Si les communications sont coupées, rendez-vous au poste de secours le plus proche en cas d’urgence.',
+            ],
+            state: 'published', kind: 'solar-storm', area: 'Toute la ville',
+        ));
+        $this->io->writeln('✔ publications, 4 alertes et 1 message officiel');
     }
 
     /** @return list<string> e-mails des citoyens */

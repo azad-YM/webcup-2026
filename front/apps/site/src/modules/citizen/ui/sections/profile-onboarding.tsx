@@ -1,5 +1,5 @@
 "use client"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import { useRouter } from "next/navigation"
 import { ProfileForm } from "./profile-form/profile-form"
 import { CitizenAccessState, useCitizenAccess } from "../components/citizen-access"

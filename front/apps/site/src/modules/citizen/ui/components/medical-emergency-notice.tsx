@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import type { Route } from "next"
 import { Phone, TriangleAlert } from "@boilerplate/shared-ui/components/icon"
 

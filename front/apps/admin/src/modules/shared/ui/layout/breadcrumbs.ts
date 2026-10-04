@@ -6,6 +6,7 @@ import type { BreadcrumbTrailItem } from "@boilerplate/shared-ui/components/a11y
  */
 export const BREADCRUMB_LABELS: Record<string, string> = {
   "/espaces": "Modules",
+  "/securite": "Événements de sécurité",
   "/admin": "Administration",
   "/admin/role": "Rôles",
   "/admin/member": "Membres",
@@ -17,9 +18,12 @@ export const BREADCRUMB_LABELS: Record<string, string> = {
   "/contenus": "Contenus de la ville",
   "/contenus/alertes": "Alertes",
   "/contenus/services": "Services et transports",
+  "/contenus/transports": "Lignes de transport",
   "/pilotage": "Pilotage",
   "/pilotage/tableau-de-bord": "Tableau de bord",
   "/pilotage/exports": "Exports",
+  "/pilotage/services": "Services les plus utilisés",
+  "/pilotage/rapport": "Rapport d’activité",
   "/demandes": "Demandes des habitants",
   "/demandes/rendez-vous": "Rendez-vous",
   "/demandes/inquietudes": "Inquiétudes",

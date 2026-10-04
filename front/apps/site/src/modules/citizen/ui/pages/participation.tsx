@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react"
 import { polling } from "@/modules/shared/ui/sobriety/polling"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import { CheckCircle2, HandHeart, MapPin, MessageCircleWarning, ShieldCheck } from "@boilerplate/shared-ui/components/icon"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
 import { useSession } from "@/modules/shared/ui/store-provider"

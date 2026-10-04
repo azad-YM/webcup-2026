@@ -6,11 +6,13 @@ import { useAccessibilityPreferences } from "@boilerplate/shared-ui/components/a
 /**
  * Mode léger (L17, F62). Deux origines :
  * - le choix de l’habitant dans le panneau « Affichage » (mémorisé sur l’appareil par la gateway L4) ;
- * - une activation temporaire, pour la visite en cours, quand le serveur annonce un mode dégradé (surcharge).
+ * - une activation temporaire, pour la visite en cours, quand le serveur annonce un mode dégradé (surcharge)
+ *   ou quand l’appareil demande d’économiser les données (`navigator.connection.saveData`, F96).
  * Dans les deux cas `<html data-light="on">` porte l’état : le CSS, l’espacement des mises à jour et la coupure
  * du temps réel le lisent.
  */
-export type TemporaryLightModeReason = "degraded"
+/** `degraded` : le serveur annonce une surcharge ; `save-data` : l’appareil demande d’économiser les données (F96). */
+export type TemporaryLightModeReason = "degraded" | "save-data"
 
 let temporary: TemporaryLightModeReason | null = null
 const listeners = new Set<() => void>()

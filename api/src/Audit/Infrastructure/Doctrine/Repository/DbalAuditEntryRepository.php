@@ -77,6 +77,33 @@ final readonly class DbalAuditEntryRepository implements AuditEntryRepository
         ], $this->db()->fetchAllAssociative($sql, $params, $types));
     }
 
+    public function latestOfActions(array $actionPrefixes, \DateTimeImmutable $since, int $limit): array
+    {
+        if ($actionPrefixes === []) {
+            return [];
+        }
+        $clauses = [];
+        $params = ['since' => $since->format('Y-m-d H:i:s')];
+        foreach (array_values($actionPrefixes) as $index => $prefix) {
+            $clauses[] = sprintf('action LIKE :prefix%d', $index);
+            $params['prefix'.$index] = addcslashes($prefix, '%_\\').'%';
+        }
+        $sql = 'SELECT id, occurred_at, actor_id, actor_label, action, category, target_type, target_id, summary, details FROM audit_entries'
+            .' WHERE occurred_at >= :since AND ('.implode(' OR ', $clauses).')'
+            .sprintf(' ORDER BY occurred_at DESC, id DESC LIMIT %d', max(1, $limit));
+
+        return array_map(static fn (array $row): array => [
+            'id' => $row['id'],
+            'occurredAt' => (new \DateTimeImmutable($row['occurred_at']))->format(\DateTimeInterface::ATOM),
+            'actor' => ['id' => $row['actor_id'], 'label' => $row['actor_label']],
+            'action' => $row['action'],
+            'category' => $row['category'],
+            'target' => ['type' => $row['target_type'], 'id' => $row['target_id']],
+            'summary' => $row['summary'],
+            'details' => json_decode((string) $row['details'], true) ?: [],
+        ], $this->db()->fetchAllAssociative($sql, $params));
+    }
+
     public function facets(array $hiddenActionPrefixes): array
     {
         [$where, $params, $types] = $this->visibility($hiddenActionPrefixes);

@@ -1,5 +1,6 @@
 import { createRealtimeTicketProvider, openRealtimeStream, type RealtimeStream } from "@boilerplate/shared-utils/realtime"
 import type { RealtimeNotification, RealtimeSubscriber } from "../../application/ports/realtime-subscriber"
+import { setRealtimeLive } from "../../lib/realtime-health"
 
 type Listener = { eventTypes: readonly string[]; onEvent: (notification: RealtimeNotification) => void }
 
@@ -51,6 +52,7 @@ export class SseRealtimeSubscriber implements RealtimeSubscriber {
       apiBaseUrl: this.apiBaseUrl,
       eventTypes: this.eventTypes,
       getTicket: this.getTicket,
+      onStatus: setRealtimeLive,
       onEvent: (message) => {
         for (const current of [...this.listeners]) {
           if (current.eventTypes.includes(message.type)) current.onEvent({ type: message.type, data: message.data })

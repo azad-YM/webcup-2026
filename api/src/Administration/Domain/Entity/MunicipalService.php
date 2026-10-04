@@ -23,6 +23,10 @@ final class MunicipalService
     public const TRANSLATION_LANGUAGES = ['en', 'ar'];
     /** F89 : longueur maximale de la version « En clair ». */
     public const PLAIN_LANGUAGE_MAX = 600;
+    /** F99 : disponibilité d'une offre de partenaire et prochaine action proposée à l'habitant. */
+    public const OFFER_STATUSES = ['available', 'limited', 'full', 'paused', 'soon'];
+    public const OFFER_ACTIONS = ['call', 'visit', 'book', 'register', 'website', 'email'];
+    public const MAX_OFFERS = 12;
 
     private string $name;
     private string $category;
@@ -53,6 +57,8 @@ final class MunicipalService
     private ?\DateTimeImmutable $disabledAt = null;
     /** F89 : version en langage clair (texte court) relue et validée par l'agent qui enregistre la fiche. */
     private string $plainLanguage = '';
+    /** @var list<array<string, mixed>>|null F99 : services proposés par un partenaire, avec leur disponibilité et la prochaine action. */
+    private ?array $offers = null;
 
     /** @param array<string, mixed> $data */
     private function __construct(public readonly string $id, array $data, \DateTimeImmutable $now)
@@ -124,6 +130,7 @@ final class MunicipalService
             'emergency' => $this->emergency,
             'translations' => $this->translations ?? (object) [],
             'plainLanguage' => $this->plainLanguage,
+            'offers' => $this->offers ?? [],
             ...$this->disablementView(),
         ];
     }
@@ -218,7 +225,71 @@ final class MunicipalService
         $this->transport = $transport;
         [$this->location, $this->emergency, $this->translations] = [$location, $emergency, $translations];
         $this->plainLanguage = self::text($data['plainLanguage'] ?? '', self::PLAIN_LANGUAGE_MAX, 'Version en clair', false);
+        $this->offers = self::offers($data['offers'] ?? [], $category);
         $this->updatedAt = $now;
+    }
+
+    /**
+     * F99 : offres d'un partenaire (catégorie `partenaires` seulement). Chacune dit ce qui est proposé, à qui, si c'est
+     * disponible (`available`, `limited` places limitées, `full` complet, `paused` suspendu, `soon` bientôt), quand elle
+     * le redevient (`nextAvailableAt`), et la prochaine action de l'habitant (appeler, s'y rendre, réserver,
+     * s'inscrire, site, e-mail) avec sa cible (numéro, lien ou adresse ; vide = coordonnées du partenaire).
+     *
+     * @return list<array<string, mixed>>|null
+     */
+    private static function offers(mixed $items, string $category): ?array
+    {
+        if ($items === null || $items === []) {
+            return null;
+        }
+        if ($category !== self::PARTNER_CATEGORY) {
+            throw new DomainException('Les offres concernent une association ou un partenaire de la ville.');
+        }
+        if (!is_array($items) || count($items) > self::MAX_OFFERS) {
+            throw new DomainException(sprintf('De 0 à %d offres par partenaire.', self::MAX_OFFERS));
+        }
+        $offers = [];
+        foreach (array_values($items) as $index => $item) {
+            if (!is_array($item)) {
+                throw new DomainException('Offre invalide.');
+            }
+            $status = (string) ($item['status'] ?? '');
+            if (!in_array($status, self::OFFER_STATUSES, true)) {
+                throw new DomainException('Disponibilité d’offre inconnue.');
+            }
+            $action = is_array($item['action'] ?? null) ? $item['action'] : [];
+            $kind = (string) ($action['kind'] ?? '');
+            if (!in_array($kind, self::OFFER_ACTIONS, true)) {
+                throw new DomainException('Prochaine action inconnue.');
+            }
+            $target = self::text($action['target'] ?? '', 300, 'Cible de l’action', false);
+            if ($target !== '' && in_array($kind, ['website', 'book', 'register'], true) && !preg_match('#^https?://#i', $target)) {
+                throw new DomainException('Le lien de l’action doit commencer par http:// ou https://.');
+            }
+            if ($target !== '' && $kind === 'email' && filter_var($target, FILTER_VALIDATE_EMAIL) === false) {
+                throw new DomainException('E-mail de l’action invalide.');
+            }
+            $next = null;
+            if (($item['nextAvailableAt'] ?? '') !== '' && $item['nextAvailableAt'] !== null) {
+                try {
+                    $next = (new \DateTimeImmutable((string) $item['nextAvailableAt']))->format(DATE_ATOM);
+                } catch (\Exception) {
+                    throw new DomainException('Date de prochaine disponibilité invalide.');
+                }
+            }
+            $offers[] = [
+                'id' => sprintf('offre-%d', $index + 1),
+                'title' => self::text($item['title'] ?? '', 120, 'Titre de l’offre'),
+                'description' => self::text($item['description'] ?? '', 400, 'Description de l’offre', false),
+                'audience' => self::text($item['audience'] ?? '', 120, 'Public concerné', false),
+                'status' => $status,
+                'statusNote' => self::text($item['statusNote'] ?? '', 160, 'Précision sur la disponibilité', false),
+                'nextAvailableAt' => $next,
+                'action' => ['kind' => $kind, 'label' => self::text($action['label'] ?? '', 80, 'Libellé de l’action'), 'target' => $target],
+            ];
+        }
+
+        return $offers;
     }
 
     /**

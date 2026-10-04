@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react"
 import { polling } from "@/modules/shared/ui/sobriety/polling"
 import { useSearchParams } from "next/navigation"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import type { Route } from "next"
 import { CalendarCheck, CalendarClock, CalendarX, Clock, FileText, MapPin } from "@boilerplate/shared-ui/components/icon"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"

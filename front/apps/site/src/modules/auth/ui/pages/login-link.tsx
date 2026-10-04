@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useRef, useState } from "react"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { MonitorSmartphone } from "@boilerplate/shared-ui/components/icon"
 import { useConsumeLoginLinkMutation } from "../../core/application/rtk-api/auth"

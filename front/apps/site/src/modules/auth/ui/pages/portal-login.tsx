@@ -4,7 +4,7 @@ import { siteEnv } from "@/config/env"
 import { SessionGuard } from "../components/session-guard"
 import { useIssuePortalCodeMutation } from "../../core/application/rtk-api/auth"
 import { useSession } from "@/modules/shared/ui/store-provider"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
 
 function PortalLogin() {

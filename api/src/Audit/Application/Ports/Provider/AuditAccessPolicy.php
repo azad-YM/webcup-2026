@@ -12,4 +12,7 @@ interface AuditAccessPolicy
 
     /** Also see the login security entries (blocked logins: e-mail, IP), reserved to `admin.security.read`. */
     public function canReadSecurityEntries(): bool;
+
+    /** F100 : any active member of the administration (agent or administrator) follows the latest security events. */
+    public function canReadSecurityEvents(): bool;
 }

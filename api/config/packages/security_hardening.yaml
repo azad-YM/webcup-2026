@@ -25,6 +25,7 @@ parameters:
         assistance_refine_search: { limit: 40, window: 600, action: 'la recherche assistée' }
         assistance_orient: { limit: 30, window: 600, action: 'l’assistant d’orientation' }
         assistance_explain: { limit: 40, window: 600, action: 'les explications simplifiées' }
+        assistance_transport: { limit: 40, window: 600, action: 'l’aide aux trajets' }
         administration_suggest_plain_language: { limit: 30, window: 600, action: 'les propositions de version en clair' }
         communication_suggest_plain_language: { limit: 30, window: 600, action: 'les propositions de version en clair' }
 

@@ -1,5 +1,5 @@
 "use client"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import type { Route } from "next"
 import { useSearchParams } from "next/navigation"
 import { StatusBadge, type StatusTone } from "@boilerplate/shared-ui/components/a11y"

@@ -81,3 +81,32 @@ export function humanBytes(bytes: number): string {
   if (bytes >= 1024) return `${(bytes / 1024).toLocaleString("fr-FR", { maximumFractionDigits: 1 })} ko`
   return `${bytes} octets`
 }
+
+/**
+ * F100 : derniers événements de sécurité, rédigés en clair pour le suivi quotidien des agents
+ * (`GET /api/audit/security-events`, tout membre actif ; détails masqués sans `admin.security.read`).
+ */
+export type SecurityEventSeverity = "info" | "warning" | "critical"
+export type SecurityEvent = {
+  id: string
+  source: "journal" | "detection"
+  occurredAt: string
+  action: string
+  severity: SecurityEventSeverity
+  title: string
+  description: string
+  whatToDo: string
+  actor: string
+  status: AnomalyStatus | null
+  toReview: boolean
+  link: string | null
+}
+export type SecurityEventFeed = {
+  generatedAt: string
+  days: number
+  detailed: boolean
+  summary: { last24h: number; critical24h: number; warning24h: number; toReview: number; headline: string }
+  events: SecurityEvent[]
+}
+
+export const SECURITY_EVENT_SEVERITY_LABELS: Record<SecurityEventSeverity, string> = { info: "Information", warning: "Attention", critical: "Grave" }

@@ -7,6 +7,8 @@ import { getServiceRating, listPublications, listServices } from "../usecases/pu
 import type { ServiceRatingSummary } from "../ports/provider/service-ratings.provider"
 import type { Explanation, ExplainParams, ServiceSearchParams, ServiceSearchResult } from "../../domain/service-search"
 import { explainPassage, refineServiceSearch, searchServices } from "../usecases/assistance.usecase"
+import type { TransportLine, TripHelp, TripRequest } from "../../domain/transport"
+import { findTrip, listTransportLines } from "../usecases/transport.usecase"
 
 /** Rafraîchissement de secours des contenus publiés. */
 export const CONTENT_POLLING_MS = 60_000
@@ -14,7 +16,7 @@ export const CONTENT_POLLING_MS = 60_000
 export const publicApi = createApi({
   reducerPath: "publicApi",
   baseQuery: fakeBaseQuery<QueryError>(),
-  tagTypes: ["Services", "Publications"],
+  tagTypes: ["Services", "Publications", "TransportLines"],
   endpoints: (build) => ({
     listServices: build.query<MunicipalService[], void>({
       queryFn: withUseCase(listServices),
@@ -34,6 +36,9 @@ export const publicApi = createApi({
     searchServices: build.query<ServiceSearchResult, ServiceSearchParams>({ queryFn: withUseCase(searchServices), keepUnusedDataFor: 300 }),
     refineServiceSearch: build.query<ServiceSearchResult, ServiceSearchParams>({ queryFn: withUseCase(refineServiceSearch), keepUnusedDataFor: 600 }),
     explainPassage: build.query<Explanation, ExplainParams>({ queryFn: withUseCase(explainPassage), keepUnusedDataFor: 600 }),
+    // F97 : état des lignes de transport (Administration) et aide au trajet (Assistance, rien n’est stocké).
+    listTransportLines: build.query<TransportLine[], void>({ queryFn: withUseCase(listTransportLines), providesTags: ["TransportLines"] }),
+    findTrip: build.mutation<TripHelp, TripRequest>({ queryFn: withUseCase(findTrip) }),
     listPublications: build.query<Publication[], void>({
       queryFn: withUseCase(listPublications),
       providesTags: ["Publications"],
@@ -53,4 +58,6 @@ export const {
   useListPublicationsQuery,
   useSearchServicesQuery,
   useLazyRefineServiceSearchQuery,
-  useLazyExplainPassageQuery, useGetServiceRatingQuery } = publicApi
+  useLazyExplainPassageQuery, useGetServiceRatingQuery,
+  useListTransportLinesQuery,
+  useFindTripMutation } = publicApi

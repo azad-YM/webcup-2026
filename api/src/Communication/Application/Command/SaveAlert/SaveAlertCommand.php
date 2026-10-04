@@ -26,5 +26,8 @@ final readonly class SaveAlertCommand
         #[Assert\Length(max: 160)] public ?string $signatory = null,
         /** F73 : la publication d'un message officiel doit être confirmée explicitement. */
         public bool $confirmOfficial = false,
+        /** F101/F104 : nature de l'événement (coupure d'électricité, tempête solaire…) et zone touchée en clair. */
+        #[Assert\Choice(['general', 'power', 'network', 'solar-storm', 'transport', 'weather', 'water', 'health'])] public string $kind = 'general',
+        #[Assert\Length(max: 300)] public string $area = '',
     ) {}
 }

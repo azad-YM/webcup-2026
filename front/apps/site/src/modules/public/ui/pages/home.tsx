@@ -1,7 +1,7 @@
 "use client"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import type { Route } from "next"
-import { ArrowRight, Compass, LogIn, Map as MapIcon, Newspaper, Search, Siren, UserPlus, UserRound } from "@boilerplate/shared-ui/components/icon"
+import { ArrowRight, Compass, LogIn, Map as MapIcon, Newspaper, Search, Siren, UserPlus, UserRound, LifeBuoy } from "@boilerplate/shared-ui/components/icon"
 import { useMessages } from "@/modules/shared/ui/i18n/i18n-provider"
 import { HOME_MESSAGES } from "../i18n/home-messages"
 import { useSession } from "@/modules/shared/ui/store-provider"
@@ -44,7 +44,7 @@ function AccountCallToAction() {
   const t = useMessages(HOME_MESSAGES)
   if (!ready) return null
   return (
-    <section aria-labelledby="titre-compte" className="bg-teal-800 text-white">
+    <section aria-labelledby="titre-compte" data-optional className="bg-teal-800 text-white">
       <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-14 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
         <div className="max-w-2xl">
           <h2 id="titre-compte" className="text-3xl font-semibold tracking-tight">
@@ -67,7 +67,7 @@ function AccountCallToAction() {
 function QuickAccess() {
   const t = useMessages(HOME_MESSAGES)
   return (
-    <div className="mx-auto grid max-w-7xl gap-4 px-4 pt-8 sm:px-6 md:grid-cols-2 lg:px-8">
+    <div className="mx-auto grid max-w-7xl gap-4 px-4 pt-8 sm:px-6 md:grid-cols-3 lg:px-8">
       <Link href="/urgences" className="flex items-start gap-4 rounded-2xl border-2 border-red-700 bg-red-50 p-5 hover:bg-red-100">
         <Siren className="mt-0.5 size-7 shrink-0 text-red-700" aria-hidden="true" />
         <span>
@@ -82,6 +82,14 @@ function QuickAccess() {
           <span className="mt-1 block text-teal-950">{t.newcomerText}</span>
         </span>
       </Link>
+      {/* F93, F94 : l’essentiel (alertes, consignes, numéros) à un clic, lisible hors ligne. */}
+      <Link href="/essentiel" className="flex items-start gap-4 rounded-2xl border-2 border-slate-700 bg-white p-5 hover:bg-slate-100">
+        <LifeBuoy className="mt-0.5 size-7 shrink-0 text-slate-700" aria-hidden="true" />
+        <span>
+          <span className="block text-lg font-semibold text-slate-950">{t.essentialsTitle}</span>
+          <span className="mt-1 block text-slate-800">{t.essentialsText}</span>
+        </span>
+      </Link>
     </div>
   )
 }
@@ -93,10 +101,10 @@ export function HomePage() {
       <section aria-labelledby="titre-accueil" className="relative overflow-hidden bg-slate-950 text-white">
         <div aria-hidden="true" data-decorative className="pointer-events-none absolute -right-24 -top-24 size-[28rem] rounded-full bg-gradient-to-br from-teal-400 to-teal-900 opacity-40" />
         <div aria-hidden="true" data-decorative className="pointer-events-none absolute -right-40 top-40 h-6 w-[40rem] -rotate-12 rounded-full border-2 border-amber-300/60" />
-        <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+        <div className="nt-mobile-compact relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-amber-300">{t.kicker}</p>
           <h1 id="titre-accueil" className="mt-4 max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">{t.title}</h1>
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">
+          <p data-optional className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">
             {t.intro}
           </p>
           <form action="/services/" method="get" role="search" aria-label={t.searchForm} className="mt-8 flex max-w-xl flex-col gap-3 sm:flex-row">
@@ -127,13 +135,13 @@ export function HomePage() {
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <h2 id="titre-services" className="text-3xl font-semibold tracking-tight">{t.servicesTitle}</h2>
-              <p className="mt-2 text-slate-700">{t.servicesLead}</p>
+              <p data-optional className="mt-2 text-slate-700">{t.servicesLead}</p>
             </div>
             <Link href="/services" className="inline-flex items-center gap-2 font-medium text-teal-800 underline underline-offset-4">
               {t.allServices} <ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" />
             </Link>
           </div>
-          <div className="mt-8"><FeaturedServices /></div>
+          <div className="mt-8" data-mobile-limit><FeaturedServices /></div>
         </div>
       </section>
 
@@ -141,13 +149,13 @@ export function HomePage() {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <h2 id="titre-actualites" className="text-3xl font-semibold tracking-tight">{t.newsTitle}</h2>
-            <p className="mt-2 text-slate-700">{t.newsLead}</p>
+            <p data-optional className="mt-2 text-slate-700">{t.newsLead}</p>
           </div>
           <Link href="/actualites" className="inline-flex items-center gap-2 font-medium text-teal-800 underline underline-offset-4">
             {t.allNews} <ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" />
           </Link>
         </div>
-        <div className="mt-8"><LatestPublications /></div>
+        <div className="mt-8" data-mobile-limit><LatestPublications /></div>
       </section>
 
       <AccountCallToAction />

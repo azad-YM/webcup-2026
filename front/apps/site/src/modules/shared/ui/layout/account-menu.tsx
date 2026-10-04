@@ -1,5 +1,5 @@
 "use client"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import { useRouter } from "next/navigation"
 import { useState, type ReactNode } from "react"
 import { FileDown, LogOut, ShieldCheck, UserRound } from "@boilerplate/shared-ui/components/icon"

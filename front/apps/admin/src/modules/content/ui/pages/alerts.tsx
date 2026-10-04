@@ -4,6 +4,9 @@ import { getErrorMessage } from "@boilerplate/shared-utils/error.utils"
 import { StatusBadge, useProtectedSubmit } from "@boilerplate/shared-ui/components/a11y"
 import { useListAlertsQuery, useListDistrictsQuery, useSaveAlertMutation } from "../../core/application/rtk-api/content"
 import {
+  ALERT_KIND_LABELS,
+  ALERT_TEMPLATES,
+  alertFromTemplate,
   AUDIENCE_LABELS,
   fromLines,
   fromLocalInput,
@@ -16,6 +19,7 @@ import {
   toLocalInput,
   type Alert,
   type AlertAudience,
+  type AlertKind,
   type AlertSeverity,
   type ContentState,
 } from "../../core/domain/content"
@@ -77,6 +81,20 @@ function AlertForm({ initial, onDone }: { initial: Alert; onDone: () => void }) 
                 <Input id="alert-signatory" required maxLength={160} value={draft.signatory ?? ""} onChange={(event) => setDraft({ ...draft, signatory: event.target.value })} placeholder="Ex. La présidente du Haut Conseil" />
               </div>
             )}
+            {!official && (
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="alert-kind">Nature de l’événement</Label>
+                  <select id="alert-kind" className={selectClass} value={draft.kind ?? "general"} onChange={(event) => setDraft({ ...draft, kind: event.target.value as AlertKind })}>
+                    {Object.entries(ALERT_KIND_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="alert-area">Zone touchée (facultatif)</Label>
+                  <Input id="alert-area" maxLength={300} value={draft.area ?? ""} onChange={(event) => setDraft({ ...draft, area: event.target.value })} placeholder="Ex. Secteur nord : du dôme des Pionniers à la Corniche" />
+                </div>
+              </div>
+            )}
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="alert-severity">Gravité</Label>
@@ -116,7 +134,7 @@ function AlertForm({ initial, onDone }: { initial: Alert; onDone: () => void }) 
             <div className="space-y-2">
               <Label htmlFor="alert-recommendations">{official ? "Ce qu’il faut savoir ou faire (facultatif)" : "Recommandations (facultatif)"}</Label>
               <Textarea id="alert-recommendations" rows={5} aria-describedby="alert-recommendations-help" value={recommendations} onChange={(event) => setRecommendations(event.target.value)} placeholder={"Buvez au moins 1,5 L d’eau par jour.\nRestez au frais aux heures les plus chaudes."} />
-              <p id="alert-recommendations-help" className="text-sm text-muted-foreground">Une recommandation par ligne, rédigée par vos soins pour les personnes concernées (vulnérables, quartier…).</p>
+              <p id="alert-recommendations-help" className="text-sm text-muted-foreground">Une consigne par ligne, concrète et courte (« Débranchez les appareils sensibles »). Pour une urgence, elles s’affichent d’emblée sur le site ; une alerte programmée est annoncée « À venir » jusqu’à 12 h avant son début.</p>
             </div>
             {official && (
               <label className="flex items-start gap-2 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950">
@@ -154,6 +172,15 @@ export function AlertsPage() {
             <Button type="button" onClick={() => setEditing(newAlert())}>Nouvelle alerte</Button>
           </div>
         </div>
+        <div className="rounded-lg border border-slate-200 bg-white p-3">
+          <p className="text-sm font-medium">Alerte de crise prête à diffuser (F101, F104)</p>
+          <p className="text-xs text-muted-foreground">Un texte clair et relu : ce qui se passe, où, jusqu’à quand et que faire. Adaptez-le puis diffusez.</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {ALERT_TEMPLATES.map((template) => (
+              <Button key={template.id} type="button" variant="outline" size="sm" onClick={() => setEditing({ ...alertFromTemplate(template), id: null })}>{template.label}</Button>
+            ))}
+          </div>
+        </div>
         <ListState isLoading={alerts.isLoading} error={alerts.error} isEmpty={items.length === 0} emptyLabel="Aucune alerte." onRetry={() => void alerts.refetch()} retrying={alerts.isFetching}>
           <ul className="nt-content-list space-y-3">
             {items.map((item) => (
@@ -161,7 +188,7 @@ export function AlertsPage() {
                 <div className="min-w-0">
                   <p className="font-medium">{item.title}</p>
                   <p className="text-sm text-muted-foreground">
-                    {item.audience === "district" ? `Quartier ${item.district}` : AUDIENCE_LABELS[item.audience]} · du {new Date(item.startsAt).toLocaleString("fr-FR")} au {new Date(item.endsAt).toLocaleString("fr-FR")}
+                    {item.kind && item.kind !== "general" ? `${ALERT_KIND_LABELS[item.kind]} · ` : ""}{item.audience === "district" ? `Quartier ${item.district}` : AUDIENCE_LABELS[item.audience]} · du {new Date(item.startsAt).toLocaleString("fr-FR")} au {new Date(item.endsAt).toLocaleString("fr-FR")}
                   </p>
                   <div className="mt-1 flex flex-wrap gap-2">
                     {item.category === "official" && <StatusBadge tone="info" label="Message officiel" />}
@@ -178,7 +205,7 @@ export function AlertsPage() {
       </section>
       <div>
         {editing
-          ? <AlertForm key={editing.id ?? "nouvelle"} initial={editing} onDone={() => setEditing(null)} />
+          ? <AlertForm key={editing.id ?? `nouvelle-${editing.title}`} initial={editing} onDone={() => setEditing(null)} />
           : <p className="rounded-lg border border-dashed p-6 text-sm text-muted-foreground">Choisissez une alerte à modifier, ou créez-en une avec « Nouvelle alerte ».</p>}
       </div>
     </div>

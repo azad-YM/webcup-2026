@@ -1,5 +1,5 @@
 "use client"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import { FormAnnouncement, TextField } from "@/modules/shared/ui/components/form-field"
 import { FormProtection } from "@boilerplate/shared-ui/components/a11y"
 import { PASSWORD_MAX_BYTES, PASSWORD_MIN_BYTES } from "../../../core/domain/registration"

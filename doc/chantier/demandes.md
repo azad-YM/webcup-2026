@@ -24,7 +24,7 @@ Les 15 suivis déjà faits sont conservés. F40 reste en cours (cron et récepti
 
 À la demande de l’utilisateur, les demandes livrées dont la seule réserve était la vérification dans le navigateur passent en « fait » dans le snapshot Pilotage (43 suivis) : D02, D10, F45, F46, F53, F54, F55, F56, F57, F58, F59, F60, F61, F62, F63, F65, F66, F67, F68, F69, F70, F71, F72, F73, F74, F75, F76, F77, F78, F79, F80, F81, F82, F83, F84, F85, F86, F87, F88, F89, F90, F91, F92. F73, F74, F76 et F88 (lot L26) sont inclus après leur intégration. Les mentions « non testé » des tableaux restent une dette technique.
 
-Restent en cours : F40 (planification du cron et réception des rappels), D14 et F27 (traduction partielle : publications et alertes non traduites). Bilan : **89 faits, 3 en cours** sur les 92 premières demandes ; les 8 demandes des vagues 19 et 20 (F93 à F100) sont à faire.
+Restent en cours : F40 (planification du cron et réception des rappels), D14 et F27 (traduction partielle : publications et alertes non traduites). Bilan : **89 faits, 3 en cours** sur les 92 premières demandes ; les vagues 19 à 22 (F93 à F101, F103, F104) sont livrées en 🟡 le 2026-10-04, sans test ni vérification navigateur.
 
 ## Demandes initiales (H+0)
 
@@ -217,20 +217,21 @@ Restent en cours : F40 (planification du cron et réception des rappels), D14 et
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
-| F93 | 4 | 1 760 | Panne de réseau : fonctions essentielles et informations nécessaires compréhensibles et récupérables | L27 | API, site | ⬜ (prolonge F59, F77) |
-| F94 | 2 | 880 | Pendant un incident, consulter au moins les informations essentielles, consignes et coordonnées utiles | L27 | site | ⬜ (prolonge F59, F62) |
-| F95 | 3 | 1 320 | Réduire les ressources chargées et les requêtes inutiles relevées par les mesures | L27 | site, admin | ⬜ (prolonge F57, F58) |
-| F96 | 2 | 880 | Sur mobile et connexion limitée, accéder vite à l’essentiel avec une présentation adaptée | L27 | site | ⬜ (prolonge F61, F62) |
-
+| F93 | 4 | 1 760 | Panne de réseau : fonctions essentielles et informations nécessaires compréhensibles et récupérables | L27 | API, site | 🟡 page `/essentiel` (numéros, alertes, consignes, coordonnées, fichier texte), service worker v2 (pages de crise et données vitales préchargées), lien « Voir l’essentiel » pendant une panne ; non testé |
+| F94 | 2 | 880 | Pendant un incident, consulter au moins les informations essentielles, consignes et coordonnées utiles | L27 | site | 🟡 `/essentiel` et `/alertes` lisibles hors ligne, consignes générales statiques ; non testé |
+| F95 | 3 | 1 320 | Réduire les ressources chargées et les requêtes inutiles relevées par les mesures | L27 | site, admin | 🟡 liens sans préchargement automatique (`shared/ui/link`), rafraîchissement de secours ×5 quand le temps réel est ouvert ; mesure à refaire |
+| F96 | 2 | 880 | Sur mobile et connexion limitée, accéder vite à l’essentiel avec une présentation adaptée | L27 | site | 🟡 mode léger automatique en économie de données, contenus non indispensables masqués sur mobile, listes limitées à 3 ; non testé |
 ## Vague 20 (H+21) — relevée le 2026-10-04
 
 | Code | Diff. | XP | Besoin | Lot | Propriétaire | Statut |
 |---|---|---|---|---|---|---|
-| F97 (IA) | 3 | 1 350 | Lignes de transport interrompues : trouver rapidement une solution de remplacement | L27 | Administration, Assistance, site | ⬜ (prolonge F36, F38) |
-| F98 | 3 | 1 350 | Savoir quels services sont les plus utilisés, sous une forme claire et exploitable | L27 | Pilotage, admin | ⬜ (prolonge F50) |
-| F99 | 3 | 1 350 | Services proposés par des partenaires extérieurs : disponibilité et prochaine action visibles | L27 | Administration, site | ⬜ (prolonge F74) |
-| F100 | 2 | 900 | Les agents consultent facilement les derniers événements de sécurité | L27 | Audit, IAM, admin | ⬜ (prolonge F37, F85) |
-
+| F97 (IA) | 3 | 1 350 | Lignes de transport interrompues : trouver rapidement une solution de remplacement | L27 | Administration, Assistance, site | 🟡 lignes de transport (Administration, `/contenus/transports`), page `/transports`, aide au trajet `POST /api/assistance/transport` (règles + rédaction IA) ; non testé |
+| F98 | 3 | 1 350 | Savoir quels services sont les plus utilisés, sous une forme claire et exploitable | L27 | Pilotage, admin | 🟡 `/pilotage/services` sur `GET /api/pilotage/service-usage` : classement, évolution, satisfaction, constats, CSV ; non testé |
+| F99 | 3 | 1 350 | Services proposés par des partenaires extérieurs : disponibilité et prochaine action visibles | L27 | Administration, site | 🟡 offres des partenaires (disponibilité, prochaine action) dans l’admin et sur `/partenaires` ; non testé |
+| F100 | 2 | 900 | Les agents consultent facilement les derniers événements de sécurité | L27 | Audit, IAM, admin | 🟡 `GET /api/audit/security-events` (tout membre, détails masqués), bloc sur l’accueil de l’espace de travail et page `/securite` ; non testé |
+| F101 | 4 | 1 380 | Panne électrique du secteur nord : informer sans délai, au bon moment, de façon compréhensible | L28 | Communication, site, admin | 🟡 alertes de quartier publiques et en temps réel, nature et zone touchée, annonce « À venir », bandeau à la minute près, page `/alertes`, modèles de crise dans l’admin ; non testé |
+| F103 | 4 | 1 410 | Rapport synthétique de l’activité, clair et exploitable | L28 | Pilotage, admin | 🟡 `/pilotage/rapport` sur `GET /api/pilotage/activity-report` : à retenir, actions recommandées, chiffres comparés, Markdown/impression ; non testé |
+| F104 | 4 | 1 410 | Tempête solaire : consignes claires avant la perturbation des communications | L28 | Communication, site, admin | 🟡 modèle « Tempête solaire », consignes « À faire dès maintenant », copie gardée sur l’appareil, notifications de l’appareil ; non testé |
 ## Vagues suivantes
 
 Ajouter une section par vague au moment de sa diffusion, en suivant la [procédure](README.md#quand-une-vague-arrive).

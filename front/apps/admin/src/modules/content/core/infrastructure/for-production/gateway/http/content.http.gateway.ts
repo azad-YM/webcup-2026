@@ -2,7 +2,7 @@ import { ApiClient, ApiHttpError } from "@boilerplate/shared-utils/api-client"
 import { ContentError } from "../../../../application/errors/content.error"
 import type { ContentGateway } from "../../../../application/ports/gateway/content.gateway"
 import type { ContentSessionProvider } from "../../../../application/ports/provider/content-session.provider"
-import type { Alert, MunicipalService, PlainLanguageDraft, Publication, PublicationPlainLanguageRequest, ServiceAvailabilityChange, ServicePlainLanguageRequest } from "../../../../domain/content"
+import type { Alert, MunicipalService, TransportLine, PlainLanguageDraft, Publication, PublicationPlainLanguageRequest, ServiceAvailabilityChange, ServicePlainLanguageRequest } from "../../../../domain/content"
 
 /** Adaptateur HTTP des contenus : services (Administration), publications et alertes (Communication). */
 export class ContentHttpGateway extends ApiClient implements ContentGateway {
@@ -52,6 +52,14 @@ export class ContentHttpGateway extends ApiClient implements ContentGateway {
 
   suggestPublicationPlainLanguage(request: PublicationPlainLanguageRequest) {
     return this.call(() => this.postAuth<PlainLanguageDraft>("/communication/manage/publications/plain-language", request), "la proposition de version en clair", "admin.communication.write")
+  }
+
+  listTransportLines() {
+    return this.call(() => this.getAuth<TransportLine[]>("/administration/transport-lines"), "les lignes de transport")
+  }
+
+  saveTransportLine(line: TransportLine) {
+    return this.call(() => this.putAuth<TransportLine>("/administration/transport-lines", line), "la ligne de transport", "admin.service.write")
   }
 
   private async call<T>(request: () => Promise<T>, what: string, permission?: string): Promise<T> {

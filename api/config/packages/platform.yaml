@@ -27,6 +27,7 @@ parameters:
         administration_application_municipalservice_list: 60
         administration_application_municipalservice_show: 60
         administration_application_municipalservice_districts: 3600
+        administration_transport_lines: 30
         communication_application_communication_publications: 60
         communication_application_communication_publication: 60
         communication_application_communication_alerts: 15
@@ -73,7 +74,7 @@ parameters:
     # Tables importantes par BC (les tables techniques éphémères — compteurs, codes, liens, tampons — sont exclues).
     app.backup.tables:
         IAM: [auth_users, iam_known_devices, iam_sign_ins, iam_login_security_events]
-        Administration: [admin_members, roles, municipal_service]
+        Administration: [admin_members, roles, municipal_service, transport_line]
         Citizen: [citizens, citizen_alert_preference, citizen_service_requests, citizen_request_supports, citizen_concerns, citizen_appointment_slots, citizen_appointments, citizen_notifications]
         Communication: [communication_publication, communication_alert]
         Participation: [participation_projects, participation_consultations, participation_contributions, participation_ideas, participation_service_reviews]

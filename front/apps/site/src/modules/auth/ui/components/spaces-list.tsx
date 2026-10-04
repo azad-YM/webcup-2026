@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useId } from "react"
 import { polling } from "@/modules/shared/ui/sobriety/polling"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import {
   ArrowRight,
   Building2

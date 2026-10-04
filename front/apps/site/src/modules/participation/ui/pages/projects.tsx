@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react"
 import { polling } from "@/modules/shared/ui/sobriety/polling"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import { ArrowRight, MapPin } from "@boilerplate/shared-ui/components/icon"
 import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"

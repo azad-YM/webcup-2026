@@ -48,6 +48,8 @@ final readonly class SaveAlertHandler
             'recommendations' => $cmd->recommendations,
             'category' => $cmd->category,
             'signatory' => $cmd->signatory,
+            'kind' => $cmd->kind,
+            'area' => $cmd->area,
         ];
         $official = $cmd->category === 'official';
         if ($official && $cmd->state === 'published' && !$cmd->confirmOfficial) {
@@ -79,7 +81,7 @@ final readonly class SaveAlertHandler
             $resource,
             $alert->id,
             sprintf($official ? 'Message officiel « %s » (signé %s) : %s.' : 'Alerte « %s » (%s) : %s.', $cmd->title, $official ? (string) $cmd->signatory : $cmd->severity, $labels[$cmd->state] ?? $cmd->state),
-            ['previousState' => $previousState, 'state' => $cmd->state, 'severity' => $cmd->severity, 'audience' => $cmd->audience, 'district' => $cmd->district, 'category' => $cmd->category],
+            ['previousState' => $previousState, 'state' => $cmd->state, 'severity' => $cmd->severity, 'audience' => $cmd->audience, 'district' => $cmd->district, 'category' => $cmd->category, 'kind' => $cmd->kind],
         );
 
         return $view;

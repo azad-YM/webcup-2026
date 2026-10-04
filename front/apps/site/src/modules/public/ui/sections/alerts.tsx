@@ -1,8 +1,8 @@
 "use client"
-import { useEffect } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { polling } from "@/modules/shared/ui/sobriety/polling"
-import Link from "next/link"
-import { AlertTriangle, BadgeCheck, Info, Megaphone } from "@boilerplate/shared-ui/components/icon"
+import Link from "@/modules/shared/ui/link"
+import { AlertTriangle, BadgeCheck, Bus, CloudLightning, Droplets, HeartPulse, Info, Megaphone, Sun, WifiOff, ZapOff } from "@boilerplate/shared-ui/components/icon"
 import { useSession } from "@/modules/shared/ui/store-provider"
 import { isUnauthorized, toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
 import { ErrorState, LoadingState } from "@/modules/shared/ui/components/states"
@@ -13,9 +13,11 @@ import {
   useReadOfficialMessagesQuery,
   useMyAlertPreferenceQuery,
   useMyNotificationsQuery,
-  useSetHealthConsentMutation
+  useSetHealthConsentMutation,
+  useChosenDistrictQuery,
+  useSaveAlertsMutation
 } from "../../core/application/rtk-api/alerts"
-import { audienceLabel, formatDateTime, isOfficialMessage, mergeAlerts, SEVERITY_LABELS, type CityAlert } from "../../core/domain/alert"
+import { ALERT_KIND_LABELS, alertTiming, audienceLabel, concernsDistrict, formatDateTime, formatDelay, formatMoment, isOfficialMessage, mergeAlerts, nextAlertChange, SEVERITY_LABELS, type AlertKind, type CityAlert } from "../../core/domain/alert"
 import { formatPublicationDate } from "../../core/domain/publication"
 import { publicationHref } from "../components/content-cards"
 
@@ -25,35 +27,109 @@ const SEVERITY_STYLES: Record<CityAlert["severity"], string> = {
   info: "border-teal-600 bg-teal-50 text-teal-950"
 }
 
-/** Une alerte : gravité, audience, validité, message et recommandations rédigées par la ville. */
-export function AlertNotice({ alert, headingLevel = 2 }: { alert: CityAlert; headingLevel?: 2 | 3 }) {
+const KIND_ICONS: Record<AlertKind, typeof Info> = {
+  general: Info,
+  power: ZapOff,
+  network: WifiOff,
+  "solar-storm": Sun,
+  transport: Bus,
+  weather: CloudLightning,
+  water: Droplets,
+  health: HeartPulse
+}
+
+/**
+ * Une alerte (D18, F29, F101, F104) lisible d’un coup d’œil : nature et gravité, où, jusqu’à quand,
+ * ce qui se passe, puis ce qu’il faut faire — affiché d’emblée pour une urgence, repliable sinon.
+ */
+export function AlertNotice({ alert, headingLevel = 2, now = Date.now() }: { alert: CityAlert; headingLevel?: 2 | 3; now?: number }) {
   const Heading = headingLevel === 2 ? "h2" : "h3"
-  const Icon = alert.severity === "info" ? Info : AlertTriangle
+  const kind = alert.kind ?? "general"
+  const Icon = kind === "general" ? (alert.severity === "info" ? Info : AlertTriangle) : KIND_ICONS[kind]
+  const upcoming = alertTiming(alert, now) === "upcoming"
+  const where = alert.area ? `${alert.area}${alert.audience === "district" ? ` (quartier ${alert.district})` : ""}` : audienceLabel(alert)
+  const steps = alert.recommendations.length > 0 && (
+    <ul className="mt-1 list-disc space-y-1 ps-6">
+      {alert.recommendations.map((recommendation) => <li key={recommendation}>{recommendation}</li>)}
+    </ul>
+  )
   return (
-    <article className={`rounded-xl border-l-4 p-4 ${SEVERITY_STYLES[alert.severity]}`}>
+    <article className={`rounded-xl border-l-4 p-4 ${SEVERITY_STYLES[alert.severity]}`} aria-labelledby={`alerte-${alert.id}`}>
       <div className="flex items-start gap-3">
-        <Icon className="mt-1 size-5 shrink-0" aria-hidden="true" />
+        <Icon className="mt-1 size-6 shrink-0" aria-hidden="true" />
         <div className="min-w-0 flex-1">
-          <Heading className="font-semibold">
-            <span className="mr-2 rounded bg-white/70 px-2 py-0.5 text-sm uppercase tracking-wide">{SEVERITY_LABELS[alert.severity]}</span>
-            {alert.title}
-          </Heading>
-          <p className="mt-1 text-sm">
-            {audienceLabel(alert)} · jusqu’au <time dateTime={alert.endsAt}>{formatDateTime(alert.endsAt)}</time>
+          <p className="flex flex-wrap gap-2 text-sm font-semibold uppercase tracking-wide">
+            <span className="rounded bg-white/70 px-2 py-0.5">{SEVERITY_LABELS[alert.severity]}</span>
+            {kind !== "general" && <span className="rounded bg-white/70 px-2 py-0.5">{ALERT_KIND_LABELS[kind]}</span>}
+            {upcoming && <span className="rounded bg-slate-900 px-2 py-0.5 text-white">À venir</span>}
           </p>
+          <Heading id={`alerte-${alert.id}`} className="mt-1 text-lg font-semibold">{alert.title}</Heading>
+          <dl className="mt-2 grid gap-x-6 gap-y-1 text-sm sm:grid-cols-[auto_1fr]">
+            <dt className="font-semibold">Où</dt>
+            <dd>{where}</dd>
+            <dt className="font-semibold">{upcoming ? "À partir de" : "Jusqu’à"}</dt>
+            <dd>
+              {upcoming
+                ? <><time dateTime={alert.startsAt}>{formatMoment(alert.startsAt, now)}</time> ({formatDelay(alert.startsAt, now)}) · jusqu’à <time dateTime={alert.endsAt}>{formatMoment(alert.endsAt, now)}</time></>
+                : <time dateTime={alert.endsAt}>{formatMoment(alert.endsAt, now)}</time>}
+            </dd>
+          </dl>
           <p className="mt-2 whitespace-pre-line">{alert.message}</p>
-          {alert.recommendations.length > 0 && (
+          {steps && (alert.severity === "critical" || upcoming ? (
+            <div className="mt-3 rounded-lg bg-white/70 p-3">
+              <p className="font-semibold">{upcoming ? "À faire dès maintenant" : "Ce que vous devez faire"}</p>
+              {steps}
+            </div>
+          ) : (
             <details className="mt-3">
-              <summary className="cursor-pointer font-medium underline underline-offset-4">Recommandations de la ville</summary>
-              <ul className="mt-2 list-disc space-y-1 pl-6">
-                {alert.recommendations.map((recommendation) => <li key={recommendation}>{recommendation}</li>)}
-              </ul>
+              <summary className="cursor-pointer font-medium underline underline-offset-4">Ce que vous devez faire</summary>
+              {steps}
             </details>
-          )}
+          ))}
         </div>
       </div>
     </article>
   )
+}
+
+/**
+ * Horloge du bandeau (F101) : se réveille au prochain début ou fin d’alerte et toutes les 30 s
+ * (« dans 25 min »), pour afficher chaque alerte au bon moment sans attendre un rechargement.
+ */
+function useAlertClock(alerts: CityAlert[]): number {
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => {
+    const next = nextAlertChange(alerts, now)
+    const delay = Math.min(30_000, next === null ? 30_000 : Math.max(500, next - now + 250))
+    const timer = window.setTimeout(() => setNow(Date.now()), delay)
+    return () => window.clearTimeout(timer)
+  }, [alerts, now])
+  return now
+}
+
+/**
+ * F104 : une notification de l’appareil pour une nouvelle alerte grave, si la personne l’a autorisée
+ * (page « Alertes et consignes »). Seulement pour les alertes arrivées pendant la visite.
+ */
+function useDeviceNotifications(alerts: CityAlert[]) {
+  const known = useRef<Set<string> | null>(null)
+  useEffect(() => {
+    const ids = new Set(alerts.map((alert) => alert.id))
+    if (known.current === null) {
+      known.current = ids
+      return
+    }
+    const fresh = alerts.filter((alert) => !known.current?.has(alert.id) && alert.severity === "critical")
+    known.current = ids
+    if (fresh.length === 0 || typeof Notification === "undefined" || Notification.permission !== "granted") return
+    for (const alert of fresh) {
+      try {
+        new Notification(`Alerte : ${alert.title}`, { body: alert.recommendations[0] ?? alert.message, tag: alert.id, lang: "fr" })
+      } catch {
+        /* Certains navigateurs mobiles exigent un service worker pour notifier : le bandeau suffit. */
+      }
+    }
+  }, [alerts])
 }
 
 /**
@@ -115,8 +191,11 @@ function OfficialMessages({ messages }: { messages: CityAlert[] }) {
 }
 
 /**
- * Bandeau d’alertes (D18, F29) sous l’en-tête de chaque page : alertes générales,
- * plus celles qui visent le citoyen connecté (quartier, alertes sanitaires).
+ * Bandeau d’alertes (D18, F29, F101, F104) sous l’en-tête de chaque page : alertes générales et de quartier,
+ * plus celles qui visent le citoyen connecté (quartier du profil, alertes sanitaires).
+ * - Quartier connu (profil ou choix sur l’appareil) : ses alertes en entier, les autres quartiers en une ligne.
+ * - Alertes annoncées (début dans les 12 h) : « À venir », avec les consignes à lire dès maintenant.
+ * - Chaque alerte apparaît et disparaît à la minute près ; une copie est gardée sur l’appareil (coupure du réseau).
  * Mis à jour en temps réel, avec un rafraîchissement de secours toutes les 60 s.
  */
 export function AlertBanner() {
@@ -124,15 +203,43 @@ export function AlertBanner() {
   const general = useListAlertsQuery(undefined, polling(ALERTS_POLLING_MS))
   const connected = session.ready && session.hasToken
   const mine = useMyNotificationsQuery(undefined, { skip: !connected, ...polling(ALERTS_POLLING_MS) })
-  const alerts = mergeAlerts(general.data ?? [], connected ? mine.data?.alerts ?? [] : [])
-  if (alerts.length === 0) return null
+  const chosen = useChosenDistrictQuery()
+  const [saveAlerts] = useSaveAlertsMutation()
+  const personal = useMemo(() => (connected ? mine.data?.alerts ?? [] : []), [connected, mine.data])
+  const alerts = useMemo(() => mergeAlerts(general.data ?? [], personal), [general.data, personal])
+  const now = useAlertClock(alerts)
+  useDeviceNotifications(alerts)
+  useEffect(() => {
+    if (general.data) void saveAlerts(alerts)
+  }, [general.data, alerts, saveAlerts])
+  const district = chosen.data ?? null
+  const mineIds = new Set(personal.map((alert) => alert.id))
+  const live = alerts.filter((alert) => alertTiming(alert, now) !== "ended")
+  const relevant = live.filter((alert) => mineIds.has(alert.id) || concernsDistrict(alert, district))
+  const elsewhere = live.filter((alert) => !relevant.includes(alert) && alertTiming(alert, now) === "active")
+  if (relevant.length === 0 && elsewhere.length === 0) return null
   // F73 : les messages officiels du Haut Conseil passent avant les alertes.
-  const official = alerts.filter(isOfficialMessage)
+  const official = relevant.filter((alert) => isOfficialMessage(alert) && alertTiming(alert, now) === "active")
+  const active = relevant.filter((alert) => !isOfficialMessage(alert) && alertTiming(alert, now) === "active")
+  const upcoming = relevant.filter((alert) => alertTiming(alert, now) === "upcoming")
   return (
     <aside aria-label="Alertes de la ville" className="border-b border-slate-200 bg-white">
       <div className="mx-auto max-w-7xl space-y-3 px-4 py-4 sm:px-6 lg:px-8" aria-live="polite">
         {official.length > 0 && <OfficialMessages messages={official} />}
-        {alerts.filter((alert) => !isOfficialMessage(alert)).map((alert) => <AlertNotice key={alert.id} alert={alert} />)}
+        {active.map((alert) => <AlertNotice key={alert.id} alert={alert} now={now} />)}
+        {upcoming.map((alert) => <AlertNotice key={alert.id} alert={alert} now={now} />)}
+        {elsewhere.length > 0 && (
+          <p className="text-sm text-slate-700">
+            Aussi en cours : {elsewhere.map((alert) => `${alert.title}${alert.district ? ` (quartier ${alert.district})` : ""}`).join(" · ")}.{" "}
+            <Link href="/alertes" className="font-medium text-teal-800 underline underline-offset-4">Voir toutes les alertes</Link>
+          </p>
+        )}
+        {(active.length > 0 || upcoming.length > 0) && (
+          <p className="text-sm">
+            <Link href="/alertes" className="font-medium text-teal-800 underline underline-offset-4">Alertes et consignes</Link>
+            {district === null && live.some((alert) => alert.audience === "district") ? " · indiquez votre quartier pour ne voir que ce qui vous concerne" : district ? ` · quartier ${district}` : ""}
+          </p>
+        )}
       </div>
     </aside>
   )

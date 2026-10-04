@@ -21,6 +21,7 @@ import {
 import { ListState, selectClass } from "../components/content-states"
 import { ServicePlaceFields } from "../sections/service-place-fields"
 import { PartnerContactFields } from "../sections/partner-contact-fields"
+import { PartnerOfferFields } from "../sections/partner-offer-fields"
 import { ServiceTranslationFields } from "../sections/service-translation-fields"
 
 const SLUG = /^[a-z0-9][a-z0-9-]{0,79}$/
@@ -48,6 +49,7 @@ function ServiceForm({ initial, isNew, onDone }: { initial: MunicipalService; is
       emergency: draft.emergency ?? null,
       translations: draft.translations ?? {},
       plainLanguage: draft.plainLanguage ?? "",
+      offers: draft.category === "partenaires" ? (draft.offers ?? []).filter((offer) => offer.title.trim() !== "") : [],
     })
     if ("data" in result && result.data) {
       setDraft(result.data)
@@ -159,6 +161,7 @@ function ServiceForm({ initial, isNew, onDone }: { initial: MunicipalService; is
 
           <ServicePlaceFields draft={draft} disabled={saving.isLoading} onChange={setDraft} />
           {draft.category === "partenaires" && <PartnerContactFields draft={draft} disabled={saving.isLoading} onChange={setDraft} />}
+          {draft.category === "partenaires" && <PartnerOfferFields draft={draft} disabled={saving.isLoading} onChange={setDraft} />}
           <ServiceTranslationFields draft={draft} disabled={saving.isLoading} onChange={setDraft} />
 
           {draft.category === "mobilite" && (

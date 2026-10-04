@@ -15,12 +15,12 @@ final class RealtimeTopics
     public const HEALTH_ALERTS = 'alerts.health';
     public const DISTRICT_PREFIX = 'district.';
 
+    /**
+     * F101 : une alerte de quartier est une information publique (panne du secteur nord…) : elle part sur le
+     * topic public pour prévenir sans délai les visiteurs non connectés. Seules les alertes sanitaires restent privées.
+     */
     public static function forAlert(string $audience, ?string $district): string
     {
-        return match ($audience) {
-            'district' => self::DISTRICT_PREFIX . mb_strtolower((string) $district),
-            'health' => self::HEALTH_ALERTS,
-            default => self::PUBLIC_ALERTS,
-        };
+        return $audience === 'health' ? self::HEALTH_ALERTS : self::PUBLIC_ALERTS;
     }
 }

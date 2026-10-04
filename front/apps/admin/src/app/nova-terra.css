@@ -74,3 +74,11 @@ html[data-contrast="high"] .nt-data-table th { color: #111827; }
 html[data-contrast="high"] .nt-data-table td { border-block: 1px solid #374151; }
 [data-slot="card"]:has(.nt-data-table) { border-color: transparent; box-shadow: 0 3px 16px #0f172a05; }
 html[data-contrast="high"] [data-slot="card"]:has(.nt-data-table) { border-color: #374151; }
+
+/* F103 : impression d’un rapport (ou « Enregistrer en PDF ») — seul le contenu de la page est imprimé. */
+@media print {
+  aside, header, #navigation-desktop, [aria-label="Modules et compte"] { display: none !important; }
+  .sticky { position: static !important; }
+  main { padding: 0 !important; background: #fff !important; }
+  body { background: #fff; }
+}

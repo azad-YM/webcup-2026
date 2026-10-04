@@ -1,5 +1,5 @@
 "use client"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
 import { DeleteAccount } from "../sections/delete-account"
 import { ProfileForm } from "../sections/profile-form/profile-form"

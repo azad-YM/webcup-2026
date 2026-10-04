@@ -1,4 +1,4 @@
-import { Star, Activity, ArchiveRestore, Download, BookKey, Building2, CalendarClock, HandHeart, History, Inbox, LayoutDashboard, Lightbulb, MessageCircleWarning, MessagesSquare, Newspaper, ShieldAlert, ShieldQuestion, Siren, Users } from "@boilerplate/shared-ui/components/icon"
+import { Star, Bus, FileText, ShieldCheck, Activity, ArchiveRestore, Download, BookKey, Building2, CalendarClock, HandHeart, History, Inbox, LayoutDashboard, Lightbulb, MessageCircleWarning, MessagesSquare, Newspaper, ShieldAlert, ShieldQuestion, Siren, Users } from "@boilerplate/shared-ui/components/icon"
 import type { NavGroup } from "../components/sidebar/nav-main"
 
 export type ModuleCode = "admin" | "requests" | "pilotage" | "participation"
@@ -30,9 +30,11 @@ export const MODULE_NAVIGATION: Record<ModuleCode, NavGroup[]> = {
       { title: "Publications", url: "/contenus", icon: Newspaper },
       { title: "Alertes", url: "/contenus/alertes", icon: Siren },
       { title: "Services et transports", url: "/contenus/services", icon: Building2 },
+      { title: "Lignes de transport", url: "/contenus/transports", icon: Bus, description: "Interruptions et solutions de remplacement" },
     ] },
     { title: "Suivi et sécurité", items: [
       { title: "Journal des actions", url: "/admin/journal", icon: History },
+      { title: "Événements de sécurité", url: "/securite", icon: ShieldCheck, description: "Les derniers événements, en clair" },
       { title: "Journal de sécurité", url: "/admin/security", icon: ShieldAlert },
       { title: "Activité inhabituelle", url: "/admin/activite-inhabituelle", icon: ShieldQuestion, description: "Anomalies, robots, données incohérentes" },
       { title: "Sauvegardes", url: "/admin/sauvegardes", icon: ArchiveRestore, description: "Rapports de sauvegarde et de restauration" },
@@ -47,6 +49,8 @@ export const MODULE_NAVIGATION: Record<ModuleCode, NavGroup[]> = {
   pilotage: [{ title: "Activité de la ville", items: [
     { title: "Flux Nova Terra", url: "/pilotage", icon: Activity, description: "Demandes de la ville et suivi de l’équipe" },
     { title: "Tableau de bord", url: "/pilotage/tableau-de-bord", icon: LayoutDashboard, description: "Chiffres clés et activité" },
+    { title: "Services les plus utilisés", url: "/pilotage/services", icon: Star, description: "Classement, évolution et satisfaction" },
+    { title: "Rapport d’activité", url: "/pilotage/rapport", icon: FileText, description: "Synthèse à transmettre aux responsables" },
     { title: "Exports", url: "/pilotage/exports", icon: Download, description: "Télécharger des données de suivi (CSV, JSON)" },
   ] }],
   participation: [{ title: "Participation des habitants", items: [

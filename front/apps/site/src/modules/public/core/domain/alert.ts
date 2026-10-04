@@ -24,7 +24,66 @@ export type CityAlert = {
   signatory?: string | null
   /** Archive des messages officiels : encore en cours de validité. */
   active?: boolean
+  /** F101/F104 : nature de l’événement (coupure d’électricité, tempête solaire…) et zone touchée en clair. */
+  kind?: AlertKind
+  area?: string
+  /** F101 : `upcoming` = publiée mais pas encore commencée (annoncée jusqu’à 12 h avant). */
+  status?: "active" | "upcoming"
 }
+
+export type AlertKind = "general" | "power" | "network" | "solar-storm" | "transport" | "weather" | "water" | "health"
+
+export const ALERT_KIND_LABELS: Record<AlertKind, string> = {
+  general: "Information de la ville",
+  power: "Coupure d’électricité",
+  network: "Panne des communications",
+  "solar-storm": "Tempête solaire",
+  transport: "Transports perturbés",
+  weather: "Météo dangereuse",
+  water: "Eau potable",
+  health: "Santé"
+}
+
+/** Moment d’une alerte à l’instant `now` : le bandeau l’affiche au bon moment, sans attendre un rechargement. */
+export function alertTiming(alert: Pick<CityAlert, "startsAt" | "endsAt">, now: number): "upcoming" | "active" | "ended" {
+  if (now < Date.parse(alert.startsAt)) return "upcoming"
+  return now < Date.parse(alert.endsAt) ? "active" : "ended"
+}
+
+/** Prochain changement (début ou fin) d’une des alertes, pour réafficher le bandeau à cet instant précis. */
+export function nextAlertChange(alerts: Pick<CityAlert, "startsAt" | "endsAt">[], now: number): number | null {
+  const moments = alerts.flatMap((alert) => [Date.parse(alert.startsAt), Date.parse(alert.endsAt)]).filter((moment) => moment > now)
+  return moments.length === 0 ? null : Math.min(...moments)
+}
+
+/**
+ * F101 : une alerte de quartier concerne la personne si c’est son quartier ; sans quartier connu,
+ * toutes les alertes sont montrées (avec le nom du quartier) pour ne laisser personne sans information.
+ */
+export function concernsDistrict(alert: Pick<CityAlert, "audience" | "district">, district: string | null): boolean {
+  return alert.audience !== "district" || district === null || alert.district === district
+}
+
+const timeFormat = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit" })
+const dayFormat = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long" })
+
+/** « 14:30 » aujourd’hui, sinon « mardi 6 octobre à 14:30 ». */
+export function formatMoment(iso: string, now = Date.now()): string {
+  const date = new Date(iso)
+  return new Date(now).toDateString() === date.toDateString() ? timeFormat.format(date) : `${dayFormat.format(date)} à ${timeFormat.format(date)}`
+}
+
+/** « dans 25 min », « dans 2 h » : délai lisible avant le début d’une alerte annoncée. */
+export function formatDelay(iso: string, now = Date.now()): string {
+  const minutes = Math.max(1, Math.round((Date.parse(iso) - now) / 60_000))
+  if (minutes < 60) return `dans ${minutes} min`
+  const hours = Math.floor(minutes / 60)
+  const rest = minutes % 60
+  return rest === 0 ? `dans ${hours} h` : `dans ${hours} h ${String(rest).padStart(2, "0")}`
+}
+
+/** Consignes enregistrées sur l’appareil (F93, F104) : relues quand le réseau est coupé. */
+export type SavedAlerts = { alerts: CityAlert[]; savedAt: string }
 
 export const isOfficialMessage = (alert: Pick<CityAlert, "category">) => alert.category === "official"
 

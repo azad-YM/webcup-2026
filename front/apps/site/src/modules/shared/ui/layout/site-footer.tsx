@@ -1,5 +1,5 @@
 "use client"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import { MAIN_NAVIGATION } from "../navigation"
 import { NovaTerraWordmark } from "./nova-terra-logo"
 import { useMessages } from "../i18n/i18n-provider"
@@ -24,6 +24,9 @@ export function SiteFooter() {
             ))}
             <li><Link href="/espace" className="hover:text-white hover:underline">{t.footerSpace}</Link></li>
             <li><Link href="/urgences" className="hover:text-white hover:underline">{t.emergencyLabel}</Link></li>
+            <li><Link href="/alertes" className="hover:text-white hover:underline">{t.footerAlerts}</Link></li>
+            <li><Link href="/essentiel" className="hover:text-white hover:underline">{t.footerEssentials}</Link></li>
+            <li><Link href="/transports" className="hover:text-white hover:underline">{t.footerTransport}</Link></li>
             <li><Link href="/bienvenue" className="hover:text-white hover:underline">{t.footerNewcomer}</Link></li>
             <li><Link href="/aide/glossaire" className="hover:text-white hover:underline">{t.footerGlossary}</Link></li>
             <li><Link href="/vos-donnees" className="hover:text-white hover:underline">{t.footerData}</Link></li>

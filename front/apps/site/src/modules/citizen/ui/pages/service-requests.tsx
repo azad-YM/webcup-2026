@@ -1,7 +1,7 @@
 "use client"
 import { useEffect } from "react"
 import { polling } from "@/modules/shared/ui/sobriety/polling"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import type { Route } from "next"
 import { useSearchParams } from "next/navigation"
 import { ArrowLeft, ArrowRight, FileText, MapPin, Megaphone, MessageSquare } from "@boilerplate/shared-ui/components/icon"

@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, type ReactNode } from "react"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import type { Route } from "next"
 import { LogIn, ShieldAlert, UserCheck } from "@boilerplate/shared-ui/components/icon"
 import { useSession } from "@/modules/shared/ui/store-provider"

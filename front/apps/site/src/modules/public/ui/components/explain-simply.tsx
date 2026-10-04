@@ -1,6 +1,6 @@
 "use client"
 import { useId, useState } from "react"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
 import { useLocale, useMessages } from "@/modules/shared/ui/i18n/i18n-provider"
 import { useLazyExplainPassageQuery } from "../../core/application/rtk-api/public"

@@ -39,6 +39,8 @@ export type RealtimeStreamOptions = {
   reopenDelayMs?: number
   /** Injected in tests; defaults to the browser `EventSource`. */
   createEventSource?: EventSourceFactory
+  /** F95 : the stream is open (`true`) or interrupted (`false`); lets screens space out their fallback polling. */
+  onStatus?: (open: boolean) => void
 }
 
 export type RealtimeStream = { close(): void }
@@ -90,6 +92,7 @@ export function openRealtimeStream(options: RealtimeStreamOptions): RealtimeStre
     source = current
     current.onopen = () => {
       failures = 0
+      options.onStatus?.(true)
     }
     for (const type of options.eventTypes) {
       current.addEventListener(type, (event: MessageEvent) => {
@@ -104,6 +107,7 @@ export function openRealtimeStream(options: RealtimeStreamOptions): RealtimeStre
       })
     }
     current.onerror = () => {
+      options.onStatus?.(false)
       // CONNECTING: the browser reconnects by itself (normal end of a short connection).
       // CLOSED: the server refused the stream (e.g. expired ticket): reopen with a fresh ticket.
       if (current.readyState === CLOSED) {
@@ -120,6 +124,7 @@ export function openRealtimeStream(options: RealtimeStreamOptions): RealtimeStre
       closed = true
       if (timer) clearTimeout(timer)
       source?.close()
+      options.onStatus?.(false)
     }
   }
 }

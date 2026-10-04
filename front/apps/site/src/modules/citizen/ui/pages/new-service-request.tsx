@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import type { Route } from "next"
 import { useSearchParams } from "next/navigation"
 import { CheckCircle2, Send } from "@boilerplate/shared-ui/components/icon"

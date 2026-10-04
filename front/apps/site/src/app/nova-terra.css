@@ -50,3 +50,16 @@ html[data-text-size="150"] .site-header {
 
 /* L17 (F60) : une image éventuelle ne déborde pas et garde ses proportions (dimensions explicites attendues). */
 img { height: auto; }
+
+/* F96 : sur petit écran ou en mode léger, l’essentiel d’abord.
+ * - `data-decorative` : décor masqué sur mobile (il l’est déjà partout en mode léger) ;
+ * - `data-optional` : contenu utile mais non indispensable (appel à l’inscription, textes d’accroche), masqué
+ *   sur mobile en mode léger et sur tout écran en mode léger ;
+ * - `data-mobile-limit` : une liste n’affiche que ses 3 premiers éléments sur mobile (le lien « Voir tout » reste). */
+@media (max-width: 639px) {
+  [data-decorative] { display: none !important; }
+  [data-mobile-limit] > ul > li:nth-child(n + 4) { display: none; }
+  .nt-mobile-compact { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+}
+html[data-light="on"] [data-optional] { display: none !important; }
+html[data-light="on"] [data-mobile-limit] > ul > li:nth-child(n + 4) { display: none; }

@@ -1,4 +1,4 @@
-import type { Alert, MunicipalService, PlainLanguageDraft, Publication, PublicationPlainLanguageRequest, ServiceAvailabilityChange, ServicePlainLanguageRequest } from "../../../domain/content"
+import type { Alert, MunicipalService, TransportLine, PlainLanguageDraft, Publication, PublicationPlainLanguageRequest, ServiceAvailabilityChange, ServicePlainLanguageRequest } from "../../../domain/content"
 
 /**
  * Gestion des contenus par les agents. Erreurs : `ContentError`.
@@ -18,4 +18,7 @@ export interface ContentGateway {
   /** F89 : `POST /administration/services/plain-language` et `POST /communication/manage/publications/plain-language`. */
   suggestServicePlainLanguage(request: ServicePlainLanguageRequest): Promise<PlainLanguageDraft>
   suggestPublicationPlainLanguage(request: PublicationPlainLanguageRequest): Promise<PlainLanguageDraft>
+  /** F97 : `GET|PUT /administration/transport-lines` (écriture : `admin.service.write`). */
+  listTransportLines(): Promise<TransportLine[]>
+  saveTransportLine(line: TransportLine): Promise<TransportLine>
 }

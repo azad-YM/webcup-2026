@@ -1,9 +1,10 @@
 "use client"
 import { useEffect, useState } from "react"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import type { Route } from "next"
 import { useSearchParams } from "next/navigation"
-import { ArrowLeft, Clock, ExternalLink, Mail, MapPin, Navigation, Phone, User } from "@boilerplate/shared-ui/components/icon"
+import { ArrowLeft, ArrowRight, Clock, ExternalLink, Mail, MapPin, Navigation, Phone, User } from "@boilerplate/shared-ui/components/icon"
+import { StatusBadge, type StatusTone } from "@boilerplate/shared-ui/components/a11y"
 import { polling } from "@/modules/shared/ui/sobriety/polling"
 import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
 import { PageBody, PageHeader } from "@/modules/shared/ui/layout/page-header"
@@ -11,7 +12,7 @@ import { EmptyState, ErrorState, LoadingState, SkeletonCards } from "@/modules/s
 import { format } from "@/modules/shared/core/i18n/locales"
 import { useMessages } from "@/modules/shared/ui/i18n/i18n-provider"
 import { CONTENT_POLLING_MS, useListServicesQuery } from "../../core/application/rtk-api/public"
-import { openingState, PARTNER_CATEGORY, spokenTime, type MunicipalService, type OpeningSlot } from "../../core/domain/municipal-service"
+import { isOfferAvailable, offerActionHref, openingState, PARTNER_CATEGORY, spokenTime, type MunicipalService, type OfferStatus, type OpeningSlot, type PartnerOffer } from "../../core/domain/municipal-service"
 import { directionsUrl, hasLocation } from "../../core/domain/service-places"
 import { PARTNERS_MESSAGES, type PartnersMessages } from "../i18n/partners-messages"
 import { PhoneLink } from "../components/place-card"
@@ -48,6 +49,85 @@ function OpenNow({ slots, t }: { slots: OpeningSlot[] | undefined; t: PartnersMe
   )
 }
 
+const OFFER_TONES: Record<OfferStatus, StatusTone> = { available: "success", limited: "warning", full: "danger", paused: "neutral", soon: "pending" }
+const OFFER_LABEL_KEYS: Record<OfferStatus, keyof PartnersMessages> = { available: "statusAvailable", limited: "statusLimited", full: "statusFull", paused: "statusPaused", soon: "statusSoon" }
+const offerDate = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long" })
+
+/**
+ * F99 : une offre de partenaire lisible d’un coup d’œil — disponible ou non (texte et icône, pas seulement la couleur),
+ * pour qui, quand elle revient, et un bouton pour la prochaine étape.
+ */
+function OfferCard({ offer, partner, t, showPartner }: { offer: PartnerOffer; partner: MunicipalService; t: PartnersMessages; showPartner?: boolean }) {
+  const action = offerActionHref(offer, partner)
+  const available = isOfferAvailable(offer)
+  return (
+    <article className={`flex h-full flex-col gap-2 rounded-2xl border bg-white p-5 ${available ? "border-slate-200" : "border-dashed border-slate-300"}`}>
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <h3 className="text-lg font-semibold text-slate-950" lang="fr">{offer.title}</h3>
+        <StatusBadge tone={OFFER_TONES[offer.status]} label={t[OFFER_LABEL_KEYS[offer.status]]} size="md" />
+      </div>
+      {showPartner && <p className="text-sm"><Link href={partnerHref(partner.id)} className="font-medium text-teal-800 underline underline-offset-4">{partner.name}</Link></p>}
+      {offer.description && <p className="text-slate-700" lang="fr">{offer.description}</p>}
+      {offer.audience && <p className="text-sm text-slate-700"><span className="font-medium">{t.forWhom} :</span> <span lang="fr">{offer.audience}</span></p>}
+      {offer.statusNote && <p className={`text-sm font-medium ${available ? "text-slate-800" : "text-amber-900"}`} lang="fr">{offer.statusNote}</p>}
+      {!available && offer.nextAvailableAt && <p className="text-sm text-slate-800">{format(t.availableAgain, { date: offerDate.format(new Date(offer.nextAvailableAt)) })}</p>}
+      <div className="mt-auto pt-2">
+        <p className="text-xs font-semibold uppercase tracking-wide text-slate-600">{t.nextStep}</p>
+        {action ? (
+          <a href={action.href} {...(action.external ? { target: "_blank", rel: "noopener noreferrer" } : {})} className={`mt-1 inline-flex items-center gap-2 rounded-lg px-4 py-2 font-medium ${available ? "bg-teal-700 text-white hover:bg-teal-800" : "border border-slate-300 text-slate-900 hover:bg-slate-100"}`}>
+            <span lang="fr">{offer.action.label}</span> <ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" />
+          </a>
+        ) : (
+          <p className="mt-1 font-medium" lang="fr">{offer.action.label}</p>
+        )}
+      </div>
+    </article>
+  )
+}
+
+type OfferFilter = "all" | "available" | "unavailable"
+
+/** F99 : toutes les offres des partenaires, disponibles d’abord, avec un filtre et le décompte. */
+function PartnerOffers({ partners, t }: { partners: MunicipalService[]; t: PartnersMessages }) {
+  const [filter, setFilter] = useState<OfferFilter>("all")
+  const all = partners.flatMap((partner) => (partner.offers ?? []).map((offer) => ({ offer, partner })))
+  if (all.length === 0) return null
+  const available = all.filter(({ offer }) => isOfferAvailable(offer))
+  const shown = (filter === "available" ? available : filter === "unavailable" ? all.filter(({ offer }) => !isOfferAvailable(offer)) : all)
+    .sort((a, b) => Number(isOfferAvailable(b.offer)) - Number(isOfferAvailable(a.offer)))
+  return (
+    <section aria-labelledby="titre-offres" className="mb-12 space-y-4">
+      <div>
+        <h2 id="titre-offres" className="text-2xl font-semibold tracking-tight">{t.offersTitle}</h2>
+        <p className="mt-1 text-slate-700">{t.offersLead}</p>
+        <p className="mt-2 font-medium" role="status">{format(t.offersSummary, { available: String(available.length), unavailable: String(all.length - available.length) })}</p>
+      </div>
+      <div className="flex flex-wrap gap-2" role="group" aria-label={t.offersTitle}>
+        {(["all", "available", "unavailable"] as const).map((value) => (
+          <button key={value} type="button" aria-pressed={filter === value} onClick={() => setFilter(value)} className={`rounded-full border px-4 py-1.5 text-sm font-medium ${filter === value ? "border-slate-900 bg-slate-900 text-white" : "border-slate-300 bg-white hover:bg-slate-100"}`}>
+            {value === "all" ? t.filterAll : value === "available" ? t.filterAvailable : t.filterUnavailable}
+          </button>
+        ))}
+      </div>
+      {shown.length === 0 ? <p className="text-slate-700">{t.noOfferMatch}</p> : (
+        <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {shown.map(({ offer, partner }) => <li key={`${partner.id}-${offer.id}`}><OfferCard offer={offer} partner={partner} t={t} showPartner /></li>)}
+        </ul>
+      )}
+    </section>
+  )
+}
+
+function ProposeServices({ t }: { t: PartnersMessages }) {
+  return (
+    <section aria-labelledby="titre-proposer" className="mt-12 rounded-2xl border border-teal-200 bg-teal-50 p-6">
+      <h2 id="titre-proposer" className="text-xl font-semibold text-teal-950">{t.proposeTitle}</h2>
+      <p className="mt-2 max-w-3xl text-teal-950">{t.proposeText}</p>
+      <Link href={"/espace/demandes/nouvelle?type=contact" as Route} className="mt-3 inline-flex items-center gap-2 font-medium text-teal-900 underline underline-offset-4">{t.proposeLink} <ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" /></Link>
+    </section>
+  )
+}
+
 function WeeklyHours({ slots, t }: { slots: OpeningSlot[]; t: PartnersMessages }) {
   return (
     <table className="mt-3 w-full text-start text-sm">
@@ -76,7 +156,13 @@ function PartnerDetail({ partner, t }: { partner: MunicipalService; t: PartnersM
         <p className="text-lg leading-8 text-slate-800" lang="fr">{partner.description}</p>
         <section aria-labelledby="titre-propose">
           <h2 id="titre-propose" className="text-xl font-semibold">{t.whatTheyOffer}</h2>
-          <ul className="mt-3 list-disc space-y-2 ps-6 text-slate-800" lang="fr">{partner.actions.map((action) => <li key={action}>{action}</li>)}</ul>
+          {partner.offers && partner.offers.length > 0 ? (
+            <ul className="mt-3 grid gap-4 sm:grid-cols-2">
+              {[...partner.offers].sort((a, b) => Number(isOfferAvailable(b)) - Number(isOfferAvailable(a))).map((offer) => <li key={offer.id}><OfferCard offer={offer} partner={partner} t={t} /></li>)}
+            </ul>
+          ) : (
+            <ul className="mt-3 list-disc space-y-2 ps-6 text-slate-800" lang="fr">{partner.actions.map((action) => <li key={action}>{action}</li>)}</ul>
+          )}
         </section>
         <section aria-labelledby="titre-trouver" className="rounded-2xl border border-slate-200 bg-white p-6">
           <h2 id="titre-trouver" className="text-xl font-semibold">{t.findUs}</h2>
@@ -127,6 +213,9 @@ function PartnerCard({ partner, t }: { partner: MunicipalService; t: PartnersMes
       </h2>
       <p className="text-slate-700" lang="fr">{partner.summary}</p>
       <p className="flex gap-2 text-sm text-slate-700"><MapPin className="size-4 shrink-0 text-teal-700" aria-hidden="true" /><span lang="fr">{partner.location?.address ?? partner.contact.place}</span></p>
+      {partner.offers && partner.offers.length > 0 && (
+        <p className="text-sm text-slate-800">{format(t.offersSummary, { available: String(partner.offers.filter(isOfferAvailable).length), unavailable: String(partner.offers.filter((offer) => !isOfferAvailable(offer)).length) })}</p>
+      )}
       <div className="mt-auto"><OpenNow slots={partner.contact.openingHours} t={t} /></div>
     </article>
   )
@@ -156,9 +245,13 @@ export function PartnersPage() {
         ) : partners.length === 0 ? (
           <EmptyState title={t.empty} />
         ) : (
-          <ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {partners.map((item) => <li key={item.id}><PartnerCard partner={item} t={t} /></li>)}
-          </ul>
+          <>
+            <PartnerOffers partners={partners} t={t} />
+            <ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {partners.map((item) => <li key={item.id}><PartnerCard partner={item} t={t} /></li>)}
+            </ul>
+            <ProposeServices t={t} />
+          </>
         )}
       </PageBody>
     </>

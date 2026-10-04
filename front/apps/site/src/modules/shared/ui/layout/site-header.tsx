@@ -1,5 +1,5 @@
 "use client"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import { usePathname } from "next/navigation"
 import { lazy, Suspense, useState, type ReactNode } from "react"
 import { Menu, Siren, UserRound, X } from "@boilerplate/shared-ui/components/icon"

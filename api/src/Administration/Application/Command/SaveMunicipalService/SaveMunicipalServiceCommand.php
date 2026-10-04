@@ -37,5 +37,7 @@ final readonly class SaveMunicipalServiceCommand
         public ?array $translations = null,
         /** F89 : version « En clair » relue par l'agent ; l'enregistrer vaut validation. */
         #[Assert\Length(max: 600)] public string $plainLanguage = '',
+        /** F99 : offres d'un partenaire `[{title, description?, audience?, status, statusNote?, nextAvailableAt?, action: {kind, label, target?}}]`. */
+        #[Assert\Count(max: 12)] public array $offers = [],
     ) {}
 }

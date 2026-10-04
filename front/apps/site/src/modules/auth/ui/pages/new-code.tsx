@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useRef, useState, type FormEvent } from "react"
-import Link from "next/link"
+import Link from "@/modules/shared/ui/link"
 import { useRouter } from "next/navigation"
 import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
 import { useMessages } from "@/modules/shared/ui/i18n/i18n-provider"
