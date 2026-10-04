@@ -29,6 +29,10 @@ export type ProtectedSubmit = {
   trap: string
   setTrap: (value: string) => void
   guarded: boolean
+  /** Message à afficher quand la protection a retenu l’envoi (question posée, robot, envoi déjà en cours). */
+  refusal: string | null
+  /** Vrai si le dernier envoi réussi était un rejeu (réponse du premier envoi rendue par l’API). */
+  wasReplay: () => boolean
   submit: <T>(payload: unknown, run: () => Promise<T>) => Promise<T | undefined>
 }
 
@@ -47,7 +51,9 @@ export function useProtectedSubmit({ apiBaseUrl, form }: { apiBaseUrl?: string; 
   const [challenge, setChallenge] = useState<FormChallenge | null>(null)
   const [answer, setAnswer] = useState("")
   const [trap, setTrap] = useState("")
+  const [refusal, setRefusal] = useState<string | null>(null)
   const busy = useRef(false)
+  const replay = useRef(false)
   const token = useRef<string | null>(null)
 
   useEffect(() => {
@@ -66,6 +72,8 @@ export function useProtectedSubmit({ apiBaseUrl, form }: { apiBaseUrl?: string; 
     busy.current = true
     setSubmitting(true)
     setDuplicate(false)
+    setRefusal(null)
+    replay.current = false
     const headers: Record<string, string> = { "Idempotency-Key": idempotencyKey(form ?? "envoi", payload) }
     if (form) {
       if (token.current) headers["X-Form-Token"] = token.current
@@ -77,16 +85,21 @@ export function useProtectedSubmit({ apiBaseUrl, form }: { apiBaseUrl?: string; 
       const result = await withSubmission(context, run)
       setChallenge(null)
       setAnswer("")
-      setDuplicate(Boolean(context.replayed))
+      replay.current = Boolean(context.replayed)
+      setDuplicate(replay.current)
       return result
     } catch (error) {
       if (context.challenge) {
         setChallenge(context.challenge)
         setAnswer("")
-        throw new SubmissionRefusedError(context.code === "challenge_failed" ? `${context.message ?? "La réponse n’est pas la bonne."} Répondez à la nouvelle question, puis envoyez de nouveau.` : CHALLENGE_MESSAGE, context.code)
+        const message = context.code === "challenge_failed" ? `${context.message ?? "La réponse n’est pas la bonne."} Répondez à la nouvelle question, puis envoyez de nouveau.` : CHALLENGE_MESSAGE
+        setRefusal(message)
+        throw new SubmissionRefusedError(message, context.code)
       }
       if (context.code === "form_rejected" || context.code === "submission_in_progress" || context.code === "idempotency_key_reused") {
-        throw new SubmissionRefusedError(context.message ?? "Envoi refusé.", context.code)
+        const message = context.message ?? "Envoi refusé."
+        setRefusal(message)
+        throw new SubmissionRefusedError(message, context.code)
       }
       throw error
     } finally {
@@ -95,7 +108,8 @@ export function useProtectedSubmit({ apiBaseUrl, form }: { apiBaseUrl?: string; 
     }
   }, [answer, challenge, form, trap])
 
-  return { submitting, duplicate, challenge, answer, setAnswer, trap, setTrap, guarded: Boolean(form), submit }
+  const wasReplay = useCallback(() => replay.current, [])
+  return { submitting, duplicate, challenge, answer, setAnswer, trap, setTrap, guarded: Boolean(form), refusal, wasReplay, submit }
 }
 
 /**

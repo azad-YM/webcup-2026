@@ -7,6 +7,8 @@ import { useSession } from "@/modules/shared/ui/store-provider"
 import { toQueryError } from "@/modules/shared/core/lib/use-cases.decorator"
 import { EmptyState, ErrorState, LoadingState } from "@/modules/shared/ui/components/states"
 import { FormAnnouncement, SelectField, TextAreaField, TextField } from "@/modules/shared/ui/components/form-field"
+import { FormProtection, useProtectedSubmit } from "@boilerplate/shared-ui/components/a11y"
+import { siteEnv } from "@/config/env"
 import { CitizenAccessState, useCitizenAccess } from "../components/citizen-access"
 import { StatusBadge } from "../components/request-status"
 import {
@@ -101,6 +103,8 @@ function ConcernForm() {
   const [errors, setErrors] = useState<Partial<Record<"subject" | "message", string>>>({})
   const [sent, setSent] = useState<Concern | null>(null)
   const [raise, { isLoading, error }] = useRaiseConcernMutation()
+  // L25 (F81, F82) : protection contre les robots et les envois multiples.
+  const guard = useProtectedSubmit({ apiBaseUrl: siteEnv.apiBaseUrl, form: "inquietude" })
   const sending = useRef(false)
   const receipt = useRef<HTMLHeadingElement>(null)
   const failure = toQueryError(error)
@@ -114,7 +118,9 @@ function ConcernForm() {
     if (Object.keys(found).length > 0) return
     sending.current = true
     try {
-      setSent(await raise(draft).unwrap())
+      const concern = await guard.submit(draft, () => raise(draft).unwrap())
+      if (concern === undefined) return
+      setSent(concern)
       setDraft({ topic: "data", subject: "", message: "" })
     } catch {
       /* Message affiché par FormAnnouncement. */
@@ -142,8 +148,9 @@ function ConcernForm() {
       <SelectField id="inquietude-sujet" label="Thème" options={TOPIC_OPTIONS} value={draft.topic} onChange={(event) => setDraft({ ...draft, topic: event.target.value as ConcernTopic })} />
       <TextField id="inquietude-objet" label="Objet" value={draft.subject} maxLength={CONCERN_LIMITS.subject} required error={errors.subject} onChange={(event) => setDraft({ ...draft, subject: event.target.value })} />
       <TextAreaField id="inquietude-message" label="Votre message" rows={6} value={draft.message} maxLength={CONCERN_LIMITS.message} required error={errors.message} hint="N’indiquez pas d’information médicale ni de mot de passe." onChange={(event) => setDraft({ ...draft, message: event.target.value })} />
-      <FormAnnouncement tone="error">{failure && failure.status !== 401 ? failure.data : null}</FormAnnouncement>
-      <button type="submit" disabled={isLoading} className="inline-flex items-center gap-2 rounded-xl bg-teal-700 px-5 py-3 font-medium text-white hover:bg-teal-800 disabled:opacity-70">
+      <FormProtection guard={guard} duplicateMessage="Votre inquiétude a déjà été envoyée : elle n’a pas été enregistrée une seconde fois." />
+      <FormAnnouncement tone="error">{guard.refusal ?? (failure && failure.status !== 401 ? failure.data : null)}</FormAnnouncement>
+      <button type="submit" disabled={isLoading || guard.submitting} className="inline-flex items-center gap-2 rounded-xl bg-teal-700 px-5 py-3 font-medium text-white hover:bg-teal-800 disabled:opacity-70">
         <MessageCircleWarning className="size-5" aria-hidden="true" /> {isLoading ? "Envoi en cours…" : "Envoyer mon inquiétude"}
       </button>
     </form>

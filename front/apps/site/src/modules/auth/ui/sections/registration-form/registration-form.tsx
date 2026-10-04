@@ -1,6 +1,7 @@
 "use client"
 import Link from "next/link"
 import { FormAnnouncement, TextField } from "@/modules/shared/ui/components/form-field"
+import { FormProtection } from "@boilerplate/shared-ui/components/a11y"
 import { PASSWORD_MAX_BYTES, PASSWORD_MIN_BYTES } from "../../../core/domain/registration"
 import { REGISTRATION_FIELD_ID, useRegistrationForm } from "./registration-form.hook"
 import { useMessages } from "@/modules/shared/ui/i18n/i18n-provider"
@@ -9,7 +10,7 @@ import { AUTH_MESSAGES } from "../../i18n/auth-messages"
 
 /** Étape 1 de l’inscription : adresse e-mail et mot de passe. */
 export function RegistrationForm({ onRegistered }: { onRegistered: () => void }) {
-  const { draft, errors, failure, isLoading, update, submit } = useRegistrationForm(onRegistered)
+  const { draft, errors, failure, isLoading, update, submit, guard } = useRegistrationForm(onRegistered)
   const t = useMessages(AUTH_MESSAGES)
   return (
     <form onSubmit={submit} noValidate className="space-y-5">
@@ -45,6 +46,7 @@ export function RegistrationForm({ onRegistered }: { onRegistered: () => void })
         error={errors.confirmation}
         onChange={(event) => update("confirmation", event.target.value)}
       />
+      <FormProtection guard={guard} />
       <FormAnnouncement tone="error">
         {failure && (
           <>
