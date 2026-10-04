@@ -16,6 +16,7 @@ import {
   LocalStorageAuthSessionGateway,
   SESSION_KEY
 } from "@/modules/auth/core/infrastructure/for-production/gateway/auth-session.local-storage.gateway"
+import { LocalStorageDeviceIdentityGateway } from "@/modules/auth/core/infrastructure/for-production/gateway/device-identity.local-storage.gateway"
 import { AuthCitizenSessionAdapter } from "@/modules/auth/core/infrastructure/adapter/citizen/auth-citizen-session.adapter"
 import { CitizenHttpGateway } from "@/modules/citizen/core/infrastructure/for-production/gateway/http/citizen.http.gateway"
 import { CitizenAccountRegistrationAdapter } from "@/modules/citizen/core/infrastructure/adapter/auth/citizen-account-registration.adapter"
@@ -56,9 +57,12 @@ function createDependencies(): Dependencies {
     ...APPOINTMENT_EVENTS,
     ...CITY_FEED_EVENTS
   ])
+  const authGateway = new AuthHttpGateway(siteEnv.apiBaseUrl)
   return {
     realtime,
-    authGateway: new AuthHttpGateway(siteEnv.apiBaseUrl),
+    authGateway,
+    accountSecurityGateway: authGateway,
+    deviceIdentityGateway: new LocalStorageDeviceIdentityGateway(),
     authSessionGateway,
     accountRegistrationGateway: new CitizenAccountRegistrationAdapter(citizenGateway),
     citizenGateway,

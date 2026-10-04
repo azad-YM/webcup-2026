@@ -9,8 +9,10 @@ export const register: UseCase<RegistrationPayload, null> = async (dependencies,
   const credentials = { email: payload.email.trim(), password: payload.password }
   await dependencies.accountRegistrationGateway.register(credentials)
   try {
-    const { token } = await dependencies.authGateway.loginWithCredentials(credentials)
-    dependencies.authSessionGateway.saveToken(token)
+    const response = await dependencies.authGateway.loginWithCredentials({ ...credentials, deviceId: dependencies.deviceIdentityGateway.deviceId() })
+    // Un nouveau compte n'a pas encore activé la vérification supplémentaire (F53) : la session est ouverte.
+    if (!("token" in response)) throw new AppError("CLIENT_ERROR", "verification")
+    dependencies.authSessionGateway.saveToken(response.token)
   } catch (error) {
     throw new AppError(
       error instanceof AppError ? error.status : "CLIENT_ERROR",

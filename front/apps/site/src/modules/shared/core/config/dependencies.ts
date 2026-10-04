@@ -1,4 +1,5 @@
-import type { AuthGateway } from "@/modules/auth/core/application/ports/gateway/auth.gateway"
+import type { AccountSecurityGateway, AuthGateway } from "@/modules/auth/core/application/ports/gateway/auth.gateway"
+import type { DeviceIdentityGateway } from "@/modules/auth/core/application/ports/gateway/device-identity.gateway"
 import type { AuthSessionGateway } from "@/modules/auth/core/application/ports/gateway/auth-session.gateway"
 import type { AccountRegistrationGateway } from "@/modules/auth/core/application/ports/gateway/account-registration.gateway"
 import type { CitizenGateway } from "@/modules/citizen/core/application/ports/gateway/citizen.gateway"
@@ -20,6 +21,9 @@ export type Dependencies = {
   authGateway: AuthGateway
   authSessionGateway: AuthSessionGateway
   accountRegistrationGateway: AccountRegistrationGateway
+  // L15 : appareil, lien de connexion, « Sécurité du compte »
+  deviceIdentityGateway: DeviceIdentityGateway
+  accountSecurityGateway: AccountSecurityGateway
   // citizen
   citizenGateway: CitizenGateway
   citizenSessionProvider: CitizenSessionProvider

@@ -28,6 +28,12 @@ export class InMemoryAuthGateway implements AuthGateway {
   async issuePortalCode() {
     return { code: "code" }
   }
+
+  // L15 : non simulé par ce double (aucun test écrit pour la connexion renforcée).
+  async requestLoginLink(): Promise<never> { throw new AppError("CLIENT_ERROR", "Not configured") }
+  async consumeLoginLink(): Promise<never> { throw new AppError("CLIENT_ERROR", "Not configured") }
+  async verifySignInCode(): Promise<never> { throw new AppError("CLIENT_ERROR", "Not configured") }
+  async resendSignInCode(): Promise<never> { throw new AppError("CLIENT_ERROR", "Not configured") }
 }
 
 export class InMemoryAuthSessionGateway implements AuthSessionGateway {
