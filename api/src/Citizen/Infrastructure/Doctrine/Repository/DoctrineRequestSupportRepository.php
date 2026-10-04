@@ -23,6 +23,11 @@ final readonly class DoctrineRequestSupportRepository implements RequestSupportR
         $this->manager->remove($support);
     }
 
+    public function findByCitizen(string $citizenId): array
+    {
+        return array_values($this->manager->getRepository(RequestSupport::class)->findBy(['citizenId' => $citizenId], ['createdAt' => 'DESC']));
+    }
+
     public function find(string $requestId, string $citizenId): ?RequestSupport
     {
         return $this->manager->getRepository(RequestSupport::class)->findOneBy(['requestId' => $requestId, 'citizenId' => $citizenId]);

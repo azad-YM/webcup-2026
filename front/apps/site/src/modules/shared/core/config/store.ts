@@ -6,6 +6,7 @@ import { serviceRequestsApi } from "@/modules/citizen/core/application/rtk-api/s
 import { notificationsApi } from "@/modules/citizen/core/application/rtk-api/notifications"
 import { appointmentsApi } from "@/modules/citizen/core/application/rtk-api/appointments"
 import { participationApi } from "@/modules/citizen/core/application/rtk-api/participation"
+import { personalDataApi } from "@/modules/citizen/core/application/rtk-api/personal-data"
 import { publicApi } from "@/modules/public/core/application/rtk-api/public"
 import { cityParticipationApi } from "@/modules/participation/core/application/rtk-api/city-participation"
 import type { Dependencies } from "./dependencies"
@@ -21,7 +22,8 @@ export const createStore = (dependencies: Dependencies) =>
       [notificationsApi.reducerPath]: notificationsApi.reducer,
       [appointmentsApi.reducerPath]: appointmentsApi.reducer,
       [participationApi.reducerPath]: participationApi.reducer,
-      [cityParticipationApi.reducerPath]: cityParticipationApi.reducer
+      [cityParticipationApi.reducerPath]: cityParticipationApi.reducer,
+      [personalDataApi.reducerPath]: personalDataApi.reducer
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({ thunk: { extraArgument: dependencies } }).concat(
@@ -33,7 +35,8 @@ export const createStore = (dependencies: Dependencies) =>
         notificationsApi.middleware,
         appointmentsApi.middleware,
         participationApi.middleware,
-        cityParticipationApi.middleware
+        cityParticipationApi.middleware,
+        personalDataApi.middleware
       ),
     devTools: false
   })
@@ -51,4 +54,5 @@ export const resetAccountCaches = (store: AppStore) => {
   store.dispatch(appointmentsApi.util.resetApiState())
   store.dispatch(participationApi.util.resetApiState())
   store.dispatch(cityParticipationApi.util.resetApiState())
+  store.dispatch(personalDataApi.util.resetApiState())
 }

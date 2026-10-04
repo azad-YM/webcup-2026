@@ -30,6 +30,8 @@ security:
         - { path: ^/api/participation/ideas$, roles: PUBLIC_ACCESS, methods: [GET] }
         - { path: ^/api/iam/portal-sessions$, roles: PUBLIC_ACCESS, methods: [POST] }
         - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
+        # L15 : lien de connexion (D02) et seconde étape par code e-mail (F53).
+        - { path: ^/api/iam/(login-links(/consume)?|sign-in/(verify|resend))$, roles: PUBLIC_ACCESS, methods: [POST] }
         - { path: ^/api/citizen/register$, roles: PUBLIC_ACCESS, methods: [POST] }
         # Flux SSE : public pour les topics `public.*`, privé via un ticket vérifié par le contrôleur.
         - { path: ^/api/realtime/stream$, roles: PUBLIC_ACCESS, methods: [GET] }

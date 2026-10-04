@@ -27,3 +27,20 @@ html[data-text-size="150"] .site-header {
     position: static;
   }
 }
+
+/* Impression (F56, F55) : seul le contenu de la page est imprimé, sans en-tête, alertes ni pied de page. */
+@media print {
+  .site-header,
+  footer.bg-slate-950,
+  aside[aria-label="Alertes de la ville"],
+  [data-print="hide"] {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+    color: #000;
+  }
+  [data-print="avoid-break"] {
+    break-inside: avoid;
+  }
+}

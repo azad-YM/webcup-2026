@@ -101,6 +101,14 @@ Le **quartier** se choisit dans une liste fermée (Nord, Sud, Est, Ouest, Centre
 
 Sous l’espace personnel, la section **« Notifications de la ville »** affiche les alertes qui concernent le citoyen, les annonces importantes et la case de consentement aux alertes sanitaires : voir [vitrine et alertes](vitrine-et-alertes.md).
 
+## Mes données et récapitulatif (F55, F56)
+
+🟡 Non testé, non vérifié dans un navigateur. Règles et format : [Citizen — mes données](../../../../api/src/Citizen/doc/mes-donnees.md).
+
+- **Récapitulatif des demandes** (`/espace/demandes/recapitulatif`, lien depuis « Mes demandes ») : page imprimable (tableau d’ensemble, puis détail et étapes de chaque demande ; en-tête, alertes et pied de page masqués à l’impression) et bouton « Télécharger le tableau (CSV) » (UTF-8 avec BOM, `;`, en-têtes en français). Construit sur `GET /api/citizen/requests`.
+- **Mes données** (`/espace/mes-donnees`, menu du compte et page « Vos données ») : confirmation par mot de passe ou par code reçu par e-mail (code demandé à IAM par le port `IdentityCodeProvider` du module citizen, adaptateur `auth/core/infrastructure/adapter/citizen/AuthIdentityCodeAdapter`), puis rubriques expliquées (compte, profil, préférences, demandes, rendez-vous, notifications, participation, appareils, connexions récentes), impression et téléchargement JSON.
+- **Sécurité du compte** (`/espace/securite`) : page du module `auth`, voir [parcours de connexion](parcours-connexion.md).
+
 ## Dépendances et limites
 
 - Le parcours de bout en bout dépend de l’API Citizen (lot L1, agent A). Sans elle, `/espace` affiche « ce compte n’est pas un compte citoyen » (la route répond `404`) et l’inscription échoue avec un message ; la connexion IAM et la carte « Administration » continuent de fonctionner.
@@ -129,4 +137,5 @@ Code : modules `auth` (`ui/pages/registration.tsx`, `core/application/usecases/r
 - [Citizen — rendez-vous](../../../../api/src/Citizen/doc/rendez-vous.md)
 - [Citizen — participation](../../../../api/src/Citizen/doc/participation.md)
 - [Participation (BC)](../../../../api/src/Participation/doc/README.md)
+- [Citizen — mes données](../../../../api/src/Citizen/doc/mes-donnees.md)
 <!-- backlinks:end -->

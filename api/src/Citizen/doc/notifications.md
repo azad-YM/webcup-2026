@@ -16,7 +16,7 @@ Le citoyen est prévenu, dans son espace et sans recharger la page, quand un fai
 | `MarkMyNotificationsRead` | `POST /api/citizen/notifications/read` `{ ids: string[] }` (vide = toutes) → `200 { read }` | citoyen connecté ; un identifiant d’un autre citoyen est ignoré |
 | `RecordCitizenNotification` | commande interne, sans route | listeners de Citizen, rappels de rendez-vous |
 
-Vue `CitizenNotification` : `{ id, kind, title, message, link, createdAt, readAt }` ; `kind` : `request.status_changed` | `appointment.reminder` | `concern.updated` | `idea.updated` (idée suivie par les agents, envoyée par le BC [Participation](../../Participation/doc/README.md) via l’adaptateur `Infrastructure/Adapter/Participation/CitizenParticipationNotifier`, lien `/espace/contributions#IDE-…`) ; `link` est un chemin du site (ex. `/espace/demandes?ref=NT-2026-0042`).
+Vue `CitizenNotification` : `{ id, kind, title, message, link, createdAt, readAt }` ; `kind` : `request.status_changed` | `appointment.reminder` | `concern.updated` | `idea.updated` (idée suivie par les agents, envoyée par le BC [Participation](../../Participation/doc/README.md) via l’adaptateur `Infrastructure/Adapter/Participation/CitizenParticipationNotifier`, lien `/espace/contributions#IDE-…`) | `security.new_device` (F54 : connexion depuis un nouvel appareil, créée par l’adaptateur `Infrastructure/Adapter/IAM/CitizenAccountSecurityNotifier` qui implémente le port `AccountSecurityNotifier` d’IAM, lien `/espace/securite`, clé `device:{id}` ; voir [IAM — connexion renforcée](../../IAM/doc/connexion-renforcee.md)) ; `link` est un chemin du site (ex. `/espace/demandes?ref=NT-2026-0042`).
 
 ### Production des notifications
 
@@ -47,4 +47,5 @@ Agrégat `Domain/Entity/CitizenNotification`, table `citizen_notifications` (mig
 
 - [Citizen](README.md)
 - [Site — parcours citoyen](../../../../front/apps/site/doc/parcours-citoyen.md)
+- [IAM — connexion renforcée](../../IAM/doc/connexion-renforcee.md)
 <!-- backlinks:end -->

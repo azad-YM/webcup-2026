@@ -105,6 +105,10 @@ Alias déclarés dans `config/services.yaml` (section « Ports intermodules »).
 
 Le raccordement IAM est aussi testé côté fournisseur : `IAM/Tests/Suites/Unit/CitizenAccountProvisionerTest`.
 
+## Livré — mes données et récapitulatif (lot L16)
+
+🟡 Non testé, non vérifié dans un navigateur : export des données personnelles après confirmation d’identité (`POST /api/citizen/me/personal-data`, F55, données du compte via le port `PersonalAccountDataProvider` implémenté par IAM) et récapitulatif imprimable/CSV des demandes côté site (F56). Détails et format JSON : [mes données](mes-donnees.md). Notification `security.new_device` (F54) : [notifications](notifications.md).
+
 ## Livré — demandes citoyennes (lot L2)
 
 Consommé par « Mes demandes » du [site](../../../../front/apps/site/doc/parcours-citoyen.md#4-demandes-citoyennes-lot-l2) et par le module « Demandes citoyennes » de l’[admin](../../../../front/apps/admin/doc/demandes.md). Demandes Webcup : D04, D16, F25, D11, F26, F22, D17. **Aucun test automatisé n’a été écrit pour ce lot** et le parcours n’a pas encore été vérifié dans un navigateur.
@@ -315,4 +319,5 @@ Pas d’espace IAM « citoyen » : l’espace citoyen est une zone du site, qui 
 - [Rendez-vous](rendez-vous.md)
 - [Participation](participation.md)
 - [Participation (BC)](../../Participation/doc/README.md)
+- [Mes données (L16)](mes-donnees.md)
 <!-- backlinks:end -->

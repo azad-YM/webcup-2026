@@ -16,6 +16,14 @@ L’accueil `/` est public. L’en-tête propose « Connexion » et « Créer un
 
 Protection des connexions (F37, lot L8, 🟡 non vérifié dans un navigateur) : après plusieurs échecs, IAM répond `429` avec `retryAfter` ; le site affiche « Trop de tentatives de connexion. Par sécurité, la connexion est bloquée temporairement : réessayez dans X minutes. » (X calculé depuis `retryAfter`). Un compte suspendu par un agent reçoit, après un mot de passe correct, le message de l’API « Votre compte est suspendu par la mairie… » (`403`, `code: account_suspended`). `/connexion?compte=supprime` affiche la confirmation de suppression du compte. Règles : [IAM — protection des connexions](../../../../api/src/IAM/doc/comptes-et-sessions.md#protection-contre-les-tentatives-de-connexion-f37).
 
+Connexion renforcée (L15 : D02, F53, F54, 🟡 non testé, non vérifié dans un navigateur ; règles : [IAM — connexion renforcée](../../../../api/src/IAM/doc/connexion-renforcee.md)) :
+
+- `/connexion` propose deux méthodes : « Mot de passe » ou « Lien par e-mail ». La seconde (« Recevoir un lien de connexion par e-mail ») explique où regarder, la validité de 10 minutes et l’obligation d’ouvrir le lien dans ce même navigateur ; la réponse est la même que l’adresse corresponde à un compte ou non. Le secret de navigateur est gardé par `DeviceIdentityGateway` (stockage local, expiré après 10 minutes, effacé après usage : un lien ouvert depuis la messagerie arrive dans un nouvel onglet, qui ne partage pas le stockage de session).
+- `/connexion/lien?jeton=…` retire aussitôt le jeton de l’adresse, l’échange par `POST` contre la session habituelle et affiche un message clair si le lien est ouvert sur un autre appareil ou a expiré.
+- Si la vérification supplémentaire est active, une étape « code reçu par e-mail » suit (6 chiffres, renvoi limité, case « Faire confiance à cet appareil » pendant 30 jours).
+- Chaque connexion envoie l’identifiant aléatoire de l’appareil (`deviceId`, jamais dans une URL).
+- `/espace/securite` (menu du compte, « Sécurité du compte ») : activer/désactiver la vérification, appareils reconnus avec « Ce n’était pas moi » (déconnexion partout puis invitation à changer le mot de passe), changement de mot de passe, connexions récentes.
+
 `/login` reste disponible : l’admin y renvoie encore ses utilisateurs non connectés. La page redirige vers `/connexion` en conservant les paramètres.
 
 ## 3. Choisir un espace
@@ -55,4 +63,5 @@ L’admin n’a pas de formulaire : sans session, elle renvoie vers le site ; sa
 - [Architecture technique](../../../../doc/technique/architecture.md)
 - [IAM](../../../../api/src/IAM/doc/README.md)
 - [Admin](../../admin/doc/README.md)
+- [IAM — connexion renforcée](../../../../api/src/IAM/doc/connexion-renforcee.md)
 <!-- backlinks:end -->
