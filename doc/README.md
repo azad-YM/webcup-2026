@@ -25,6 +25,7 @@ Pour comprendre une fonctionnalité, partir de l’application qui la présente 
 - [Communication](../api/src/Communication/doc/README.md) : publications et alertes, diffusées en temps réel ([ADR 005](technique/decisions/005-bc-communication.md))
 - [Participation](../api/src/Participation/doc/README.md) : projets de la ville, consultations et avis des habitants, boîte à idées ([ADR 008](technique/decisions/008-bc-participation.md))
 - [Citizen](../api/src/Citizen/doc/README.md) : citoyens et demandes (inscription, profil et préférences d’alerte livrés ; demandes à venir)
+- [Assistance](../api/src/Assistance/doc/README.md) : recherche tolérante des services, assistant d’orientation, explications simples, brouillons « En clair » ([ADR 011](technique/decisions/011-bc-assistance.md))
 - [Pilotage](../api/src/Pilotage/doc/README.md) : flux de l’API du concours Webcup pour les agents, suivi de l’équipe, tableau de bord de l’activité (F50)
 - [Audit](../api/src/Audit/doc/README.md) : journal des actions de l’administration ([ADR 006](technique/decisions/006-journal-des-actions.md))
 - [Shared](../api/src/Shared/doc/README.md) : primitives et conventions communes

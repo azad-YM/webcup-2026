@@ -94,6 +94,7 @@ Le handler `Application/EventHandler/ProjectCommunicationToRealtime` consomme le
 |---|---|---|
 | `Ports/Provider/CommunicationAccessPolicy` | `Administration/Infrastructure/Adapter/Communication/AdminCommunicationAccessPolicy` | permission `admin.communication.write` |
 | `Ports/Provider/DistrictDirectory` | `Administration/Infrastructure/Adapter/Communication/AdminCommunicationDistrictDirectory` | liste fermée des quartiers |
+| `Ports/Provider/PlainLanguageDrafter` (F89, L22) | `Assistance/Infrastructure/Adapter/Communication/AssistancePublicationPlainLanguageDrafter` | brouillon « En clair » (`POST /api/communication/manage/publications/plain-language`, `admin.communication.write`, rien n’est enregistré) ; champ `plainLanguage` (600 caractères) de la publication, validé à l’enregistrement — non testé |
 | `Ports/Provider/AudienceProvider` | `Citizen/Infrastructure/Adapter/Communication/CitizenAudienceProvider` | quartier et consentement du citoyen connecté |
 
 Câblage : autoload `Communication\` (et `Tests\Communication\` réservé), services, routes, mapping Doctrine `Communication`, règles `PUBLIC_ACCESS` en lecture dans `security.yaml`, tables `communication_publication` et `communication_alert` (migration `Version20261003003000`).
