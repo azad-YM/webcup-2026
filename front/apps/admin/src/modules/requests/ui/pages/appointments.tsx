@@ -4,6 +4,7 @@ import { RefreshCw, Trash2 } from "@boilerplate/shared-ui/components/icon"
 import { Button, Input, Label, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Textarea } from "@boilerplate/shared-ui/components"
 import { DESK_POLLING_MS, useAppointmentDayQuery, useOpenSlotsMutation, useRemoveSlotMutation } from "../../core/application/rtk-api/agent-desk"
 import { cityToday, localTime, type AppointmentDay } from "../../core/domain/agent-desk"
+import { RequestQueueSkeleton } from "../sections/request-queue-skeleton"
 
 const selectClass = "flex h-9 w-full rounded-lg border border-input bg-background px-3 text-sm focus-visible:outline-2 focus-visible:outline-ring"
 
@@ -68,7 +69,7 @@ export function AppointmentsPage() {
   const [date, setDate] = useState(cityToday)
   const query = useAppointmentDayQuery(date, { pollingInterval: DESK_POLLING_MS })
   const [removeSlot, removing] = useRemoveSlotMutation()
-  const day = query.data
+  const day = query.currentData
   return (
     <div className="mx-auto w-full max-w-7xl space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -87,8 +88,8 @@ export function AppointmentsPage() {
         <Label htmlFor="desk-date">Jour</Label>
         <Input id="desk-date" type="date" value={date} onChange={(event) => event.target.value && setDate(event.target.value)} />
       </div>
-      {query.isLoading ? (
-        <p role="status">Chargement des rendez-vous…</p>
+      {query.isFetching && (!day || day.items.length === 0) ? (
+        <RequestQueueSkeleton label="Chargement des rendez-vous…" />
       ) : query.error && !day ? (
         <div role="alert" className="rounded-xl border border-destructive/40 bg-white p-4">
           <p>{getErrorMessage(query.error)}</p>
@@ -100,7 +101,7 @@ export function AppointmentsPage() {
           {day.items.length === 0 ? (
             <p className="rounded-xl border bg-white p-6 text-muted-foreground">Aucun créneau ce jour-là{day.canManage ? " : ouvrez-en ci-dessous." : "."}</p>
           ) : (
-            <div className="overflow-x-auto rounded-xl border bg-white">
+            <div className="nt-data-table overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>

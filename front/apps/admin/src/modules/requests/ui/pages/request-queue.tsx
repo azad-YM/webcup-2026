@@ -1,10 +1,11 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { getErrorMessage } from "@boilerplate/shared-utils/error.utils"
-import { RefreshCw } from "@boilerplate/shared-ui/components/icon"
+import { ArrowRight, Check, Inbox, MessageSquare, Megaphone, RefreshCw } from "@boilerplate/shared-ui/components/icon"
 import { StatusBadge } from "@boilerplate/shared-ui/components/a11y"
-import { Button, Label, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@boilerplate/shared-ui/components"
+import { Button, Label } from "@boilerplate/shared-ui/components"
 import { REQUEST_QUEUE_POLLING_MS, useListRequestQueueQuery } from "../../core/application/rtk-api/requests"
 import { REQUEST_STATUSES, STATUS_LABELS, TYPE_LABELS, type RequestStatus } from "../../core/domain/service-request"
+import { RequestQueueSkeleton } from "../sections/request-queue-skeleton"
 import { RequestDetail } from "../sections/request-detail"
 import { RequestStatusBadge } from "../sections/request-status-badge"
 
@@ -13,13 +14,19 @@ const dateTime = new Intl.DateTimeFormat("fr-FR", { dateStyle: "short", timeStyl
 
 /** Agents' queue (F22): filter by status, "N en attente" counter (D17), processing with a comment. */
 export function RequestQueuePage() {
-  const [status, setStatus] = useState<RequestStatus | null>("submitted")
+  const detailRef = useRef<HTMLElement>(null)
+  const [status, setStatus] = useState<RequestStatus | null>(null)
   const [page, setPage] = useState(1)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const queue = useListRequestQueueQuery({ status, page }, { pollingInterval: REQUEST_QUEUE_POLLING_MS })
-  const data = queue.data
+  const data = queue.currentData
+  const showSkeleton = queue.isFetching && (!data || data.items.length === 0)
   const selected = data?.items.find(item => item.id === selectedId) ?? null
   const pages = data ? Math.max(1, Math.ceil(data.total / data.pageSize)) : 1
+
+  useEffect(() => {
+    if (selectedId) detailRef.current?.focus()
+  }, [selectedId])
 
   return (
     <div className="mx-auto w-full max-w-7xl space-y-6">
@@ -67,10 +74,10 @@ export function RequestQueuePage() {
         </div>
       ) : null}
 
-      {!data && queue.isLoading && <p role="status">Chargement des demandes…</p>}
+      {showSkeleton && <RequestQueueSkeleton />}
 
-      {data && (
-        <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
+      {data && !showSkeleton && (
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
           <section aria-labelledby="queue-title" className="space-y-3">
             <h2 id="queue-title" className="sr-only">Liste des demandes</h2>
             {data.items.length === 0 ? (
@@ -78,51 +85,54 @@ export function RequestQueuePage() {
                 {status === "submitted" ? "Aucune demande en attente de prise en charge." : "Aucune demande pour ce filtre."}
               </p>
             ) : (
-              <div className="overflow-x-auto rounded-lg border bg-white">
-                <Table>
-                  <caption className="sr-only">Demandes citoyennes, les plus anciennes d’abord</caption>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead scope="col">N° de suivi</TableHead>
-                      <TableHead scope="col">Objet</TableHead>
-                      <TableHead scope="col">Type</TableHead>
-                      <TableHead scope="col">Reçue le</TableHead>
-                      <TableHead scope="col">État</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {data.items.map(item => (
-                      <TableRow key={item.id} className={item.id === selectedId ? "bg-sky-50 outline-2 -outline-offset-2 outline-sky-800" : undefined}>
-                        <TableCell className="font-mono text-xs">{item.reference}</TableCell>
-                        <TableCell>
-                          <button type="button" className="text-left font-medium underline-offset-4 hover:underline" aria-pressed={item.id === selectedId} onClick={() => setSelectedId(item.id)}>
-                            {item.subject}
-                          </button>
-                        </TableCell>
-                        <TableCell>{TYPE_LABELS[item.type]}</TableCell>
-                        <TableCell><time dateTime={item.createdAt}>{dateTime.format(new Date(item.createdAt))}</time></TableCell>
-                        <TableCell><RequestStatusBadge status={item.status} /></TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+              <ul className="space-y-3" aria-label="Demandes, les plus anciennes d’abord">
+                {data.items.map(item => {
+                  const isSelected = item.id === selectedId
+                  const Icon = item.type === "report" ? Megaphone : MessageSquare
+                  return <li key={item.id}>
+                    <button
+                      type="button"
+                      onClick={() => { if (isSelected) detailRef.current?.focus(); else setSelectedId(item.id) }}
+                      aria-pressed={isSelected}
+                      aria-controls="selected-request"
+                      aria-label={`${isSelected ? "Voir le détail" : "Voir la demande"} ${item.reference} : ${item.subject}`}
+                      className={`group w-full rounded-2xl p-5 text-left transition ${isSelected ? "bg-teal-50 shadow-sm" : "bg-white shadow-sm hover:bg-teal-50/60 hover:shadow-md"}`}
+                    >
+                      <span className="flex items-start gap-3">
+                        <span className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${isSelected ? "bg-teal-700 text-white" : "bg-slate-100 text-slate-600"}`}><Icon className="size-5" aria-hidden="true" /></span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-xs font-medium text-slate-500">{TYPE_LABELS[item.type]} · {item.reference}</span>
+                          <span className="mt-1 block break-words text-base font-semibold text-slate-950">{item.subject}</span>
+                        </span>
+                      </span>
+                      <span className="mt-4 flex flex-wrap items-center gap-2">
+                        <RequestStatusBadge status={item.status} />
+                        <span className="text-xs text-slate-500">Reçue le <time dateTime={item.createdAt}>{dateTime.format(new Date(item.createdAt))}</time></span>
+                      </span>
+                      <span className="mt-4 flex items-center justify-between gap-3 text-sm font-semibold text-teal-800">
+                        {isSelected ? <><span className="inline-flex items-center gap-2"><Check className="size-4" aria-hidden="true" />Demande ouverte</span><span>Voir le détail</span></> : <><span>Voir la demande</span><ArrowRight className="size-4 transition group-hover:translate-x-1" aria-hidden="true" /></>}
+                      </span>
+                    </button>
+                  </li>
+                })}
+              </ul>
             )}
             {pages > 1 && (
               <nav aria-label="Pages de la file" className="flex items-center gap-3 text-sm">
-                <Button type="button" variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>Précédente</Button>
+                <Button type="button" variant="outline" size="sm" disabled={queue.isFetching || page <= 1} onClick={() => setPage(page - 1)}>Précédente</Button>
                 <span>Page {page} sur {pages}</span>
-                <Button type="button" variant="outline" size="sm" disabled={page >= pages} onClick={() => setPage(page + 1)}>Suivante</Button>
+                <Button type="button" variant="outline" size="sm" disabled={queue.isFetching || page >= pages} onClick={() => setPage(page + 1)}>Suivante</Button>
               </nav>
             )}
           </section>
-          <aside aria-label="Demande sélectionnée">
+          <aside id="selected-request" ref={detailRef} tabIndex={-1} aria-label="Demande sélectionnée" className="scroll-mt-6 self-start outline-none">
             {selected ? (
               <RequestDetail request={selected} canProcess={data.canProcess} />
             ) : (
-              <p className="rounded-2xl border border-dashed bg-white p-6 text-sm text-muted-foreground">
-                {selectedId ? "Cette demande n’apparaît plus avec ce filtre (son état a changé)." : "Sélectionnez une demande pour la lire et la traiter."}
-              </p>
+              <div className="rounded-2xl bg-slate-100/80 px-6 py-12 text-center text-sm text-slate-600">
+                <Inbox className="mx-auto mb-4 size-9 text-slate-400" aria-hidden="true" />
+                {selectedId ? "Cette demande n’apparaît plus avec ce filtre (son état a changé)." : "Cliquez sur « Voir la demande » pour consulter son détail et les actions disponibles."}
+              </div>
             )}
           </aside>
         </div>

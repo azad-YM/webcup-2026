@@ -15,6 +15,25 @@ function signedInCitizen() {
 }
 
 describe("Espace citoyen — profil", () => {
+  it("recharge un profil ancien et conserve les cinq champs non modifiés à l’enregistrement", async () => {
+    const { store, citizenGateway } = signedInCitizen()
+    const subscription = store.dispatch(citizenApi.endpoints.getMyProfile.initiate())
+    await subscription.unwrap()
+    const existing = {
+      firstName: "Ada", lastName: "Lovelace", phone: "+269 1234567",
+      address: "12 allée des Serres", district: "Nord", preferredLanguage: "fr"
+    }
+    await citizenGateway.updateMyProfile(`token:${email}`, existing)
+    const loaded = await store.dispatch(citizenApi.endpoints.getMyProfile.initiate(undefined, { forceRefetch: true, subscribe: false })).unwrap()
+    expect(toDraft(loaded)).toEqual(existing)
+    const saved = await store.dispatch(citizenApi.endpoints.updateMyProfile.initiate({ ...toDraft(loaded), phone: "+269 7654321" })).unwrap()
+    expect(saved).toMatchObject({ ...existing, phone: "+269 7654321" })
+    await vi.waitFor(() => expect(citizenApi.endpoints.getMyProfile.select()(store.getState()).data).toEqual(saved))
+    const cleared = await store.dispatch(citizenApi.endpoints.updateMyProfile.initiate({ ...toDraft(saved), address: "" })).unwrap()
+    expect(cleared).toMatchObject({ ...existing, phone: "+269 7654321", address: null })
+    subscription.unsubscribe()
+  })
+
   it("exige une session sans appeler Citizen", async () => {
     const { store, citizenGateway } = createTestContext()
     citizenGateway.seed(email)

@@ -25,13 +25,14 @@ const isProfileField = (value: string | undefined): value is ProfileField =>
 export function useProfileForm(profile: CitizenProfile, onSaved: (profile: CitizenProfile) => void) {
   const { logout } = useSession()
   const [update, { isLoading }] = useUpdateMyProfileMutation()
-  const [draft, setDraft] = useState<CitizenProfileDraft>(() => toDraft(profile))
+  const [changes, setChanges] = useState<Partial<CitizenProfileDraft>>({})
+  const draft = { ...toDraft(profile), ...changes }
   const [errors, setErrors] = useState<ProfileErrors>({})
   const [status, setStatus] = useState<{ tone: "error" | "success"; message: string } | null>(null)
   const submitting = useRef(false)
 
   const change = (field: ProfileField, value: string) => {
-    setDraft((current) => ({ ...current, [field]: value }))
+    setChanges((current) => ({ ...current, [field]: value }))
     if (errors[field]) setErrors((current) => ({ ...current, [field]: undefined }))
     if (status?.tone === "success") setStatus(null)
   }
@@ -51,7 +52,7 @@ export function useProfileForm(profile: CitizenProfile, onSaved: (profile: Citiz
     submitting.current = true
     try {
       const saved = await update(draft).unwrap()
-      setDraft(toDraft(saved))
+      setChanges({})
       setStatus({ tone: "success", message: "Vos informations ont été enregistrées." })
       onSaved(saved)
     } catch (reason) {

@@ -1,3 +1,4 @@
+import type { CitizenWorkspaceProvider } from "@/modules/auth/core/application/ports/provider/citizen-workspace.provider"
 import type { PortalLoginGateway } from "@/modules/auth/core/application/ports/gateway/portal-login.gateway"
 import type { AuthGateway } from "@/modules/auth/core/application/ports/gateway/auth.gateway"
 import type { AuthSessionGateway } from "@/modules/auth/core/application/ports/gateway/auth-session.gateway"
@@ -17,6 +18,7 @@ import type { ActivityDashboardGateway } from "@/modules/pilotage/core/applicati
 import type { ContentGateway } from "@/modules/content/core/application/ports/gateway/content.gateway"
 
 export type Dependencies = {
+  citizenWorkspaceProvider: CitizenWorkspaceProvider
   citizenAccountsGateway: CitizenAccountsGateway
   securityJournalGateway: SecurityJournalGateway
   portalLoginGateway: PortalLoginGateway

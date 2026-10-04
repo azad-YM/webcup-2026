@@ -19,7 +19,7 @@ const dateTime = new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeSty
 /** Detail of a request, its timeline and the processing form (F22). */
 export function RequestDetail({ request, canProcess }: { request: ServiceRequest; canProcess: boolean }) {
   return (
-    <article aria-labelledby="request-detail-title" className="space-y-5 rounded-2xl border bg-white p-5 shadow-sm">
+    <article aria-labelledby="request-detail-title" className="space-y-5 rounded-2xl bg-white p-6 shadow-sm">
       <div>
         <p className="font-mono text-sm text-muted-foreground">{request.reference} · {TYPE_LABELS[request.type]}</p>
         <h2 id="request-detail-title" className="mt-1 text-lg font-semibold">{request.subject}</h2>

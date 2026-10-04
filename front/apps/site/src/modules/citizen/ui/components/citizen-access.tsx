@@ -13,15 +13,15 @@ import { CitizenErrorCode } from "../../core/application/ports/gateway/citizen.g
  * Garde de l’espace citoyen : une session, puis un profil citoyen
  * (`GET /api/citizen/me`). Un 401 ferme la session ; une panne réseau non.
  */
-export function useCitizenAccess() {
+export function useCitizenAccess({ refreshProfile = false }: { refreshProfile?: boolean } = {}) {
   const { ready, hasToken, logout } = useSession()
-  const query = useGetMyProfileQuery(undefined, { skip: !ready || !hasToken })
+  const query = useGetMyProfileQuery(undefined, { skip: !ready || !hasToken, refetchOnMountOrArgChange: refreshProfile })
   const error = toQueryError(query.error)
   const unauthorized = error?.status === 401
   useEffect(() => {
     if (unauthorized) logout()
   }, [unauthorized, logout])
-  const profile = ready && hasToken && !query.error ? query.data ?? null : null
+  const profile = ready && hasToken && !query.error && !(refreshProfile && query.isFetching) ? query.data ?? null : null
   return { ready, hasToken, query, error, unauthorized, profile }
 }
 

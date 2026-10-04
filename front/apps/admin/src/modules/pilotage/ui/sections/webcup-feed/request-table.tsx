@@ -10,7 +10,7 @@ type Props = {
 
 export function RequestTable({ requests, newCodes, canEditTracking }: Props) {
   return (
-    <div className="overflow-x-auto rounded-lg border bg-white">
+    <div className="nt-data-table overflow-x-auto">
       <Table>
         <caption className="sr-only">Demandes diffusées par l’API du concours, dans l’ordre de l’API</caption>
         <TableHeader>
@@ -29,7 +29,7 @@ export function RequestTable({ requests, newCodes, canEditTracking }: Props) {
           {requests.map(request => {
             const isNew = newCodes.has(request.requestCode)
             return (
-              <TableRow key={request.requestCode} className={isNew ? "bg-amber-50" : undefined}>
+              <TableRow key={request.requestCode} data-highlight={isNew ? "new" : undefined}>
                 <TableCell className="align-top font-mono font-medium">
                   <span className="flex flex-wrap items-center gap-1">
                     {request.requestCode}

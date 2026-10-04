@@ -1,3 +1,4 @@
+import { HttpCitizenWorkspaceProvider } from "@/modules/citizen-accounts/core/infrastructure/adapter/auth/citizen-workspace.provider"
 import { CitizenAccountsHttpGateway } from "@/modules/citizen-accounts/core/infrastructure/for-production/gateway/http/citizen-accounts.http.gateway"
 import { AuthAccountSessionProvider } from "@/modules/auth/core/infrastructure/adapter/citizen-accounts/auth-account-session.provider"
 import { SecurityJournalHttpGateway } from "@/modules/security/core/infrastructure/for-production/gateway/http/security-journal.http.gateway"
@@ -48,6 +49,7 @@ export class App {
     const contentSession = new AuthContentSessionProvider(authSessionGateway, onSessionInvalidated)
 
     return {
+      citizenWorkspaceProvider: new HttpCitizenWorkspaceProvider(apiBaseUrl, new AuthAccountSessionProvider(authSessionGateway, onSessionInvalidated)),
       citizenAccountsGateway: new CitizenAccountsHttpGateway(apiBaseUrl, new AuthAccountSessionProvider(authSessionGateway, onSessionInvalidated)),
       securityJournalGateway: new SecurityJournalHttpGateway(apiBaseUrl, new AuthSecuritySessionProvider(authSessionGateway, onSessionInvalidated)),
       authSessionGateway,

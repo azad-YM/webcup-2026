@@ -1,8 +1,9 @@
 "use client"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, type ReactNode } from "react"
 import { LogOut, Menu, UserRound, X } from "@boilerplate/shared-ui/components/icon"
+import { Popover, PopoverTrigger, PopoverContent } from "@boilerplate/shared-ui/components"
 import { useSession } from "../store-provider"
 import { isCurrentSection, MAIN_NAVIGATION } from "../navigation"
 import { NovaTerraWordmark } from "./nova-terra-logo"
@@ -11,7 +12,8 @@ import { DisplayPreferencesButton } from "@boilerplate/shared-ui/components/a11y
 const navLink = (active: boolean) =>
   `rounded-lg px-3 py-2 text-base font-medium transition ${active ? "bg-teal-50 text-teal-900" : "text-slate-700 hover:bg-slate-100 hover:text-slate-950"}`
 
-function SessionActions({ onNavigate }: { onNavigate?: () => void }) {
+function SessionActions({ notifications, spaces }: { notifications: ReactNode; spaces: ReactNode }) {
+  const [open, setOpen] = useState(false)
   const { ready, hasToken, logout } = useSession()
   const router = useRouter()
   const pathname = usePathname()
@@ -19,32 +21,40 @@ function SessionActions({ onNavigate }: { onNavigate?: () => void }) {
   if (!hasToken)
     return (
       <>
-        <Link href="/connexion" onClick={onNavigate} className="rounded-lg px-3 py-2 font-medium text-slate-800 hover:bg-slate-100">Connexion</Link>
-        <Link href="/inscription" onClick={onNavigate} className="rounded-lg bg-teal-700 px-4 py-2 font-medium text-white hover:bg-teal-800">Créer un compte</Link>
+        <Link href="/connexion" onClick={() => setOpen(false)} className="rounded-lg px-3 py-2 font-medium text-slate-800 hover:bg-slate-100">Connexion</Link>
+        <Link href="/inscription" onClick={() => setOpen(false)} className="rounded-lg bg-teal-700 px-4 py-2 font-medium text-white hover:bg-teal-800">Créer un compte</Link>
       </>
     )
   return (
     <>
       <Link
         href="/espace"
-        onClick={onNavigate}
+        onClick={() => setOpen(false)}
         aria-current={isCurrentSection(pathname, "/espace") ? "page" : undefined}
         className="inline-flex items-center gap-2 rounded-lg bg-teal-700 px-4 py-2 font-medium text-white hover:bg-teal-800"
       >
         <UserRound className="size-4" aria-hidden="true" /> Mon espace
       </Link>
-      <button
-        type="button"
-        onClick={() => { onNavigate?.(); logout(); router.push("/") }}
-        className="inline-flex items-center gap-2 rounded-lg px-3 py-2 font-medium text-slate-800 hover:bg-slate-100"
-      >
-        <LogOut className="size-4" aria-hidden="true" /> Déconnexion
-      </button>
+      {notifications}
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <button type="button" aria-label="Ouvrir le menu de mon compte" className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-teal-200 bg-teal-50 text-teal-800 hover:bg-teal-100">
+            <UserRound className="size-5" aria-hidden="true" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent align="end" aria-label="Mon compte" className="max-h-[70dvh] w-80 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-3 text-slate-950" onClick={(event) => { if ((event.target as HTMLElement).closest("a")) setOpen(false) }}>
+          <Link href="/espace/profil" className="flex items-center gap-2 rounded-lg px-3 py-2 font-medium text-slate-800 hover:bg-slate-100"><UserRound className="size-4" aria-hidden="true" /> Mon profil</Link>
+          {spaces}
+          <button type="button" onClick={() => { setOpen(false); logout(); router.push("/") }} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 font-medium text-slate-800 hover:bg-slate-100">
+            <LogOut className="size-4" aria-hidden="true" /> Déconnexion
+          </button>
+        </PopoverContent>
+      </Popover>
     </>
   )
 }
 
-export function SiteHeader() {
+export function SiteHeader({ notifications, spaces }: { notifications: ReactNode; spaces: ReactNode }) {
   const pathname = usePathname()
   // Le menu mobile se referme de lui-même quand la page change.
   const [openOn, setOpenOn] = useState<string | null>(null)
@@ -68,9 +78,9 @@ export function SiteHeader() {
             })}
           </ul>
         </nav>
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="order-3 flex w-full flex-wrap items-center justify-end gap-2 md:order-none md:ml-auto md:w-auto">
           <DisplayPreferencesButton showHintsReset className="text-slate-800 hover:bg-slate-100" />
-          <SessionActions />
+          <SessionActions key={pathname} notifications={notifications} spaces={spaces} />
         </div>
         <button
           type="button"
@@ -96,10 +106,6 @@ export function SiteHeader() {
             })}
           </ul>
         </nav>
-        <div className="mt-3 flex flex-wrap gap-2 border-t border-slate-200 pt-3">
-          <DisplayPreferencesButton showHintsReset className="text-slate-800 hover:bg-slate-100" />
-          <SessionActions onNavigate={close} />
-        </div>
       </div>
     </header>
   )
