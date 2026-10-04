@@ -8,6 +8,7 @@ const LOCAL_SPACE_ROUTES: Record<string, string> = {
   admin: "/admin",
   pilotage: "/pilotage",
   requests: "/demandes",
+  participation: "/participation",
 }
 
 export const useListSpaces = () => {

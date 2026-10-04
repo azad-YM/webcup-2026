@@ -1,11 +1,12 @@
-import { Activity, BookKey, Building2, CalendarClock, History, Inbox, LayoutDashboard, MessageCircleWarning, Newspaper, ShieldAlert, Siren, Users } from "@boilerplate/shared-ui/components/icon"
+import { Activity, BookKey, Building2, CalendarClock, History, Inbox, LayoutDashboard, Lightbulb, MessageCircleWarning, MessagesSquare, Newspaper, ShieldAlert, Siren, Users } from "@boilerplate/shared-ui/components/icon"
 import type { NavGroup } from "../components/sidebar/nav-main"
 
-export type ModuleCode = "admin" | "requests" | "pilotage"
+export type ModuleCode = "admin" | "requests" | "pilotage" | "participation"
 export const MODULES = {
   admin: { title: "Administration", route: "/admin", icon: Building2, description: "Organisation et vie de la ville" },
   requests: { title: "Demandes citoyennes", route: "/demandes", icon: Inbox, description: "Accompagner les habitants" },
   pilotage: { title: "Pilotage", route: "/pilotage", icon: Activity, description: "Suivre l’activité de Nova Terra" },
+  participation: { title: "Participation", route: "/participation", icon: MessagesSquare, description: "Projets, consultations et idées des habitants" },
 } satisfies Record<ModuleCode, unknown>
 
 export function moduleForPath(path: string): ModuleCode | null {
@@ -13,6 +14,7 @@ export function moduleForPath(path: string): ModuleCode | null {
   if (root === "admin" || root === "contenus") return "admin"
   if (root === "demandes") return "requests"
   if (root === "pilotage") return "pilotage"
+  if (root === "participation") return "participation"
   return null
 }
 
@@ -42,5 +44,10 @@ export const MODULE_NAVIGATION: Record<ModuleCode, NavGroup[]> = {
   pilotage: [{ title: "Activité de la ville", items: [
     { title: "Flux Nova Terra", url: "/pilotage", icon: Activity, description: "Demandes de la ville et suivi de l’équipe" },
     { title: "Tableau de bord", url: "/pilotage/tableau-de-bord", icon: LayoutDashboard, description: "Chiffres clés et activité" },
+  ] }],
+  participation: [{ title: "Participation des habitants", items: [
+    { title: "Projets", url: "/participation", icon: Building2, description: "Projets en cours dans la ville" },
+    { title: "Consultations et avis", url: "/participation/consultations", icon: MessagesSquare, description: "Questions posées aux habitants" },
+    { title: "Boîte à idées", url: "/participation/idees", icon: Lightbulb, description: "Idées proposées par les habitants" },
   ] }],
 }

@@ -19,6 +19,9 @@ import { ConcernsPage } from "@/modules/requests/ui/pages/concerns"
 import { PublicationsPage } from "@/modules/content/ui/pages/publications"
 import { AlertsPage } from "@/modules/content/ui/pages/alerts"
 import { ServicesPage } from "@/modules/content/ui/pages/services"
+import { ParticipationProjectsPage } from "@/modules/participation/ui/pages/projects"
+import { ParticipationConsultationsPage } from "@/modules/participation/ui/pages/consultations"
+import { ParticipationIdeasPage } from "@/modules/participation/ui/pages/ideas"
 
 const ProtectedRoutes = () => {
   const profile = useGetProfileQuery()
@@ -88,6 +91,15 @@ export const router = createBrowserRouter([
           { index: true, element: <RequestQueuePage /> },
           { path: "rendez-vous", element: <AppointmentsPage /> },
           { path: "inquietudes", element: <ConcernsPage /> },
+        ],
+      },
+      {
+        path: "/participation",
+        element: <Outlet />,
+        children: [
+          { index: true, element: <ParticipationProjectsPage /> },
+          { path: "consultations", element: <ParticipationConsultationsPage /> },
+          { path: "idees", element: <ParticipationIdeasPage /> },
         ],
       },
     ],
