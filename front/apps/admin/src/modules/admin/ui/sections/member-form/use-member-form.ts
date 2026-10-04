@@ -1,5 +1,6 @@
 import { useRef, useState, type FormEvent } from "react"
 import { getErrorMessage } from "@boilerplate/shared-utils/error.utils"
+import { useProtectedSubmit } from "@boilerplate/shared-ui/components/a11y"
 import { useAddMemberMutation, useListRolesQuery } from "../../../core/application/rtk-api/access-management"
 import { isInitialPasswordValid } from "../../../core/domain/member"
 import { assignableRoles } from "./assignable-roles"
@@ -13,6 +14,8 @@ export function useMemberForm() {
   const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>([])
   const [success, setSuccess] = useState("")
   const submitting = useRef(false)
+  // F82 (L25) : un double envoi ne crée pas deux membres (clé d’idempotence).
+  const guard = useProtectedSubmit({})
   const availableRoles = assignableRoles(roles.currentData ?? [])
   const roleIds = selectedRoleIds.filter(id => availableRoles.some(role => role.id === id))
   const passwordValid = isInitialPasswordValid(password)
@@ -30,7 +33,8 @@ export function useMemberForm() {
     setSuccess("")
     try {
       const memberName = name.trim()
-      await addMember({ name: memberName, email, password, roleIds }).unwrap()
+      const payload = { name: memberName, email, password, roleIds }
+      await guard.submit(payload, () => addMember(payload).unwrap())
       setSuccess(`« ${memberName} » a été ajouté. Transmettez-lui son mot de passe initial par un canal sûr.`)
       setName("")
       setEmail("")

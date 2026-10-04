@@ -1,5 +1,5 @@
 /** Notifications de l'espace citoyen (F49, F40, F51, F54, F68) : contrat de Citizen, voir `api/src/Citizen/doc/notifications.md`. */
-export type NotificationKind = "request.status_changed" | "appointment.reminder" | "concern.updated" | "idea.updated" | "security.new_device"
+export type NotificationKind = "request.status_changed" | "appointment.reminder" | "concern.updated" | "idea.updated" | "security.new_device" | "security.unusual_activity"
 
 export type CitizenNotification = {
   id: string
@@ -18,7 +18,8 @@ export const NOTIFICATION_KIND_LABELS: Record<NotificationKind, string> = {
   "appointment.reminder": "Rendez-vous",
   "concern.updated": "Inquiétude",
   "idea.updated": "Idée",
-  "security.new_device": "Sécurité"
+  "security.new_device": "Sécurité",
+  "security.unusual_activity": "Sécurité"
 }
 
 /** Non lues d'un type donné (pastille sur un raccourci de l'espace). */

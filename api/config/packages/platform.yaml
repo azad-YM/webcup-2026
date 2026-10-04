@@ -58,6 +58,8 @@ parameters:
         - realtime_issue_ticket
         - iam_my_device_report
         - iam_my_password
+        # Fiche d'accueil (F71) : la réponse contient le code provisoire, jamais conservé en base.
+        - citizen_account_welcome
 
     # --- F87 : sauvegardes ---
     # Dossier hors du dossier public, jamais commité ; rétention en nombre de sauvegardes.

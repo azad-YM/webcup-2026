@@ -1,5 +1,6 @@
 import { useRef, useState, type FormEvent } from "react"
 import { getErrorMessage } from "@boilerplate/shared-utils/error.utils"
+import { useProtectedSubmit } from "@boilerplate/shared-ui/components/a11y"
 import { useCreateRoleMutation, useListPermissionsQuery } from "../../../core/application/rtk-api/access-management"
 import { permissionKey } from "../../../core/domain/permission"
 import { filterPermissions, permissionContexts } from "./permission-options"
@@ -13,6 +14,8 @@ export function useRoleForm() {
   const [selectedKeys, setSelectedKeys] = useState<string[]>([])
   const [success, setSuccess] = useState("")
   const submitting = useRef(false)
+  // F82 (L25) : un double envoi ne crée pas deux rôles (clé d’idempotence).
+  const guard = useProtectedSubmit({})
   const permissions = catalog.currentData ?? []
   const selectedPermissions = permissions.filter(permission => selectedKeys.includes(permissionKey(permission)))
   const canSubmit = name.trim().length > 0 && catalog.isSuccess && !catalog.isFetching && !creation.isLoading && permissions.length > 0
@@ -29,7 +32,8 @@ export function useRoleForm() {
     setSuccess("")
     try {
       const roleName = name.trim()
-      await createRole({ name: roleName, permissions: selectedPermissions }).unwrap()
+      const payload = { name: roleName, permissions: selectedPermissions }
+      await guard.submit(payload, () => createRole(payload).unwrap())
       setSuccess(`Le rôle « ${roleName} » a été créé.`)
       setName("")
       setSelectedKeys([])

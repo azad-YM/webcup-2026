@@ -12,6 +12,8 @@ export const BREADCRUMB_LABELS: Record<string, string> = {
   "/admin/citizens": "Comptes citoyens",
   "/admin/security": "Journal de sécurité",
   "/admin/journal": "Journal des actions",
+  "/admin/activite-inhabituelle": "Activité inhabituelle",
+  "/admin/sauvegardes": "Sauvegardes",
   "/contenus": "Contenus de la ville",
   "/contenus/alertes": "Alertes",
   "/contenus/services": "Services et transports",

@@ -13,6 +13,7 @@ import type { RealtimeSubscriber } from "@/modules/shared/core/ports/realtime-su
 
 import type { CitizenAccountsGateway } from "@/modules/citizen-accounts/core/application/ports/gateway/citizen-accounts.gateway"
 import type { SecurityJournalGateway } from "@/modules/security/core/application/ports/gateway/security-journal.gateway"
+import type { OperationsGateway } from "@/modules/security/core/application/ports/gateway/operations.gateway"
 import type { AuditJournalGateway } from "@/modules/audit/core/application/ports/gateway/audit-journal.gateway"
 import type { ActivityDashboardGateway } from "@/modules/pilotage/core/application/ports/gateway/activity-dashboard.gateway"
 import type { ContentGateway } from "@/modules/content/core/application/ports/gateway/content.gateway"
@@ -22,6 +23,8 @@ export type Dependencies = {
   citizenWorkspaceProvider: CitizenWorkspaceProvider
   citizenAccountsGateway: CitizenAccountsGateway
   securityJournalGateway: SecurityJournalGateway
+  /** L24, L25 : activité inhabituelle (F85), sauvegardes (F87), état de la plateforme (F77). */
+  operationsGateway: OperationsGateway
   portalLoginGateway: PortalLoginGateway
   authGateway: AuthGateway
   authSessionGateway: AuthSessionGateway
